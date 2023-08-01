@@ -1,123 +1,156 @@
-type Child = NodeReactNext<any> | string
-type Ctx = {}
+import {ComponentCtx, NodeCtx} from '../types';
+import {handleChildren} from './string/string';
+import {createElementString} from './string/string.ts';
 
-const selfClosingTags = [
-  'area',
-  'base',
-  'br',
-  'col',
-  'command',
-  'embed',
-  'hr',
-  'img',
-  'input',
-  'keygen',
-  'link',
-  'meta',
-  'param',
-  'source',
-  'track',
-  'wbr'
-];
+export type Child = NodeReactNext<any, any> | string;
+type Props = Record<string, any>;
 
-type StringStream = TransformStream<string, string>
+type Component<TProps> = (ctx: ComponentCtx<TProps>) => any;
 
-
-export function createElementString({type, props}) {
-  const left = `<${type} ${Object.entries(props).map(([key, value]) => `${key}="${value}"`).join(' ')}>`
-  const right = selfClosingTags.includes(type) ? '' : `</${type}>`
-  return {left, right}
+function createComponentCtx<TProps>({
+  nodeCtx,
+  props,
+}: {
+  nodeCtx: NodeCtx;
+  props: TProps;
+}): ComponentCtx<TProps> {
+  return {
+    props,
+    mount: () => {},
+    select: () => {},
+    // config: {
+    //   disableSubscribe: boolean,
+    // },
+  };
 }
 
-type Component = () => any
+abstract class NodeReactNext<TType, TProps extends Props> {
+  type: TType;
+  key: string;
+  props: TProps;
+  children: Child[];
 
-class NodeReactNext<TType> {
-  type: TType
+  constructor({
+    type,
+    props,
+    key = '',
+    children,
+  }: {
+    type: TType;
+    props: TProps;
+    key: string;
+    children: Child[];
+  }) {
+    this.type = type;
+    this.key = key;
+    this.props = props;
+    this.children = children;
+  }
+  abstract getStringStream(
+    ctx: NodeCtx
+  ): Promise<TransformStream<string, string>>;
+}
+
+export class NodeReactNextComponent<TProps extends Props>
+  extends NodeReactNext<Component<TProps>, TProps>
+  implements NodeReactNext<Component<TProps>, TProps>
+{
+  async getStringStream(ctx: NodeCtx) {
+    const streams = new TransformStream<string, string>();
+    const writer = streams.writable.getWriter();
+
+    const element = await this.type(
+      createComponentCtx({nodeCtx: ctx, props: this.props})
+    );
+
+    const elementString = createElementString({
+      type: element,
+      props: this.props,
+    });
+    writer.write(elementString.left);
+
+    Promise.resolve().then(async () => {
+      await handleChildren({
+        children: this.children,
+        ctx,
+        streams,
+        writer,
+      });
+      writer.write(elementString.right);
+      writer.close();
+    });
+
+    return streams;
+  }
+}
+
+export class NodeReactNextElem<TProps extends Props>
+  extends NodeReactNext<string, TProps>
+  implements NodeReactNext<string, TProps>
+{
+  async getStringStream(ctx: NodeCtx) {
+    const streams = new TransformStream<string, string>();
+    const writer = streams.writable.getWriter();
+
+    const elementString = createElementString({
+      type: this.type,
+      props: this.props,
+    });
+    writer.write(elementString.left);
+
+    Promise.resolve().then(async () => {
+      await handleChildren({
+        children: this.children,
+        ctx,
+        streams,
+        writer,
+      });
+      writer.write(elementString.right);
+      writer.close();
+    });
+
+    return streams;
+  }
+}
+
+export function jsx<TProps extends Props>(
+  type: string | Component<any>,
+  rawProps: {children: Child | Child[]} & TProps,
   key: string
-  props: Props
-  children: Child[]
-
-  constructor({type, props, key = '', children}: {type: TType, props: Props, key: string, children: Child[]}) {
-    this.type = type
-    this.key = key
-    this.props = props
-    this.children = children
+) {
+  const {children: rawChidlren, ...props} = rawProps;
+  const children = Array.isArray(rawChidlren) ? rawChidlren : [rawChidlren];
+  if (typeof type === 'string') {
+    return new NodeReactNextElem({type, props, key, children});
   }
-  abstract getStringStream(props: {ctx: Ctx}): TransformStream<string, string>
+  return new NodeReactNextComponent({type, props, key, children});
 }
 
-type OnFinish = () => void
+async function convertStreamToString(stream: ReadableStream) {
+  const reader = stream.getReader();
+  let result = '';
 
-class NodeReactNextComponent extends NodeReactNext<Component> implements NodeReactNext<Component> {
-  getStringStream({ctx}) {
+  while (true) {
+    const {done, value} = await reader.read();
 
-  }
-}
-
-async function handleChildren({children, streams, ctx, writer}: {children: Child[], streams: StringStream, onFinish: OnFinish, ctx: Ctx, writer:  WritableStreamDefaultWriter<string>}) {
-  const childrenStreams = children.map((child) => {
-    if (typeof child === 'string') {
-      return child
+    if (done) {
+      break;
     }
-    return child.getStringStream({ctx})
-  })
 
-  for (const childStream of childrenStreams) {
-    if (typeof childStream === 'string') {
-      writer.write(childStream)
-      continue
-    }
-    await childStream.readable.pipeTo(streams.writable, {preventClose: true})
+    result += value;
   }
+
+  return result;
 }
 
-class NodeReactNextElem extends NodeReactNext<string> implements NodeReactNext<string> {
-  getStringStream({ctx}: {ctx: Ctx}) {
-    const streams = new TransformStream<string, string>()
-    const writer = streams.writable.getWriter()
-
-    const elementString = createElementString({type: this.type, props: this.props})
-    writer.write(elementString.left)
-
-    Promise.resolve().then(() => {
-      await handleChildren({children: this.children, ctx, onFinish: () => {}, streams, writer})
-      writer.write(elementString.right)
-      writer.close()
-    })
-
-    return streams
-  }
-  getStringStreamOld({ctx}: {ctx: Ctx}) {
-    const streams = new TransformStream<string, string>()
-    const writer = streams.writable.getWriter()
-
-    const elementString = createElementString({type: this.type, props: this.props})
-    writer.write(elementString.left)
-
-    queueMicrotask(async () => {
-      const childrenStreams = this.children.map((child) => {
-        if (typeof child === 'string') {
-          return child
-        }
-        return child.getStringStream({ctx})
-      })
-
-      for (const childStream of childrenStreams) {
-        if (typeof childStream === 'string') {
-          writer.write(childStream)
-          continue
-        }
-        await childStream.readable.pipeTo(streams.writable, {preventClose: true})
-      }
-      writer.write(elementString.right)
-      writer.close()
-    })
-
-    return streams
-  }
+async function toString(node: NodeReactNext<any, any>) {
+  const stream = await node.getStringStream({} as any);
+  const str = await convertStreamToString(stream.readable);
+  return str;
 }
 
+const a = jsx('div', {a: 'b', children: []}, '2');
 
-function Button() {
-  return <div>hello</div>
-}
+const b = await toString(a);
+
+console.log('-----', 'b', b);
