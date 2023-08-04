@@ -54,13 +54,16 @@ export async function handleChildren({
     return child.getStringStream({ctx});
   });
 
-  for (const childStream of childrenStreams) {
-    if (typeof childStream === 'string') {
-      writer.write(childStream);
+  for (const childStreamsPromise of childrenStreams) {
+    if (typeof childStreamsPromise === 'string') {
+      writer.write(childStreamsPromise);
       continue;
     }
-    await (
-      await childStream
-    ).readable.pipeTo(streams.writable, {preventClose: true});
+
+    const childStreams = await childStreamsPromise;
+
+    console.log('-----', 'childStreams', childStreams);
+    await childStreams.readable.pipeTo(streams.writable, {preventClose: true});
+    await childStreams.writable.close();
   }
 }

@@ -5,7 +5,7 @@ import {createElementString} from './string/string.ts';
 export type Child = NodeReactNext<any, any> | string;
 type Props = Record<string, any>;
 
-type Component<TProps> = (ctx: ComponentCtx<TProps>) => any;
+export type Component<TProps> = (ctx: ComponentCtx<TProps>) => any;
 
 function createComponentCtx<TProps>({
   nodeCtx,
@@ -56,28 +56,23 @@ export class NodeReactNextComponent<TProps extends Props>
   implements NodeReactNext<Component<TProps>, TProps>
 {
   async getStringStream(ctx: NodeCtx) {
+    console.log('-----', 'NodeReactNextComponent');
     const streams = new TransformStream<string, string>();
     const writer = streams.writable.getWriter();
 
-    const element = await this.type(
+    const rawChidlren = await this.type(
       createComponentCtx({nodeCtx: ctx, props: this.props})
     );
 
-    const elementString = createElementString({
-      type: element,
-      props: this.props,
-    });
-    writer.write(elementString.left);
+    const children = Array.isArray(rawChidlren) ? rawChidlren : [rawChidlren];
 
     Promise.resolve().then(async () => {
       await handleChildren({
-        children: this.children,
+        children,
         ctx,
         streams,
         writer,
       });
-      writer.write(elementString.right);
-      writer.close();
     });
 
     return streams;
@@ -89,41 +84,38 @@ export class NodeReactNextElem<TProps extends Props>
   implements NodeReactNext<string, TProps>
 {
   async getStringStream(ctx: NodeCtx) {
+    console.log('-----', 'NodeReactNextElem');
     const streams = new TransformStream<string, string>();
-    const writer = streams.writable.getWriter();
+    console.log('-----', 'elem writer', streams.writable);
+    // const writer = streams.writable.getWriter();
+    console.log('-----', 'elem writer after', streams.writable);
 
     const elementString = createElementString({
       type: this.type,
       props: this.props,
     });
-    writer.write(elementString.left);
+    //
 
     Promise.resolve().then(async () => {
+      const writer = streams.writable.getWriter();
+
+      console.log('-----', 'elem writer befoer', streams.writable);
+      await writer.write(elementString.left);
+      await writer.releaseLock();
+      // console.log('-----', 'after elem writer', streams.writable);
       await handleChildren({
         children: this.children,
         ctx,
         streams,
         writer,
       });
-      writer.write(elementString.right);
-      writer.close();
+      const writer2 = streams.writable.getWriter();
+      await writer2.write(elementString.right);
+      await writer2.releaseLock();
     });
 
     return streams;
   }
-}
-
-export function jsx<TProps extends Props>(
-  type: string | Component<any>,
-  rawProps: {children: Child | Child[]} & TProps,
-  key: string
-) {
-  const {children: rawChidlren, ...props} = rawProps;
-  const children = Array.isArray(rawChidlren) ? rawChidlren : [rawChidlren];
-  if (typeof type === 'string') {
-    return new NodeReactNextElem({type, props, key, children});
-  }
-  return new NodeReactNextComponent({type, props, key, children});
 }
 
 async function convertStreamToString(stream: ReadableStream) {
@@ -140,17 +132,12 @@ async function convertStreamToString(stream: ReadableStream) {
     result += value;
   }
 
+  stream.cancel();
   return result;
 }
 
-async function toString(node: NodeReactNext<any, any>) {
+export async function toString(node: NodeReactNext<any, any>) {
   const stream = await node.getStringStream({} as any);
   const str = await convertStreamToString(stream.readable);
   return str;
 }
-
-const a = jsx('div', {a: 'b', children: []}, '2');
-
-const b = await toString(a);
-
-console.log('-----', 'b', b);
