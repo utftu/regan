@@ -67,6 +67,7 @@ export class NodeReactNextComponent<TProps extends Props>
     const children = Array.isArray(rawChidlren) ? rawChidlren : [rawChidlren];
 
     Promise.resolve().then(async () => {
+      console.log('-----', 'resolve component');
       await handleChildren({
         children,
         ctx,
@@ -86,32 +87,26 @@ export class NodeReactNextElem<TProps extends Props>
   async getStringStream(ctx: NodeCtx) {
     console.log('-----', 'NodeReactNextElem');
     const streams = new TransformStream<string, string>();
-    console.log('-----', 'elem writer', streams.writable);
-    // const writer = streams.writable.getWriter();
-    console.log('-----', 'elem writer after', streams.writable);
 
     const elementString = createElementString({
       type: this.type,
       props: this.props,
     });
-    //
 
     Promise.resolve().then(async () => {
       const writer = streams.writable.getWriter();
+      console.log('-----', 'resolve elem');
 
-      console.log('-----', 'elem writer befoer', streams.writable);
       await writer.write(elementString.left);
-      await writer.releaseLock();
-      // console.log('-----', 'after elem writer', streams.writable);
+
+      console.log('-----', 'resolve2 elem');
       await handleChildren({
         children: this.children,
         ctx,
         streams,
         writer,
       });
-      const writer2 = streams.writable.getWriter();
-      await writer2.write(elementString.right);
-      await writer2.releaseLock();
+      await writer.write(elementString.right);
     });
 
     return streams;
@@ -132,12 +127,13 @@ async function convertStreamToString(stream: ReadableStream) {
     result += value;
   }
 
-  stream.cancel();
+  // stream.cancel();
   return result;
 }
 
 export async function toString(node: NodeReactNext<any, any>) {
   const stream = await node.getStringStream({} as any);
+  console.log('-----', 'before str');
   const str = await convertStreamToString(stream.readable);
   return str;
 }

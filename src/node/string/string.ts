@@ -56,13 +56,14 @@ export async function handleChildren({
 
   for (const childStreamsPromise of childrenStreams) {
     if (typeof childStreamsPromise === 'string') {
-      writer.write(childStreamsPromise);
+      await writer.write(childStreamsPromise);
       continue;
     }
 
     const childStreams = await childStreamsPromise;
 
-    console.log('-----', 'childStreams', childStreams);
+    console.log('-----', 'childStreams.readable', childStreams.readable);
+    console.log('-----', 'streams.writable', streams.writable);
     await childStreams.readable.pipeTo(streams.writable, {preventClose: true});
     await childStreams.writable.close();
   }
