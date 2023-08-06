@@ -1,8 +1,8 @@
-import {ComponentCtx, NodeCtx} from '../types';
-import {handleChildren} from './string/string';
+import {ComponentCtx, NodeCtx} from '../types.ts';
+import {handleChildren} from './string/string.ts';
 import {createElementString} from './string/string.ts';
 
-export type Child = NodeReactNext<any, any> | string;
+export type Child = ReganJSXNode<any, any> | string;
 type Props = Record<string, any>;
 
 export type Component<TProps> = (ctx: ComponentCtx<TProps>) => any;
@@ -24,7 +24,7 @@ function createComponentCtx<TProps>({
   };
 }
 
-abstract class NodeReactNext<TType, TProps extends Props> {
+export abstract class ReganJSXNode<TType, TProps extends Props> {
   type: TType;
   key: string;
   props: TProps;
@@ -51,14 +51,12 @@ abstract class NodeReactNext<TType, TProps extends Props> {
   ): Promise<TransformStream<string, string>>;
 }
 
-export class NodeReactNextComponent<TProps extends Props>
-  extends NodeReactNext<Component<TProps>, TProps>
-  implements NodeReactNext<Component<TProps>, TProps>
+export class ReganJSXNodeComponent<TProps extends Props>
+  extends ReganJSXNode<Component<TProps>, TProps>
+  implements ReganJSXNode<Component<TProps>, TProps>
 {
   async getStringStream(ctx: NodeCtx) {
-    console.log('-----', 'NodeReactNextComponent');
     const streams = new TransformStream<string, string>();
-    const writer = streams.writable.getWriter();
 
     const rawChidlren = await this.type(
       createComponentCtx({nodeCtx: ctx, props: this.props})
@@ -67,25 +65,23 @@ export class NodeReactNextComponent<TProps extends Props>
     const children = Array.isArray(rawChidlren) ? rawChidlren : [rawChidlren];
 
     Promise.resolve().then(async () => {
-      console.log('-----', 'resolve component');
       await handleChildren({
         children,
         ctx,
         streams,
-        writer,
       });
+      await streams.writable.close();
     });
 
     return streams;
   }
 }
 
-export class NodeReactNextElem<TProps extends Props>
-  extends NodeReactNext<string, TProps>
-  implements NodeReactNext<string, TProps>
+export class ReganJSXNodeElement<TProps extends Props>
+  extends ReganJSXNode<string, TProps>
+  implements ReganJSXNode<string, TProps>
 {
   async getStringStream(ctx: NodeCtx) {
-    console.log('-----', 'NodeReactNextElem');
     const streams = new TransformStream<string, string>();
 
     const elementString = createElementString({
@@ -95,18 +91,21 @@ export class NodeReactNextElem<TProps extends Props>
 
     Promise.resolve().then(async () => {
       const writer = streams.writable.getWriter();
-      console.log('-----', 'resolve elem');
 
       await writer.write(elementString.left);
+      await writer.releaseLock();
 
-      console.log('-----', 'resolve2 elem');
       await handleChildren({
         children: this.children,
         ctx,
         streams,
-        writer,
       });
-      await writer.write(elementString.right);
+
+      const writer2 = streams.writable.getWriter();
+      await writer2.write(elementString.right);
+      await writer2.releaseLock();
+
+      await streams.writable.close();
     });
 
     return streams;
@@ -127,13 +126,11 @@ async function convertStreamToString(stream: ReadableStream) {
     result += value;
   }
 
-  // stream.cancel();
   return result;
 }
 
-export async function toString(node: NodeReactNext<any, any>) {
+export async function toString(node: ReganJSXNode<any, any>) {
   const stream = await node.getStringStream({} as any);
-  console.log('-----', 'before str');
   const str = await convertStreamToString(stream.readable);
   return str;
 }

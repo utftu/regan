@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "module": "esnext",
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "nodenext",
     "target": "esnext",
     "strict": true,
-    "allowImportingTsExtensions": true
-  }
+
+    "jsx": "preserve"
+  },
+  "include": ["./**/*.*"],
+  "files": ["./global.d.ts"]
 }

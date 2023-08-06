@@ -1,4 +1,4 @@
-import {type Atom, type ComponentCtx} from './types.ts';
+import {type Atom, type ComponentCtx} from './src/types.ts';
 
 type Props = {
   age: Atom<number>;

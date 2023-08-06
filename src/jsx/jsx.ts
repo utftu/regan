@@ -1,8 +1,8 @@
 import {
   Component,
   Child,
-  NodeReactNextElem,
-  NodeReactNextComponent,
+  ReganJSXNodeElement,
+  ReganJSXNodeComponent,
 } from '../node/node.ts';
 
 export function jsx<TProps extends Props>(
@@ -21,9 +21,9 @@ export function jsx<TProps extends Props>(
   } else {
     children = [rawChidlren];
   }
-  // const children = Array.isArray(rawChidlren) ? rawChidlren : [rawChidlren];
+
   if (typeof type === 'string') {
-    return new NodeReactNextElem({type, props, key, children});
+    return new ReganJSXNodeElement({type, props, key, children});
   }
-  return new NodeReactNextComponent({type, props, key, children});
+  return new ReganJSXNodeComponent({type, props, key, children});
 }

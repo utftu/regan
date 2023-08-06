@@ -29,9 +29,10 @@ export function createElementString({
   type: string;
   props: Props;
 }) {
-  const left = `<${type} ${Object.entries(props)
+  const propertiers = Object.entries(props)
     .map(([key, value]) => `${key}="${value}"`)
-    .join(' ')}>`;
+    .join(' ');
+  const left = `<${type}${propertiers.length === 0 ? '' : ` ${propertiers}`}>`;
   const right = selfClosingTags.includes(type) ? '' : `</${type}>`;
   return {left, right};
 }
@@ -40,12 +41,12 @@ export async function handleChildren({
   children,
   streams,
   ctx,
-  writer,
-}: {
+}: // writer,
+{
   children: Child[];
   streams: StringStream;
   ctx: NodeCtx;
-  writer: WritableStreamDefaultWriter<string>;
+  // writer: WritableStreamDefaultWriter<string>;
 }) {
   const childrenStreams = children.map((child) => {
     if (typeof child === 'string') {
@@ -56,15 +57,14 @@ export async function handleChildren({
 
   for (const childStreamsPromise of childrenStreams) {
     if (typeof childStreamsPromise === 'string') {
+      const writer = streams.writable.getWriter();
       await writer.write(childStreamsPromise);
+      await writer.releaseLock();
       continue;
     }
 
     const childStreams = await childStreamsPromise;
 
-    console.log('-----', 'childStreams.readable', childStreams.readable);
-    console.log('-----', 'streams.writable', streams.writable);
     await childStreams.readable.pipeTo(streams.writable, {preventClose: true});
-    await childStreams.writable.close();
   }
 }

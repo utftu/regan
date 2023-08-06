@@ -2,13 +2,16 @@ import {describe, expect, it} from 'vitest';
 import {toString} from './node.ts';
 
 describe('node', () => {
-  it('a', async () => {
+  it('toString()', async () => {
     const Component = () => {
-      return <div>hello</div>;
+      return (
+        <div c='d' v='h'>
+          hello f
+        </div>
+      );
     };
-    const result = <Component a='b' />;
-    // console.log(result);
-    const str = await toString(result);
+    const str = await toString(<Component a='b' />);
+    console.log('str', str);
     // console.log(str);
   });
 });

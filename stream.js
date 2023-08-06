@@ -9,22 +9,33 @@ function log(name) {
 
 log('init');
 
+await parentStreams.writable.close();
+
+log('init2');
+
 const writerParent = parentStreams.writable.getWriter();
 
-log('parent wiriter');
+// log('parent wiriter');
 
-// // // setTimeout(async () => {
-// // await writerParent.write('hello');
-// // console.log('-----', '1234', 1234);
-// // await writerParent.write('world');
-// // await writerParent.close();
-// // // }, 1000);
+// // // // setTimeout(async () => {
+// // // await writerParent.write('hello');
+// // // console.log('-----', '1234', 1234);
+// // // await writerParent.write('world');
+// // // await writerParent.close();
+// // // // }, 1000);
 
-const writerChild = childStreams.writable.getWriter();
+// const writerChild = childStreams.writable.getWriter();
 
-log('child writer');
+// log('child writer');
 
-parentStreams.readable.pipeTo(childStreams.writable);
+// // await writerChild.releaseLock();
+// childStreams.writable;
+
+// log('after release');
+
+// parentStreams.readable.pipeTo(childStreams.writable);
+
+// writerChild.write('123');
 
 // writerChild.write('child');
 
