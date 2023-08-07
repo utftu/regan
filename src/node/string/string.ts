@@ -66,7 +66,7 @@ export async function handleChildren({
 
     const childStreams = await childStreamsPromise;
 
-    await childStreams.readable.pipeTo(streams.writable, {preventClose: true});
+    await childStreams.pipeTo(streams.writable, {preventClose: true});
   }
 }
 
@@ -89,6 +89,6 @@ async function convertStreamToString(stream: ReadableStream) {
 
 export async function getString(node: ReganJSXNode<any, any>) {
   const stream = await node.getStringStream({} as any);
-  const str = await convertStreamToString(stream.readable);
+  const str = await convertStreamToString(stream);
   return str;
 }

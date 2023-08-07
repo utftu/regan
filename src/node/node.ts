@@ -46,9 +46,7 @@ export abstract class ReganJSXNode<TType, TProps extends Props> {
     this.props = props;
     this.children = children;
   }
-  abstract getStringStream(
-    ctx: NodeCtx
-  ): Promise<TransformStream<string, string>>;
+  abstract getStringStream(ctx: NodeCtx): Promise<ReadableStream<string>>;
 }
 
 export class ReganJSXNodeComponent<TProps extends Props>
@@ -73,7 +71,7 @@ export class ReganJSXNodeComponent<TProps extends Props>
       await streams.writable.close();
     });
 
-    return streams;
+    return streams.readable;
   }
 }
 
@@ -108,7 +106,7 @@ export class ReganJSXNodeElement<TProps extends Props>
       await streams.writable.close();
     });
 
-    return streams;
+    return streams.readable;
   }
 }
 
@@ -131,6 +129,6 @@ async function convertStreamToString(stream: ReadableStream) {
 
 export async function getString(node: ReganJSXNode<any, any>) {
   const stream = await node.getStringStream({} as any);
-  const str = await convertStreamToString(stream.readable);
+  const str = await convertStreamToString(stream);
   return str;
 }
