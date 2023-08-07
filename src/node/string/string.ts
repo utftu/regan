@@ -1,5 +1,6 @@
-import {Child} from '../node.ts';
-import {NodeCtx} from '../../types';
+import {Child, ReganJSXNode} from '../node.ts';
+import {NodeCtx} from '../../types.ts';
+import {Props} from '../node.ts';
 
 const selfClosingTags = [
   'area',
@@ -67,4 +68,27 @@ export async function handleChildren({
 
     await childStreams.readable.pipeTo(streams.writable, {preventClose: true});
   }
+}
+
+async function convertStreamToString(stream: ReadableStream) {
+  const reader = stream.getReader();
+  let result = '';
+
+  while (true) {
+    const {done, value} = await reader.read();
+
+    if (done) {
+      break;
+    }
+
+    result += value;
+  }
+
+  return result;
+}
+
+export async function getString(node: ReganJSXNode<any, any>) {
+  const stream = await node.getStringStream({} as any);
+  const str = await convertStreamToString(stream.readable);
+  return str;
 }

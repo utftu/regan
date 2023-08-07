@@ -1,17 +1,23 @@
 import {describe, expect, it} from 'vitest';
-import {toString} from './node.ts';
+import {getString} from './node.ts';
 
 describe('node', () => {
   it('toString()', async () => {
-    const Component = () => {
+    const Child = () => {
+      return <div>child</div>;
+    };
+
+    const Parent = () => {
       return (
-        <div c='d' v='h'>
-          hello f
+        <div hello='world' world='hello'>
+          <div>parent</div>
+          <Child />
         </div>
       );
     };
-    const str = await toString(<Component a='b' />);
-    console.log('str', str);
-    // console.log(str);
+    const str = await getString(<Parent a='b' />);
+    expect(str).toBe(
+      '<div hello="world" world="hello"><div>parent</div><div>child</div></div>'
+    );
   });
 });

@@ -3,7 +3,7 @@ import {handleChildren} from './string/string.ts';
 import {createElementString} from './string/string.ts';
 
 export type Child = ReganJSXNode<any, any> | string;
-type Props = Record<string, any>;
+export type Props = Record<string, any>;
 
 export type Component<TProps> = (ctx: ComponentCtx<TProps>) => any;
 
@@ -129,7 +129,7 @@ async function convertStreamToString(stream: ReadableStream) {
   return result;
 }
 
-export async function toString(node: ReganJSXNode<any, any>) {
+export async function getString(node: ReganJSXNode<any, any>) {
   const stream = await node.getStringStream({} as any);
   const str = await convertStreamToString(stream.readable);
   return str;
