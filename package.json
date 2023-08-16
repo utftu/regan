@@ -14,7 +14,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jsdom": "^21.1.1",
+    "@types/react": "^18.2.20",
     "@vitejs/plugin-react": "^4.0.4",
+    "jsdom": "^22.1.0",
+    "strangelove": "^1.0.9",
+    "utftu": "^1.0.23",
     "vite": "^4.4.8",
     "vitest": "^0.33.0"
   },

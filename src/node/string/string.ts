@@ -1,6 +1,13 @@
-import {Child, ReganJSXNode} from '../node.ts';
+import {Child, JSXNode} from '../node.ts';
 import {NodeCtx} from '../../types.ts';
 import {Props} from '../node.ts';
+import {Atom} from 'strangelove';
+// import { Atom } from '../../types.ts';
+
+// todo
+// class Atom {
+//   get(): any {}
+// }
 
 const selfClosingTags = [
   'area',
@@ -30,10 +37,27 @@ export function createElementString({
   type: string;
   props: Props;
 }) {
-  const propertiers = Object.entries(props)
+  const propertiers: Props = {};
+
+  for (const key in props) {
+    const prop = props[key];
+    if (typeof prop === 'function') {
+      continue;
+    }
+    if (prop instanceof Atom) {
+      propertiers[key] = prop.get();
+      continue;
+    }
+
+    propertiers[key] = prop;
+  }
+
+  const preparedProperties = Object.entries(propertiers)
     .map(([key, value]) => `${key}="${value}"`)
     .join(' ');
-  const left = `<${type}${propertiers.length === 0 ? '' : ` ${propertiers}`}>`;
+  const left = `<${type}${
+    preparedProperties.length === 0 ? '' : ` ${preparedProperties}`
+  }>`;
   const right = selfClosingTags.includes(type) ? '' : `</${type}>`;
   return {left, right};
 }
@@ -87,7 +111,7 @@ async function convertStreamToString(stream: ReadableStream) {
   return result;
 }
 
-export async function getString(node: ReganJSXNode<any, any>) {
+export async function getString(node: JSXNode<any, any>) {
   const stream = await node.getStringStream({} as any);
   const str = await convertStreamToString(stream);
   return str;

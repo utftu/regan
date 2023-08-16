@@ -1,11 +1,11 @@
-import {type Atom, type ComponentCtx} from './src/types.ts';
+import {type Atom, type Ctx} from './src/types.ts';
 
 type Props = {
   age: Atom<number>;
   promiseName: Atom<Promise<string>>;
 };
 
-async function A(ctx: ComponentCtx<Props>) {
+async function A(ctx: Ctx<Props>) {
   const {age, promiseName} = ctx.props;
 
   const name = await promiseName.get();

@@ -1,11 +1,37 @@
-import {ComponentCtx, NodeCtx} from '../types.ts';
+import {Atom} from 'strangelove';
+import {Ctx, NodeCtx} from '../types.ts';
+import {ElementNode, handleChildrenHydrate} from './hydrate/hydrate.ts';
 import {handleChildren} from './string/string.ts';
 import {createElementString} from './string/string.ts';
 
-export type Child = ReganJSXNode<any, any> | string;
+export type Child = JSXNode<any, any> | string;
 export type Props = Record<string, any>;
 
-export type Component<TProps> = (ctx: ComponentCtx<TProps>) => any;
+// type ConstructorProps<T> = T extends {new (...args: any[]): infer U}
+//   ? U
+//   : never;
+// type A = ConstructorProps<typeof Atom>;
+
+function normalizeChildren(child: Child | Child[]) {
+  if (Array.isArray(child)) {
+    return child;
+  }
+  return [child];
+}
+
+// class AtomRegan<TValue> extends Atom<TValue> {
+//   constructor(
+//     props: ConstructorParameters<typeof Atom<TValue>>[0] & {desytroy: any}
+//   ) {
+//     super(props);
+//   }
+
+//   // constructor(props: ConstructorParameters<typeof AtomRegan>) {}
+// }
+
+export type FC<TProps = any> = (
+  ctx: Ctx<TProps>
+) => JSXNode | JSXNode[] | Promise<JSXNode> | Promise<JSXNode[]>;
 
 function createComponentCtx<TProps>({
   nodeCtx,
@@ -13,18 +39,19 @@ function createComponentCtx<TProps>({
 }: {
   nodeCtx: NodeCtx;
   props: TProps;
-}): ComponentCtx<TProps> {
+}): Ctx<TProps> {
   return {
     props,
     mount: () => {},
     select: () => {},
+    children: [],
     // config: {
     //   disableSubscribe: boolean,
     // },
   };
 }
 
-export abstract class ReganJSXNode<TType, TProps extends Props> {
+export abstract class JSXNode<TType = any, TProps extends Props = any> {
   type: TType;
   key: string;
   props: TProps;
@@ -47,11 +74,15 @@ export abstract class ReganJSXNode<TType, TProps extends Props> {
     this.children = children;
   }
   abstract getStringStream(ctx: NodeCtx): Promise<ReadableStream<string>>;
+  abstract hydrate(ctx: {
+    parent: ElementNode;
+    position: number;
+  }): Promise<{insertedCount: number}>;
 }
 
-export class ReganJSXNodeComponent<TProps extends Props>
-  extends ReganJSXNode<Component<TProps>, TProps>
-  implements ReganJSXNode<Component<TProps>, TProps>
+export class JSXNodeComponent<TProps extends Props>
+  extends JSXNode<FC<TProps>, TProps>
+  implements JSXNode<FC<TProps>, TProps>
 {
   async getStringStream(ctx: NodeCtx) {
     const streams = new TransformStream<string, string>();
@@ -60,7 +91,7 @@ export class ReganJSXNodeComponent<TProps extends Props>
       createComponentCtx({nodeCtx: ctx, props: this.props})
     );
 
-    const children = Array.isArray(rawChidlren) ? rawChidlren : [rawChidlren];
+    const children = normalizeChildren(rawChidlren);
 
     Promise.resolve().then(async () => {
       await handleChildren({
@@ -73,11 +104,26 @@ export class ReganJSXNodeComponent<TProps extends Props>
 
     return streams.readable;
   }
+
+  async hydrate(ctx: {parent: ElementNode; position: number}) {
+    const rawChidlren = await this.type(
+      createComponentCtx({nodeCtx: ctx, props: this.props})
+    );
+
+    const children = normalizeChildren(rawChidlren);
+
+    const insertedCount = await handleChildrenHydrate({
+      parent: ctx.parent,
+      children,
+    });
+
+    return {insertedCount};
+  }
 }
 
-export class ReganJSXNodeElement<TProps extends Props>
-  extends ReganJSXNode<string, TProps>
-  implements ReganJSXNode<string, TProps>
+export class JSXNodeElement<TProps extends Props>
+  extends JSXNode<string, TProps>
+  implements JSXNode<string, TProps>
 {
   async getStringStream(ctx: NodeCtx) {
     const streams = new TransformStream<string, string>();
@@ -108,27 +154,36 @@ export class ReganJSXNodeElement<TProps extends Props>
 
     return streams.readable;
   }
-}
 
-async function convertStreamToString(stream: ReadableStream) {
-  const reader = stream.getReader();
-  let result = '';
+  async hydrate(ctx: {parent: ElementNode; position: number}) {
+    const element = ctx.parent.element.children[ctx.position] as HTMLElement;
 
-  while (true) {
-    const {done, value} = await reader.read();
+    for (const key in this.props) {
+      const prop = this.props[key];
 
-    if (done) {
-      break;
+      if (typeof prop !== 'function') {
+        continue;
+      }
+
+      element.addEventListener(key, prop);
     }
 
-    result += value;
+    const elementNode = new ElementNode({element});
+
+    await handleChildrenHydrate({children: this.children, parent: elementNode});
+
+    return {insertedCount: 1};
   }
-
-  return result;
 }
 
-export async function getString(node: ReganJSXNode<any, any>) {
-  const stream = await node.getStringStream({} as any);
-  const str = await convertStreamToString(stream);
-  return str;
+class MyClass {
+  constructor(public name: string, public age: number) {}
 }
+
+type MyClassConstructorArgs = ConstructorParameters<typeof MyClass>;
+
+// Теперь вы можете использовать MyClassConstructorArgs для определения переменных, функций и т.д.
+const args: MyClassConstructorArgs = ['John', 30];
+
+// Создание экземпляра класса с использованием аргументов
+const myInstance = new MyClass(...args);
