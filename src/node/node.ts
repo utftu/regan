@@ -1,16 +1,12 @@
-import {Atom} from 'strangelove';
-import {Ctx, NodeCtx} from '../types.ts';
+import {NodeCtx} from '../types.ts';
 import {ElementNode, handleChildrenHydrate} from './hydrate/hydrate.ts';
 import {handleChildren} from './string/string.ts';
 import {createElementString} from './string/string.ts';
+import {Ctx} from './ctx/ctx.ts';
+import {Atom} from 'strangelove';
 
 export type Child = JSXNode<any, any> | string;
 export type Props = Record<string, any>;
-
-// type ConstructorProps<T> = T extends {new (...args: any[]): infer U}
-//   ? U
-//   : never;
-// type A = ConstructorProps<typeof Atom>;
 
 function normalizeChildren(child: Child | Child[]) {
   if (Array.isArray(child)) {
@@ -19,37 +15,10 @@ function normalizeChildren(child: Child | Child[]) {
   return [child];
 }
 
-// class AtomRegan<TValue> extends Atom<TValue> {
-//   constructor(
-//     props: ConstructorParameters<typeof Atom<TValue>>[0] & {desytroy: any}
-//   ) {
-//     super(props);
-//   }
-
-//   // constructor(props: ConstructorParameters<typeof AtomRegan>) {}
-// }
-
-export type FC<TProps = any> = (
+export type FC<TProps extends Record<any, any>> = (
+  props: TProps,
   ctx: Ctx<TProps>
 ) => JSXNode | JSXNode[] | Promise<JSXNode> | Promise<JSXNode[]>;
-
-function createComponentCtx<TProps>({
-  nodeCtx,
-  props,
-}: {
-  nodeCtx: NodeCtx;
-  props: TProps;
-}): Ctx<TProps> {
-  return {
-    props,
-    mount: () => {},
-    select: () => {},
-    children: [],
-    // config: {
-    //   disableSubscribe: boolean,
-    // },
-  };
-}
 
 export abstract class JSXNode<TType = any, TProps extends Props = any> {
   type: TType;
@@ -87,8 +56,16 @@ export class JSXNodeComponent<TProps extends Props>
   async getStringStream(ctx: NodeCtx) {
     const streams = new TransformStream<string, string>();
 
+    const state = {
+      mounts: [],
+      atoms: [],
+    };
     const rawChidlren = await this.type(
-      createComponentCtx({nodeCtx: ctx, props: this.props})
+      this.props,
+      new Ctx({
+        props: this.props,
+        state: state,
+      })
     );
 
     const children = normalizeChildren(rawChidlren);
@@ -106,8 +83,16 @@ export class JSXNodeComponent<TProps extends Props>
   }
 
   async hydrate(ctx: {parent: ElementNode; position: number}) {
+    const state = {
+      mounts: [],
+      atoms: [],
+    };
     const rawChidlren = await this.type(
-      createComponentCtx({nodeCtx: ctx, props: this.props})
+      this.props,
+      new Ctx({
+        props: this.props,
+        state: state,
+      })
     );
 
     const children = normalizeChildren(rawChidlren);
@@ -176,14 +161,7 @@ export class JSXNodeElement<TProps extends Props>
   }
 }
 
-class MyClass {
-  constructor(public name: string, public age: number) {}
+abstract class HydratedNode {
+  abstract atom: Atom;
+  abstract destroy(): void;
 }
-
-type MyClassConstructorArgs = ConstructorParameters<typeof MyClass>;
-
-// Теперь вы можете использовать MyClassConstructorArgs для определения переменных, функций и т.д.
-const args: MyClassConstructorArgs = ['John', 30];
-
-// Создание экземпляра класса с использованием аргументов
-const myInstance = new MyClass(...args);

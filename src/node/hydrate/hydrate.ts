@@ -1,9 +1,9 @@
-import {Atom, FastUpdater, connectAtoms, createDefaultRoot} from 'strangelove';
+import {Atom, createDefaultRoot} from 'strangelove';
 import {Child, JSXNode, JSXNodeComponent, JSXNodeElement} from '../node.ts';
-import {noop} from '../../consts.ts';
+import {runOnPromise} from '../../utils.ts';
 
 type Unmount = () => void | Promise<void>;
-type Mount = () => Unmount | void | Promise<Unmount | void>;
+export type Mount = () => Unmount | Promise<Unmount>;
 
 export class ElementNode {
   element: HTMLElement;
@@ -14,23 +14,77 @@ export class ElementNode {
 }
 
 export class HydratedComponentNode {
-  async new({mount, parent}: {mount: Mount; parent: HydratedComponentNode}) {
-    const unmount = (await mount()) || noop;
+  atom: Atom;
 
-    return new HydratedComponentNode({mount, unmount, parent});
+  private _mount: Mount;
+  private _unmount: ReturnType<Mount> | null = null;
+
+  mount() {
+    this.atom.update({
+      data: {
+        status: 'mount',
+      },
+    });
   }
 
-  constructor({mount, unmount, parent}: {parent: HydratedComponentNode}) {
-    const root = createDefaultRoot();
-    this.mount = Atom.new({exec: mount, root});
-    connectAtoms(parent.mount, this.mount);
-    this.unmount = Atom.new({exec: unmount, root});
-    connectAtoms(parent.unmount, this.unmount);
+  unmount() {
+    this.atom.update({
+      data: {
+        status: 'unmount',
+      },
+    });
   }
 
-  mount: Atom;
-  unmount: Atom;
+  constructor({mount}: {mount: Mount}) {
+    this._mount = mount;
+    this._unmount = mount();
+    const self = this;
+    this.atom = Atom.new<void>({
+      exec(atom: Atom, {data}: {data: {status: 'mount' | 'unmount'}}) {
+        if (data.status === 'unmount') {
+          if (self._unmount === null) {
+            return true;
+          }
+
+          runOnPromise(self._unmount, (unmount) => unmount());
+          self._unmount = null;
+          return true;
+        } else if (data.status === 'mount') {
+          if (self._unmount === null) {
+            self._unmount = self._mount();
+
+            return true;
+          }
+
+          runOnPromise(self._unmount, (unmount) => unmount());
+          self._unmount = self._mount();
+          return true;
+        }
+        return true;
+      },
+      root: createDefaultRoot(),
+    });
+  }
 }
+
+// export class HydratedComponentNode {
+//   async new({mount, parent}: {mount: Mount; parent: HydratedComponentNode}) {
+//     const unmount = (await mount()) || noop;
+
+//     return new HydratedComponentNode({mount, unmount, parent});
+//   }
+
+//   constructor({mount, unmount, parent}: {parent: HydratedComponentNode}) {
+//     const root = createDefaultRoot();
+//     this.mount = Atom.new({exec: mount, root});
+//     connectAtoms(parent.mount, this.mount);
+//     this.unmount = Atom.new({exec: unmount, root});
+//     connectAtoms(parent.unmount, this.unmount);
+//   }
+
+//   mount: Atom;
+//   unmount: Atom;
+// }
 
 export async function handleChildrenHydrate({
   children,

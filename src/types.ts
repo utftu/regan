@@ -7,9 +7,12 @@ export type Atom<TValue> = {
 
 export type NodeCtx = {};
 
+export type Unmount = () => void;
+export type Mount = () => Unmount | Promise<Unmount> | void;
+
 export type Ctx<TProps = any> = {
   props: TProps;
-  mount: Function;
+  mount: Mount;
   select: Function;
   children: Child | Child[];
   // config: {
