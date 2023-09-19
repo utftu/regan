@@ -5,14 +5,6 @@ import {runOnPromise} from '../../utils.ts';
 type Unmount = () => void | Promise<void>;
 export type Mount = () => Unmount | Promise<Unmount>;
 
-export class ElementNode {
-  element: HTMLElement;
-
-  constructor({element}: {element: HTMLElement}) {
-    this.element = element;
-  }
-}
-
 export class HydratedComponentNode {
   atom: Atom;
 
@@ -111,6 +103,5 @@ export async function handleChildrenHydrate({
 }
 
 export async function hydrate(domNode: HTMLElement, node: JSXNode) {
-  const elementNode = new ElementNode({element: domNode});
-  await node.hydrate({parent: elementNode, position: 0});
+  await node.hydrate({parent: domNode, position: 0});
 }

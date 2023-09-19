@@ -1,5 +1,5 @@
 import {NodeCtx} from '../types.ts';
-import {ElementNode, handleChildrenHydrate} from './hydrate/hydrate.ts';
+import {handleChildrenHydrate} from './hydrate/hydrate.ts';
 import {handleChildren} from './string/string.ts';
 import {createElementString} from './string/string.ts';
 import {Ctx} from './ctx/ctx.ts';
@@ -44,7 +44,7 @@ export abstract class JSXNode<TType = any, TProps extends Props = any> {
   }
   abstract getStringStream(ctx: NodeCtx): Promise<ReadableStream<string>>;
   abstract hydrate(ctx: {
-    parent: ElementNode;
+    parent: HTMLElement;
     position: number;
   }): Promise<{insertedCount: number}>;
 }
@@ -82,7 +82,7 @@ export class JSXNodeComponent<TProps extends Props>
     return streams.readable;
   }
 
-  async hydrate(ctx: {parent: ElementNode; position: number}) {
+  async hydrate(ctx: {parent: HTMLElement; position: number}) {
     const state = {
       mounts: [],
       atoms: [],
@@ -140,8 +140,8 @@ export class JSXNodeElement<TProps extends Props>
     return streams.readable;
   }
 
-  async hydrate(ctx: {parent: ElementNode; position: number}) {
-    const element = ctx.parent.element.children[ctx.position] as HTMLElement;
+  async hydrate(ctx: {parent: HTMLElement; position: number}) {
+    const element = ctx.parent.children[ctx.position] as HTMLElement;
 
     for (const key in this.props) {
       const prop = this.props[key];
@@ -153,9 +153,7 @@ export class JSXNodeElement<TProps extends Props>
       element.addEventListener(key, prop);
     }
 
-    const elementNode = new ElementNode({element});
-
-    await handleChildrenHydrate({children: this.children, parent: elementNode});
+    await handleChildrenHydrate({children: this.children, parent});
 
     return {insertedCount: 1};
   }
