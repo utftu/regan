@@ -67,25 +67,6 @@ export class HydratedComponentNode {
   }
 }
 
-// export class HydratedComponentNode {
-//   async new({mount, parent}: {mount: Mount; parent: HydratedComponentNode}) {
-//     const unmount = (await mount()) || noop;
-
-//     return new HydratedComponentNode({mount, unmount, parent});
-//   }
-
-//   constructor({mount, unmount, parent}: {parent: HydratedComponentNode}) {
-//     const root = createDefaultRoot();
-//     this.mount = Atom.new({exec: mount, root});
-//     connectAtoms(parent.mount, this.mount);
-//     this.unmount = Atom.new({exec: unmount, root});
-//     connectAtoms(parent.unmount, this.unmount);
-//   }
-
-//   mount: Atom;
-//   unmount: Atom;
-// }
-
 export async function handleChildrenHydrate({
   children,
   parent,

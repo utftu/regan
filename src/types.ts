@@ -1,5 +1,7 @@
 import {Child} from './node/node.ts';
 
+export type Props = Record<string, any>;
+
 export type Atom<TValue> = {
   get: () => TValue;
   set: (value: TValue) => boolean;

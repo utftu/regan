@@ -1,24 +1,63 @@
 import {FC, Child, JSXNodeElement, JSXNodeComponent} from '../node/node.ts';
+import {Props} from '../types.ts';
+
+type PropsPrepareRaw = {
+  type: string | FC<any>;
+  props: Props;
+  children: Children;
+  key?: string;
+};
+
+type RawChildren = Child | Child[];
+type Children = Child[];
+type ElementType = string | FC<any>;
+
+const prepare = ({type, props, key, children}: PropsPrepareRaw) => {
+  const preparedKey = key === undefined ? '' : key;
+  if (typeof type === 'string') {
+    return new JSXNodeElement({type, props, key: preparedKey, children});
+  }
+  return new JSXNodeComponent({type, props, key: preparedKey, children});
+};
+
+const normalizeChildren = (rawChildren: RawChildren) => {
+  if (rawChildren === undefined) {
+    return [];
+  } else if (Array.isArray(rawChildren)) {
+    return rawChildren;
+  } else {
+    return [rawChildren];
+  }
+};
+
+export const createElement = (
+  type: ElementType,
+  rawProps: {
+    key?: string;
+  } & Props,
+  rawChildren: RawChildren
+) => {
+  const {key, ...props} = rawProps;
+
+  return prepare({
+    type,
+    props,
+    key,
+    children: normalizeChildren(rawChildren),
+  });
+};
 
 export function jsx<TProps extends Props>(
-  type: string | FC<any>,
-  rawProps: {children: Child | Child[]} & TProps,
-  key: string
+  type: ElementType,
+  rawProps: {children: RawChildren} & TProps,
+  key?: string
 ) {
-  const {children: rawChidlren, ...props} = rawProps;
+  const {children: rawChildren, ...props} = rawProps;
 
-  let children: Child[];
-
-  if (rawChidlren === undefined) {
-    children = [];
-  } else if (Array.isArray(rawChidlren)) {
-    children = rawChidlren;
-  } else {
-    children = [rawChidlren];
-  }
-
-  if (typeof type === 'string') {
-    return new JSXNodeElement({type, props, key, children});
-  }
-  return new JSXNodeComponent({type, props, key, children});
+  return prepare({
+    type,
+    props,
+    key,
+    children: normalizeChildren(rawChildren),
+  });
 }

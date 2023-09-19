@@ -5,7 +5,7 @@ import {createElementString} from './string/string.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
 
-export type Child = JSXNode<any, any> | string;
+export type Child = JSXNode<any, any> | string | null | undefined;
 export type Props = Record<string, any>;
 
 function normalizeChildren(child: Child | Child[]) {
