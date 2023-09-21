@@ -4,16 +4,17 @@ import {handleChildren} from './string/string.ts';
 import {createElementString} from './string/string.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
+import {normalizeChildren} from '../jsx/jsx.ts';
 
 export type Child = JSXNode<any, any> | string | null | undefined;
 export type Props = Record<string, any>;
 
-function normalizeChildren(child: Child | Child[]) {
-  if (Array.isArray(child)) {
-    return child;
-  }
-  return [child];
-}
+// function normalizeChildren(child: Child | Child[]) {
+//   if (Array.isArray(child)) {
+//     return child;
+//   }
+//   return [child];
+// }
 
 export type FC<TProps extends Record<any, any>> = (
   props: TProps,
@@ -87,13 +88,11 @@ export class JSXNodeComponent<TProps extends Props>
       mounts: [],
       atoms: [],
     };
-    const rawChidlren = await this.type(
-      this.props,
-      new Ctx({
-        props: this.props,
-        state: state,
-      })
-    );
+    const componentCtx = new Ctx({
+      props: this.props,
+      state: state,
+    });
+    const rawChidlren = await this.type(this.props, componentCtx);
 
     const children = normalizeChildren(rawChidlren);
 

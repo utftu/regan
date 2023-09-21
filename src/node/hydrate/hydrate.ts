@@ -5,6 +5,53 @@ import {runOnPromise} from '../../utils.ts';
 type Unmount = () => void | Promise<void>;
 export type Mount = () => Unmount | Promise<Unmount>;
 
+type PropsHydratedNode = {
+  children: HydratedNode[];
+};
+
+abstract class HydratedNode {
+  children: HydratedNode[];
+
+  constructor({children}: PropsHydratedNode) {
+    // this.element = element;
+    this.children = children;
+  }
+
+  unmount() {
+    Promise.all(this.children.map((child) => child.unmount()));
+    // this.element.remove();
+  }
+}
+
+type PropsHydratedNodeElement = {
+  element: HTMLElement;
+  children: HydratedNode[];
+};
+
+class HydratedNodeElement extends HydratedNode implements HydratedNode {
+  element: HTMLElement;
+
+  constructor({children, element}: HydratedNodeElement) {
+    super({children});
+    this.element = element;
+  }
+
+  unmount() {
+    this.children.forEach((child) => child.unmount());
+    this.element.remove();
+  }
+}
+
+type PropsHydratedComponentElement = {
+  children: HydratedNode[];
+};
+
+class HydratedNodeComponent extends HydratedNode {
+  constructor({children}: PropsHydratedComponentElement) {
+    super({children});
+  }
+}
+
 export class HydratedComponentNode {
   atom: Atom;
 
@@ -64,7 +111,7 @@ export async function handleChildrenHydrate({
   parent,
 }: {
   children: Child[];
-  parent: ElementNode;
+  parent: HTMLElement;
 }) {
   const promises = [];
   let insertedCount = 0;

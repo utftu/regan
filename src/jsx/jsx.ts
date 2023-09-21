@@ -20,7 +20,7 @@ const prepare = ({type, props, key, children}: PropsPrepareRaw) => {
   return new JSXNodeComponent({type, props, key: preparedKey, children});
 };
 
-const normalizeChildren = (rawChildren: RawChildren) => {
+export const normalizeChildren = (rawChildren: RawChildren) => {
   if (rawChildren === undefined) {
     return [];
   } else if (Array.isArray(rawChildren)) {
