@@ -1,24 +1,28 @@
 import {Atom, selectBase} from 'strangelove';
 import {Mount} from '../../types.ts';
 import {getRoot} from '../../regan.ts';
+import {Child} from '../node.ts';
 
 type State = {
   mounts: Mount[];
-  atoms: Atom[];
+  atoms: (Atom | Promise<Atom>)[];
 };
 
 type PropsCtx<TProps> = {
   props: TProps;
   state: State;
+  children: Child[];
 };
 
 export class Ctx<TProps extends Record<any, any>> {
-  private state: State;
+  state: State;
   props: TProps;
+  children: Child[];
 
-  constructor({props, state}: PropsCtx<TProps>) {
+  constructor({props, state, children}: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
+    this.children = children;
   }
 
   mount(fn: Mount) {
@@ -30,6 +34,8 @@ export class Ctx<TProps extends Record<any, any>> {
       value: value,
       root: getRoot(),
     });
+
+    this.state.atoms.push(atom);
 
     return atom;
   }
@@ -44,16 +50,20 @@ export class Ctx<TProps extends Record<any, any>> {
       onAtomCreate: () => {},
     });
 
-    if (!(atom instanceof Promise)) {
-      this.state.atoms.push(atom);
-      this.state.mounts.push(() => atom.relations.parents.clear());
-      return atom as any;
-    }
+    this.state.atoms.push(atom);
 
-    return atom.then((atom) => {
-      this.state.atoms.push(atom);
-      this.state.mounts.push(() => atom.relations.parents.clear());
-      return atom;
-    }) as any;
+    return atom;
+
+    // if (!(atom instanceof Promise)) {
+    //   this.state.atoms.push(atom);
+    //   // this.state.mounts.push(() => atom.relations.parents.clear());
+    //   return atom as any;
+    // }
+
+    // return atom.then((atom) => {
+    //   this.state.atoms.push(atom);
+    //   this.state.mounts.push(() => atom.relations.parents.clear());
+    //   return atom;
+    // }) as any;
   }
 }

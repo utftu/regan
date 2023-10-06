@@ -1,10 +1,12 @@
-import {NodeCtx} from '../types.ts';
 import {handleChildrenHydrate} from './hydrate/hydrate.ts';
 import {handleChildren} from './string/string.ts';
 import {createElementString} from './string/string.ts';
 import {Ctx} from './ctx/ctx.ts';
-import {Atom} from 'strangelove';
 import {normalizeChildren} from '../jsx/jsx.ts';
+import {NodeCtx} from '../types.ts';
+import {HydratedNode} from './hydrate/hydrate.ts';
+import {Fragment} from '../components/fragment/fragment.ts';
+import {Atom, disconnectAtoms} from 'strangelove';
 
 export type Child = JSXNode<any, any> | string | null | undefined;
 export type Props = Record<string, any>;
@@ -15,6 +17,11 @@ export type Props = Record<string, any>;
 //   }
 //   return [child];
 // }
+
+export type DomProps = {
+  parent: HTMLElement;
+  position: number;
+};
 
 export type FC<TProps extends Record<any, any>> = (
   props: TProps,
@@ -45,9 +52,16 @@ export abstract class JSXNode<TType = any, TProps extends Props = any> {
   }
   abstract getStringStream(ctx: NodeCtx): Promise<ReadableStream<string>>;
   abstract hydrate(ctx: {
-    parent: HTMLElement;
-    position: number;
-  }): Promise<{insertedCount: number}>;
+    dom: DomProps;
+    parentHydratedNode?: HydratedNode;
+  }): Promise<{insertedCount: number; hydratedNode: HydratedNode}>;
+}
+
+function destroyAtom(atom: Atom) {
+  for (const parent of atom.relations.parents) {
+    disconnectAtoms(parent, atom);
+  }
+  atom.transaction = {};
 }
 
 export class JSXNodeComponent<TProps extends Props>
@@ -66,6 +80,7 @@ export class JSXNodeComponent<TProps extends Props>
       new Ctx({
         props: this.props,
         state: state,
+        children: this.children,
       })
     );
 
@@ -83,7 +98,7 @@ export class JSXNodeComponent<TProps extends Props>
     return streams.readable;
   }
 
-  async hydrate(ctx: {parent: HTMLElement; position: number}) {
+  async hydrate(ctx: {dom: DomProps; parentHydratedNode?: HydratedNode}) {
     const state = {
       mounts: [],
       atoms: [],
@@ -91,17 +106,46 @@ export class JSXNodeComponent<TProps extends Props>
     const componentCtx = new Ctx({
       props: this.props,
       state: state,
+      children: this.children,
     });
     const rawChidlren = await this.type(this.props, componentCtx);
 
     const children = normalizeChildren(rawChidlren);
 
-    const insertedCount = await handleChildrenHydrate({
-      parent: ctx.parent,
-      children,
+    const hydratedNode = new HydratedNode({
+      mount: () => {
+        const unmounts = componentCtx.state.mounts.map((mount) => mount());
+
+        return () => {
+          unmounts.forEach((possibleUnmount) => {
+            if (typeof possibleUnmount === 'function') {
+              possibleUnmount();
+            }
+          });
+          componentCtx.state.atoms.forEach((possibleAtom) => {
+            if (possibleAtom instanceof Promise) {
+              possibleAtom.then((atom) => destroyAtom(atom));
+            } else {
+              destroyAtom(possibleAtom);
+            }
+          });
+        };
+      },
+      parent: ctx.parentHydratedNode,
     });
 
-    return {insertedCount};
+    const {insertedCount, hydratedNodes: childrenHydrayedNodes} =
+      await handleChildrenHydrate({
+        parentElement: ctx.dom.parent,
+        parentHydratedNode: hydratedNode,
+        children,
+        // todo
+        insertedCountStart: ctx.dom.position,
+      });
+
+    hydratedNode.addChildren(childrenHydrayedNodes);
+
+    return {insertedCount, hydratedNode};
   }
 }
 
@@ -121,7 +165,7 @@ export class JSXNodeElement<TProps extends Props>
       const writer = streams.writable.getWriter();
 
       await writer.write(elementString.left);
-      await writer.releaseLock();
+      writer.releaseLock();
 
       await handleChildren({
         children: this.children,
@@ -131,7 +175,7 @@ export class JSXNodeElement<TProps extends Props>
 
       const writer2 = streams.writable.getWriter();
       await writer2.write(elementString.right);
-      await writer2.releaseLock();
+      writer2.releaseLock();
 
       await streams.writable.close();
     });
@@ -139,8 +183,8 @@ export class JSXNodeElement<TProps extends Props>
     return streams.readable;
   }
 
-  async hydrate(ctx: {parent: HTMLElement; position: number}) {
-    const element = ctx.parent.children[ctx.position] as HTMLElement;
+  async hydrate(ctx: {dom: DomProps; parentHydratedNode?: HydratedNode}) {
+    const element = ctx.dom.parent.children[ctx.dom.position] as HTMLElement;
 
     for (const key in this.props) {
       const prop = this.props[key];
@@ -149,16 +193,29 @@ export class JSXNodeElement<TProps extends Props>
         continue;
       }
 
+      // todo get atom
+
       element.addEventListener(key, prop);
     }
 
-    await handleChildrenHydrate({children: this.children, parent});
+    const hydratedNode = new HydratedNode({
+      mount: () => {
+        return () => {
+          element.remove();
+        };
+      },
+      parent: ctx.parentHydratedNode,
+    });
 
-    return {insertedCount: 1};
+    const {hydratedNodes} = await handleChildrenHydrate({
+      children: this.children,
+      parentElement: element,
+      // todo
+      parentHydratedNode: hydratedNode,
+    });
+
+    hydratedNode.addChildren(hydratedNodes);
+
+    return {insertedCount: 1, hydratedNode};
   }
-}
-
-abstract class HydratedNode {
-  abstract atom: Atom;
-  abstract destroy(): void;
 }

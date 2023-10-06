@@ -1,154 +1,102 @@
-import {Atom, createDefaultRoot} from 'strangelove';
 import {Child, JSXNode, JSXNodeComponent, JSXNodeElement} from '../node.ts';
-import {runOnPromise} from '../../utils.ts';
 
-type Unmount = () => void | Promise<void>;
-export type Mount = () => Unmount | Promise<Unmount>;
+type Unmount = () => any;
+export type Mount = () => Unmount;
 
 type PropsHydratedNode = {
-  children: HydratedNode[];
+  mount: Mount;
+  parent?: HydratedNode;
 };
 
-abstract class HydratedNode {
-  children: HydratedNode[];
+export class HydratedNode {
+  children: HydratedNode[] = [];
+  parent?: HydratedNode;
 
-  constructor({children}: PropsHydratedNode) {
-    // this.element = element;
-    this.children = children;
+  private mountFn: Mount;
+  private unmountFn: Unmount | null = null;
+
+  constructor({mount, parent}: PropsHydratedNode) {
+    this.mountFn = mount;
+    this.parent = parent;
   }
-
-  unmount() {
-    Promise.all(this.children.map((child) => child.unmount()));
-    // this.element.remove();
-  }
-}
-
-type PropsHydratedNodeElement = {
-  element: HTMLElement;
-  children: HydratedNode[];
-};
-
-class HydratedNodeElement extends HydratedNode implements HydratedNode {
-  element: HTMLElement;
-
-  constructor({children, element}: HydratedNodeElement) {
-    super({children});
-    this.element = element;
-  }
-
-  unmount() {
-    this.children.forEach((child) => child.unmount());
-    this.element.remove();
-  }
-}
-
-type PropsHydratedComponentElement = {
-  children: HydratedNode[];
-};
-
-class HydratedNodeComponent extends HydratedNode {
-  constructor({children}: PropsHydratedComponentElement) {
-    super({children});
-  }
-}
-
-export class HydratedComponentNode {
-  atom: Atom;
-
-  private _mount: Mount;
-  private _unmount: ReturnType<Mount> | null = null;
 
   mount() {
-    this.atom.update({
-      data: {
-        status: 'mount',
-      },
-    });
+    this.unmountFn = this.mountFn();
   }
 
   unmount() {
-    this.atom.update({
-      data: {
-        status: 'unmount',
-      },
-    });
+    this.unmountFn?.();
   }
 
-  constructor({mount}: {mount: Mount}) {
-    this._mount = mount;
-    this._unmount = mount();
-    const self = this;
-    this.atom = Atom.new<void>({
-      exec(atom: Atom, {data}: {data: {status: 'mount' | 'unmount'}}) {
-        if (data.status === 'unmount') {
-          if (self._unmount === null) {
-            return true;
-          }
-
-          runOnPromise(self._unmount, (unmount) => unmount());
-          self._unmount = null;
-          return true;
-        } else if (data.status === 'mount') {
-          if (self._unmount === null) {
-            self._unmount = self._mount();
-
-            return true;
-          }
-
-          runOnPromise(self._unmount, (unmount) => unmount());
-          self._unmount = self._mount();
-          return true;
-        }
-        return true;
-      },
-      root: createDefaultRoot(),
-    });
+  addChildren(children: HydratedNode[]) {
+    children.forEach((hydratedNode) => this.children.push(hydratedNode));
   }
 }
+
+export const DYNAMIC_INSERTED_COUNT = Symbol('DYNAMIC_INSERTED_COUNT');
+export const INSERTED_COUNT = Symbol('INSERTED_COUNT');
 
 export async function handleChildrenHydrate({
   children,
-  parent,
+  parentElement,
+  parentHydratedNode,
+  insertedCountStart = 0,
 }: {
   children: Child[];
-  parent: HTMLElement;
+  parentElement: HTMLElement;
+  parentHydratedNode?: HydratedNode;
+  insertedCountStart?: number;
 }) {
-  const promises = [];
-  let insertedCount = 0;
+  const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
+  let insertedCount = insertedCountStart;
   for (let i = 0; i <= children.length; i++) {
     const child = children[i];
-    if (typeof child === 'string') {
+    if (typeof child === 'string' || !child) {
       continue;
     }
 
+    const hydrateResult = child.hydrate({
+      dom: {parent: parentElement, position: insertedCount},
+      parentHydratedNode,
+    });
+    hydrateResults.push(hydrateResult);
+
     if (child instanceof JSXNodeElement) {
-      promises.push(
-        child.hydrate({
-          parent,
-          position: insertedCount,
-        })
-      );
       insertedCount++;
-      continue;
     } else if (child instanceof JSXNodeComponent) {
-      const hydratedResult = await child.hydrate({
-        parent,
-        position: insertedCount,
-      });
-      insertedCount += hydratedResult.insertedCount;
+      if (INSERTED_COUNT in child.type) {
+        if (child.type[INSERTED_COUNT] !== DYNAMIC_INSERTED_COUNT) {
+          insertedCount += child.type[INSERTED_COUNT] as number;
+        } else {
+          const awaitedhydratedResult = await hydrateResult;
+          insertedCount += awaitedhydratedResult.insertedCount;
+        }
+      } else {
+        insertedCount++;
+      }
     }
   }
 
-  const promisesResult = await Promise.all(promises);
+  const hydrateResultsData = await Promise.all(hydrateResults);
 
-  insertedCount += promisesResult.reduce(
-    (prev, {insertedCount}) => prev + insertedCount,
-    0
-  );
+  return {
+    insertedCount: insertedCount - insertedCountStart,
+    hydratedNodes: hydrateResultsData.map(({hydratedNode}) => {
+      return hydratedNode;
+    }),
+  };
+}
 
-  return insertedCount;
+function mountHydratedNodes(elem: HydratedNode) {
+  elem.mount();
+  elem.children.forEach(mountHydratedNodes);
 }
 
 export async function hydrate(domNode: HTMLElement, node: JSXNode) {
-  await node.hydrate({parent: domNode, position: 0});
+  const {hydratedNode} = await node.hydrate({
+    dom: {parent: domNode, position: 0},
+    parentHydratedNode: undefined,
+  });
+
+  mountHydratedNodes(hydratedNode);
 }
