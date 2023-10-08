@@ -1,4 +1,6 @@
-import {FC, Child, JSXNodeElement, JSXNodeComponent} from '../node/node.ts';
+import {JSXNodeComponent} from '../node/component/component.ts';
+import {JSXNodeElement} from '../node/element/element.ts';
+import {FC, Child} from '../node/node.ts';
 import {Props} from '../types.ts';
 
 type PropsPrepareRaw = {
@@ -35,7 +37,7 @@ export const createElement = (
   rawProps: {
     key?: string;
   } & Props,
-  rawChildren: RawChildren
+  ...rawChildren: Children
 ) => {
   const {key, ...props} = rawProps;
 

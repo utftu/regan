@@ -1,7 +1,7 @@
 import {Atom, selectBase} from 'strangelove';
 import {Mount} from '../../types.ts';
-import {getRoot} from '../../regan.ts';
 import {Child} from '../node.ts';
+import {getRoot} from '../../root/root.ts';
 
 type State = {
   mounts: Mount[];

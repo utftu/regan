@@ -62,7 +62,7 @@ export function createElementString({
   return {left, right};
 }
 
-export async function handleChildren({
+export async function handleChildrenString({
   children,
   streams,
   ctx,
@@ -74,21 +74,27 @@ export async function handleChildren({
   // writer: WritableStreamDefaultWriter<string>;
 }) {
   const childrenStreams = children.map((child) => {
-    if (typeof child === 'string') {
-      return child;
+    if (child instanceof JSXNode) {
+      return child.getStringStream({ctx});
     }
-    return child.getStringStream({ctx});
+
+    return child;
   });
 
-  for (const childStreamsPromise of childrenStreams) {
-    if (typeof childStreamsPromise === 'string') {
+  for (const childStream of childrenStreams) {
+    // null, undefined
+    if (!childStream) {
+      continue;
+    }
+
+    if (typeof childStream === 'string') {
       const writer = streams.writable.getWriter();
-      await writer.write(childStreamsPromise);
+      await writer.write(childStream);
       await writer.releaseLock();
       continue;
     }
 
-    const childStreams = await childStreamsPromise;
+    const childStreams = await childStream;
 
     await childStreams.pipeTo(streams.writable, {preventClose: true});
   }

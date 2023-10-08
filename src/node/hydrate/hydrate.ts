@@ -1,4 +1,6 @@
-import {Child, JSXNode, JSXNodeComponent, JSXNodeElement} from '../node.ts';
+import {JSXNodeComponent} from '../component/component.ts';
+import {JSXNodeElement} from '../element/element.ts';
+import {Child, DomProps, JSXNode} from '../node.ts';
 
 type Unmount = () => any;
 export type Mount = () => Unmount;
@@ -6,18 +8,21 @@ export type Mount = () => Unmount;
 type PropsHydratedNode = {
   mount: Mount;
   parent?: HydratedNode;
+  dom?: DomProps;
 };
 
 export class HydratedNode {
   children: HydratedNode[] = [];
   parent?: HydratedNode;
+  dom?: DomProps;
 
   private mountFn: Mount;
   private unmountFn: Unmount | null = null;
 
-  constructor({mount, parent}: PropsHydratedNode) {
+  constructor({mount, parent, dom}: PropsHydratedNode) {
     this.mountFn = mount;
     this.parent = parent;
+    this.dom = dom;
   }
 
   mount() {
@@ -38,17 +43,20 @@ export const INSERTED_COUNT = Symbol('INSERTED_COUNT');
 
 export async function handleChildrenHydrate({
   children,
-  parentElement,
+  // parentElement,
   parentHydratedNode,
-  insertedCountStart = 0,
+  // insertedCountStart = 0,
+  dom,
 }: {
+  dom: DomProps;
   children: Child[];
-  parentElement: HTMLElement;
+  // parentElement: HTMLElement;
   parentHydratedNode?: HydratedNode;
-  insertedCountStart?: number;
+  // insertedCountStart?: number;
 }) {
   const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
-  let insertedCount = insertedCountStart;
+  let position = dom.position;
+  // let insertedCount = insertedCountStart;
   for (let i = 0; i <= children.length; i++) {
     const child = children[i];
     if (typeof child === 'string' || !child) {
@@ -56,23 +64,23 @@ export async function handleChildrenHydrate({
     }
 
     const hydrateResult = child.hydrate({
-      dom: {parent: parentElement, position: insertedCount},
+      dom: {parent: dom.parent, position},
       parentHydratedNode,
     });
     hydrateResults.push(hydrateResult);
 
     if (child instanceof JSXNodeElement) {
-      insertedCount++;
+      position++;
     } else if (child instanceof JSXNodeComponent) {
       if (INSERTED_COUNT in child.type) {
         if (child.type[INSERTED_COUNT] !== DYNAMIC_INSERTED_COUNT) {
-          insertedCount += child.type[INSERTED_COUNT] as number;
+          position += child.type[INSERTED_COUNT] as number;
         } else {
           const awaitedhydratedResult = await hydrateResult;
-          insertedCount += awaitedhydratedResult.insertedCount;
+          position += awaitedhydratedResult.insertedCount;
         }
       } else {
-        insertedCount++;
+        position++;
       }
     }
   }
@@ -80,7 +88,7 @@ export async function handleChildrenHydrate({
   const hydrateResultsData = await Promise.all(hydrateResults);
 
   return {
-    insertedCount: insertedCount - insertedCountStart,
+    insertedCount: position - dom.position,
     hydratedNodes: hydrateResultsData.map(({hydratedNode}) => {
       return hydratedNode;
     }),
