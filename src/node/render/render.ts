@@ -61,7 +61,7 @@ export async function handleChildrenRender({
 type Options = {
   parent?: HydratedNode;
   window: Window;
-  data: Record<any, any>;
+  data?: Record<any, any>;
 };
 
 export const redner = async (

@@ -101,6 +101,7 @@ export class JSXNodeComponent<TProps extends Props>
         parentHydratedNode: hydratedNode,
         children,
         dom: ctx.dom,
+        globalCtx: ctx.globalCtx,
       });
 
     hydratedNode.addChildren(childrenHydrayedNodes);

@@ -1,5 +1,4 @@
-import {Ctx} from './ctx/ctx.ts';
-import {NodeCtx, Props} from '../types.ts';
+import {Props} from '../types.ts';
 import {HydratedNode} from './hydrate/hydrate.ts';
 import {Atom, disconnectAtoms} from 'strangelove';
 import {GlobalCtx} from './global-ctx/global-ctx.ts';
@@ -13,11 +12,6 @@ export type DomSimpleProps = {
 export type DomProps = DomSimpleProps & {
   position: number;
 };
-
-export type FC<TProps extends Record<any, any>> = (
-  props: TProps,
-  ctx: Ctx<TProps>
-) => JSXNode | JSXNode[] | Promise<JSXNode> | Promise<JSXNode[]>;
 
 export type GetStringStreamProps = {
   gloablCtx: GlobalCtx;

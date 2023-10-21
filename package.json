@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "types": "tsc --project tsconfig.types.json"
+    "coverage": "vitest run --coverage",
+    "types": "tsc --project tsconfig.json"
   },
   "files": [
     "dist/**/*"
@@ -16,8 +17,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jsdom": "^21.1.4",
-    "@types/react": "^18.2.31",
     "@vitejs/plugin-react": "^4.1.0",
+    "@vitest/coverage-istanbul": "^0.34.6",
     "jsdom": "^22.1.0",
     "strangelove": "^1.0.14",
     "utftu": "^1.0.26",
@@ -26,6 +27,7 @@
   },
   "dependencies": {
     "preact": "^10.18.1",
+    "typescript": "^5.2.2",
     "vite-node": "^0.34.6"
   }
 }

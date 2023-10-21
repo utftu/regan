@@ -9,13 +9,28 @@ export type NodeCtx = {};
 export type Unmount = () => void;
 export type Mount = () => Unmount | Promise<Unmount> | any;
 
-export type FC<TProps extends Record<any, any> = any> = (
-  props: TProps,
-  ctx: Ctx<TProps>
-) =>
+export type FCReturn =
   | JSXNode
   | JSXNode[]
   | Promise<JSXNode>
   | Promise<JSXNode[]>
+  | string
   | null
-  | undefined;
+  | undefined
+  | void;
+
+export type FC<TProps extends Record<any, any> = any> = (
+  props: TProps,
+  ctx: Ctx<TProps>
+) => FCReturn;
+
+// export type FC<TProps extends Record<any, any> = any> = (
+//   props: TProps,
+//   ctx: Ctx<TProps>
+// ) =>
+//   | JSXNode
+//   | JSXNode[]
+//   | Promise<JSXNode>
+//   | Promise<JSXNode[]>
+//   | null
+//   | undefined;

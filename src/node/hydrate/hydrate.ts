@@ -112,7 +112,7 @@ type HydrateConfig = {
 export async function hydrate(
   domNode: HTMLElement,
   node: JSXNode,
-  config: HydrateConfig
+  config: HydrateConfig = {window}
 ) {
   const {hydratedNode} = await node.hydrate({
     dom: {parent: domNode, position: 0},
