@@ -14,7 +14,7 @@ type PropsCtx<TProps> = {
   children: Child[];
 };
 
-export class Ctx<TProps extends Record<any, any>> {
+export class Ctx<TProps extends Record<any, any> = any> {
   state: State;
   props: TProps;
   children: Child[];
@@ -53,17 +53,5 @@ export class Ctx<TProps extends Record<any, any>> {
     this.state.atoms.push(atom);
 
     return atom;
-
-    // if (!(atom instanceof Promise)) {
-    //   this.state.atoms.push(atom);
-    //   // this.state.mounts.push(() => atom.relations.parents.clear());
-    //   return atom as any;
-    // }
-
-    // return atom.then((atom) => {
-    //   this.state.atoms.push(atom);
-    //   this.state.mounts.push(() => atom.relations.parents.clear());
-    //   return atom;
-    // }) as any;
   }
 }

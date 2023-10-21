@@ -1,9 +1,16 @@
 import {JSXNodeComponent} from '../component/component.ts';
+import {Ctx} from '../ctx/ctx.ts';
 import {JSXNodeElement} from '../element/element.ts';
-import {Child, DomProps, JSXNode} from '../node.ts';
+import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {Child, DomProps, JSXNode, destroyAtom} from '../node.ts';
 
 type Unmount = () => any;
 export type Mount = () => Unmount;
+
+export class ComponentState {
+  mounts = [];
+  atoms = [];
+}
 
 type PropsHydratedNode = {
   mount: Mount;
@@ -43,20 +50,17 @@ export const INSERTED_COUNT = Symbol('INSERTED_COUNT');
 
 export async function handleChildrenHydrate({
   children,
-  // parentElement,
   parentHydratedNode,
-  // insertedCountStart = 0,
   dom,
+  globalCtx,
 }: {
   dom: DomProps;
   children: Child[];
-  // parentElement: HTMLElement;
   parentHydratedNode?: HydratedNode;
-  // insertedCountStart?: number;
+  globalCtx: GlobalCtx;
 }) {
   const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
   let position = dom.position;
-  // let insertedCount = insertedCountStart;
   for (let i = 0; i <= children.length; i++) {
     const child = children[i];
     if (typeof child === 'string' || !child) {
@@ -66,6 +70,7 @@ export async function handleChildrenHydrate({
     const hydrateResult = child.hydrate({
       dom: {parent: dom.parent, position},
       parentHydratedNode,
+      globalCtx,
     });
     hydrateResults.push(hydrateResult);
 
@@ -100,10 +105,21 @@ function mountHydratedNodes(elem: HydratedNode) {
   elem.children.forEach(mountHydratedNodes);
 }
 
-export async function hydrate(domNode: HTMLElement, node: JSXNode) {
+type HydrateConfig = {
+  window?: Window;
+};
+
+export async function hydrate(
+  domNode: HTMLElement,
+  node: JSXNode,
+  config: HydrateConfig
+) {
   const {hydratedNode} = await node.hydrate({
     dom: {parent: domNode, position: 0},
     parentHydratedNode: undefined,
+    globalCtx: new GlobalCtx({
+      window: config.window,
+    }),
   });
 
   mountHydratedNodes(hydratedNode);

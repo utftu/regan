@@ -37,22 +37,7 @@ export function createElementString({
   type: string;
   props: Props;
 }) {
-  const propertiers: Props = {};
-
-  for (const key in props) {
-    const prop = props[key];
-    if (typeof prop === 'function') {
-      continue;
-    }
-    if (prop instanceof Atom) {
-      propertiers[key] = prop.get();
-      continue;
-    }
-
-    propertiers[key] = prop;
-  }
-
-  const preparedProperties = Object.entries(propertiers)
+  const preparedProperties = Object.entries(props)
     .map(([key, value]) => `${key}="${value}"`)
     .join(' ');
   const left = `<${type}${

@@ -1,15 +1,16 @@
-import {handleChildrenHydrate} from './hydrate/hydrate.ts';
-import {handleChildrenString} from './string/string.ts';
-import {createElementString} from './string/string.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {NodeCtx, Props} from '../types.ts';
 import {HydratedNode} from './hydrate/hydrate.ts';
 import {Atom, disconnectAtoms} from 'strangelove';
+import {GlobalCtx} from './global-ctx/global-ctx.ts';
 
 export type Child = JSXNode<any, any> | string | null | undefined;
 
-export type DomProps = {
+export type DomSimpleProps = {
   parent: HTMLElement;
+};
+
+export type DomProps = DomSimpleProps & {
   position: number;
 };
 
@@ -17,6 +18,22 @@ export type FC<TProps extends Record<any, any>> = (
   props: TProps,
   ctx: Ctx<TProps>
 ) => JSXNode | JSXNode[] | Promise<JSXNode> | Promise<JSXNode[]>;
+
+export type GetStringStreamProps = {
+  gloablCtx: GlobalCtx;
+};
+
+export type HydrateProps = {
+  dom: DomProps;
+  parentHydratedNode?: HydratedNode;
+  globalCtx: GlobalCtx;
+};
+
+export type RenderProps = {
+  dom: {parent: HTMLElement};
+  parentHydratedNode?: HydratedNode;
+  globalCtx: GlobalCtx;
+};
 
 export abstract class JSXNode<TType = any, TProps extends Props = any> {
   type: TType;
@@ -40,11 +57,13 @@ export abstract class JSXNode<TType = any, TProps extends Props = any> {
     this.props = props;
     this.children = children;
   }
-  abstract getStringStream(ctx: NodeCtx): Promise<ReadableStream<string>>;
-  abstract hydrate(ctx: {
-    dom: DomProps;
-    parentHydratedNode?: HydratedNode;
-  }): Promise<{insertedCount: number; hydratedNode: HydratedNode}>;
+  abstract getStringStream(
+    ctx: GetStringStreamProps
+  ): Promise<ReadableStream<string>>;
+  abstract hydrate(
+    ctx: HydrateProps
+  ): Promise<{insertedCount: number; hydratedNode: HydratedNode}>;
+  abstract render(ctx: RenderProps): Promise<{hydratedNode: HydratedNode}>;
 }
 
 export function destroyAtom(atom: Atom) {
