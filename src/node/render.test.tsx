@@ -74,7 +74,7 @@ describe('render', () => {
     expect(childClick.mock.calls.length).toBe(1);
     expect(parentClick.mock.calls.length).toBe(2);
   });
-  it('react on change', async () => {
+  it('subscribe', async () => {
     const parentAtom = atom(0);
     const childAtom = atom(0);
 
