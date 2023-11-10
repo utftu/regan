@@ -5,7 +5,11 @@ import {
 } from '../../node/hydrate/hydrate.ts';
 import {FC} from '../../types.ts';
 
-const Fragment: FC<any> = (_: any, ctx: Ctx) => {
+type ObjLike = {
+  [INSERTED_COUNT]: typeof DYNAMIC_INSERTED_COUNT | number;
+};
+
+const Fragment: FC<any> & ObjLike = (_: any, ctx: Ctx) => {
   return ctx.children;
 };
 

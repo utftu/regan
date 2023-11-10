@@ -3,6 +3,21 @@ import {HydratedNode} from './hydrate/hydrate.ts';
 import {Atom, disconnectAtoms} from 'strangelove';
 import {GlobalCtx} from './global-ctx/global-ctx.ts';
 
+// start
+
+type JSXChild =
+  | JSXNode
+  | string
+  | null
+  | undefined
+  | Atom
+  | ((...args: any[]) => any);
+type CtxChildren = JSXChild[];
+
+type FC = () => JSXChild | JSXChild[] | Promise<JSXChild> | Promise<JSXChild[]>;
+
+// finish
+
 export type Child = JSXNode<any, any> | string | null | undefined;
 
 export type DomSimpleProps = {

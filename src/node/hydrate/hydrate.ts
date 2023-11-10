@@ -1,5 +1,4 @@
 import {JSXNodeComponent} from '../component/component.ts';
-import {Ctx} from '../ctx/ctx.ts';
 import {JSXNodeElement} from '../element/element.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Child, DomProps, JSXNode, destroyAtom} from '../node.ts';

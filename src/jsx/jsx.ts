@@ -1,7 +1,7 @@
 import {JSXNodeComponent} from '../node/component/component.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
-import {FC, Child} from '../node/node.ts';
-import {Props} from '../types.ts';
+import {Child} from '../node/node.ts';
+import {FC, Props} from '../types.ts';
 
 type PropsPrepareRaw = {
   type: string | FC<any>;
