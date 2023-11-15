@@ -1,6 +1,6 @@
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
-import {Ctx} from '../node/ctx/ctx.ts';
+import {Ctx} from '../ctx/ctx.ts';
 import {HydrateProps, destroyAtom} from '../node/node.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {ComponentState, HNode} from './h-node.ts';

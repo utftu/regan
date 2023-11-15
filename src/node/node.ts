@@ -1,7 +1,7 @@
 import {Child, Props} from '../types.ts';
-import {HNode} from './hydrate/hydrate.ts';
 import {Atom, disconnectAtoms} from 'strangelove';
-import {GlobalCtx} from './global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {HNode} from '../hydrate/h-node.ts';
 
 export type DomSimpleProps = {
   parent: HTMLElement;

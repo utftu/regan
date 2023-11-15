@@ -2,7 +2,7 @@ import {createHydrateNodeComponent} from '../hydrate/component.ts';
 import {ComponentState} from '../hydrate/h-node.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
-import {Ctx} from '../node/ctx/ctx.ts';
+import {Ctx} from '../ctx/ctx.ts';
 import {RenderProps} from '../node/node.ts';
 import {handleChildrenRender} from './children.ts';
 

@@ -1,4 +1,4 @@
-import {GlobalCtx} from '../node/global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JSXNode} from '../node/node.ts';
 
 async function convertStreamToString(stream: ReadableStream) {

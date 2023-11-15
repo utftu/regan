@@ -1,5 +1,5 @@
 import {Atom} from 'strangelove';
-import {GlobalCtx} from '../node/global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JSXNode} from '../node/node.ts';
 import {Child} from '../types.ts';
 import {joinPath} from '../utils.ts';

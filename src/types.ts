@@ -1,5 +1,5 @@
 import {JSXNode} from './node/node.ts';
-import {Ctx} from './node/ctx/ctx.ts';
+import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
 
 export type Child =

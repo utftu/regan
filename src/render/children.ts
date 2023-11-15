@@ -1,4 +1,4 @@
-import {GlobalCtx} from '../node/global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../node/hydrate/hydrate.ts';
 import {DomSimpleProps} from '../node/node.ts';
 import {Child} from '../types.ts';

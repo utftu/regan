@@ -1,6 +1,6 @@
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
-import {Ctx} from '../node/ctx/ctx.ts';
+import {Ctx} from '../ctx/ctx.ts';
 import {GetStringStreamProps} from '../node/node.ts';
 import {Props} from '../types.ts';
 import {handleChildrenString} from './children.ts';

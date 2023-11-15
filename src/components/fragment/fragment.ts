@@ -1,5 +1,5 @@
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../../consts.ts';
-import {Ctx} from '../../node/ctx/ctx.ts';
+import {Ctx} from '../../ctx/ctx.ts';
 import {FC} from '../../types.ts';
 
 type ObjLike = {
