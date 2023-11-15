@@ -1,12 +1,12 @@
 import {describe, expect, it, vi} from 'vitest';
 import {JSXNode} from '../node/node.ts';
-import {hydrate} from '../node/hydrate/hydrate.ts';
 import {JSDOM} from 'jsdom';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {FC} from '../types.ts';
 import {createAtomRegan} from '../atoms/atoms.ts';
 import {atom} from 'strangelove';
 import {getString} from '../string/string.ts';
+import {hydrate} from './hydrate.ts';
 
 async function insertAndHydrate(body: HTMLElement, jsxNode: JSXNode) {
   const root = document.createElement('div');

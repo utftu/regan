@@ -2,8 +2,9 @@ import {Atom} from 'strangelove';
 import {HydrateProps} from '../node/node.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {selectRegan} from '../atoms/atoms.ts';
-import {HNode, handleChildrenHydrate} from '../node/hydrate/hydrate.ts';
 import {addEventListenerStore} from '../render/children.ts';
+import {HNode} from './h-node.ts';
+import {handleChildrenHydrate} from './children.ts';
 
 export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
   const element = ctx.dom.parent.children[ctx.dom.position] as HTMLElement;

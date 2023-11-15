@@ -1,16 +1,13 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../node/global-ctx/global-ctx.ts';
-import {
-  DYNAMIC_INSERTED_COUNT,
-  HNode,
-  INSERTED_COUNT,
-} from '../node/hydrate/hydrate.ts';
 import {DomProps, JSXNode} from '../node/node.ts';
 import {Child} from '../types.ts';
 import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
 import {joinPath} from '../utils.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
+import {HNode} from './h-node.ts';
+import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 
 export async function handleChildrenHydrate({
   children,
