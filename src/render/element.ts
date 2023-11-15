@@ -2,8 +2,9 @@ import {Atom} from 'strangelove';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {RenderProps} from '../node/node.ts';
 import {selectRegan} from '../atoms/atoms.ts';
-import {addEventListenerStore, handleChildrenRender} from './children.ts';
+import {handleChildrenRender} from './children.ts';
 import {HNode} from '../hydrate/h-node.ts';
+import {addEventListenerStore} from '../utils.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   const element = ctx.globalCtx.window.document.createElement(this.type);

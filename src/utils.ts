@@ -1,6 +1,6 @@
-import {Atom, select, selectBase, SelectCb} from 'strangelove';
+import {selectBase, SelectCb} from 'strangelove';
 import {getRoot} from './atoms/atoms.ts';
-import {HNode} from './node/hydrate/hydrate.ts';
+import {HNode} from './hydrate/h-node.ts';
 
 export function runOnPromise<TValue>(
   maybePromise: Promise<TValue> | TValue,
@@ -10,20 +10,6 @@ export function runOnPromise<TValue>(
     maybePromise.then(cb);
   } else {
     cb(maybePromise);
-  }
-}
-
-function runOnAtomAndSubscribe<TValue = any>(
-  possibleValue: TValue | Atom<TValue>,
-  cb: (value: TValue) => void
-) {
-  if (possibleValue instanceof Atom) {
-    select((get) => {
-      const value = get(possibleValue) as TValue;
-      cb(value);
-    });
-  } else {
-    cb(possibleValue);
   }
 }
 
@@ -51,4 +37,24 @@ export function getParentDom(node: HNode) {
   }
 
   return null;
+}
+
+export function addEventListenerStore({
+  listener,
+  name,
+  elem,
+  store,
+}: {
+  listener: EventListener;
+  name: string;
+  elem: HTMLElement;
+  store: Record<any, any>;
+}) {
+  if (name in store) {
+    elem.removeEventListener(name, store[name]);
+  }
+
+  elem.addEventListener(name, listener);
+  store[name] = listener;
+  return;
 }

@@ -1,28 +1,8 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode} from '../node/hydrate/hydrate.ts';
+import {HNode} from '../hydrate/h-node.ts';
 import {DomSimpleProps} from '../node/node.ts';
 import {Child} from '../types.ts';
 import {joinPath} from '../utils.ts';
-
-export function addEventListenerStore({
-  listener,
-  name,
-  elem,
-  store,
-}: {
-  listener: EventListener;
-  name: string;
-  elem: HTMLElement;
-  store: Record<any, any>;
-}) {
-  if (name in store) {
-    elem.removeEventListener(name, store[name]);
-  }
-
-  elem.addEventListener(name, listener);
-  store[name] = listener;
-  return;
-}
 
 export async function handleChildrenRender({
   children,

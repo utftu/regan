@@ -1,5 +1,5 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode} from '../node/hydrate/hydrate.ts';
+import {HNode} from '../hydrate/h-node.ts';
 import {JSXNode} from '../node/node.ts';
 
 type Options = {
