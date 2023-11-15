@@ -6,10 +6,10 @@ import {
 import {FC} from '../../types.ts';
 
 type ObjLike = {
-  [INSERTED_COUNT]: typeof DYNAMIC_INSERTED_COUNT | number;
+  [INSERTED_COUNT]: number | typeof DYNAMIC_INSERTED_COUNT;
 };
 
-const Fragment: FC<any> & ObjLike = (_: any, ctx: Ctx) => {
+const Fragment: FC & ObjLike = (_: any, ctx: Ctx) => {
   return ctx.children;
 };
 

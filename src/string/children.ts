@@ -1,47 +1,11 @@
-import {JSXNode} from '../node.ts';
-import {Child, Props} from '../../types.ts';
 import {Atom} from 'strangelove';
-import {joinPath} from '../../utils.ts';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {SELECT_REGAN_NAMED} from '../../atoms/atoms.ts';
-
-const selfClosingTags = [
-  'area',
-  'base',
-  'br',
-  'col',
-  'command',
-  'embed',
-  'hr',
-  'img',
-  'input',
-  'keygen',
-  'link',
-  'meta',
-  'param',
-  'source',
-  'track',
-  'wbr',
-];
+import {GlobalCtx} from '../node/global-ctx/global-ctx.ts';
+import {JSXNode} from '../node/node.ts';
+import {Child} from '../types.ts';
+import {joinPath} from '../utils.ts';
+import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
 
 type StringStream = TransformStream<string, string>;
-
-export function createElementString({
-  type,
-  props,
-}: {
-  type: string;
-  props: Props;
-}) {
-  const preparedProperties = Object.entries(props)
-    .map(([key, value]) => `${key}="${value}"`)
-    .join(' ');
-  const left = `<${type}${
-    preparedProperties.length === 0 ? '' : ` ${preparedProperties}`
-  }>`;
-  const right = selfClosingTags.includes(type) ? '' : `</${type}>`;
-  return {left, right};
-}
 
 export async function handleChildrenString({
   children,
@@ -114,41 +78,4 @@ export async function handleChildrenString({
 
     await childStreams.pipeTo(streams.writable, {preventClose: true});
   }
-}
-
-async function convertStreamToString(stream: ReadableStream) {
-  const reader = stream.getReader();
-  let result = '';
-
-  while (true) {
-    const {done, value} = await reader.read();
-
-    if (done) {
-      break;
-    }
-
-    result += value;
-  }
-
-  return result;
-}
-
-type GetStringConfig = {
-  jsxPath?: string;
-};
-
-export async function getString(
-  node: JSXNode<any, any>,
-  config: GetStringConfig = {}
-) {
-  const stream = await node.getStringStream({
-    jsxPath: config.jsxPath || '',
-    globalCtx: new GlobalCtx({
-      window: null as any,
-      status: 'string',
-      data: {},
-    }),
-  });
-  const str = await convertStreamToString(stream);
-  return str;
 }

@@ -109,10 +109,51 @@ describe('render', () => {
 
     expect(childDiv.getAttribute('data-name')).toBe('0');
 
-    await childAtom.set(1);
+    await childAtom.set(0);
 
-    expect(childDiv.getAttribute('data-name')).toBe('1');
+    expect(childDiv.getAttribute('data-name')).toBe('0');
 
     expect(parentDiv.getAttribute('data-name')).toBe('0');
+  });
+  it('jsxPath', async () => {
+    let level3JsxPath!: string;
+    const Level3: FC = (_, ctx) => {
+      level3JsxPath = ctx.jsxPath;
+      return <div>level3</div>;
+    };
+    const Level2 = () => {
+      // 0
+      return <Level3 />;
+    };
+    const Level1 = () => {
+      return (
+        <div>
+          level1
+          <div>empty</div>
+          <div>empty</div>
+          {/* 0.2 */}
+          <Level2 />
+        </div>
+      );
+    };
+    const Level0 = () => {
+      return (
+        <div>
+          <div>parent</div>
+          {/* 0.1.0 */}
+          <Fragment>
+            <Level1 />
+          </Fragment>
+        </div>
+      );
+    };
+
+    const jsdom = new JSDOM();
+    const document = jsdom.window.document;
+
+    await redner(document.body, <Level0 />, {
+      window: jsdom.window as any as Window,
+    });
+    expect(level3JsxPath).toBe('0.1.0.0.2.0');
   });
 });

@@ -1,6 +1,8 @@
+import {Child} from '../../types.ts';
+import {joinPath} from '../../utils.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HydratedNode} from '../hydrate/hydrate.ts';
-import {Child, DomProps, DomSimpleProps, JSXNode} from '../node.ts';
+import {HNode} from '../hydrate/hydrate.ts';
+import {DomSimpleProps, JSXNode} from '../node.ts';
 
 export function addEventListenerStore({
   listener,
@@ -27,15 +29,17 @@ export async function handleChildrenRender({
   parentHydratedNode,
   dom,
   globalCtx,
+  jsxPath,
 }: {
   dom: DomSimpleProps;
   children: Child[];
-  parentHydratedNode?: HydratedNode;
+  parentHydratedNode?: HNode;
   globalCtx: GlobalCtx;
+  jsxPath: string;
 }) {
-  const hydratedNodes: HydratedNode[] = [];
+  const hydratedNodes: HNode[] = [];
 
-  for (let i = 0; i <= children.length; i++) {
+  for (let i = 0, insertedJsxNodeCount = 0; i <= children.length; i++) {
     const child = children[i];
     if (!child) {
       continue;
@@ -50,8 +54,11 @@ export async function handleChildrenRender({
       dom: {parent: dom.parent},
       parentHydratedNode,
       globalCtx,
+      jsxPath: joinPath(jsxPath, insertedJsxNodeCount.toString()),
     });
     hydratedNodes.push(renderResult.hydratedNode);
+
+    insertedJsxNodeCount++;
   }
   return {
     hydratedNodes,
@@ -59,8 +66,9 @@ export async function handleChildrenRender({
 }
 
 type Options = {
-  parent?: HydratedNode;
-  window: Window;
+  jsxPath?: string;
+  parent?: HNode;
+  window?: Window;
   data?: Record<any, any>;
 };
 
@@ -71,8 +79,10 @@ export const redner = async (
 ) => {
   return await node.render({
     dom: {parent: domNode},
+    parentHydratedNode: options.parent,
+    jsxPath: options.jsxPath || '',
     globalCtx: new GlobalCtx({
-      window: options.window,
+      window: options.window || window,
       status: 'render',
     }),
   });

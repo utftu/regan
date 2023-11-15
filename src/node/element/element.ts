@@ -1,8 +1,7 @@
-import {Atom, select} from 'strangelove';
-import {NodeCtx, Props} from '../../types.ts';
-import {HydratedNode, handleChildrenHydrate} from '../hydrate/hydrate.ts';
+import {Atom} from 'strangelove';
+import {Props} from '../../types.ts';
+import {HNode, handleChildrenHydrate} from '../hydrate/hydrate.ts';
 import {
-  DomProps,
   GetStringStreamProps,
   HydrateProps,
   JSXNode,
@@ -45,11 +44,11 @@ export class JSXNodeElement<TProps extends Props>
 
       await handleChildrenString({
         children: this.children,
-        ctx,
         streams,
+        jsxPath: ctx.jsxPath,
+        globalCtx: ctx.globalCtx,
       });
 
-      // todo
       const writer2 = streams.writable.getWriter();
       await writer2.write(elementString.right);
       writer2.releaseLock();
@@ -104,7 +103,7 @@ export class JSXNodeElement<TProps extends Props>
       }
     }
 
-    const hydratedNode = new HydratedNode({
+    const hydratedNode = new HNode({
       mount: () => {
         return () => {
           atoms.forEach((atom) => destroyAtom(atom));
@@ -112,9 +111,11 @@ export class JSXNodeElement<TProps extends Props>
         };
       },
       parent: ctx.parentHydratedNode,
+      elem: element,
     });
 
     const {hydratedNodes} = await handleChildrenHydrate({
+      jsxPath: ctx.jsxPath,
       children: this.children,
       dom: {
         parent: element,
@@ -170,7 +171,7 @@ export class JSXNodeElement<TProps extends Props>
       }
     }
 
-    const hydratedNode = new HydratedNode({
+    const hydratedNode = new HNode({
       mount: () => {
         return () => {
           atoms.forEach((atom) => destroyAtom(atom));
@@ -178,15 +179,18 @@ export class JSXNodeElement<TProps extends Props>
         };
       },
       parent: ctx.parentHydratedNode,
+      elem: element,
     });
 
     ctx.dom.parent.appendChild(element);
 
+    // todo add nodes
     await handleChildrenRender({
       children: this.children,
       parentHydratedNode: hydratedNode,
       dom: {parent: element},
       globalCtx: ctx.globalCtx,
+      jsxPath: ctx.jsxPath,
     });
 
     return {hydratedNode};

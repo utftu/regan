@@ -1,5 +1,6 @@
 import {Atom, select, selectBase, SelectCb} from 'strangelove';
-import {getRoot} from './root/root.ts';
+import {getRoot} from './atoms/atoms.ts';
+import {HNode} from './node/hydrate/hydrate.ts';
 
 export function runOnPromise<TValue>(
   maybePromise: Promise<TValue> | TValue,
@@ -31,4 +32,23 @@ export function selectRegan<TCb extends SelectCb>(cb: TCb) {
     root: getRoot(),
     onAtomCreate: () => {},
   });
+}
+
+export function joinPath(oldPart: string, newPart: string) {
+  if (oldPart === '') {
+    return newPart;
+  }
+  return `${oldPart}.${newPart}`;
+}
+
+export function getParentDom(node: HNode) {
+  if (node.elem) {
+    return node.elem;
+  }
+
+  if (node.parent) {
+    return getParentDom(node);
+  }
+
+  return null;
 }

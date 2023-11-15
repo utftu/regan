@@ -1,7 +1,11 @@
+import {Atom} from 'strangelove';
+import {Child} from '../../types.ts';
 import {JSXNodeComponent} from '../component/component.ts';
 import {JSXNodeElement} from '../element/element.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {Child, DomProps, JSXNode, destroyAtom} from '../node.ts';
+import {DomProps, JSXNode, destroyAtom} from '../node.ts';
+import {joinPath} from '../../utils.ts';
+import {SELECT_REGAN_NAMED} from '../../atoms/atoms.ts';
 
 type Unmount = () => any;
 export type Mount = () => Unmount;
@@ -13,22 +17,26 @@ export class ComponentState {
 
 type PropsHydratedNode = {
   mount: Mount;
-  parent?: HydratedNode;
-  dom?: DomProps;
+  parent?: HNode;
+  elem?: HTMLElement;
+  segment: string;
 };
 
-export class HydratedNode {
-  children: HydratedNode[] = [];
-  parent?: HydratedNode;
-  dom?: DomProps;
+// HNode = HydratedNode
+export class HNode {
+  children: HNode[] = [];
+  parent?: HNode;
+  elem?: HTMLElement;
+  segment: string;
 
   private mountFn: Mount;
   private unmountFn: Unmount | null = null;
 
-  constructor({mount, parent, dom}: PropsHydratedNode) {
+  constructor({mount, parent, elem, segment}: PropsHydratedNode) {
     this.mountFn = mount;
     this.parent = parent;
-    this.dom = dom;
+    this.elem = elem;
+    this.segment = segment;
   }
 
   mount() {
@@ -39,7 +47,7 @@ export class HydratedNode {
     this.unmountFn?.();
   }
 
-  addChildren(children: HydratedNode[]) {
+  addChildren(children: HNode[]) {
     children.forEach((hydratedNode) => this.children.push(hydratedNode));
   }
 }
@@ -52,33 +60,58 @@ export async function handleChildrenHydrate({
   parentHydratedNode,
   dom,
   globalCtx,
+  jsxPath,
 }: {
   dom: DomProps;
   children: Child[];
-  parentHydratedNode?: HydratedNode;
+  parentHydratedNode?: HNode;
   globalCtx: GlobalCtx;
+  jsxPath: string;
 }) {
   const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
   let position = dom.position;
-  for (let i = 0; i <= children.length; i++) {
+  for (let i = 0, jsxNodeCount = 0; i <= children.length; i++) {
     const child = children[i];
-    if (typeof child === 'string' || !child) {
+    if (!(child instanceof JSXNode) && !(child instanceof Atom)) {
       continue;
     }
 
-    const hydrateResult = child.hydrate({
+    let childNode!: JSXNode;
+    let additionalName = '';
+    if (child instanceof Atom) {
+      let value: any;
+      let name: string;
+      if ((child as any)[SELECT_REGAN_NAMED]) {
+        [name, value] = child.get();
+      } else {
+        value = child.get();
+        name = '0';
+      }
+
+      if (value instanceof JSXNode) {
+        childNode = value;
+        additionalName = `:a=${name}`;
+      } else {
+        continue;
+      }
+    } else {
+      childNode = child;
+    }
+
+    const hydrateResult = childNode.hydrate({
+      jsxPath: joinPath(jsxPath, jsxNodeCount.toString()) + additionalName,
       dom: {parent: dom.parent, position},
       parentHydratedNode,
       globalCtx,
     });
     hydrateResults.push(hydrateResult);
 
-    if (child instanceof JSXNodeElement) {
+    if (childNode instanceof JSXNodeElement) {
       position++;
-    } else if (child instanceof JSXNodeComponent) {
-      if (INSERTED_COUNT in child.type) {
-        if (child.type[INSERTED_COUNT] !== DYNAMIC_INSERTED_COUNT) {
-          position += child.type[INSERTED_COUNT] as number;
+    } else if (childNode instanceof JSXNodeComponent) {
+      if (INSERTED_COUNT in childNode.type) {
+        if (childNode.type[INSERTED_COUNT] !== DYNAMIC_INSERTED_COUNT) {
+          position += childNode.type[INSERTED_COUNT] as number;
         } else {
           const awaitedhydratedResult = await hydrateResult;
           position += awaitedhydratedResult.insertedCount;
@@ -87,6 +120,8 @@ export async function handleChildrenHydrate({
         position++;
       }
     }
+
+    jsxNodeCount++;
   }
 
   const hydrateResultsData = await Promise.all(hydrateResults);
@@ -99,13 +134,14 @@ export async function handleChildrenHydrate({
   };
 }
 
-function mountHydratedNodes(elem: HydratedNode) {
+function mountHydratedNodes(elem: HNode) {
   elem.mount();
   elem.children.forEach(mountHydratedNodes);
 }
 
 type HydrateConfig = {
   window?: Window;
+  jsxPath?: string;
 };
 
 export async function hydrate(
@@ -114,10 +150,12 @@ export async function hydrate(
   config: HydrateConfig = {window}
 ) {
   const {hydratedNode} = await node.hydrate({
+    jsxPath: config.jsxPath || '',
     dom: {parent: domNode, position: 0},
     parentHydratedNode: undefined,
     globalCtx: new GlobalCtx({
-      window: config.window,
+      window: config.window || window,
+      status: 'hydrate',
     }),
   });
 

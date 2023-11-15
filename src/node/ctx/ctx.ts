@@ -1,7 +1,6 @@
 import {Atom, selectBase} from 'strangelove';
-import {Mount} from '../../types.ts';
-import {Child} from '../node.ts';
-import {getRoot} from '../../root/root.ts';
+import {Child, Mount} from '../../types.ts';
+import {getRoot} from '../../atoms/atoms.ts';
 
 type State = {
   mounts: Mount[];
@@ -12,17 +11,20 @@ type PropsCtx<TProps> = {
   props: TProps;
   state: State;
   children: Child[];
+  jsxPath: string;
 };
 
 export class Ctx<TProps extends Record<any, any> = any> {
   state: State;
   props: TProps;
   children: Child[];
+  jsxPath: string;
 
-  constructor({props, state, children}: PropsCtx<TProps>) {
+  constructor({props, state, children, jsxPath}: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
     this.children = children;
+    this.jsxPath = jsxPath;
   }
 
   mount(fn: Mount) {

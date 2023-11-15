@@ -1,18 +1,17 @@
 import {JSXNodeComponent} from '../node/component/component.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
-import {Child} from '../node/node.ts';
-import {FC, Props} from '../types.ts';
+import {Child, FC, Props} from '../types.ts';
+
+type RawChildren = Child | Child[];
+// type Children = Child[];
+type ElementType = string | FC<any>;
 
 type PropsPrepareRaw = {
   type: string | FC<any>;
   props: Props;
-  children: Children;
+  children: Child[];
   key?: string;
 };
-
-type RawChildren = Child | Child[];
-type Children = Child[];
-type ElementType = string | FC<any>;
 
 const prepare = ({type, props, key, children}: PropsPrepareRaw) => {
   const preparedKey = key === undefined ? '' : key;
@@ -37,7 +36,7 @@ export const createElement = (
   rawProps: {
     key?: string;
   } & Props,
-  ...rawChildren: Children
+  ...rawChildren: Child[]
 ) => {
   const {key, ...props} = rawProps;
 
@@ -61,5 +60,16 @@ export function jsx<TProps extends Props>(
     props,
     key,
     children: normalizeChildren(rawChildren),
+  });
+}
+
+export function h(type: ElementType, props: Props, children: Child[]) {
+  const {key, ...restProps} = props;
+
+  return prepare({
+    type,
+    props: restProps,
+    key: props.key,
+    children: normalizeChildren(children),
   });
 }
