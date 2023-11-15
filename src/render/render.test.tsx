@@ -1,9 +1,9 @@
 import {describe, expect, it, vi} from 'vitest';
-import {redner} from './render/render.ts';
 import {JSDOM} from 'jsdom';
 import {FC} from '../types.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {Atom, atom} from 'strangelove';
+import {redner} from './render.ts';
 
 describe('render', () => {
   it('markup', async () => {

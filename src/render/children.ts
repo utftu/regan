@@ -1,8 +1,8 @@
-import {Child} from '../../types.ts';
-import {joinPath} from '../../utils.ts';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode} from '../hydrate/hydrate.ts';
-import {DomSimpleProps, JSXNode} from '../node.ts';
+import {GlobalCtx} from '../node/global-ctx/global-ctx.ts';
+import {HNode} from '../node/hydrate/hydrate.ts';
+import {DomSimpleProps} from '../node/node.ts';
+import {Child} from '../types.ts';
+import {joinPath} from '../utils.ts';
 
 export function addEventListenerStore({
   listener,
@@ -64,26 +64,3 @@ export async function handleChildrenRender({
     hydratedNodes,
   };
 }
-
-type Options = {
-  jsxPath?: string;
-  parent?: HNode;
-  window?: Window;
-  data?: Record<any, any>;
-};
-
-export const redner = async (
-  domNode: HTMLElement,
-  node: JSXNode,
-  options: Options
-) => {
-  return await node.render({
-    dom: {parent: domNode},
-    parentHydratedNode: options.parent,
-    jsxPath: options.jsxPath || '',
-    globalCtx: new GlobalCtx({
-      window: options.window || window,
-      status: 'render',
-    }),
-  });
-};

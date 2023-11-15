@@ -1,9 +1,9 @@
-import {describe, expect, it, vi} from 'vitest';
-import {getString} from './string/string.ts';
+import {describe, expect, it} from 'vitest';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {createAtomRegan} from '../atoms/atoms.ts';
 import {FC} from '../types.ts';
 import {atom} from 'strangelove';
+import {getString} from './string.ts';
 
 describe('node', () => {
   it('getString()', async () => {

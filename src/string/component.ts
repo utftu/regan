@@ -5,8 +5,8 @@ import {GetStringStreamProps} from '../node/node.ts';
 import {Props} from '../types.ts';
 import {handleChildrenString} from './children.ts';
 
-export async function getStringStreamComponent<TProps extends Props = any>(
-  this: JSXNodeComponent<TProps>,
+export async function getStringStreamComponent(
+  this: JSXNodeComponent,
   ctx: GetStringStreamProps
 ) {
   const streams = new TransformStream<string, string>();
