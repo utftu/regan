@@ -44,7 +44,7 @@ export async function handleChildrenHydrate({
 
       if (value instanceof JSXNode) {
         childNode = value;
-        additionalName = `:a=${name}`;
+        additionalName = `?a=${name}`;
       } else {
         continue;
       }

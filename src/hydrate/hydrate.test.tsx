@@ -244,7 +244,7 @@ describe('hydrate', () => {
           level1
           <div>empty</div>
           <div>empty</div>
-          {/* 0.2:a=0 */}
+          {/* 0.2?a=0 */}
           {level1Atom}
         </div>
       );
@@ -264,6 +264,6 @@ describe('hydrate', () => {
     const jsdom = new JSDOM();
 
     await insertAndHydrate(jsdom.window.document.body, <Level0 />);
-    expect(level3JsxPath).toBe('0.1.0.0.2:a=0.0');
+    expect(level3JsxPath).toBe('0.1.0.0.2?a=0.0');
   });
 });

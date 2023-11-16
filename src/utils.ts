@@ -1,6 +1,7 @@
 import {selectBase, SelectCb} from 'strangelove';
 import {getRoot} from './atoms/atoms.ts';
 import {HNode} from './h-node/h-node.ts';
+import {JsxPathSegment, JSXSegment} from './node/node.ts';
 
 export function runOnPromise<TValue>(
   maybePromise: Promise<TValue> | TValue,
@@ -19,16 +20,6 @@ export function runOnPromise<TValue>(
 //     onAtomCreate: () => {},
 //   });
 // }
-
-export function joinPath(oldPart: string, newPart: string) {
-  if (newPart === '') {
-    return oldPart;
-  }
-  if (oldPart === '') {
-    return newPart;
-  }
-  return `${oldPart}.${newPart}`;
-}
 
 export function getParentDom(node: HNode) {
   if (node.elem) {
@@ -60,13 +51,4 @@ export function addEventListenerStore({
   elem.addEventListener(name, listener);
   store[name] = listener;
   return;
-}
-
-function getJsxPath(node: HNode, childJsxPath: string = '') {
-  let jsxPath = joinPath(node.segment, childJsxPath);
-
-  if (node.parent) {
-    return getJsxPath(node.parent, jsxPath);
-  }
-  return jsxPath;
 }

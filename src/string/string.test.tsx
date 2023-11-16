@@ -4,6 +4,7 @@ import {createAtomRegan} from '../atoms/atoms.ts';
 import {FC} from '../types.ts';
 import {atom} from 'strangelove';
 import {getString} from './string.ts';
+import {getHashFromString} from '../jsx-path/jsx-path.ts';
 
 describe('node', () => {
   it('getString()', async () => {
@@ -60,8 +61,10 @@ describe('node', () => {
   });
   it('jsxPath', async () => {
     let level3JsxPath!: string;
+    let level3Id!: string;
     const Level3: FC = (_, ctx) => {
-      level3JsxPath = ctx.jsxPath;
+      level3JsxPath = ctx.getJsxPath();
+      level3Id = ctx.getId();
       return <div>level3</div>;
     };
     const Level2 = () => {
@@ -75,7 +78,7 @@ describe('node', () => {
           level1
           <div>empty</div>
           <div>empty</div>
-          {/* 0.2:a=0 */}
+          {/* 0.2?a=0 */}
           {level1Atom}
         </div>
       );
@@ -93,6 +96,8 @@ describe('node', () => {
     };
 
     await getString(<Level0 />);
-    expect(level3JsxPath).toBe('0.1.0.0.2:a=0.0');
+    const jsxPath = '0.1.0.0.2?a=0.0';
+    expect(level3JsxPath).toBe(jsxPath);
+    expect(level3Id).toBe(getHashFromString(jsxPath));
   });
 });

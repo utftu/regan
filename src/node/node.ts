@@ -2,6 +2,7 @@ import {Child, Props} from '../types.ts';
 import {Atom, disconnectAtoms} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
+import {JSXSegment} from '../jsx-path/jsx-path.ts';
 
 export type DomSimpleProps = {
   parent: HTMLElement;
@@ -11,9 +12,26 @@ export type DomProps = DomSimpleProps & {
   position: number;
 };
 
+// export class JSXSegment {
+//   segment: string;
+//   parent?: JSXSegment;
+//   constructor(segment: string, parent?: JSXSegment) {
+//     this.segment = segment;
+//     this.parent = parent;
+//   }
+// }
+
+// export type JsxPathSegment = {
+//   parent?: JsxPathSegment;
+//   segment: string;
+// };
+
 export type GetStringStreamProps = {
   globalCtx: GlobalCtx;
-  jsxPath: string;
+  // jsxPath: string;
+  jsxSegmentStr: string;
+  parentJsxSegment?: JSXSegment;
+  // jsxSegment?: JSXSegment;
 };
 
 export type HydrateProps = {

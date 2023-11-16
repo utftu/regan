@@ -1,6 +1,11 @@
 import {Atom, selectBase} from 'strangelove';
 import {Child, Mount} from '../types.ts';
 import {getRoot} from '../atoms/atoms.ts';
+import {
+  JSXSegment,
+  getHashFromString,
+  getJsxPath,
+} from '../jsx-path/jsx-path.ts';
 
 type State = {
   mounts: Mount[];
@@ -11,20 +16,23 @@ type PropsCtx<TProps> = {
   props: TProps;
   state: State;
   children: Child[];
-  jsxPath: string;
+  jsxSegment: JSXSegment;
+  // jsxPath: string;
 };
 
 export class Ctx<TProps extends Record<any, any> = any> {
   state: State;
   props: TProps;
   children: Child[];
-  jsxPath: string;
+  jsxSegment: JSXSegment;
+  // jsxPath: string;
 
-  constructor({props, state, children, jsxPath}: PropsCtx<TProps>) {
+  constructor({props, state, children, jsxSegment}: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
     this.children = children;
-    this.jsxPath = jsxPath;
+    this.jsxSegment = jsxSegment;
+    // this.jsxPath = jsxPath;
   }
 
   mount(fn: Mount) {
@@ -55,5 +63,14 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.state.atoms.push(atom);
 
     return atom;
+  }
+
+  getJsxPath() {
+    return getJsxPath(this.jsxSegment);
+  }
+
+  getId() {
+    const jsxPath = this.getJsxPath();
+    return getHashFromString(jsxPath);
   }
 }

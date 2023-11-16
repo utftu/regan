@@ -2,13 +2,15 @@ import {normalizeChildren} from '../jsx/jsx.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {GetStringStreamProps} from '../node/node.ts';
-import {Props} from '../types.ts';
+// import {Props} from '../types.ts';
 import {handleChildrenString} from './children.ts';
+import {JSXSegment} from '../jsx-path/jsx-path.ts';
 
 export async function getStringStreamComponent(
   this: JSXNodeComponent,
   ctx: GetStringStreamProps
 ) {
+  const jsxSegment = new JSXSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
   const streams = new TransformStream<string, string>();
 
   const state = {
@@ -18,7 +20,8 @@ export async function getStringStreamComponent(
   const rawChidlren = await this.type(
     this.props,
     new Ctx({
-      jsxPath: ctx.jsxPath,
+      jsxSegment: jsxSegment,
+      // jsxPath: ctx.jsxPath,
       props: this.props,
       state: state,
       children: this.children,
@@ -31,7 +34,8 @@ export async function getStringStreamComponent(
     await handleChildrenString({
       children,
       streams,
-      jsxPath: ctx.jsxPath,
+      parentJsxSegment: jsxSegment,
+      // jsxPath: ctx.jsxPath,
       globalCtx: ctx.globalCtx,
     });
     await streams.writable.close();
