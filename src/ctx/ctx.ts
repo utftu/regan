@@ -6,6 +6,7 @@ import {
   getHashFromString,
   getJsxPath,
 } from '../jsx-path/jsx-path.ts';
+import {HNode} from '../h-node/h-node.ts';
 
 type State = {
   mounts: Mount[];
@@ -17,6 +18,7 @@ type PropsCtx<TProps> = {
   state: State;
   children: Child[];
   jsxSegment: JsxSegment;
+  hNode?: HNode;
   // jsxPath: string;
 };
 
@@ -25,13 +27,15 @@ export class Ctx<TProps extends Record<any, any> = any> {
   props: TProps;
   children: Child[];
   jsxSegment: JsxSegment;
+  hNode?: HNode;
   // jsxPath: string;
 
-  constructor({props, state, children, jsxSegment}: PropsCtx<TProps>) {
+  constructor({props, state, children, jsxSegment, hNode}: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
     this.children = children;
     this.jsxSegment = jsxSegment;
+    this.hNode = hNode;
     // this.jsxPath = jsxPath;
   }
 

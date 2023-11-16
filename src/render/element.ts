@@ -1,12 +1,14 @@
 import {Atom} from 'strangelove';
 import {JSXNodeElement} from '../node/element/element.ts';
-import {RenderProps} from '../node/node.ts';
+import {RenderProps, destroyAtom} from '../node/node.ts';
 import {selectRegan} from '../atoms/atoms.ts';
 import {handleChildrenRender} from './children.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {addEventListenerStore} from '../utils.ts';
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
+  const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
   const element = ctx.globalCtx.window.document.createElement(this.type);
 
   const listeners: Record<string, any> = {};
@@ -48,14 +50,17 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   }
 
   const hydratedNode = new HNode({
-    mount: () => {
-      return () => {
-        atoms.forEach((atom) => destroyAtom(atom));
-        element.remove();
-      };
-    },
+    mounts: [
+      () => {
+        return () => {
+          atoms.forEach((atom) => destroyAtom(atom));
+          element.remove();
+        };
+      },
+    ],
+    jsxSegment,
     parent: ctx.parentHNode,
-    elem: element,
+    // elem: element,
   });
 
   ctx.dom.parent.appendChild(element);
@@ -63,10 +68,11 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   // todo add nodes
   await handleChildrenRender({
     children: this.children,
-    parentHydratedNode: hydratedNode,
+    parentHNode: hydratedNode,
     dom: {parent: element},
     globalCtx: ctx.globalCtx,
-    jsxPath: ctx.jsxPath,
+    parentJsxSegment: jsxSegment,
+    // jsxPath: ctx.jsxPath,
   });
 
   return {hydratedNode};

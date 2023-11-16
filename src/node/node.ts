@@ -48,7 +48,9 @@ export type RenderProps = {
   dom: {parent: HTMLElement};
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
-  jsxPath: string;
+  jsxSegmentStr: string;
+  parentJsxSegment?: JsxSegment;
+  // jsxPath: string;
 };
 
 export abstract class JSXNode<TType = any, TProps extends Props = any> {
@@ -78,7 +80,7 @@ export abstract class JSXNode<TType = any, TProps extends Props = any> {
   ): Promise<ReadableStream<string>>;
   abstract hydrate(
     ctx: HydrateProps
-  ): Promise<{insertedCount: number; hydratedNode: HNode}>;
+  ): Promise<{insertedCount: number; hNode: HNode}>;
   abstract render(ctx: RenderProps): Promise<{hydratedNode: HNode}>;
 }
 

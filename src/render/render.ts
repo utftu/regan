@@ -17,7 +17,8 @@ export const redner = async (
   return await node.render({
     dom: {parent: domNode},
     parentHNode: options.parent,
-    jsxPath: options.jsxPath || '',
+    jsxSegmentStr: '',
+    // jsxPath: options.jsxPath || '',
     globalCtx: new GlobalCtx({
       window: options.window || window,
       status: 'render',

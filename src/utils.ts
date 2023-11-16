@@ -1,7 +1,6 @@
-import {selectBase, SelectCb} from 'strangelove';
-import {getRoot} from './atoms/atoms.ts';
+import {Ctx} from './ctx/ctx.ts';
 import {HNode} from './h-node/h-node.ts';
-import {JsxPathSegment, JSXSegment} from './node/node.ts';
+import {destroyAtom} from './node/node.ts';
 
 export function runOnPromise<TValue>(
   maybePromise: Promise<TValue> | TValue,
@@ -14,24 +13,17 @@ export function runOnPromise<TValue>(
   }
 }
 
-// export function selectRegan<TCb extends SelectCb>(cb: TCb) {
-//   return selectBase<TCb>(cb, {
-//     root: getRoot(),
-//     onAtomCreate: () => {},
-//   });
+// export function getParentDom(node: HNode) {
+//   if (node.elem) {
+//     return node.elem;
+//   }
+
+//   if (node.parent) {
+//     return getParentDom(node);
+//   }
+
+//   return null;
 // }
-
-export function getParentDom(node: HNode) {
-  if (node.elem) {
-    return node.elem;
-  }
-
-  if (node.parent) {
-    return getParentDom(node);
-  }
-
-  return null;
-}
 
 export function addEventListenerStore({
   listener,
@@ -52,3 +44,22 @@ export function addEventListenerStore({
   store[name] = listener;
   return;
 }
+
+export const createSmartMount = (ctx: Ctx) => (hNode: HNode) => {
+  const unmounts = ctx.state.mounts.map((mount) => mount());
+
+  hNode.unmounts.push(() => {
+    unmounts.forEach((possibleUnmount) => {
+      if (typeof possibleUnmount === 'function') {
+        possibleUnmount();
+      }
+    });
+    ctx.state.atoms.forEach((possibleAtom) => {
+      if (possibleAtom instanceof Promise) {
+        possibleAtom.then((atom) => destroyAtom(atom));
+      } else {
+        destroyAtom(possibleAtom);
+      }
+    });
+  });
+};

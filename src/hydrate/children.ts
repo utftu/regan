@@ -86,8 +86,8 @@ export async function handleChildrenHydrate({
 
   return {
     insertedCount: position - dom.position,
-    hydratedNodes: hydrateResultsData.map(({hydratedNode}) => {
-      return hydratedNode;
+    hNodes: hydrateResultsData.map(({hNode}) => {
+      return hNode;
     }),
   };
 }

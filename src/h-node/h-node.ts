@@ -8,39 +8,55 @@ export class ComponentState {
   atoms = [];
 }
 
+type MountUnmounFunc = (hNode: HNode) => void;
+
 type PropsHydratedNode = {
-  mount: Mount;
+  // mount: Mount;
+  mounts?: MountUnmounFunc[];
+  unmounts?: MountUnmounFunc[];
   parent?: HNode;
   elem?: HTMLElement;
-  segment: string;
+  // segment: string;
   jsxSegment: JsxSegment;
 };
 
 // HNode
 export class HNode {
   children: HNode[] = [];
+  mounts: MountUnmounFunc[] = [];
+  unmounts: MountUnmounFunc[] = [];
   parent?: HNode;
   elem?: HTMLElement;
-  segment: string;
+  // segment: string;
   jsxSegment: JsxSegment;
 
-  private mountFn: Mount;
-  private unmountFn: Unmount | null = null;
+  // private mountFn: Mount;
+  // private unmountFn: Unmount | null = null;
 
-  constructor({mount, parent, elem, jsxSegment, segment}: PropsHydratedNode) {
-    this.mountFn = mount;
+  constructor({
+    parent,
+    elem,
+    jsxSegment,
+    mounts = [],
+    unmounts = [],
+  }: PropsHydratedNode) {
+    this.mounts = mounts;
+    this.unmounts = unmounts;
+    // this.mountFn = mount;
     this.parent = parent;
     this.elem = elem;
     this.jsxSegment = jsxSegment;
-    this.segment = segment;
+    // this.segment = segment;
   }
 
   mount() {
-    this.unmountFn = this.mountFn();
+    this.mounts.forEach((fn) => fn(this));
+    // this.unmountFn = this.mountFn();
   }
 
   unmount() {
-    this.unmountFn?.();
+    this.unmounts.forEach((fn) => fn(this));
+    // this.unmountFn?.();
   }
 
   addChildren(children: HNode[]) {

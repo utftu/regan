@@ -1,21 +1,23 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
-import {joinPath} from '../jsx-path/jsx-path.ts';
-import {DomSimpleProps} from '../node/node.ts';
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
+import {DomSimpleProps, JSXNode} from '../node/node.ts';
 import {Child} from '../types.ts';
 
 export async function handleChildrenRender({
   children,
-  parentHydratedNode,
+  parentHNode,
   dom,
   globalCtx,
-  jsxPath,
-}: {
+  parentJsxSegment,
+}: // jsxPath,
+{
   dom: DomSimpleProps;
   children: Child[];
-  parentHydratedNode?: HNode;
+  parentHNode?: HNode;
   globalCtx: GlobalCtx;
-  jsxPath: string;
+  parentJsxSegment: JsxSegment;
+  // jsxPath: string;
 }) {
   const hydratedNodes: HNode[] = [];
 
@@ -30,11 +32,14 @@ export async function handleChildrenRender({
       continue;
     }
 
-    const renderResult = await child.render({
+    const renderResult = await (child as JSXNode).render({
       dom: {parent: dom.parent},
-      parentHydratedNode,
+      parentHNode,
       globalCtx,
-      jsxPath: joinPath(jsxPath, insertedJsxNodeCount.toString()),
+      parentJsxSegment,
+      jsxSegmentStr: insertedJsxNodeCount.toString(),
+      // jsx
+      // jsxPath: joinPath(jsxPath, insertedJsxNodeCount.toString()),
     });
     hydratedNodes.push(renderResult.hydratedNode);
 

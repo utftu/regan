@@ -1,5 +1,5 @@
 import {Atom} from 'strangelove';
-import {HydrateProps} from '../node/node.ts';
+import {HydrateProps, destroyAtom} from '../node/node.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {selectRegan} from '../atoms/atoms.ts';
 import {HNode} from '../h-node/h-node.ts';
@@ -52,30 +52,32 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     }
   }
 
-  const hydratedNode = new HNode({
-    mount: () => {
-      return () => {
-        atoms.forEach((atom) => destroyAtom(atom));
-        element.remove();
-      };
-    },
+  const hNode = new HNode({
+    jsxSegment,
+    mounts: [
+      () => {
+        return () => {
+          atoms.forEach((atom) => destroyAtom(atom));
+          element.remove();
+        };
+      },
+    ],
     parent: ctx.parentHydratedNode,
     elem: element,
   });
 
-  const {hydratedNodes} = await handleChildrenHydrate({
-    // jsxPath: ctx.jsxPath,
+  const {hNodes} = await handleChildrenHydrate({
     parentJsxSegment: jsxSegment,
     children: this.children,
     dom: {
       parent: element,
       position: 0,
     },
-    parentHydratedNode: hydratedNode,
+    parentHydratedNode: hNode,
     globalCtx: ctx.globalCtx,
   });
 
-  hydratedNode.addChildren(hydratedNodes);
+  hNode.addChildren(hNodes);
 
-  return {insertedCount: 1, hydratedNode};
+  return {insertedCount: 1, hNode};
 }
