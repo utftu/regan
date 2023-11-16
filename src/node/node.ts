@@ -12,34 +12,16 @@ export type DomProps = DomSimpleProps & {
   position: number;
 };
 
-// export class JSXSegment {
-//   segment: string;
-//   parent?: JSXSegment;
-//   constructor(segment: string, parent?: JSXSegment) {
-//     this.segment = segment;
-//     this.parent = parent;
-//   }
-// }
-
-// export type JsxPathSegment = {
-//   parent?: JsxPathSegment;
-//   segment: string;
-// };
-
 export type GetStringStreamProps = {
   globalCtx: GlobalCtx;
-  // jsxPath: string;
   jsxSegmentStr: string;
   parentJsxSegment?: JsxSegment;
-  // jsxSegment?: JSXSegment;
 };
 
 export type HydrateProps = {
   dom: DomProps;
   parentHydratedNode?: HNode;
   globalCtx: GlobalCtx;
-  // jsxPath: string;
-  // jsx
   jsxSegmentStr: string;
   parentJsxSegment?: JsxSegment;
 };
@@ -50,7 +32,6 @@ export type RenderProps = {
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;
   parentJsxSegment?: JsxSegment;
-  // jsxPath: string;
 };
 
 export abstract class JSXNode<TType = any, TProps extends Props = any> {
