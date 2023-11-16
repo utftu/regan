@@ -1,4 +1,4 @@
-import {Atom} from 'strangelove';
+import {Atom, atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {DomProps, JSXNode} from '../node/node.ts';
 import {Child} from '../types.ts';
@@ -7,21 +7,46 @@ import {JSXNodeElement} from '../node/element/element.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
-import {JsxSegment, joinPath} from '../jsx-path/jsx-path.ts';
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
+// import {Fragment} from '../components/fragment/fragment.ts';
+
+// function a(atom: Atom<Child>) {
+//   const fragment = new JSXNodeComponent({
+//     type: Fragment,
+//     props: {},
+//     key: '',
+//     children: [atom.get()],
+//   });
+// }
+
+function handleAtom(atom: Atom): [string, JSXNode] | void {
+  let value: any;
+  let name: string;
+  if ((atom as any as {[SELECT_REGAN_NAMED]: any})[SELECT_REGAN_NAMED]) {
+    [name, value] = atom.get();
+  } else {
+    value = atom.get();
+    name = '0';
+  }
+
+  if (value instanceof JSXNode) {
+    return [`?a=${name}`, value];
+  } else {
+    return;
+  }
+}
 
 export async function handleChildrenHydrate({
   children,
   parentHydratedNode,
   dom,
   globalCtx,
-  // jsxPath,
   parentJsxSegment,
 }: {
   dom: DomProps;
   children: Child[];
   parentHydratedNode?: HNode;
   globalCtx: GlobalCtx;
-  // jsxPath: string;
   parentJsxSegment: JsxSegment;
 }) {
   const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
@@ -34,28 +59,41 @@ export async function handleChildrenHydrate({
 
     let childNode!: JSXNode;
     let additionalName = '';
-    if (child instanceof Atom) {
-      let value: any;
-      let name: string;
-      if ((child as any)[SELECT_REGAN_NAMED]) {
-        [name, value] = child.get();
-      } else {
-        value = child.get();
-        name = '0';
-      }
 
-      if (value instanceof JSXNode) {
-        childNode = value;
-        additionalName = `?a=${name}`;
-      } else {
-        continue;
+    if (child instanceof Atom) {
+      const values = handleAtom(child);
+      if (!values) {
+        return;
       }
+      [additionalName, childNode] = values;
+      // handleAtom(child));
     } else {
       childNode = child;
     }
 
+    // let childNode!: JSXNode;
+    // let additionalName = '';
+    // if (child instanceof Atom) {
+    //   let value: any;
+    //   let name: string;
+    //   if ((child as any)[SELECT_REGAN_NAMED]) {
+    //     [name, value] = child.get();
+    //   } else {
+    //     value = child.get();
+    //     name = '0';
+    //   }
+
+    //   if (value instanceof JSXNode) {
+    //     childNode = value;
+    //     additionalName = `?a=${name}`;
+    //   } else {
+    //     continue;
+    //   }
+    // } else {
+    //   childNode = child;
+    // }
+
     const hydrateResult = childNode.hydrate({
-      // jsxPath: joinPath(jsxPath, jsxNodeCount.toString()) + additionalName,
       jsxSegmentStr: `${jsxNodeCount}${additionalName}`,
       parentJsxSegment,
       dom: {parent: dom.parent, position},
