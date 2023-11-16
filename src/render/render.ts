@@ -1,5 +1,5 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode} from '../hydrate/h-node.ts';
+import {HNode} from '../h-node/h-node.ts';
 import {JSXNode} from '../node/node.ts';
 
 type Options = {
@@ -16,7 +16,7 @@ export const redner = async (
 ) => {
   return await node.render({
     dom: {parent: domNode},
-    parentHydratedNode: options.parent,
+    parentHNode: options.parent,
     jsxPath: options.jsxPath || '',
     globalCtx: new GlobalCtx({
       window: options.window || window,

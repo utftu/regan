@@ -3,7 +3,7 @@ import {JSXNodeComponent} from '../node/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {HydrateProps, destroyAtom} from '../node/node.ts';
 import {handleChildrenHydrate} from './children.ts';
-import {ComponentState, HNode} from './h-node.ts';
+import {ComponentState, HNode} from '../h-node/h-node.ts';
 
 export function createHydrateNodeComponent({
   ctx,

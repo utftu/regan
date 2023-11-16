@@ -2,7 +2,7 @@ import {Atom} from 'strangelove';
 import {HydrateProps} from '../node/node.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {selectRegan} from '../atoms/atoms.ts';
-import {HNode} from './h-node.ts';
+import {HNode} from '../h-node/h-node.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
 

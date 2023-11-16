@@ -3,7 +3,7 @@ import {JSXNodeElement} from '../node/element/element.ts';
 import {RenderProps} from '../node/node.ts';
 import {selectRegan} from '../atoms/atoms.ts';
 import {handleChildrenRender} from './children.ts';
-import {HNode} from '../hydrate/h-node.ts';
+import {HNode} from '../h-node/h-node.ts';
 import {addEventListenerStore} from '../utils.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
@@ -54,7 +54,7 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
         element.remove();
       };
     },
-    parent: ctx.parentHydratedNode,
+    parent: ctx.parentHNode,
     elem: element,
   });
 

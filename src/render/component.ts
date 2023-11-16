@@ -1,5 +1,5 @@
 import {createHydrateNodeComponent} from '../hydrate/component.ts';
-import {ComponentState} from '../hydrate/h-node.ts';
+import {ComponentState} from '../h-node/h-node.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
@@ -22,7 +22,7 @@ export async function renderComponent(
 
   const hydratedNode = createHydrateNodeComponent({
     ctx: componentCtx,
-    parentHydratedNode: ctx.parentHydratedNode,
+    parentHydratedNode: ctx.parentHNode,
   });
 
   const {hydratedNodes: childrenHydrayedNodes} = await handleChildrenRender({

@@ -1,7 +1,7 @@
 import {Child, Props} from '../types.ts';
 import {Atom, disconnectAtoms} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode} from '../hydrate/h-node.ts';
+import {HNode} from '../h-node/h-node.ts';
 
 export type DomSimpleProps = {
   parent: HTMLElement;
@@ -25,7 +25,7 @@ export type HydrateProps = {
 
 export type RenderProps = {
   dom: {parent: HTMLElement};
-  parentHydratedNode?: HNode;
+  parentHNode?: HNode;
   globalCtx: GlobalCtx;
   jsxPath: string;
 };

@@ -6,7 +6,7 @@ import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
 import {joinPath} from '../utils.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
-import {HNode} from './h-node.ts';
+import {HNode} from '../h-node/h-node.ts';
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 
 export async function handleChildrenHydrate({

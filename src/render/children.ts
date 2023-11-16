@@ -1,5 +1,5 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode} from '../hydrate/h-node.ts';
+import {HNode} from '../h-node/h-node.ts';
 import {DomSimpleProps} from '../node/node.ts';
 import {Child} from '../types.ts';
 import {joinPath} from '../utils.ts';

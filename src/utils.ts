@@ -1,6 +1,6 @@
 import {selectBase, SelectCb} from 'strangelove';
 import {getRoot} from './atoms/atoms.ts';
-import {HNode} from './hydrate/h-node.ts';
+import {HNode} from './h-node/h-node.ts';
 
 export function runOnPromise<TValue>(
   maybePromise: Promise<TValue> | TValue,
@@ -13,14 +13,17 @@ export function runOnPromise<TValue>(
   }
 }
 
-export function selectRegan<TCb extends SelectCb>(cb: TCb) {
-  return selectBase<TCb>(cb, {
-    root: getRoot(),
-    onAtomCreate: () => {},
-  });
-}
+// export function selectRegan<TCb extends SelectCb>(cb: TCb) {
+//   return selectBase<TCb>(cb, {
+//     root: getRoot(),
+//     onAtomCreate: () => {},
+//   });
+// }
 
 export function joinPath(oldPart: string, newPart: string) {
+  if (newPart === '') {
+    return oldPart;
+  }
   if (oldPart === '') {
     return newPart;
   }
@@ -57,4 +60,13 @@ export function addEventListenerStore({
   elem.addEventListener(name, listener);
   store[name] = listener;
   return;
+}
+
+function getJsxPath(node: HNode, childJsxPath: string = '') {
+  let jsxPath = joinPath(node.segment, childJsxPath);
+
+  if (node.parent) {
+    return getJsxPath(node.parent, jsxPath);
+  }
+  return jsxPath;
 }
