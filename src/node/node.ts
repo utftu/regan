@@ -39,6 +39,8 @@ export type HydrateProps = {
   parentHydratedNode?: HNode;
   globalCtx: GlobalCtx;
   jsxPath: string;
+  // jsx
+  parentJsxSegment?: JSXSegment;
 };
 
 export type RenderProps = {

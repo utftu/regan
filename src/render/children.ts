@@ -1,8 +1,8 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
+import {joinPath} from '../jsx-path/jsx-path.ts';
 import {DomSimpleProps} from '../node/node.ts';
 import {Child} from '../types.ts';
-import {joinPath} from '../utils.ts';
 
 export async function handleChildrenRender({
   children,
