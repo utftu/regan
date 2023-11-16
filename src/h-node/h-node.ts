@@ -1,3 +1,5 @@
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
+
 type Unmount = () => any;
 export type Mount = () => Unmount;
 
@@ -11,6 +13,7 @@ type PropsHydratedNode = {
   parent?: HNode;
   elem?: HTMLElement;
   segment: string;
+  jsxSegment: JsxSegment;
 };
 
 // HNode
@@ -19,14 +22,16 @@ export class HNode {
   parent?: HNode;
   elem?: HTMLElement;
   segment: string;
+  jsxSegment: JsxSegment;
 
   private mountFn: Mount;
   private unmountFn: Unmount | null = null;
 
-  constructor({mount, parent, elem, segment}: PropsHydratedNode) {
+  constructor({mount, parent, elem, jsxSegment, segment}: PropsHydratedNode) {
     this.mountFn = mount;
     this.parent = parent;
     this.elem = elem;
+    this.jsxSegment = jsxSegment;
     this.segment = segment;
   }
 

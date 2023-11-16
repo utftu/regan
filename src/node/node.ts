@@ -2,7 +2,7 @@ import {Child, Props} from '../types.ts';
 import {Atom, disconnectAtoms} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
-import {JSXSegment} from '../jsx-path/jsx-path.ts';
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
 
 export type DomSimpleProps = {
   parent: HTMLElement;
@@ -30,7 +30,7 @@ export type GetStringStreamProps = {
   globalCtx: GlobalCtx;
   // jsxPath: string;
   jsxSegmentStr: string;
-  parentJsxSegment?: JSXSegment;
+  parentJsxSegment?: JsxSegment;
   // jsxSegment?: JSXSegment;
 };
 
@@ -38,9 +38,10 @@ export type HydrateProps = {
   dom: DomProps;
   parentHydratedNode?: HNode;
   globalCtx: GlobalCtx;
-  jsxPath: string;
+  // jsxPath: string;
   // jsx
-  parentJsxSegment?: JSXSegment;
+  jsxSegmentStr: string;
+  parentJsxSegment?: JsxSegment;
 };
 
 export type RenderProps = {

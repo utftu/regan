@@ -3,13 +3,13 @@ import {JSXNodeElement} from '../node/element/element.ts';
 import {GetStringStreamProps} from '../node/node.ts';
 import {createElementString} from './flat.ts';
 import {handleChildrenString} from './children.ts';
-import {JSXSegment} from '../jsx-path/jsx-path.ts';
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
 
 export async function getStringStreamElement(
   this: JSXNodeElement,
   ctx: GetStringStreamProps
 ) {
-  const jsxSegment = new JSXSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
+  const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
   const streams = new TransformStream<string, string>();
 
   const preparedProps = Object.entries(this.props).reduce(

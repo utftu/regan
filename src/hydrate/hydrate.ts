@@ -18,7 +18,8 @@ export async function hydrate(
   config: HydrateConfig = {window}
 ) {
   const {hydratedNode} = await node.hydrate({
-    jsxPath: config.jsxPath || '',
+    // jsxPath: config.jsxPath || '',
+    jsxSegmentStr: '',
     dom: {parent: domNode, position: 0},
     parentHydratedNode: undefined,
     globalCtx: new GlobalCtx({

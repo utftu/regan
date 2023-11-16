@@ -5,8 +5,10 @@ import {selectRegan} from '../atoms/atoms.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
 
 export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
+  const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
   const element = ctx.dom.parent.children[ctx.dom.position] as HTMLElement;
 
   const listeners: Record<string, any> = {};
@@ -62,7 +64,8 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
   });
 
   const {hydratedNodes} = await handleChildrenHydrate({
-    jsxPath: ctx.jsxPath,
+    // jsxPath: ctx.jsxPath,
+    parentJsxSegment: jsxSegment,
     children: this.children,
     dom: {
       parent: element,

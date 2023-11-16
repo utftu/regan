@@ -230,7 +230,7 @@ describe('hydrate', () => {
   it('jsxPath', async () => {
     let level3JsxPath!: string;
     const Level3: FC = (_, ctx) => {
-      level3JsxPath = ctx.jsxPath;
+      level3JsxPath = ctx.getJsxPath();
       return <div>level3</div>;
     };
     const Level2 = () => {

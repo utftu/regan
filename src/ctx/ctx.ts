@@ -2,7 +2,7 @@ import {Atom, selectBase} from 'strangelove';
 import {Child, Mount} from '../types.ts';
 import {getRoot} from '../atoms/atoms.ts';
 import {
-  JSXSegment,
+  JsxSegment,
   getHashFromString,
   getJsxPath,
 } from '../jsx-path/jsx-path.ts';
@@ -16,7 +16,7 @@ type PropsCtx<TProps> = {
   props: TProps;
   state: State;
   children: Child[];
-  jsxSegment: JSXSegment;
+  jsxSegment: JsxSegment;
   // jsxPath: string;
 };
 
@@ -24,7 +24,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
   state: State;
   props: TProps;
   children: Child[];
-  jsxSegment: JSXSegment;
+  jsxSegment: JsxSegment;
   // jsxPath: string;
 
   constructor({props, state, children, jsxSegment}: PropsCtx<TProps>) {

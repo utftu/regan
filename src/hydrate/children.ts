@@ -7,20 +7,22 @@ import {JSXNodeElement} from '../node/element/element.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
-import {joinPath} from '../jsx-path/jsx-path.ts';
+import {JsxSegment, joinPath} from '../jsx-path/jsx-path.ts';
 
 export async function handleChildrenHydrate({
   children,
   parentHydratedNode,
   dom,
   globalCtx,
-  jsxPath,
+  // jsxPath,
+  parentJsxSegment,
 }: {
   dom: DomProps;
   children: Child[];
   parentHydratedNode?: HNode;
   globalCtx: GlobalCtx;
-  jsxPath: string;
+  // jsxPath: string;
+  parentJsxSegment: JsxSegment;
 }) {
   const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
   let position = dom.position;
@@ -53,7 +55,9 @@ export async function handleChildrenHydrate({
     }
 
     const hydrateResult = childNode.hydrate({
-      jsxPath: joinPath(jsxPath, jsxNodeCount.toString()) + additionalName,
+      // jsxPath: joinPath(jsxPath, jsxNodeCount.toString()) + additionalName,
+      jsxSegmentStr: `${jsxNodeCount}${additionalName}`,
+      parentJsxSegment,
       dom: {parent: dom.parent, position},
       parentHydratedNode,
       globalCtx,

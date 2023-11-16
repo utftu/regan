@@ -3,7 +3,7 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JSXNode} from '../node/node.ts';
 import {Child} from '../types.ts';
 import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
-import {JSXSegment, joinPath} from '../jsx-path/jsx-path.ts';
+import {JsxSegment, joinPath} from '../jsx-path/jsx-path.ts';
 
 type StringStream = TransformStream<string, string>;
 
@@ -18,7 +18,7 @@ export async function handleChildrenString({
   streams: StringStream;
   // jsxPath: string;
   globalCtx: GlobalCtx;
-  parentJsxSegment?: JSXSegment;
+  parentJsxSegment?: JsxSegment;
 }) {
   // run iteration twice
   // first - to start stream process in children

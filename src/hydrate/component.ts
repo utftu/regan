@@ -4,6 +4,7 @@ import {Ctx} from '../ctx/ctx.ts';
 import {HydrateProps, destroyAtom} from '../node/node.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {ComponentState, HNode} from '../h-node/h-node.ts';
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
 
 export function createHydrateNodeComponent({
   ctx,
@@ -39,11 +40,13 @@ export async function hydrateComponent(
   this: JSXNodeComponent,
   ctx: HydrateProps
 ) {
+  const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
   const componentCtx = new Ctx({
     props: this.props,
     state: new ComponentState(),
     children: this.children,
-    jsxPath: ctx.jsxPath,
+    jsxSegment,
+    // jsxPath: ctx.jsxPath,
   });
   const rawChidlren = await this.type(this.props, componentCtx);
 
@@ -56,7 +59,8 @@ export async function hydrateComponent(
 
   const {insertedCount, hydratedNodes: childrenHydrayedNodes} =
     await handleChildrenHydrate({
-      jsxPath: ctx.jsxPath,
+      parentJsxSegment: jsxSegment,
+      // jsxPath: ctx.jsxPath,
       parentHydratedNode: hydratedNode,
       children,
       dom: ctx.dom,

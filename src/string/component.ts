@@ -4,13 +4,13 @@ import {Ctx} from '../ctx/ctx.ts';
 import {GetStringStreamProps} from '../node/node.ts';
 // import {Props} from '../types.ts';
 import {handleChildrenString} from './children.ts';
-import {JSXSegment} from '../jsx-path/jsx-path.ts';
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
 
 export async function getStringStreamComponent(
   this: JSXNodeComponent,
   ctx: GetStringStreamProps
 ) {
-  const jsxSegment = new JSXSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
+  const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
   const streams = new TransformStream<string, string>();
 
   const state = {

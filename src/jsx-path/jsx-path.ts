@@ -1,7 +1,7 @@
-export class JSXSegment {
+export class JsxSegment {
   segment: string;
-  parent?: JSXSegment;
-  constructor(segment: string, parent?: JSXSegment) {
+  parent?: JsxSegment;
+  constructor(segment: string, parent?: JsxSegment) {
     this.segment = segment;
     this.parent = parent;
   }
@@ -38,7 +38,7 @@ export function joinPath(oldPart: string, newPart: string) {
   return `${oldPart}.${newPart}`;
 }
 
-export function getJsxPath(jsxSegment: JSXSegment, childJsxPath: string = '') {
+export function getJsxPath(jsxSegment: JsxSegment, childJsxPath: string = '') {
   let jsxPath = joinPath(jsxSegment.segment, childJsxPath);
 
   if (jsxSegment.parent) {
