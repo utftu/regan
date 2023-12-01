@@ -24,7 +24,7 @@ export async function hydrate(
     parentHydratedNode: undefined,
     globalCtx: new GlobalCtx({
       window: config.window || window,
-      status: 'hydrate',
+      stage: 'hydrate',
     }),
   });
 

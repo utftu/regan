@@ -1,22 +1,22 @@
-type Status = 'string' | 'hydrate' | 'render';
+type Stage = 'string' | 'hydrate' | 'render';
 
 type Data = Record<any, any>;
 
 export class GlobalCtx {
   window: Window;
-  status: Status;
+  stage: Stage;
   data: Data;
   constructor({
     window,
-    status,
+    stage: status,
     data = {},
   }: {
     window: Window;
-    status: Status;
+    stage: Stage;
     data?: Data;
   }) {
     this.window = window;
-    this.status = status;
+    this.stage = status;
     this.data = data;
   }
 }

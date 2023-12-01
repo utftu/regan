@@ -6,6 +6,7 @@ import {HNode} from '../h-node/h-node.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
+import {HNodeElement} from '../h-node/element.ts';
 
 export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
   const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
@@ -52,7 +53,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     }
   }
 
-  const hNode = new HNode({
+  const hNode = new HNodeElement({
     jsxSegment,
     mounts: [
       () => {

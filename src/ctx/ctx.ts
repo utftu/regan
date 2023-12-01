@@ -7,6 +7,7 @@ import {
   getJsxPath,
 } from '../jsx-path/jsx-path.ts';
 import {HNode} from '../h-node/h-node.ts';
+import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 
 type State = {
   mounts: Mount[];
@@ -19,6 +20,7 @@ type PropsCtx<TProps> = {
   children: Child[];
   jsxSegment: JsxSegment;
   hNode?: HNode;
+  globalCtx: GlobalCtx;
   // jsxPath: string;
 };
 
@@ -28,16 +30,34 @@ export class Ctx<TProps extends Record<any, any> = any> {
   children: Child[];
   jsxSegment: JsxSegment;
   hNode?: HNode;
+  globalCtx: GlobalCtx;
   // jsxPath: string;
 
-  constructor({props, state, children, jsxSegment, hNode}: PropsCtx<TProps>) {
+  constructor({
+    props,
+    state,
+    children,
+    jsxSegment,
+    hNode,
+    globalCtx,
+  }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
     this.children = children;
     this.jsxSegment = jsxSegment;
     this.hNode = hNode;
+    this.globalCtx = globalCtx;
+
     // this.jsxPath = jsxPath;
   }
+
+  getStage() {
+    return this.globalCtx.stage;
+  }
+
+  // get status() {
+  //   return this.globalCtx.stage;
+  // }
 
   mount(fn: Mount) {
     this.state.mounts.push(fn);

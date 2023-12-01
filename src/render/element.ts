@@ -6,6 +6,7 @@ import {handleChildrenRender} from './children.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
+import {HNodeElement} from '../h-node/element.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
@@ -49,7 +50,8 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     }
   }
 
-  const hydratedNode = new HNode({
+  const hydratedNode = new HNodeElement({
+    elem: element,
     mounts: [
       () => {
         return () => {
@@ -60,7 +62,6 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     ],
     jsxSegment,
     parent: ctx.parentHNode,
-    // elem: element,
   });
 
   ctx.dom.parent.appendChild(element);
@@ -72,7 +73,6 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     dom: {parent: element},
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
-    // jsxPath: ctx.jsxPath,
   });
 
   return {hydratedNode};

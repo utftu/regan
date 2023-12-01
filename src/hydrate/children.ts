@@ -8,16 +8,7 @@ import {JSXNodeComponent} from '../node/component/component.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-// import {Fragment} from '../components/fragment/fragment.ts';
-
-// function a(atom: Atom<Child>) {
-//   const fragment = new JSXNodeComponent({
-//     type: Fragment,
-//     props: {},
-//     key: '',
-//     children: [atom.get()],
-//   });
-// }
+import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.ts';
 
 function handleAtom(atom: Atom): [string, JSXNode] | void {
   let value: any;
@@ -62,36 +53,19 @@ export async function handleChildrenHydrate({
 
     if (child instanceof Atom) {
       const values = handleAtom(child);
-      if (!values) {
-        return;
-      }
-      [additionalName, childNode] = values;
-      // handleAtom(child));
+      const wrapper = new JSXNodeComponent({
+        type: AtomWrapper,
+        props: {
+          atom: child,
+        },
+        key: '',
+        children: values ? [values[1]] : [],
+      });
+      childNode = wrapper;
+      additionalName = values ? values[0] : '';
     } else {
       childNode = child;
     }
-
-    // let childNode!: JSXNode;
-    // let additionalName = '';
-    // if (child instanceof Atom) {
-    //   let value: any;
-    //   let name: string;
-    //   if ((child as any)[SELECT_REGAN_NAMED]) {
-    //     [name, value] = child.get();
-    //   } else {
-    //     value = child.get();
-    //     name = '0';
-    //   }
-
-    //   if (value instanceof JSXNode) {
-    //     childNode = value;
-    //     additionalName = `?a=${name}`;
-    //   } else {
-    //     continue;
-    //   }
-    // } else {
-    //   childNode = child;
-    // }
 
     const hydrateResult = childNode.hydrate({
       jsxSegmentStr: `${jsxNodeCount}${additionalName}`,

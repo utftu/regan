@@ -62,7 +62,7 @@ export abstract class JSXNode<TType = any, TProps extends Props = any> {
   abstract hydrate(
     ctx: HydrateProps
   ): Promise<{insertedCount: number; hNode: HNode}>;
-  abstract render(ctx: RenderProps): Promise<{hydratedNode: HNode}>;
+  abstract render(ctx: RenderProps): Promise<{hNode: HNode}>;
 }
 
 export function destroyAtom(atom: Atom) {

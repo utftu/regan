@@ -7,6 +7,7 @@ export type Child =
   | string
   | null
   | undefined
+  | void
   | Atom
   | ((...args: any[]) => any);
 export type Props = Record<string, any>;

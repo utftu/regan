@@ -2,7 +2,6 @@ import {normalizeChildren} from '../jsx/jsx.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {GetStringStreamProps} from '../node/node.ts';
-// import {Props} from '../types.ts';
 import {handleChildrenString} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 
@@ -20,8 +19,8 @@ export async function getStringStreamComponent(
   const rawChidlren = await this.type(
     this.props,
     new Ctx({
+      globalCtx: ctx.globalCtx,
       jsxSegment: jsxSegment,
-      // jsxPath: ctx.jsxPath,
       props: this.props,
       state: state,
       children: this.children,

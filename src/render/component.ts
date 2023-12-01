@@ -17,11 +17,9 @@ export async function renderComponent(
     parent: ctx.parentHNode,
     jsxSegment,
   });
-  // const jsxSegment
   const componentCtx = new Ctx({
+    globalCtx: ctx.globalCtx,
     jsxSegment,
-    // jsxSegment: ctx.
-    // jsxPath: ctx.jsxPath,
     props: this.props,
     state: new ComponentState(),
     children: this.children,
@@ -33,20 +31,12 @@ export async function renderComponent(
   const smartMount = createSmartMount(componentCtx);
   hNode.mounts.push(smartMount);
 
-  // const smartMount = create
-
-  // const hydratedNode = createHydrateNodeComponent({
-  //   ctx: componentCtx,
-  //   parentHydratedNode: ctx.parentHNode,
-  // });
-
   const {hydratedNodes: childrenHydrayedNodes} = await handleChildrenRender({
     parentHNode: hNode,
     children,
     dom: ctx.dom,
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
-    // jsxPath: ctx.jsxPath,
   });
 
   hNode.addChildren(childrenHydrayedNodes);

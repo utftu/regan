@@ -23,6 +23,31 @@ export function selectRegan<TCb extends SelectCb>(cb: TCb) {
   });
 }
 
+export function subscribeAtomChange(atom: Atom, exec: () => void) {
+  const newAtom = new Atom({
+    root: getRoot(),
+    exec() {
+      exec();
+      return true;
+    },
+  });
+  Atom.connect(atom, newAtom);
+  return subscribeAtomChange;
+}
+
+// export function selectReganSecondRun<TCb extends SelectCb>(cb: TCb) {
+//   let firstRun = true;
+//   return selectBase<TCb>(
+//     (get) => {
+//       const result = cb(get);
+//     },
+//     {
+//       root: getRoot(),
+//       onAtomCreate: () => {},
+//     }
+//   );
+// }
+
 export const SELECT_REGAN_NAMED = Symbol('SELECT_REGAN_NAMED');
 export function selectReganNamed<TCb extends SelectCb>(cb: TCb) {
   return selectBase<TCb>(cb, {

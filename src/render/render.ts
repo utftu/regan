@@ -21,7 +21,7 @@ export const redner = async (
     // jsxPath: options.jsxPath || '',
     globalCtx: new GlobalCtx({
       window: options.window || window,
-      status: 'render',
+      stage: 'render',
     }),
   });
 };
