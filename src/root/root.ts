@@ -18,7 +18,6 @@ export class Root {
 
   // not check prev
   handleTx(tx: Tx) {
-    // console.log('-----', 'tx', tx);
     if (tx.status === 'running') {
       return;
     }
@@ -47,11 +46,16 @@ export class Root {
   }
 
   addTx(changes: Changes) {
-    debugger;
     const tx = new Tx(changes, this);
 
-    this.handleTx(tx);
+    tx.name = count++;
+
+    queueMicrotask(() => {
+      this.handleTx(tx);
+    });
 
     return tx.promise;
   }
 }
+
+let count = 0;

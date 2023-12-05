@@ -29,10 +29,7 @@ export class Tx {
         });
       }
 
-      const atomConfig = this.root.atoms.get(atom)!;
-      const shard = new TxShard(this, atomConfig);
-      this.shards.push(shard);
-      atomConfig.shards.push(shard);
+      new TxShard(this, this.root.atoms.get(atom)!);
     }
   }
 
@@ -57,6 +54,7 @@ export class Tx {
   }
 
   omit() {
+    this.status = 'omitted';
     const positions = [];
     for (const shard of this.shards) {
       const atomConfigShards = shard.execConfig.shards;
@@ -67,9 +65,8 @@ export class Tx {
       atomConfigShards.splice(position, 1);
       shard.execConfig.omittedShards.push(shard);
     }
-    this.status = 'omitted';
 
-    for (let i = 0; i <= this.shards.length; i++) {
+    for (let i = 0; i < this.shards.length; i++) {
       const shard = this.shards[i];
 
       const atomConfigShards = shard.execConfig.shards;
@@ -120,9 +117,10 @@ export class Tx {
     });
 
     this.root.planner.promise.then(() => {
-      this.status = 'finished';
-      this.root.handleTx(this);
-      this.promiseControls.resolve();
+      this.finish();
+      // this.status = 'finished';
+      // this.root.handleTx(this);
+      // this.promiseControls.resolve();
     });
   }
 
@@ -132,16 +130,16 @@ export class Tx {
       shard.execConfig.shards.splice(0, 1);
     });
 
-    // console.log('-----', 'here');
     this.promiseControls.resolve();
     this.shards.forEach((shard) => {
       shard.execConfig.omittedShards.forEach((shard) => {
         shard.tx.finishOmitted();
       });
 
-      const txs = shard.execConfig.shards;
-      if (txs.length > 0) {
-        this.root.handleTx(txs[0].tx);
+      const shards = shard.execConfig.shards;
+
+      if (shards.length > 0) {
+        this.root.handleTx(shards[0].tx);
       }
     });
 
@@ -150,6 +148,7 @@ export class Tx {
 
   finishOmitted() {
     this.status = 'closed';
+    // todo reolve
     this.shards.forEach((shard) => {
       const execConfig = shard.execConfig;
       const omittedShards = execConfig.omittedShards;
