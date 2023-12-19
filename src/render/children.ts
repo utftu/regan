@@ -10,14 +10,12 @@ export async function handleChildrenRender({
   dom,
   globalCtx,
   parentJsxSegment,
-}: // jsxPath,
-{
+}: {
   dom: DomSimpleProps;
   children: Child[];
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
-  // jsxPath: string;
 }) {
   const hydratedNodes: HNode[] = [];
 
@@ -38,8 +36,6 @@ export async function handleChildrenRender({
       globalCtx,
       parentJsxSegment,
       jsxSegmentStr: insertedJsxNodeCount.toString(),
-      // jsx
-      // jsxPath: joinPath(jsxPath, insertedJsxNodeCount.toString()),
     });
     hydratedNodes.push(renderResult.hNode);
 
