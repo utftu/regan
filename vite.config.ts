@@ -2,6 +2,8 @@
 import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 
+console.log('-----', 'import.meta', import.meta);
+
 export default defineConfig({
   plugins: [react({jsxImportSource: 'my-jsx'})],
   // esbuild: {
@@ -11,7 +13,7 @@ export default defineConfig({
   // },
   resolve: {
     alias: {
-      'my-jsx': './src/jsx/jsx-runtime',
+      'my-jsx': new URL('./src/jsx/jsx-runtime', import.meta.url).pathname,
     },
   },
 });

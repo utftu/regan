@@ -11,7 +11,7 @@ export default defineConfig({
   // },
   resolve: {
     alias: {
-      'my-jsx': './src/jsx/jsx-runtime',
+      'my-jsx': new URL('./src/jsx/jsx-runtime', import.meta.url).pathname,
     },
   },
   test: {
