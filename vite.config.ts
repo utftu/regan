@@ -1,8 +1,5 @@
-// vite.config.js
 import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
-
-console.log('-----', 'import.meta', import.meta);
 
 export default defineConfig({
   plugins: [react({jsxImportSource: 'my-jsx'})],
