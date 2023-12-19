@@ -41,7 +41,7 @@ export async function handleChildrenRender({
       // jsx
       // jsxPath: joinPath(jsxPath, insertedJsxNodeCount.toString()),
     });
-    hydratedNodes.push(renderResult.hydratedNode);
+    hydratedNodes.push(renderResult.hNode);
 
     insertedJsxNodeCount++;
   }
