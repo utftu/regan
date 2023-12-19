@@ -1,5 +1,7 @@
+import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JSXNode} from '../node/node.ts';
+import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 
 async function convertStreamToString(stream: ReadableStream) {
   const reader = stream.getReader();
@@ -31,6 +33,9 @@ export async function getString(node: JSXNode, config: GetStringConfig = {}) {
       stage: 'string',
       data: {},
     }),
+    stringContext: {
+      snapshot: new TreeAtomsSnapshot(),
+    },
   });
   const str = await convertStreamToString(stream);
   return str;

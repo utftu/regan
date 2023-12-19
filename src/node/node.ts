@@ -3,6 +3,7 @@ import {Atom, disconnectAtoms} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
+import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 
 export type DomSimpleProps = {
   parent: HTMLElement;
@@ -12,10 +13,15 @@ export type DomProps = DomSimpleProps & {
   position: number;
 };
 
+export type StringContext = {
+  snapshot: TreeAtomsSnapshot;
+};
+
 export type GetStringStreamProps = {
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;
   parentJsxSegment?: JsxSegment;
+  stringContext: StringContext;
 };
 
 export type HydrateProps = {

@@ -1,6 +1,6 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {JSXNode} from '../node/node.ts';
+import {JSXNode, StringContext} from '../node/node.ts';
 import {Child} from '../types.ts';
 import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
 import {JsxSegment, joinPath} from '../jsx-path/jsx-path.ts';
@@ -10,15 +10,15 @@ type StringStream = TransformStream<string, string>;
 export async function handleChildrenString({
   children,
   streams,
-  // jsxPath,
   globalCtx,
   parentJsxSegment,
+  stringContext,
 }: {
   children: Child[];
   streams: StringStream;
-  // jsxPath: string;
   globalCtx: GlobalCtx;
   parentJsxSegment?: JsxSegment;
+  stringContext: StringContext;
 }) {
   // run iteration twice
   // first - to start stream process in children
@@ -30,11 +30,10 @@ export async function handleChildrenString({
 
     if (child instanceof JSXNode) {
       const stream = child.getStringStream({
-        // jsxPath: joinPath(jsxPath, jsxNodeCount.toString()),
         globalCtx,
         jsxSegmentStr: jsxNodeCount.toString(),
         parentJsxSegment: parentJsxSegment,
-        // jsxSegment: new JSXSegment(jsxNodeCount.toString(), parentJsxSegment),
+        stringContext: stringContext,
       });
       jsxNodeCount++;
       return stream;
@@ -55,6 +54,7 @@ export async function handleChildrenString({
           globalCtx,
           jsxSegmentStr: `${jsxNodeCount.toString()}?a=${name}`,
           parentJsxSegment: parentJsxSegment,
+          stringContext: stringContext,
         });
       }
 

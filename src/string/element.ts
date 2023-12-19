@@ -41,6 +41,7 @@ export async function getStringStreamElement(
       parentJsxSegment: jsxSegment,
       // jsxPath: ctx.jsxPath,
       globalCtx: ctx.globalCtx,
+      stringContext: ctx.stringContext,
     });
 
     const writer2 = streams.writable.getWriter();
