@@ -17,7 +17,7 @@ export async function handleChildrenRender({
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
 }) {
-  const hydratedNodes: HNode[] = [];
+  const hNodes: HNode[] = [];
 
   for (let i = 0, insertedJsxNodeCount = 0; i <= children.length; i++) {
     const child = children[i];
@@ -37,11 +37,11 @@ export async function handleChildrenRender({
       parentJsxSegment,
       jsxSegmentStr: insertedJsxNodeCount.toString(),
     });
-    hydratedNodes.push(renderResult.hNode);
+    hNodes.push(renderResult.hNode);
 
     insertedJsxNodeCount++;
   }
   return {
-    hydratedNodes,
+    hydratedNodes: hNodes,
   };
 }
