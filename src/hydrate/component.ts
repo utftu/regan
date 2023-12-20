@@ -122,6 +122,7 @@ export async function hydrateComponent(
     children,
     dom: ctx.dom,
     globalCtx: ctx.globalCtx,
+    hContext: ctx.hContext,
   });
 
   hNode.addChildren(hNodes);

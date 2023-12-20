@@ -24,12 +24,17 @@ export type GetStringStreamProps = {
   stringContext: StringContext;
 };
 
+export type HContext = {
+  snapshot: TreeAtomsSnapshot;
+};
+
 export type HydrateProps = {
   dom: DomProps;
   parentHydratedNode?: HNode;
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;
   parentJsxSegment?: JsxSegment;
+  hContext: HContext;
 };
 
 export type RenderProps = {

@@ -18,7 +18,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     const prop = this.props[name] as any;
 
     if (prop instanceof Atom) {
-      const value = prop.get();
+      const value = ctx.hContext.snapshot.parse(prop);
       if (typeof value === 'function') {
         addEventListenerStore({
           listener: value,
@@ -113,6 +113,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     },
     parentHydratedNode: hNode,
     globalCtx: ctx.globalCtx,
+    hContext: ctx.hContext,
   });
 
   hNode.addChildren(hNodes);

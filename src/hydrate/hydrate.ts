@@ -1,6 +1,7 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {JSXNode} from '../node/node.ts';
+import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 
 function mountHydratedNodes(hNode: HNode) {
   hNode.mount();
@@ -25,6 +26,9 @@ export async function hydrate(
       window: config.window || window,
       stage: 'hydrate',
     }),
+    hContext: {
+      snapshot: new TreeAtomsSnapshot(),
+    },
   });
 
   mountHydratedNodes(hNode);
