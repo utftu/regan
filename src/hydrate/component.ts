@@ -5,7 +5,7 @@ import {HydrateProps, destroyAtom} from '../node/node.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {ComponentState, HNode} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HNodeElement} from '../h-node/element.ts';
+// import {HNodeElement} from '../h-node/element.ts';
 
 const createSmartMount = (ctx: Ctx) => (hNode: HNode) => {
   const unmounts = ctx.state.mounts.map((mount) => mount());
@@ -26,67 +26,67 @@ const createSmartMount = (ctx: Ctx) => (hNode: HNode) => {
   });
 };
 
-function getFirstElem(nodes: HNode[]): HTMLElement | void {
-  for (const node of nodes) {
-    if (node instanceof HNodeElement) {
-      return node.elem;
-    }
-    const elem = getFirstElem(node.children);
-    if (elem) {
-      return elem;
-    }
-  }
-}
+// function getFirstElem(nodes: HNode[]): HTMLElement | void {
+//   for (const node of nodes) {
+//     if (node instanceof HNodeElement) {
+//       return node.elem;
+//     }
+//     const elem = getFirstElem(node.children);
+//     if (elem) {
+//       return elem;
+//     }
+//   }
+// }
 
-// cut
-function getLastElem(nodes: HNode[]): HTMLElement | void {
-  for (let i = nodes.length; i > 0; i--) {
-    const node = nodes[i];
-    if (node instanceof HNodeElement) {
-      return node.elem;
-    }
-    const elem = getLastElem(node.children);
-    if (elem) {
-      return elem;
-    }
-  }
-}
+// // cut
+// function getLastElem(nodes: HNode[]): HTMLElement | void {
+//   for (let i = nodes.length; i > 0; i--) {
+//     const node = nodes[i];
+//     if (node instanceof HNodeElement) {
+//       return node.elem;
+//     }
+//     const elem = getLastElem(node.children);
+//     if (elem) {
+//       return elem;
+//     }
+//   }
+// }
 
-export class Elems {
-  first: HTMLElement;
-  last: HTMLElement;
+// export class Elems {
+//   first: HTMLElement;
+//   last: HTMLElement;
 
-  constructor(first: HTMLElement, last: HTMLElement) {
-    this.first = first;
-    this.last = last;
-  }
-}
+//   constructor(first: HTMLElement, last: HTMLElement) {
+//     this.first = first;
+//     this.last = last;
+//   }
+// }
 
-function getElems(node: HNode) {
-  const first = getFirstElem([node]);
-  if (!first) {
-    return;
-  }
-  const last = getLastElem([node])!;
+// function getElems(node: HNode) {
+//   const first = getFirstElem([node]);
+//   if (!first) {
+//     return;
+//   }
+//   const last = getLastElem([node])!;
 
-  return new Elems(first, last);
-}
+//   return new Elems(first, last);
+// }
 
-function findPrevElems(positionInChildren: number, parentHNode: HNode) {
-  if (positionInChildren === 0) {
-    return;
-  }
+// function findPrevElems(positionInChildren: number, parentHNode: HNode) {
+//   if (positionInChildren === 0) {
+//     return;
+//   }
 
-  for (let i = positionInChildren; i > 0; i--) {
-    const hNode = parentHNode.children[i];
+//   for (let i = positionInChildren; i > 0; i--) {
+//     const hNode = parentHNode.children[i];
 
-    const elems = getElems(hNode);
+//     const elems = getElems(hNode);
 
-    if (elems) {
-      return elems;
-    }
-  }
-}
+//     if (elems) {
+//       return elems;
+//     }
+//   }
+// }
 
 // cut stop
 

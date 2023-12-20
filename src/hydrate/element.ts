@@ -1,7 +1,7 @@
 import {Atom} from 'strangelove';
 import {HydrateProps, destroyAtom} from '../node/node.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
-import {selectRegan, subscribeAtomChange} from '../atoms/atoms.ts';
+import {subscribeAtomChange} from '../atoms/atoms.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
@@ -12,12 +12,26 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
   const element = ctx.dom.parent.children[ctx.dom.position] as HTMLElement;
 
   const listeners: Record<string, any> = {};
+  const unmounts = [];
 
   const atoms: Atom[] = [];
   for (const name in this.props) {
     const prop = this.props[name] as any;
 
     if (prop instanceof Atom) {
+      const exec = (value: any) => {
+        if (typeof value === 'function') {
+          addEventListenerStore({
+            listener: value,
+            store: listeners,
+            elem: element,
+            name,
+          });
+        } else {
+          element.setAttribute(name, value);
+        }
+      };
+
       const value = ctx.hContext.snapshot.parse(prop);
       if (typeof value === 'function') {
         addEventListenerStore({
@@ -29,6 +43,11 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
       }
 
       const atom = subscribeAtomChange(prop, () => {
+        if (ctx.globalCtx.stage === 'hydrate') {
+          ctx.hContext.changes.set(prop, prop.get());
+          return;
+        }
+
         const value = prop.get();
 
         if (typeof value === 'function') {
@@ -43,29 +62,6 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
         }
       });
       atoms.push(atom);
-
-      // disable non func attrs for first run, in hydrate they should be already in html.
-      // We should react only on change
-      // let firstRun = true;
-      // const atom = selectRegan((get) => {
-      //   const value = get(prop);
-
-      //   if (typeof value === 'function') {
-      //     addEventListenerStore({
-      //       listener: value,
-      //       store: listeners,
-      //       elem: element,
-      //       name,
-      //     });
-      //   } else {
-      //     if (firstRun === true) {
-      //       firstRun = false;
-      //     } else {
-      //       element.setAttribute(name, value);
-      //     }
-      //   }
-      // });
-      // atoms.push(atom);
     } else {
       if (typeof prop === 'function') {
         addEventListenerStore({
@@ -80,14 +76,6 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
 
   const hNode = new HNodeElement({
     jsxSegment,
-    // mounts: [
-    //   () => {
-    //     return () => {
-    //       atoms.forEach((atom) => destroyAtom(atom));
-    //       element.remove();
-    //     };
-    //   },
-    // ],
     unmounts: [
       () => {
         atoms.forEach((atom) => destroyAtom(atom));

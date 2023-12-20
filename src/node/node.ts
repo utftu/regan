@@ -26,6 +26,7 @@ export type GetStringStreamProps = {
 
 export type HContext = {
   snapshot: TreeAtomsSnapshot;
+  changes: Map<Atom, any>;
 };
 
 export type HydrateProps = {

@@ -14,6 +14,7 @@ class Root {
   plan(name: string, exec: () => void) {}
 }
 
+// todo
 export const AtomWrapper: FC<Props> = (props, ctx) => {
   let mounted = false;
   let needUpdaterAfterMount = false;

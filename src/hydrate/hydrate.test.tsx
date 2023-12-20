@@ -7,6 +7,7 @@ import {createAtomRegan} from '../atoms/atoms.ts';
 import {atom} from 'strangelove';
 import {getString} from '../string/string.ts';
 import {hydrate} from './hydrate.ts';
+import {waitTime} from 'utftu';
 
 async function insertAndHydrate(body: HTMLElement, jsxNode: JSXNode) {
   const root = document.createElement('div');
@@ -266,4 +267,59 @@ describe('hydrate', () => {
     await insertAndHydrate(jsdom.window.document.body, <Level0 />);
     expect(level3JsxPath).toBe('0.1.0.0.2?a=0.0.0');
   });
+  it('async child', async () => {
+    const childClick = vi.fn();
+    const Child = async () => {
+      await waitTime(30);
+
+      return (
+        <div id='child' click={childClick}>
+          child
+        </div>
+      );
+    };
+
+    const Parent = () => {
+      return (
+        <div>
+          <Child />
+        </div>
+      );
+    };
+
+    const jsdom = new JSDOM();
+
+    await insertAndHydrate(jsdom.window.document.body, <Parent />);
+    jsdom.window.document.getElementById('child')!.click();
+
+    expect(childClick.mock.calls.length).toBe(1);
+  });
+  // it('atoms changed', async () => {
+  //   const childClick = vi.fn();
+  //   const atom1 = createAtomRegan()
+  //   const Child = async () => {
+  //     await waitTime(30);
+
+  //     return (
+  //       <div id='child' click={childClick}>
+  //         child
+  //       </div>
+  //     );
+  //   };
+
+  //   const Parent = () => {
+  //     return (
+  //       <div>
+  //         <Child />
+  //       </div>
+  //     );
+  //   };
+
+  //   const jsdom = new JSDOM();
+
+  //   await insertAndHydrate(jsdom.window.document.body, <Parent />);
+  //   jsdom.window.document.getElementById('child')!.click();
+
+  //   expect(childClick.mock.calls.length).toBe(1);
+  // });
 });

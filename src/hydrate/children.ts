@@ -10,7 +10,10 @@ import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.ts';
 
-function handleAtom(atom: Atom, hContext: HContext): [string, JSXNode] | void {
+function handleAtom(
+  atom: Atom,
+  hContext: HContext
+): {name: string; value: JSXNode} | void {
   let value: any;
   let name: string;
   if ((atom as any as {[SELECT_REGAN_NAMED]: any})[SELECT_REGAN_NAMED]) {
@@ -21,11 +24,37 @@ function handleAtom(atom: Atom, hContext: HContext): [string, JSXNode] | void {
   }
 
   if (value instanceof JSXNode) {
-    return [`?a=${name}`, value];
+    return {name: `?a=${name}`, value};
   } else {
     return;
   }
 }
+
+const prepareChild = (child: JSXNode | Atom, hContext: HContext) => {
+  let childNode!: JSXNode;
+  let additionalName = '';
+
+  if (child instanceof Atom) {
+    const values = handleAtom(child, hContext);
+    const wrapper = new JSXNodeComponent({
+      type: AtomWrapper,
+      props: {
+        atom: child,
+      },
+      key: '',
+      children: values ? [values.value] : [],
+    });
+    childNode = wrapper;
+    additionalName = values ? values.name : '';
+  } else {
+    childNode = child;
+  }
+
+  return {
+    childNode,
+    additionalName,
+  };
+};
 
 export async function handleChildrenHydrate({
   children,
@@ -45,29 +74,14 @@ export async function handleChildrenHydrate({
   const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
   let position = dom.position;
   for (let i = 0, jsxNodeCount = 0; i <= children.length; i++) {
-    const child = children[i];
+    const rawChild = children[i];
+    const child = typeof rawChild === 'function' ? rawChild() : rawChild;
+
     if (!(child instanceof JSXNode) && !(child instanceof Atom)) {
       continue;
     }
 
-    let childNode!: JSXNode;
-    let additionalName = '';
-
-    if (child instanceof Atom) {
-      const values = handleAtom(child, hContext);
-      const wrapper = new JSXNodeComponent({
-        type: AtomWrapper,
-        props: {
-          atom: child,
-        },
-        key: '',
-        children: values ? [values[1]] : [],
-      });
-      childNode = wrapper;
-      additionalName = values ? values[0] : '';
-    } else {
-      childNode = child;
-    }
+    const {childNode, additionalName} = prepareChild(child, hContext);
 
     const hydrateResult = childNode.hydrate({
       jsxSegmentStr: `${jsxNodeCount}${additionalName}`,

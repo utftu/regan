@@ -48,8 +48,6 @@ export class Root {
   addTx(changes: Changes) {
     const tx = new Tx(changes, this);
 
-    tx.name = count++;
-
     queueMicrotask(() => {
       this.handleTx(tx);
     });
@@ -57,5 +55,3 @@ export class Root {
     return tx.promise;
   }
 }
-
-let count = 0;
