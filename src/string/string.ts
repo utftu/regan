@@ -26,7 +26,6 @@ type GetStringConfig = {
 
 export async function getString(node: JSXNode, config: GetStringConfig = {}) {
   const stream = await node.getStringStream({
-    // jsxPath: config.jsxPath || '',
     jsxSegmentStr: '',
     globalCtx: new GlobalCtx({
       window: null as any,

@@ -3,7 +3,6 @@ import {JSXNodeElement} from '../node/element/element.ts';
 import {Child, FC, Props} from '../types.ts';
 
 type RawChildren = Child | Child[];
-// type Children = Child[];
 type ElementType = string | FC<any>;
 
 type PropsPrepareRaw = {

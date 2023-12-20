@@ -34,7 +34,6 @@ export async function getStringStreamComponent(
       children,
       streams,
       parentJsxSegment: jsxSegment,
-      // jsxPath: ctx.jsxPath,
       globalCtx: ctx.globalCtx,
       stringContext: ctx.stringContext,
     });

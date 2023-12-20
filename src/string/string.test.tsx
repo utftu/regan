@@ -5,6 +5,7 @@ import {FC} from '../types.ts';
 import {atom} from 'strangelove';
 import {getString} from './string.ts';
 import {getHashFromString} from '../jsx-path/jsx-path.ts';
+import {waitTime} from 'utftu';
 
 describe('node', () => {
   it('getString()', async () => {
@@ -47,7 +48,7 @@ describe('node', () => {
 
     const Parent = () => {
       return (
-        <div hello='world' world='hello'>
+        <div hello='world' world={createAtomRegan('hello')}>
           <div>{createAtomRegan('parent')}</div>
           {createAtomRegan(<Child />)}
         </div>
@@ -99,5 +100,52 @@ describe('node', () => {
     const jsxPath = '0.1.0.0.2?a=0.0';
     expect(level3JsxPath).toBe(jsxPath);
     expect(level3Id).toBe(getHashFromString(jsxPath));
+  });
+  it('async', async () => {
+    const Child = async () => {
+      await waitTime(10);
+
+      return 'hello world';
+    };
+
+    const Parent = () => {
+      return <Child />;
+    };
+    const str = await getString(<Parent keyP='parent' />);
+
+    expect(str).toBe('hello world');
+  });
+  it('atom changed', async () => {
+    const atom1 = createAtomRegan('hello');
+    const atom2 = createAtomRegan('world');
+
+    const Child = async () => {
+      await waitTime(100);
+
+      return (
+        <div hello={atom1}>
+          <div>{atom2}</div>
+        </div>
+      );
+    };
+
+    const Parent = () => {
+      return (
+        <div hello={atom1}>
+          <div>{atom2}</div>
+          <Child />
+        </div>
+      );
+    };
+
+    const strPromise = getString(<Parent />);
+    setTimeout(() => {
+      atom1.set('hello1');
+    }, 20);
+    const str = await strPromise;
+
+    expect(str).toBe(
+      '<div hello="hello"><div>world</div><div hello="hello"><div>world</div></div></div>'
+    );
   });
 });

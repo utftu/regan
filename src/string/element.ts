@@ -17,7 +17,15 @@ export async function getStringStreamElement(
       if (typeof value === 'function') {
         return store;
       }
-      const realValue = value instanceof Atom ? value.get() : value;
+
+      let realValue;
+
+      if (value instanceof Atom) {
+        realValue = ctx.stringContext.snapshot.parse(value);
+      } else {
+        realValue = value;
+      }
+
       store[key] = realValue;
       return store;
     },
@@ -39,7 +47,6 @@ export async function getStringStreamElement(
       children: this.children,
       streams,
       parentJsxSegment: jsxSegment,
-      // jsxPath: ctx.jsxPath,
       globalCtx: ctx.globalCtx,
       stringContext: ctx.stringContext,
     });

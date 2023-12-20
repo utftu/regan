@@ -43,9 +43,9 @@ export async function handleChildrenString({
       let value: any;
       let name: string;
       if ((child as any)[SELECT_REGAN_NAMED]) {
-        [name, value] = child.get();
+        [name, value] = stringContext.snapshot.parse(child);
       } else {
-        value = child.get();
+        value = stringContext.snapshot.parse(child);
         name = '0';
       }
 
