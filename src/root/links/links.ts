@@ -7,17 +7,6 @@ type LinkConfig = {
   subsribeAtom: Atom;
 };
 
-function runOnPromise<TValue = any>(
-  possiblePromise: TValue | Promise<TValue>,
-  cb: (value: TValue) => any
-) {
-  if (possiblePromise instanceof Promise) {
-    return possiblePromise.then(cb);
-  }
-
-  return cb(possiblePromise);
-}
-
 export class Links {
   links: Map<Atom, LinkConfig> = new Map();
   root: Root;

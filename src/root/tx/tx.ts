@@ -93,8 +93,7 @@ export class Tx {
   async exec() {
     this.status = 'running';
 
-    const actionPromises: Promise<Action>[] = [];
-    const execs: Exec[] = [];
+    const execResults: Promise<Action>[] = [];
 
     for (const change of this.changes) {
       const [atom, value] = change;
@@ -106,22 +105,12 @@ export class Tx {
       const execsForAtom = this.root.links.get(atom)!;
 
       execsForAtom.execs.forEach((exec) => {
-        execs.push(exec);
-        actionPromises.push(exec(value));
+        execResults.push(exec(value));
       });
     }
-    const actions = await Promise.all(actionPromises);
+    await Promise.all(execResults);
 
-    actions.forEach((action, i) => {
-      this.root.planner.plan(execs[i], action);
-    });
-
-    this.root.planner.promise.then(() => {
-      this.finish();
-      // this.status = 'finished';
-      // this.root.handleTx(this);
-      // this.promiseControls.resolve();
-    });
+    this.finish();
   }
 
   finish() {

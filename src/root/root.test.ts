@@ -8,9 +8,8 @@ type MockedExec = Exec & Mock;
 describe('root', () => {
   describe('omit', () => {
     it('single', async () => {
-      const action = vi.fn();
       const externalAtom = createAtomRegan('1');
-      const exec = vi.fn(() => action) as any as Exec & Mock;
+      const exec = vi.fn() as Exec & Mock;
       const root = new Root();
       root.links.add(externalAtom, exec);
 
@@ -21,11 +20,10 @@ describe('root', () => {
       expect(exec.mock.calls[0][0]).toBe('3');
     });
     it('not omit', async () => {
-      const action = vi.fn();
       const externalAtom = createAtomRegan('1');
       const externalAtom2 = createAtomRegan('1');
-      const exec = vi.fn(() => action) as MockedExec;
-      const exec2 = vi.fn(() => () => {}) as MockedExec;
+      const exec = vi.fn() as MockedExec;
+      const exec2 = vi.fn() as MockedExec;
       const root = new Root();
       root.links.add(externalAtom, exec);
       root.links.add(externalAtom2, exec2);
@@ -49,8 +47,7 @@ describe('root', () => {
       const root = new Root();
 
       const atom1 = createAtomRegan('1 atom');
-      const action1 = vi.fn();
-      const exec1 = vi.fn(() => action1) as MockedExec;
+      const exec1 = vi.fn() as MockedExec;
 
       const atom2 = createAtomRegan('2 atom');
       const action2 = vi.fn();
@@ -79,8 +76,7 @@ describe('root', () => {
       const root = new Root();
 
       const atom1 = createAtomRegan('1 atom');
-      const action1 = vi.fn();
-      const exec1 = vi.fn(() => action1) as MockedExec;
+      const exec1 = vi.fn() as MockedExec;
 
       root.links.add(atom1, exec1);
 

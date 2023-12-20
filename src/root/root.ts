@@ -5,10 +5,10 @@ import {Changes, Tx} from './tx/tx.ts';
 import {ExecConfig} from './tx/shard.ts';
 
 export type Action = () => void;
-export type Exec = (value: any) => Promise<Action>;
+export type Exec = (value: any) => Promise<any> | any;
 
 export class Root {
-  planner = new Planner();
+  // planner = new Planner();
   links: Links;
   atoms: Map<Atom, ExecConfig> = new Map();
 
@@ -53,5 +53,33 @@ export class Root {
     });
 
     return tx.promise;
+  }
+
+  addExec(atom: Atom, exec: Exec) {
+    this.links.add(atom, exec);
+    if (!this.atoms.has(atom)) {
+      this.atoms.set(atom, new ExecConfig());
+    }
+  }
+
+  removeExec(atom: Atom, exec: Exec) {
+    this.links.remove(atom, exec);
+    if (!this.links.check(atom)) {
+      this.atoms.delete(atom);
+    }
+  }
+
+  replaceExec(atom: Atom, exec: Exec, newExec: Exec) {
+    if (!this.links.check(atom)) {
+      return;
+    }
+
+    const execs = this.links.get(atom)!.execs;
+    const i = execs.indexOf(exec);
+    if (i === -1) {
+      return;
+    }
+
+    execs[i] = newExec;
   }
 }
