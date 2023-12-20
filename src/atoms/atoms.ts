@@ -32,7 +32,7 @@ export function subscribeAtomChange(atom: Atom, exec: () => void) {
     },
   });
   Atom.connect(atom, newAtom);
-  return subscribeAtomChange;
+  return newAtom;
 }
 
 // export function selectReganSecondRun<TCb extends SelectCb>(cb: TCb) {

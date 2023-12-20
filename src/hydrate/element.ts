@@ -1,7 +1,7 @@
 import {Atom} from 'strangelove';
 import {HydrateProps, destroyAtom} from '../node/node.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
-import {selectRegan} from '../atoms/atoms.ts';
+import {selectRegan, subscribeAtomChange} from '../atoms/atoms.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
@@ -18,6 +18,21 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     const prop = this.props[name] as any;
 
     if (prop instanceof Atom) {
+      const atom = subscribeAtomChange(prop, () => {
+        const value = prop.get();
+
+        if (typeof value === 'function') {
+          addEventListenerStore({
+            listener: value,
+            store: listeners,
+            elem: element,
+            name,
+          });
+        } else {
+          element.setAttribute(name, value);
+        }
+      });
+
       // disable non func attrs for first run, in hydrate they should be already in html.
       // We should react only on change
       let firstRun = true;

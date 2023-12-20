@@ -11,12 +11,9 @@ export class ComponentState {
 type MountUnmounFunc = (hNode: HNode) => void;
 
 export type PropsHydratedNode = {
-  // mount: Mount;
   mounts?: MountUnmounFunc[];
   unmounts?: MountUnmounFunc[];
   parent?: HNode;
-  // elem?: HTMLElement;
-  // segment: string;
   jsxSegment: JsxSegment;
 };
 
@@ -26,33 +23,26 @@ export class HNode {
   mounts: MountUnmounFunc[] = [];
   unmounts: MountUnmounFunc[] = [];
   parent?: HNode;
-  // elem?: HTMLElement;
   jsxSegment: JsxSegment;
 
   constructor({
     parent,
-    // elem,
     jsxSegment,
     mounts = [],
     unmounts = [],
   }: PropsHydratedNode) {
     this.mounts = mounts;
     this.unmounts = unmounts;
-    // this.mountFn = mount;
     this.parent = parent;
-    // this.elem = elem;
     this.jsxSegment = jsxSegment;
-    // this.segment = segment;
   }
 
   mount() {
     this.mounts.forEach((fn) => fn(this));
-    // this.unmountFn = this.mountFn();
   }
 
   unmount() {
     this.unmounts.forEach((fn) => fn(this));
-    // this.unmountFn?.();
   }
 
   addChildren(children: HNode[]) {
