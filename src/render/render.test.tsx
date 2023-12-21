@@ -6,19 +6,6 @@ import {Atom, atom} from 'strangelove';
 import {redner} from './render.ts';
 
 describe('render', () => {
-  it.only('simple', async () => {
-    const Parent: FC = () => {
-      return <div>parent</div>;
-    };
-
-    const jsdom = new JSDOM();
-
-    await redner(jsdom.window.document.body, <Parent />, {
-      window: jsdom.window as any as Window,
-    });
-
-    expect(jsdom.window.document.body.innerHTML).toBe('<div>parent</div>');
-  });
   it('markup', async () => {
     const Child: FC = () => {
       return (
