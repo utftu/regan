@@ -5,9 +5,13 @@ import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HydrateProps} from '../node/hydrate/hydrate.ts';
+import {HNodeElement} from '../h-node/element.ts';
 
 export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
-  const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
+  const jsxSegment = new JsxSegment({
+    segment: ctx.jsxSegmentStr,
+    parent: ctx.parentJsxSegment,
+  });
   const element = ctx.dom.parent.children[ctx.dom.position] as HTMLElement;
 
   const listeners: Record<string, any> = {};
@@ -58,22 +62,25 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     }
   }
 
-  const hNode = new HNode({
-    jsxSegment,
-    unmounts: [
-      () => {
-        element.remove();
-      },
-      () => {
-        for (const listenerKey in listeners) {
-          const listener = listeners[listenerKey];
-          element.removeEventListener(listenerKey, listener);
-        }
-      },
-    ],
-    parent: ctx.parentHNode,
-    globalCtx: ctx.globalCtx,
-  });
+  const hNode = new HNodeElement(
+    {
+      jsxSegment,
+      unmounts: [
+        () => {
+          element.remove();
+        },
+        () => {
+          for (const listenerKey in listeners) {
+            const listener = listeners[listenerKey];
+            element.removeEventListener(listenerKey, listener);
+          }
+        },
+      ],
+      parent: ctx.parentHNode,
+      globalCtx: ctx.globalCtx,
+    },
+    element
+  );
 
   const {hNodes} = await handleChildrenHydrate({
     parentJsxSegment: jsxSegment,

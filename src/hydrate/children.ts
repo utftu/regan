@@ -86,7 +86,10 @@ export async function handleChildrenHydrate({
 
     const hydrateResult = childNode.hydrate({
       jsxSegmentStr: `${jsxNodeCount}${additionalName}`,
-      parentJsxSegment,
+      parentJsxSegment: {
+        jsxSegment: parentJsxSegment,
+        position: jsxNodeCount,
+      },
       dom: {parent: dom.parent, position},
       parentHNode,
       globalCtx,

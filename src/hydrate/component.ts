@@ -11,7 +11,10 @@ export async function hydrateComponent(
   this: JSXNodeComponent,
   ctx: HydrateProps
 ) {
-  const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
+  const jsxSegment = new JsxSegment({
+    segment: ctx.jsxSegmentStr,
+    parent: ctx.parentJsxSegment,
+  });
   const hNode = new HNode({
     jsxSegment,
     parent: ctx.parentHNode,

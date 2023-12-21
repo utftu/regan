@@ -1,7 +1,18 @@
+type Parent = {
+  jsxSegment: JsxSegment;
+  position: number;
+};
+
+export type ParentJsxSegment = {
+  jsxSegment: JsxSegment;
+  position: number;
+};
+
 export class JsxSegment {
   segment: string;
-  parent?: JsxSegment;
-  constructor(segment: string, parent?: JsxSegment) {
+  parent?: Parent;
+  // constructor(segment: string, parent?: JsxSegment) {
+  constructor({segment, parent}: {segment: string; parent?: Parent}) {
     this.segment = segment;
     this.parent = parent;
   }
@@ -42,7 +53,7 @@ export function getJsxPath(jsxSegment: JsxSegment, childJsxPath: string = '') {
   let jsxPath = joinPath(jsxSegment.segment, childJsxPath);
 
   if (jsxSegment.parent) {
-    return getJsxPath(jsxSegment.parent, jsxPath);
+    return getJsxPath(jsxSegment.parent.jsxSegment, jsxPath);
   }
   return jsxPath;
 }

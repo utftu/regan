@@ -6,9 +6,13 @@ import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
 import {addElementChild} from './render.ts';
+import {HNodeElement} from '../h-node/element.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
-  const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
+  const jsxSegment = new JsxSegment({
+    segment: ctx.jsxSegmentStr,
+    parent: ctx.parentJsxSegment,
+  });
   const element = ctx.globalCtx.window.document.createElement(this.type);
 
   const listeners: Record<string, any> = {};
@@ -67,22 +71,25 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     }
   }
 
-  const hNode = new HNode({
-    unmounts: [
-      () => {
-        element.remove();
-      },
-      () => {
-        for (const listenerKey in listeners) {
-          const listener = listeners[listenerKey];
-          element.removeEventListener(listenerKey, listener);
-        }
-      },
-    ],
-    jsxSegment,
-    parent: ctx.parentHNode,
-    globalCtx: ctx.globalCtx,
-  });
+  const hNode = new HNodeElement(
+    {
+      unmounts: [
+        () => {
+          element.remove();
+        },
+        () => {
+          for (const listenerKey in listeners) {
+            const listener = listeners[listenerKey];
+            element.removeEventListener(listenerKey, listener);
+          }
+        },
+      ],
+      jsxSegment,
+      parent: ctx.parentHNode,
+      globalCtx: ctx.globalCtx,
+    },
+    element
+  );
 
   ctx.addElementToParent(element);
 
@@ -99,3 +106,11 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
 
   return {hNode};
 }
+
+// const A = () => {
+//   return (
+//     <Try onError=()>
+//       {children}
+//     <Try/>
+//   )
+// }

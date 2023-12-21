@@ -1,7 +1,7 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../../global-ctx/global-ctx.ts';
 import {HNode} from '../../h-node/h-node.ts';
-import {JsxSegment} from '../../jsx-path/jsx-path.ts';
+import {ParentJsxSegment} from '../../jsx-path/jsx-path.ts';
 import {TreeAtomsSnapshot} from '../../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {DomProps} from '../node.ts';
 
@@ -15,6 +15,6 @@ export type HydrateProps = {
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;
-  parentJsxSegment?: JsxSegment;
+  parentJsxSegment?: ParentJsxSegment;
   hContext: HContext;
 };

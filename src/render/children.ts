@@ -36,7 +36,10 @@ export async function handleChildrenRender({
     const renderResult = await (child as JSXNode).render({
       parentHNode,
       globalCtx,
-      parentJsxSegment,
+      parentJsxSegment: {
+        jsxSegment: parentJsxSegment,
+        position: insertedJsxNodeCount,
+      },
       jsxSegmentStr: insertedJsxNodeCount.toString(),
       renderCtx,
       addElementToParent,

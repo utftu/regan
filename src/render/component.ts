@@ -11,7 +11,10 @@ export async function renderComponent(
   this: JSXNodeComponent,
   ctx: RenderProps
 ) {
-  const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
+  const jsxSegment = new JsxSegment({
+    segment: ctx.jsxSegmentStr,
+    parent: ctx.parentJsxSegment,
+  });
   const hNode = new HNode({
     parent: ctx.parentHNode,
     jsxSegment,
