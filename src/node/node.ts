@@ -26,7 +26,7 @@ export type GetStringStreamProps = {
 
 export type HContext = {
   snapshot: TreeAtomsSnapshot;
-  changes: Map<Atom, any>;
+  changedAtoms: Atom[];
 };
 
 export type HydrateProps = {
@@ -38,12 +38,21 @@ export type HydrateProps = {
   hContext: HContext;
 };
 
+export type AddElementToParent = (elem: HTMLElement | string) => void;
+
+export type RenderCtx = {
+  snapshot: TreeAtomsSnapshot;
+  changedAtoms: Atom[];
+};
+
 export type RenderProps = {
   dom: {parent: HTMLElement};
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;
   parentJsxSegment?: JsxSegment;
+  addElementToParent: AddElementToParent;
+  renderCtx: RenderCtx;
 };
 
 export abstract class JSXNode<TType = any, TProps extends Props = any> {

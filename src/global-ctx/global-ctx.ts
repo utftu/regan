@@ -1,6 +1,6 @@
 import {Root} from '../root/root.ts';
 
-type Stage = 'string' | 'hydrate' | 'render';
+type Stage = 'string' | 'hydrate' | 'render' | 'idle';
 
 type Data = Record<any, any>;
 

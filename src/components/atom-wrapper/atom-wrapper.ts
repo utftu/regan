@@ -6,14 +6,6 @@ type Props = {
   atom: Atom;
 };
 
-function planUpdate(name: string, fn: () => void) {}
-
-class Root {
-  updated = new Map<string, () => void>();
-
-  plan(name: string, exec: () => void) {}
-}
-
 // todo
 export const AtomWrapper: FC<Props> = (props, ctx) => {
   let mounted = false;
@@ -28,11 +20,11 @@ export const AtomWrapper: FC<Props> = (props, ctx) => {
   ctx.mount(() => {
     mounted = true;
 
-    if (needUpdaterAfterMount === true) {
-      planUpdate(ctx.getId(), () => {
-        // todo
-      });
-    }
+    // if (needUpdaterAfterMount === true) {
+    //   // planUpdate(ctx.getId(), () => {
+    //   //   // todo
+    //   // });
+    // }
   });
   return ctx.children;
 };

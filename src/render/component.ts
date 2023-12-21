@@ -16,6 +16,7 @@ export async function renderComponent(
   const hNode = new HNode({
     parent: ctx.parentHNode,
     jsxSegment,
+    globalCtx: ctx.globalCtx,
   });
   const componentCtx = new Ctx({
     globalCtx: ctx.globalCtx,
@@ -27,19 +28,23 @@ export async function renderComponent(
   const rawChidlren = await this.type(this.props, componentCtx);
 
   const children = normalizeChildren(rawChidlren);
+  console.log('-----', 'children', children);
 
   const smartMount = createSmartMount(componentCtx);
   hNode.mounts.push(smartMount);
 
-  const {hydratedNodes: childrenHydrayedNodes} = await handleChildrenRender({
+  const {hNodes} = await handleChildrenRender({
     parentHNode: hNode,
     children,
     dom: ctx.dom,
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
+    addElementToParent: ctx.addElementToParent,
+    renderCtx: ctx.renderCtx,
   });
 
-  hNode.addChildren(childrenHydrayedNodes);
+  console.log('-----', 'childrenHydrayedNodes', hNodes);
+  hNode.addChildren(hNodes);
 
   return {hNode};
 }

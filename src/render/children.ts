@@ -1,7 +1,12 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {DomSimpleProps, JSXNode} from '../node/node.ts';
+import {
+  AddElementToParent,
+  DomSimpleProps,
+  JSXNode,
+  RenderCtx,
+} from '../node/node.ts';
 import {Child} from '../types.ts';
 
 export async function handleChildrenRender({
@@ -10,12 +15,16 @@ export async function handleChildrenRender({
   dom,
   globalCtx,
   parentJsxSegment,
+  addElementToParent,
+  renderCtx,
 }: {
   dom: DomSimpleProps;
   children: Child[];
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
+  addElementToParent: AddElementToParent;
+  renderCtx: RenderCtx;
 }) {
   const hNodes: HNode[] = [];
 
@@ -26,7 +35,8 @@ export async function handleChildrenRender({
     }
 
     if (typeof child === 'string') {
-      dom.parent.innerHTML = child;
+      addElementToParent(child);
+      // dom.parent.innerHTML = child;
       continue;
     }
 
@@ -36,12 +46,17 @@ export async function handleChildrenRender({
       globalCtx,
       parentJsxSegment,
       jsxSegmentStr: insertedJsxNodeCount.toString(),
+      renderCtx,
+      addElementToParent,
     });
+    console.log('-----', 'renderResult', renderResult);
     hNodes.push(renderResult.hNode);
 
     insertedJsxNodeCount++;
   }
+  // console.log('-----', 'hNodes', hNodes);
+
   return {
-    hydratedNodes: hNodes,
+    hNodes,
   };
 }

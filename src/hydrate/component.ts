@@ -98,6 +98,7 @@ export async function hydrateComponent(
   const hNode = new HNode({
     jsxSegment,
     parent: ctx.parentHydratedNode,
+    globalCtx: ctx.globalCtx,
   });
 
   const componentCtx = new Ctx({

@@ -7,6 +7,7 @@ import {HNode} from '../h-node/h-node.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HNodeElement} from '../h-node/element.ts';
+import {addElementChild} from './render.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
@@ -15,28 +16,88 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   const listeners: Record<string, any> = {};
 
   const atoms: Atom[] = [];
+  const mounts = [];
 
   for (const name in this.props) {
     const prop = this.props[name] as any;
 
     if (prop instanceof Atom) {
-      const atom = selectRegan((get) => {
-        const value = get(prop);
+      const atomValue = ctx.renderCtx.snapshot.parse(prop);
 
-        if (typeof value === 'function') {
-          addEventListenerStore({
-            listener: value,
-            store: listeners,
-            elem: element,
-            name,
-          });
-        } else {
-          element.setAttribute(name, value);
-        }
+      // todo
+      if (typeof atomValue === 'function') {
+        addEventListenerStore({
+          listener: atomValue,
+          store: listeners,
+          elem: element,
+          name,
+        });
+      } else {
+        element.setAttribute(name, atomValue);
+      }
+
+      const execTemp = () => {
+        ctx.renderCtx.changedAtoms.push(prop);
+      };
+      ctx.globalCtx.root.addExec(prop, execTemp);
+      mounts.push((hNode: HNode) => {
+        const exec = (value: any) => {
+          if (typeof value === 'function') {
+            addEventListenerStore({
+              listener: value,
+              store: listeners,
+              elem: element,
+              name,
+            });
+          } else {
+            element.setAttribute(name, value);
+          }
+        };
+        ctx.globalCtx.root.replaceExec(prop, execTemp, exec);
+        hNode.unmounts.push(() => ctx.globalCtx.root.removeExec(prop, exec));
       });
-      atoms.push(atom);
       continue;
     }
+
+    // const execTemp = () => {
+    //   ctx.renderContext.changedAtoms.push(prop);
+    // };
+    // ctx.globalCtx.root.addExec(prop, execTemp);
+    // mounts.push((hNode: HNode) => {
+    //   const exec = (value: any) => {
+    //     if (typeof value === 'function') {
+    //       addEventListenerStore({
+    //         listener: value,
+    //         store: listeners,
+    //         elem: element,
+    //         name,
+    //       });
+    //     } else {
+    //       element.setAttribute(name, value);
+    //     }
+    //   };
+    //   ctx.globalCtx.root.replaceExec(prop, execTemp, exec);
+    //   hNode.unmounts.push(() => ctx.globalCtx.root.removeExec(prop, exec));
+    // });
+
+    // if (prop instanceof Atom) {
+    //   const atom = selectRegan((get) => {
+    //     const value = get(prop);
+
+    //     if (typeof value === 'function') {
+    //       addEventListenerStore({
+    //         listener: value,
+    //         store: listeners,
+    //         elem: element,
+    //         name,
+    //       });
+    //     } else {
+    //       element.setAttribute(name, value);
+    //     }
+    //   });
+    //   atoms.push(atom);
+    //   continue;
+    // }
 
     if (typeof prop === 'function') {
       addEventListenerStore({
@@ -50,8 +111,8 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     }
   }
 
-  const hydratedNode = new HNodeElement({
-    elem: element,
+  const hNode = new HNode({
+    // elem: element,
     mounts: [
       () => {
         return () => {
@@ -62,18 +123,22 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     ],
     jsxSegment,
     parent: ctx.parentHNode,
+    globalCtx: ctx.globalCtx,
   });
 
-  ctx.dom.parent.appendChild(element);
+  ctx.addElementToParent(element);
+  // ctx.dom.parent.appendChild(element);
 
   // todo add nodes
   await handleChildrenRender({
     children: this.children,
-    parentHNode: hydratedNode,
+    parentHNode: hNode,
     dom: {parent: element},
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
+    addElementToParent: (child) => addElementChild(element, child),
+    renderCtx: ctx.renderCtx,
   });
 
-  return {hydratedNode};
+  return {hNode};
 }

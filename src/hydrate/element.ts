@@ -4,7 +4,6 @@ import {JSXNodeElement} from '../node/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HNodeElement} from '../h-node/element.ts';
 import {HNode} from '../h-node/h-node.ts';
 
 export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
@@ -18,8 +17,20 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     const prop = this.props[name] as any;
 
     if (prop instanceof Atom) {
-      const execTemp = (value: any) => {
-        ctx.hContext.changes.set(prop, value);
+      const atomValue = ctx.hContext.snapshot.parse(prop);
+
+      // todo
+      if (typeof atomValue === 'function') {
+        addEventListenerStore({
+          listener: atomValue,
+          store: listeners,
+          elem: element,
+          name,
+        });
+      }
+
+      const execTemp = () => {
+        ctx.hContext.changedAtoms.push(prop);
       };
       ctx.globalCtx.root.addExec(prop, execTemp);
       mounts.push((hNode: HNode) => {
@@ -48,7 +59,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     }
   }
 
-  const hNode = new HNodeElement({
+  const hNode = new HNode({
     jsxSegment,
     unmounts: [
       () => {
@@ -62,7 +73,8 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
       },
     ],
     parent: ctx.parentHydratedNode,
-    elem: element,
+    globalCtx: ctx.globalCtx,
+    // elem: element,
   });
 
   const {hNodes} = await handleChildrenHydrate({
