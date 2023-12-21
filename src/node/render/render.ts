@@ -12,7 +12,6 @@ export type RenderCtx = {
 };
 
 export type RenderProps = {
-  dom: {parent: HTMLElement};
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;

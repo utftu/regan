@@ -34,7 +34,6 @@ export async function renderComponent(
   const {hNodes} = await handleChildrenRender({
     parentHNode: hNode,
     children,
-    dom: ctx.dom,
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
     addElementToParent: ctx.addElementToParent,

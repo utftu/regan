@@ -1,20 +1,18 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {DomSimpleProps, JSXNode} from '../node/node.ts';
+import {JSXNode} from '../node/node.ts';
 import {AddElementToParent, RenderCtx} from '../node/render/render.ts';
 import {Child} from '../types.ts';
 
 export async function handleChildrenRender({
   children,
   parentHNode,
-  dom,
   globalCtx,
   parentJsxSegment,
   addElementToParent,
   renderCtx,
 }: {
-  dom: DomSimpleProps;
   children: Child[];
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
@@ -36,7 +34,6 @@ export async function handleChildrenRender({
     }
 
     const renderResult = await (child as JSXNode).render({
-      dom: {parent: dom.parent},
       parentHNode,
       globalCtx,
       parentJsxSegment,

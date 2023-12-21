@@ -6,7 +6,6 @@ import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
 import {addElementChild} from './render.ts';
-import {destroyAtom} from '../atoms/atoms.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
@@ -87,11 +86,9 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
 
   ctx.addElementToParent(element);
 
-  // todo add nodes
   const {hNodes} = await handleChildrenRender({
     children: this.children,
     parentHNode: hNode,
-    dom: {parent: element},
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
     addElementToParent: (child: HTMLElement | string) =>
