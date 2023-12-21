@@ -1,14 +1,9 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode, mountHNodes} from '../h-node/h-node.ts';
+import {mountHNodes} from '../h-node/h-node.ts';
 import {JSXNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
-
-// export function mountHNodes(hNode: HNode) {
-//   hNode.mount();
-//   hNode.children.forEach(mountHNodes);
-// }
 
 type HydrateConfig = {
   window?: Window;

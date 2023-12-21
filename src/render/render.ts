@@ -53,11 +53,8 @@ export const redner = async (
     return false;
   }
 
-  // console.log('-----', 'hNode', hNode);
   addElementChild(domNode, el!);
   mountHNodes(hNode);
-  // console.log('-----', 'hNode', hNode);
-  // mountHydratedNodes(hNode);
 
   return true;
 };

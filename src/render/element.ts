@@ -1,12 +1,12 @@
 import {Atom} from 'strangelove';
 import {JSXNodeElement} from '../node/element/element.ts';
-import {destroyAtom} from '../node/node.ts';
 import {handleChildrenRender} from './children.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
 import {addElementChild} from './render.ts';
+import {destroyAtom} from '../atoms/atoms.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
@@ -14,7 +14,6 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
 
   const listeners: Record<string, any> = {};
 
-  const atoms: Atom[] = [];
   const mounts = [];
 
   for (const name in this.props) {
@@ -23,7 +22,6 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     if (prop instanceof Atom) {
       const atomValue = ctx.renderCtx.snapshot.parse(prop);
 
-      // todo
       if (typeof atomValue === 'function') {
         addEventListenerStore({
           listener: atomValue,
@@ -58,46 +56,6 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
       continue;
     }
 
-    // const execTemp = () => {
-    //   ctx.renderContext.changedAtoms.push(prop);
-    // };
-    // ctx.globalCtx.root.addExec(prop, execTemp);
-    // mounts.push((hNode: HNode) => {
-    //   const exec = (value: any) => {
-    //     if (typeof value === 'function') {
-    //       addEventListenerStore({
-    //         listener: value,
-    //         store: listeners,
-    //         elem: element,
-    //         name,
-    //       });
-    //     } else {
-    //       element.setAttribute(name, value);
-    //     }
-    //   };
-    //   ctx.globalCtx.root.replaceExec(prop, execTemp, exec);
-    //   hNode.unmounts.push(() => ctx.globalCtx.root.removeExec(prop, exec));
-    // });
-
-    // if (prop instanceof Atom) {
-    //   const atom = selectRegan((get) => {
-    //     const value = get(prop);
-
-    //     if (typeof value === 'function') {
-    //       addEventListenerStore({
-    //         listener: value,
-    //         store: listeners,
-    //         elem: element,
-    //         name,
-    //       });
-    //     } else {
-    //       element.setAttribute(name, value);
-    //     }
-    //   });
-    //   atoms.push(atom);
-    //   continue;
-    // }
-
     if (typeof prop === 'function') {
       addEventListenerStore({
         name,
@@ -111,13 +69,15 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   }
 
   const hNode = new HNode({
-    // elem: element,
-    mounts: [
+    unmounts: [
       () => {
-        return () => {
-          atoms.forEach((atom) => destroyAtom(atom));
-          element.remove();
-        };
+        element.remove();
+      },
+      () => {
+        for (const listenerKey in listeners) {
+          const listener = listeners[listenerKey];
+          element.removeEventListener(listenerKey, listener);
+        }
       },
     ],
     jsxSegment,
@@ -126,10 +86,9 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   });
 
   ctx.addElementToParent(element);
-  // ctx.dom.parent.appendChild(element);
 
   // todo add nodes
-  await handleChildrenRender({
+  const {hNodes} = await handleChildrenRender({
     children: this.children,
     parentHNode: hNode,
     dom: {parent: element},
@@ -139,6 +98,7 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
       addElementChild(element, child),
     renderCtx: ctx.renderCtx,
   });
+  hNode.addChildren(hNodes);
 
   return {hNode};
 }

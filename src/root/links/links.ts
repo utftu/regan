@@ -1,6 +1,6 @@
 import {Atom} from 'strangelove';
 import {Exec, Root} from '../root.ts';
-import {destroyAtom} from '../../node/node.ts';
+import {destroyAtom} from '../../atoms/atoms.ts';
 
 type LinkConfig = {
   execs: Exec[];

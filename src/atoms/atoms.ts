@@ -1,4 +1,11 @@
-import {Atom, Root, SelectCb, createDefaultRoot, selectBase} from 'strangelove';
+import {
+  Atom,
+  Root,
+  SelectCb,
+  createDefaultRoot,
+  selectBase,
+  disconnectAtoms,
+} from 'strangelove';
 
 let root: Root | null = null;
 
@@ -35,19 +42,6 @@ export function subscribeAtomChange(atom: Atom, exec: () => void) {
   return newAtom;
 }
 
-// export function selectReganSecondRun<TCb extends SelectCb>(cb: TCb) {
-//   let firstRun = true;
-//   return selectBase<TCb>(
-//     (get) => {
-//       const result = cb(get);
-//     },
-//     {
-//       root: getRoot(),
-//       onAtomCreate: () => {},
-//     }
-//   );
-// }
-
 export const SELECT_REGAN_NAMED = Symbol('SELECT_REGAN_NAMED');
 export function selectReganNamed<TCb extends SelectCb>(cb: TCb) {
   return selectBase<TCb>(cb, {
@@ -58,8 +52,9 @@ export function selectReganNamed<TCb extends SelectCb>(cb: TCb) {
   });
 }
 
-// todo
-// export function selectReganRunSecond<TCb extends SelectCb>(cb: TCb) {
-//   let firstExec = true;
-//   return selectRegan(cb);
-// }
+export function destroyAtom(atom: Atom) {
+  for (const parent of atom.relations.parents) {
+    disconnectAtoms(parent, atom);
+  }
+  atom.transaction = {};
+}

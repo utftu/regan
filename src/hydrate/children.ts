@@ -1,6 +1,6 @@
-import {Atom, atom} from 'strangelove';
+import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {DomProps, HContext, JSXNode} from '../node/node.ts';
+import {DomProps, JSXNode} from '../node/node.ts';
 import {Child} from '../types.ts';
 import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
@@ -9,6 +9,7 @@ import {HNode} from '../h-node/h-node.ts';
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.ts';
+import {HContext} from '../node/hydrate/hydrate.ts';
 
 function handleAtom(
   atom: Atom,

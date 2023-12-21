@@ -1,6 +1,6 @@
+import {destroyAtom} from './atoms/atoms.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {HNode} from './h-node/h-node.ts';
-import {destroyAtom} from './node/node.ts';
 
 export function runOnPromise<TValue>(
   maybePromise: Promise<TValue> | TValue,
@@ -12,18 +12,6 @@ export function runOnPromise<TValue>(
     cb(maybePromise);
   }
 }
-
-// export function getParentDom(node: HNode) {
-//   if (node.elem) {
-//     return node.elem;
-//   }
-
-//   if (node.parent) {
-//     return getParentDom(node);
-//   }
-
-//   return null;
-// }
 
 export function addEventListenerStore({
   listener,

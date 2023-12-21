@@ -1,5 +1,4 @@
 import {Child, Props} from '../types.ts';
-import {Atom, disconnectAtoms} from 'strangelove';
 import {HNode} from '../h-node/h-node.ts';
 import {RenderProps} from './render/render.ts';
 import {HydrateProps} from './hydrate/hydrate.ts';
@@ -42,11 +41,4 @@ export abstract class JSXNode<TType = any, TProps extends Props = any> {
     ctx: HydrateProps
   ): Promise<{insertedCount: number; hNode: HNode}>;
   abstract render(ctx: RenderProps): Promise<{hNode: HNode}>;
-}
-
-export function destroyAtom(atom: Atom) {
-  for (const parent of atom.relations.parents) {
-    disconnectAtoms(parent, atom);
-  }
-  atom.transaction = {};
 }

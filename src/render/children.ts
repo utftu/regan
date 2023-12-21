@@ -1,12 +1,8 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {
-  AddElementToParent,
-  DomSimpleProps,
-  JSXNode,
-  RenderCtx,
-} from '../node/node.ts';
+import {DomSimpleProps, JSXNode} from '../node/node.ts';
+import {AddElementToParent, RenderCtx} from '../node/render/render.ts';
 import {Child} from '../types.ts';
 
 export async function handleChildrenRender({
@@ -36,7 +32,6 @@ export async function handleChildrenRender({
 
     if (typeof child === 'string') {
       addElementToParent(child);
-      // dom.parent.innerHTML = child;
       continue;
     }
 

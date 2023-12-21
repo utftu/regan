@@ -1,10 +1,10 @@
 import {Atom} from 'strangelove';
-import {HydrateProps, destroyAtom} from '../node/node.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HNode} from '../h-node/h-node.ts';
+import {HydrateProps} from '../node/hydrate/hydrate.ts';
 
 export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
   const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
@@ -19,7 +19,6 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     if (prop instanceof Atom) {
       const atomValue = ctx.hContext.snapshot.parse(prop);
 
-      // todo
       if (typeof atomValue === 'function') {
         addEventListenerStore({
           listener: atomValue,
@@ -74,7 +73,6 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     ],
     parent: ctx.parentHNode,
     globalCtx: ctx.globalCtx,
-    // elem: element,
   });
 
   const {hNodes} = await handleChildrenHydrate({
