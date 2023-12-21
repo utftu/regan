@@ -1,15 +1,14 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode} from '../h-node/h-node.ts';
+import {HNode, mountHNodes} from '../h-node/h-node.ts';
 import {JSXNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 
-export function mountHydratedNodes(hNode: HNode) {
-  // console.log('-----', 'here', typeof hNode);
-  hNode.mount();
-  hNode.children.forEach(mountHydratedNodes);
-}
+// export function mountHNodes(hNode: HNode) {
+//   hNode.mount();
+//   hNode.children.forEach(mountHNodes);
+// }
 
 type HydrateConfig = {
   window?: Window;
@@ -31,7 +30,7 @@ export async function hydrate(
   const {hNode} = await node.hydrate({
     jsxSegmentStr: '',
     dom: {parent: domNode, position: 0},
-    parentHydratedNode: undefined,
+    parentHNode: undefined,
     globalCtx,
     hContext: {
       snapshot: new TreeAtomsSnapshot(),
@@ -46,5 +45,5 @@ export async function hydrate(
       return store;
     }, new Map())
   );
-  mountHydratedNodes(hNode);
+  mountHNodes(hNode);
 }

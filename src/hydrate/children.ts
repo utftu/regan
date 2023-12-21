@@ -58,7 +58,7 @@ const prepareChild = (child: JSXNode | Atom, hContext: HContext) => {
 
 export async function handleChildrenHydrate({
   children,
-  parentHydratedNode,
+  parentHNode,
   dom,
   globalCtx,
   parentJsxSegment,
@@ -66,7 +66,7 @@ export async function handleChildrenHydrate({
 }: {
   dom: DomProps;
   children: Child[];
-  parentHydratedNode?: HNode;
+  parentHNode?: HNode;
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
   hContext: HContext;
@@ -87,7 +87,7 @@ export async function handleChildrenHydrate({
       jsxSegmentStr: `${jsxNodeCount}${additionalName}`,
       parentJsxSegment,
       dom: {parent: dom.parent, position},
-      parentHydratedNode,
+      parentHNode,
       globalCtx,
       hContext,
     });
@@ -100,8 +100,8 @@ export async function handleChildrenHydrate({
         if (childNode.type[INSERTED_COUNT] !== DYNAMIC_INSERTED_COUNT) {
           position += childNode.type[INSERTED_COUNT] as number;
         } else {
-          const awaitedhydratedResult = await hydrateResult;
-          position += awaitedhydratedResult.insertedCount;
+          const awaitedhResult = await hydrateResult;
+          position += awaitedhResult.insertedCount;
         }
       } else {
         position++;

@@ -11,7 +11,7 @@ export class ComponentState {
 
 type MountUnmounFunc = (hNode: HNode) => void;
 
-export type PropsHydratedNode = {
+export type PropsHNode = {
   mounts?: MountUnmounFunc[];
   unmounts?: MountUnmounFunc[];
   parent?: HNode;
@@ -34,7 +34,7 @@ export class HNode {
     mounts = [],
     unmounts = [],
     globalCtx,
-  }: PropsHydratedNode) {
+  }: PropsHNode) {
     this.mounts = mounts;
     this.unmounts = unmounts;
     this.parent = parent;
@@ -54,6 +54,16 @@ export class HNode {
   }
 
   addChildren(children: HNode[]) {
-    children.forEach((hydratedNode) => this.children.push(hydratedNode));
+    children.forEach((hNode) => this.children.push(hNode));
   }
 }
+
+export const mountHNodes = (hNode: HNode) => {
+  hNode.mount();
+  hNode.children.forEach((hNode) => mountHNodes(hNode));
+};
+
+export const unmountHNodes = (hNode: HNode) => {
+  hNode.unmount();
+  hNode.children.forEach((hNode) => unmountHNodes(hNode));
+};

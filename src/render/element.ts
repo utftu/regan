@@ -1,12 +1,11 @@
 import {Atom} from 'strangelove';
 import {JSXNodeElement} from '../node/element/element.ts';
-import {RenderProps, destroyAtom} from '../node/node.ts';
-import {selectRegan} from '../atoms/atoms.ts';
+import {destroyAtom} from '../node/node.ts';
 import {handleChildrenRender} from './children.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HNodeElement} from '../h-node/element.ts';
+import {RenderProps} from '../node/render/render.ts';
 import {addElementChild} from './render.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
@@ -136,7 +135,8 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     dom: {parent: element},
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
-    addElementToParent: (child) => addElementChild(element, child),
+    addElementToParent: (child: HTMLElement | string) =>
+      addElementChild(element, child),
     renderCtx: ctx.renderCtx,
   });
 

@@ -72,7 +72,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
         }
       },
     ],
-    parent: ctx.parentHydratedNode,
+    parent: ctx.parentHNode,
     globalCtx: ctx.globalCtx,
     // elem: element,
   });
@@ -84,7 +84,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
       parent: element,
       position: 0,
     },
-    parentHydratedNode: hNode,
+    parentHNode: hNode,
     globalCtx: ctx.globalCtx,
     hContext: ctx.hContext,
   });

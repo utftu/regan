@@ -49,12 +49,10 @@ export async function handleChildrenRender({
       renderCtx,
       addElementToParent,
     });
-    console.log('-----', 'renderResult', renderResult);
     hNodes.push(renderResult.hNode);
 
     insertedJsxNodeCount++;
   }
-  // console.log('-----', 'hNodes', hNodes);
 
   return {
     hNodes,

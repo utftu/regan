@@ -1,10 +1,9 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode} from '../h-node/h-node.ts';
+import {HNode, mountHNodes} from '../h-node/h-node.ts';
 import {JSXNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
-import {mountHydratedNodes} from '../hydrate/hydrate.ts';
 
 type Options = {
   jsxPath?: string;
@@ -56,7 +55,7 @@ export const redner = async (
 
   // console.log('-----', 'hNode', hNode);
   addElementChild(domNode, el!);
-  mountHydratedNodes(hNode);
+  mountHNodes(hNode);
   // console.log('-----', 'hNode', hNode);
   // mountHydratedNodes(hNode);
 

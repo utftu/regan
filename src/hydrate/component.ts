@@ -97,7 +97,7 @@ export async function hydrateComponent(
   const jsxSegment = new JsxSegment(ctx.jsxSegmentStr, ctx.parentJsxSegment);
   const hNode = new HNode({
     jsxSegment,
-    parent: ctx.parentHydratedNode,
+    parent: ctx.parentHNode,
     globalCtx: ctx.globalCtx,
   });
 
@@ -119,7 +119,7 @@ export async function hydrateComponent(
 
   const {insertedCount, hNodes} = await handleChildrenHydrate({
     parentJsxSegment: jsxSegment,
-    parentHydratedNode: hNode,
+    parentHNode: hNode,
     children,
     dom: ctx.dom,
     globalCtx: ctx.globalCtx,

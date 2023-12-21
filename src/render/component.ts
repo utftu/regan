@@ -28,7 +28,6 @@ export async function renderComponent(
   const rawChidlren = await this.type(this.props, componentCtx);
 
   const children = normalizeChildren(rawChidlren);
-  console.log('-----', 'children', children);
 
   const smartMount = createSmartMount(componentCtx);
   hNode.mounts.push(smartMount);
@@ -43,7 +42,6 @@ export async function renderComponent(
     renderCtx: ctx.renderCtx,
   });
 
-  console.log('-----', 'childrenHydrayedNodes', hNodes);
   hNode.addChildren(hNodes);
 
   return {hNode};
