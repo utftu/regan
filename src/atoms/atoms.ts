@@ -6,15 +6,12 @@ import {
   selectBase,
   disconnectAtoms,
 } from 'strangelove';
-import {FastUpdater} from './fast.ts';
 
 let root: Root | null = null;
 
 export function getRoot() {
   if (root === null) {
-    root = new Root({
-      updater: new FastUpdater(),
-    });
+    root = createDefaultRoot();
   }
   return root;
 }
