@@ -26,13 +26,16 @@ export async function renderComponent(
     props: this.props,
     state: new ComponentState(),
     children: this.children,
+    hNode,
   });
+
   const rawChidlren = await this.type(this.props, componentCtx);
 
   const children = normalizeChildren(rawChidlren);
 
   const smartMount = createSmartMount(componentCtx);
   hNode.mounts.push(smartMount);
+  hNode.unmounts.push(...componentCtx.state.unmounts);
 
   const {hNodes} = await handleChildrenRender({
     parentHNode: hNode,

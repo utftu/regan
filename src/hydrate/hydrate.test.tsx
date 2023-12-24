@@ -8,21 +8,27 @@ import {atom} from 'strangelove';
 import {getString} from '../string/string.ts';
 import {hydrate} from './hydrate.ts';
 import {waitTime} from 'utftu';
+import {insertAndHydrate} from '../utils.ts';
 
-async function insertAndHydrate(body: HTMLElement, jsxNode: JSXNode) {
-  const root = document.createElement('div');
-  root.setAttribute('id', 'root');
-  body.appendChild(root);
+// async function insertAndHydrate(
+//   body: HTMLElement,
+//   jsxNode: JSXNode,
+//   jsdom: JSDOM
+// ) {
+//   const root = document.createElement('div');
+//   root.setAttribute('id', 'root');
+//   body.appendChild(root);
 
-  const str = await getString(jsxNode);
-  root.innerHTML = str;
+//   const str = await getString(jsxNode);
+//   root.innerHTML = str;
 
-  await hydrate(root, jsxNode);
+//   await hydrate(root, jsxNode, {
+//     window: jsdom.window as any,
+//   });
 
-  return root;
-}
+//   return root;
+// }
 
-// @vitest-environment jsdom
 describe('hydrate', () => {
   describe('child', () => {
     it('child element', async () => {
@@ -37,7 +43,7 @@ describe('hydrate', () => {
 
       const jsdom = new JSDOM();
 
-      await insertAndHydrate(jsdom.window.document.body, <Component />);
+      await insertAndHydrate({jsdom, jsxNode: <Component />});
 
       const div = jsdom.window.document.getElementById('div')!;
       div.click();
@@ -65,7 +71,7 @@ describe('hydrate', () => {
 
       const jsdom = new JSDOM();
 
-      await insertAndHydrate(jsdom.window.document.body, <Parent />);
+      await insertAndHydrate({jsdom, jsxNode: <Parent />});
 
       const div = jsdom.window.document.getElementById('div')!;
       div.click();
@@ -90,7 +96,7 @@ describe('hydrate', () => {
 
       const jsdom = new JSDOM();
 
-      await insertAndHydrate(jsdom.window.document.body, <Parent />);
+      await insertAndHydrate({jsdom, jsxNode: <Parent />});
 
       const div = jsdom.window.document.getElementById('div')!;
       div.click();
@@ -118,7 +124,7 @@ describe('hydrate', () => {
 
       const jsdom = new JSDOM();
 
-      await insertAndHydrate(jsdom.window.document.body, <Component />);
+      await insertAndHydrate({jsdom, jsxNode: <Component />});
 
       const div = jsdom.window.document.getElementById('div2')!;
       div.click();
@@ -148,7 +154,7 @@ describe('hydrate', () => {
 
       const jsdom = new JSDOM();
 
-      await insertAndHydrate(jsdom.window.document.body, <Component />);
+      await insertAndHydrate({jsdom, jsxNode: <Component />});
 
       const div3 = jsdom.window.document.getElementById('div3')!;
       const div4 = jsdom.window.document.getElementById('div4')!;
@@ -186,7 +192,7 @@ describe('hydrate', () => {
       };
       const jsdom = new JSDOM();
 
-      await insertAndHydrate(jsdom.window.document.body, <Parent />);
+      await insertAndHydrate({jsdom, jsxNode: <Parent />});
 
       expect(mounts[0]).toBe('parent');
       expect(mounts[1]).toBe('child1');
@@ -216,7 +222,7 @@ describe('hydrate', () => {
 
     const jsdom = new JSDOM();
 
-    await insertAndHydrate(jsdom.window.document.body, <Parent />);
+    await insertAndHydrate({jsdom, jsxNode: <Parent />});
 
     const div = jsdom.window.document.getElementById('child')!;
     div.click();
@@ -264,7 +270,7 @@ describe('hydrate', () => {
 
     const jsdom = new JSDOM();
 
-    await insertAndHydrate(jsdom.window.document.body, <Level0 />);
+    await insertAndHydrate({jsdom, jsxNode: <Level0 />});
     expect(level3JsxPath).toBe('0.1.0.0.2?a=0.0.0');
   });
   it('async child', async () => {
@@ -289,7 +295,7 @@ describe('hydrate', () => {
 
     const jsdom = new JSDOM();
 
-    await insertAndHydrate(jsdom.window.document.body, <Parent />);
+    await insertAndHydrate({jsdom, jsxNode: <Parent />});
     jsdom.window.document.getElementById('child')!.click();
 
     expect(childClick.mock.calls.length).toBe(1);

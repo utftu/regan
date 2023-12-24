@@ -21,7 +21,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-istanbul": "^1.1.0",
     "jsdom": "^23.0.1",
-    "strangelove": "^1.0.14",
+    "strangelove": "^1.0.16",
     "utftu": "^1.0.26",
     "vite": "^5.0.10",
     "vitest": "^1.1.0"

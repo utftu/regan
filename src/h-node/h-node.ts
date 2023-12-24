@@ -6,6 +6,7 @@ export type Mount = () => Unmount;
 
 export class ComponentState {
   mounts = [];
+  unmounts = [];
   atoms = [];
 }
 

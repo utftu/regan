@@ -18,6 +18,17 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   const listeners: Record<string, any> = {};
 
   const mounts = [];
+  const unmounts = [
+    () => {
+      element.remove();
+    },
+    () => {
+      for (const listenerKey in listeners) {
+        const listener = listeners[listenerKey];
+        element.removeEventListener(listenerKey, listener);
+      }
+    },
+  ];
 
   for (const name in this.props) {
     const prop = this.props[name] as any;
@@ -40,22 +51,20 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
         ctx.renderCtx.changedAtoms.push(prop);
       };
       ctx.globalCtx.root.addExec(prop, execTemp);
-      mounts.push((hNode: HNode) => {
-        const exec = (value: any) => {
-          if (typeof value === 'function') {
-            addEventListenerStore({
-              listener: value,
-              store: listeners,
-              elem: element,
-              name,
-            });
-          } else {
-            element.setAttribute(name, value);
-          }
-        };
-        ctx.globalCtx.root.replaceExec(prop, execTemp, exec);
-        hNode.unmounts.push(() => ctx.globalCtx.root.removeExec(prop, exec));
-      });
+      const exec = (value: any) => {
+        if (typeof value === 'function') {
+          addEventListenerStore({
+            listener: value,
+            store: listeners,
+            elem: element,
+            name,
+          });
+        } else {
+          element.setAttribute(name, value);
+        }
+      };
+      mounts.push(() => ctx.globalCtx.root.replaceExec(prop, execTemp, exec));
+      unmounts.push(() => ctx.globalCtx.root.removeExec(prop, exec));
       continue;
     }
 
@@ -73,17 +82,8 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
 
   const hNode = new HNodeElement(
     {
-      unmounts: [
-        () => {
-          element.remove();
-        },
-        () => {
-          for (const listenerKey in listeners) {
-            const listener = listeners[listenerKey];
-            element.removeEventListener(listenerKey, listener);
-          }
-        },
-      ],
+      unmounts,
+      mounts,
       jsxSegment,
       parent: ctx.parentHNode,
       globalCtx: ctx.globalCtx,
@@ -99,7 +99,7 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
     addElementToParent: (child: HTMLElement | string) =>
-      addElementChild(element, child),
+      addElementChild({parent: element, el: child}),
     renderCtx: ctx.renderCtx,
   });
   hNode.addChildren(hNodes);

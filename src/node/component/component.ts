@@ -5,8 +5,9 @@ import {renderComponent} from '../../render/component.ts';
 import {GetStringStreamProps} from '../string/string.ts';
 import {HydrateProps} from '../hydrate/hydrate.ts';
 import {RenderProps} from '../render/render.ts';
+import {FC} from '../../types.ts';
 
-export class JSXNodeComponent extends JSXNode implements JSXNode {
+export class JSXNodeComponent extends JSXNode<FC> implements JSXNode {
   async getStringStream(ctx: GetStringStreamProps) {
     return getStringStreamComponent.call(this, ctx);
   }

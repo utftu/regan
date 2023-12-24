@@ -1,4 +1,4 @@
-import {Atom} from 'strangelove';
+import {Atom, connectAtoms} from 'strangelove';
 import {Exec, Root} from '../root.ts';
 import {destroyAtom} from '../../atoms/atoms.ts';
 
@@ -23,7 +23,8 @@ export class Links {
         return true;
       },
     });
-    subsribeAtom.relations.parents.add(atom);
+    connectAtoms(atom, subsribeAtom);
+
     this.links.set(atom, {
       execs: [],
       subsribeAtom,

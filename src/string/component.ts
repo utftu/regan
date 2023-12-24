@@ -19,6 +19,7 @@ export async function getStringStreamComponent(
     mounts: [],
     atoms: [],
   };
+
   const rawChidlren = await this.type(
     this.props,
     new Ctx({

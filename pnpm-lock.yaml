@@ -29,8 +29,8 @@ devDependencies:
     specifier: ^23.0.1
     version: 23.0.1
   strangelove:
-    specifier: ^1.0.14
-    version: 1.0.14
+    specifier: ^1.0.16
+    version: 1.0.16
   utftu:
     specifier: ^1.0.26
     version: 1.0.26
@@ -1480,8 +1480,8 @@ packages:
     resolution: {integrity: sha512-aFZ19IgVmhdB2uX599ve2kE6BIE3YMnQ6Gp6BURhW/oIzpXGKr878TQfAQZn1+i0Flcc/UKUy1gOlcfaUBCryg==}
     dev: true
 
-  /strangelove@1.0.14:
-    resolution: {integrity: sha512-baINHhCGHMM/Eojvj2bz+x/bC8O3qkMW5wbkyRhXBgywpCZINZI7gDVb2JMykuCpqeiBZkAWSuXv7xG+npGnUQ==}
+  /strangelove@1.0.16:
+    resolution: {integrity: sha512-4a06wcUF2bM4iKBYVdnKZ9eOGpR+hhklSHwaf96W0M42Q9gmmu/vgA5ubg60EystpWDuVTy45Dpn1xrcuDFyFQ==}
     dev: true
 
   /strip-final-newline@3.0.0:

@@ -1,5 +1,5 @@
 import {Atom, selectBase} from 'strangelove';
-import {Child, Mount} from '../types.ts';
+import {Child, Mount, Unmount} from '../types.ts';
 import {getRoot} from '../atoms/atoms.ts';
 import {
   JsxSegment,
@@ -11,6 +11,7 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 
 type State = {
   mounts: Mount[];
+  unmounts: Unmount[];
   atoms: (Atom | Promise<Atom>)[];
 };
 
@@ -19,7 +20,7 @@ type PropsCtx<TProps> = {
   state: State;
   children: Child[];
   jsxSegment: JsxSegment;
-  hNode?: HNode;
+  hNode: HNode;
   globalCtx: GlobalCtx;
   // jsxPath: string;
 };
@@ -29,7 +30,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
   props: TProps;
   children: Child[];
   jsxSegment: JsxSegment;
-  hNode?: HNode;
+  hNode: HNode;
   globalCtx: GlobalCtx;
   // jsxPath: string;
 
@@ -59,9 +60,13 @@ export class Ctx<TProps extends Record<any, any> = any> {
   //   return this.globalCtx.stage;
   // }
 
-  mount(fn: Mount) {
+  mount = (fn: Mount) => {
     this.state.mounts.push(fn);
-  }
+  };
+
+  unmount = (fn: Unmount) => {
+    this.state.unmounts.push(fn);
+  };
 
   atom<TValue>(value: TValue) {
     const atom = Atom.new({
