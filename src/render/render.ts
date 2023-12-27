@@ -6,13 +6,6 @@ import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {ElementPointer} from '../types.ts';
 
-type Options = {
-  jsxPath?: string;
-  parentHNode?: HNode;
-  window?: Window;
-  data?: Record<any, any>;
-};
-
 export const addElementChildren = ({
   parent,
   prev = undefined,
@@ -32,29 +25,12 @@ export const addElementChildren = ({
 
 export const appendElementChild = ({
   parent,
-  // prev,
   el,
 }: {
   parent: HTMLElement;
-  // prev?: HTMLElement | void;
   el: HTMLElement | string;
 }) => {
   parent.append(el);
-  // if (typeof el === 'string') {
-  //   if (!prev) {
-  //     parent.innerHTML += el;
-  //     return;
-  //   }
-  //   parent.insertAdjacentHTML('afterend', el);
-  //   return;
-  // }
-
-  // if (!prev) {
-  //   parent.appendChild(el);
-  //   return;
-  // }
-
-  // prev.after(el);
 };
 
 export const rednerRaw = async ({

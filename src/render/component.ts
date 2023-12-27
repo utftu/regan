@@ -4,8 +4,8 @@ import {JSXNodeComponent} from '../node/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenRender} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {createSmartMount} from '../utils.ts';
 import {RenderProps} from '../node/render/render.ts';
+import {createSmartMount} from '../h-node/helpers.ts';
 
 export async function renderComponent(
   this: JSXNodeComponent,

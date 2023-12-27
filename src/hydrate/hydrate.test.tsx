@@ -8,7 +8,7 @@ import {atom} from 'strangelove';
 import {getString} from '../string/string.ts';
 import {hydrate} from './hydrate.ts';
 import {waitTime} from 'utftu';
-import {insertAndHydrate} from '../utils.ts';
+import {insertAndHydrate} from '../utils/tests.ts';
 
 // async function insertAndHydrate(
 //   body: HTMLElement,

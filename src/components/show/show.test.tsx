@@ -1,8 +1,8 @@
 import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
-import {insertAndHydrate} from '../../utils.ts';
 import {Show} from './show.ts';
 import {createAtomRegan} from '../../atoms/atoms.ts';
+import {insertAndHydrate} from '../../utils/tests.ts';
 
 describe('show', () => {
   it('simple', async () => {

@@ -5,7 +5,7 @@ import {handleChildrenHydrate} from './children.ts';
 import {ComponentState, HNode} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HydrateProps} from '../node/hydrate/hydrate.ts';
-import {createSmartMount} from '../utils.ts';
+import {createSmartMount} from '../h-node/helpers.ts';
 
 export async function hydrateComponent(
   this: JSXNodeComponent,
