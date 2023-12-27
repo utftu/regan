@@ -11,48 +11,45 @@ type HydrateConfig = {
   jsxPath?: string;
 };
 
-export async function hydrate(
-  domNode: HTMLElement,
-  node: JSXNode,
-  config: HydrateConfig = {window}
-) {
-  const changedAtoms: Atom[] = [];
-  const root = new Root();
-  const globalCtx = new GlobalCtx({
-    // window: config.window || window,
-    // stage: 'hydrate',
-    mode: 'server',
-    root,
-  });
-  const {hNode} = await node.hydrate({
-    jsxSegmentStr: '',
-    dom: {parent: domNode, position: 0},
-    parentHNode: undefined,
-    globalCtx,
-    hNodeCtx: new HNodeCtx({
-      window: config.window || window,
-      getInitElemPointer() {
-        return {
-          parent: domNode.parentElement!,
-          prev: domNode.previousElementSibling as HTMLElement,
-        };
-      },
-    }),
-    hCtx: {
-      snapshot: new TreeAtomsSnapshot(),
-      changedAtoms,
-    },
-  });
+// export async function hydrate(
+//   domNode: HTMLElement,
+//   node: JSXNode,
+//   config: HydrateConfig = {window}
+// ) {
+//   const changedAtoms: Atom[] = [];
+//   const root = new Root();
+//   const globalCtx = new GlobalCtx({
+//     mode: 'server',
+//     root,
+//   });
+//   const {hNode} = await node.hydrate({
+//     jsxSegmentStr: '',
+//     dom: {parent: domNode, position: 0},
+//     parentHNode: undefined,
+//     globalCtx,
+//     hNodeCtx: new HNodeCtx({
+//       window: config.window || window,
+//       getInitElemPointer() {
+//         return {
+//           parent: domNode.parentElement!,
+//           prev: domNode.previousElementSibling as HTMLElement,
+//         };
+//       },
+//     }),
+//     hCtx: {
+//       snapshot: new TreeAtomsSnapshot(),
+//       changedAtoms,
+//     },
+//   });
 
-  // globalCtx.stage = 'idle';
-  root.addTx(
-    changedAtoms.reduce((store, atom) => {
-      store.set(atom, atom.get());
-      return store;
-    }, new Map())
-  );
-  mountHNodes(hNode);
-}
+//   root.addTx(
+//     changedAtoms.reduce((store, atom) => {
+//       store.set(atom, atom.get());
+//       return store;
+//     }, new Map())
+//   );
+//   mountHNodes(hNode);
+// }
 
 const getPosition = (parent: HTMLElement, prev: HTMLElement | void) => {
   if (!prev) {
@@ -110,13 +107,18 @@ export async function hydrateRaw({
   mountHNodes(hNode);
 }
 
-export const hydrateNew = (element: HTMLElement, node: JSXNode) => {
+export const hydrate = (
+  element: HTMLElement,
+  node: JSXNode,
+  options: {window: Window} = {window}
+) => {
   return hydrateRaw({
     getElementPointer() {
       return {
         parent: element.parentElement!,
       };
     },
+    window: options.window,
     node,
   });
 };

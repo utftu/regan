@@ -1,4 +1,4 @@
-import {hydrateRaw} from '../hydrate/hydrate.ts';
+import {hydrate, hydrateRaw} from '../hydrate/hydrate.ts';
 import {JSXNode} from '../node/node.ts';
 import {getString} from '../string/string.ts';
 import {JSDOM} from 'jsdom';
@@ -16,6 +16,8 @@ export async function insertAndHydrate({
 
   const str = await getString(jsxNode);
   root.innerHTML = str;
+
+  // await hydrate(root, jsxNode, {window: jsdom.window as any});
 
   await hydrateRaw({
     node: jsxNode,

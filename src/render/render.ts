@@ -7,33 +7,6 @@ import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {ElementPointer} from '../types.ts';
 import {addElementChildren} from '../utils/dom.ts';
 
-// export const addElementChildren = ({
-//   parent,
-//   prev = undefined,
-//   elements,
-// }: {
-//   parent: HTMLElement;
-//   prev?: HTMLElement | void;
-//   elements: (HTMLElement | string)[];
-// }) => {
-//   if (!prev) {
-//     parent.prepend(...elements);
-//     return;
-//   }
-
-//   prev.after(...elements);
-// };
-
-// export const appendElementChild = ({
-//   parent,
-//   el,
-// }: {
-//   parent: HTMLElement;
-//   el: HTMLElement | string;
-// }) => {
-//   parent.append(el);
-// };
-
 export const rednerRaw = async ({
   node,
   window: localWindow = window,
