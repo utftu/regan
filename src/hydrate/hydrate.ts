@@ -115,7 +115,7 @@ export const hydrate = (
   return hydrateRaw({
     getElementPointer() {
       return {
-        parent: element.parentElement!,
+        parent: element,
       };
     },
     window: options.window,
