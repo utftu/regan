@@ -30,30 +30,31 @@ export const addElementChildren = ({
   prev.after(...elements);
 };
 
-export const addElementChild = ({
+export const appendElementChild = ({
   parent,
-  prev,
+  // prev,
   el,
 }: {
   parent: HTMLElement;
-  prev?: HTMLElement | void;
+  // prev?: HTMLElement | void;
   el: HTMLElement | string;
 }) => {
-  if (typeof el === 'string') {
-    if (!prev) {
-      parent.innerHTML += el;
-      return;
-    }
-    parent.insertAdjacentHTML('afterend', el);
-    return;
-  }
+  parent.append(el);
+  // if (typeof el === 'string') {
+  //   if (!prev) {
+  //     parent.innerHTML += el;
+  //     return;
+  //   }
+  //   parent.insertAdjacentHTML('afterend', el);
+  //   return;
+  // }
 
-  if (!prev) {
-    parent.appendChild(el);
-    return;
-  }
+  // if (!prev) {
+  //   parent.appendChild(el);
+  //   return;
+  // }
 
-  prev.after(el);
+  // prev.after(el);
 };
 
 export const rednerRaw = async ({
