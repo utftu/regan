@@ -5,8 +5,8 @@ import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
-import {appendElementChild} from './render.ts';
 import {HNodeElement} from '../h-node/element.ts';
+import {appendElementChild} from '../utils/dom.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   const jsxSegment = new JsxSegment({
