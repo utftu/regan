@@ -3,7 +3,7 @@ import {JSDOM} from 'jsdom';
 import {FC} from '../types.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {Atom, atom} from 'strangelove';
-import {redner} from './render.ts';
+import {render} from './render.ts';
 
 describe('render', () => {
   it('markup', async () => {
@@ -28,7 +28,7 @@ describe('render', () => {
 
     const jsdom = new JSDOM();
 
-    await redner(jsdom.window.document.body, <Parent />, {
+    await render(jsdom.window.document.body, <Parent />, {
       window: jsdom.window as any as Window,
     });
 
@@ -62,7 +62,7 @@ describe('render', () => {
     const jsdom = new JSDOM();
     const document = jsdom.window.document;
 
-    await redner(document.body, <Parent />, {
+    await render(document.body, <Parent />, {
       window: jsdom.window as any as Window,
     });
 
@@ -100,7 +100,7 @@ describe('render', () => {
     const jsdom = new JSDOM();
     const document = jsdom.window.document;
 
-    await redner(document.body, <Parent />, {
+    await render(document.body, <Parent />, {
       window: jsdom.window as any as Window,
     });
 
@@ -151,7 +151,7 @@ describe('render', () => {
     const jsdom = new JSDOM();
     const document = jsdom.window.document;
 
-    await redner(document.body, <Level0 />, {
+    await render(document.body, <Level0 />, {
       window: jsdom.window as any as Window,
     });
     expect(level3JsxPath).toBe('0.1.0.0.2.0');

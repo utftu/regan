@@ -1,5 +1,6 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
+import {ElementPointer} from '../types.ts';
 
 type Unmount = () => any;
 export type Mount = () => Unmount;
@@ -18,6 +19,7 @@ export type PropsHNode = {
   parent?: HNode;
   jsxSegment: JsxSegment;
   globalCtx: GlobalCtx;
+  hNodeCtx: HNodeCtx;
 };
 
 // HNode
@@ -28,6 +30,7 @@ export class HNode {
   parent?: HNode;
   jsxSegment: JsxSegment;
   globalCtx: GlobalCtx;
+  hNodeCtx: HNodeCtx;
 
   constructor({
     parent,
@@ -35,12 +38,14 @@ export class HNode {
     mounts = [],
     unmounts = [],
     globalCtx,
+    hNodeCtx,
   }: PropsHNode) {
     this.mounts = mounts;
     this.unmounts = unmounts;
     this.parent = parent;
     this.jsxSegment = jsxSegment;
     this.globalCtx = globalCtx;
+    this.hNodeCtx = hNodeCtx;
   }
 
   unmounted = false;
@@ -68,3 +73,19 @@ export const unmountHNodes = (hNode: HNode) => {
   hNode.unmount();
   hNode.children.forEach((hNode) => unmountHNodes(hNode));
 };
+
+export class HNodeCtx {
+  getInitElemPointer: () => ElementPointer;
+  window: Window;
+
+  constructor({
+    getInitElemPointer,
+    window: localWindow,
+  }: {
+    getInitElemPointer: () => ElementPointer;
+    window: Window;
+  }) {
+    this.getInitElemPointer = getInitElemPointer;
+    this.window = localWindow;
+  }
+}

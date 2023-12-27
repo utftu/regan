@@ -1,7 +1,7 @@
 import {destroyAtom} from './atoms/atoms.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {HNode} from './h-node/h-node.ts';
-import {hydrate} from './hydrate/hydrate.ts';
+import {hydrate, hydrateRaw} from './hydrate/hydrate.ts';
 import {JSXNode} from './node/node.ts';
 import {getString} from './string/string.ts';
 import {JSDOM} from 'jsdom';
@@ -70,9 +70,17 @@ export async function insertAndHydrate({
   const str = await getString(jsxNode);
   root.innerHTML = str;
 
-  await hydrate(root, jsxNode, {
-    window: jsdom.window as any,
+  await hydrateRaw({
+    node: jsxNode,
+    getElementPointer: () => ({
+      parent: root,
+    }),
+    window: jsdom.window as any as Window,
   });
+
+  // await hydrate(root, jsxNode, {
+  //   window: jsdom.window as any,
+  // });
 
   return root;
 }

@@ -1,11 +1,11 @@
 import {Atom} from 'strangelove';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {handleChildrenRender} from './children.ts';
-import {HNode} from '../h-node/h-node.ts';
+import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
-import {addElementChild} from './render.ts';
+import {appendElementChild, addElementChildren} from './render.ts';
 import {HNodeElement} from '../h-node/element.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
@@ -13,7 +13,7 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
   });
-  const element = ctx.globalCtx.window.document.createElement(this.type);
+  const element = ctx.hNodeCtx.window.document.createElement(this.type);
 
   const listeners: Record<string, any> = {};
 
@@ -87,6 +87,7 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
       jsxSegment,
       parent: ctx.parentHNode,
       globalCtx: ctx.globalCtx,
+      hNodeCtx: ctx.hNodeCtx,
     },
     element
   );
@@ -98,19 +99,13 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     parentHNode: hNode,
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
-    addElementToParent: (child: HTMLElement | string) =>
-      addElementChild({parent: element, el: child}),
+    addElementToParent: (child: HTMLElement | string) => {
+      appendElementChild({parent: element, el: child});
+    },
     renderCtx: ctx.renderCtx,
+    hNodeCtx: ctx.hNodeCtx,
   });
   hNode.addChildren(hNodes);
 
   return {hNode};
 }
-
-// const A = () => {
-//   return (
-//     <Try onError=()>
-//       {children}
-//     <Try/>
-//   )
-// }

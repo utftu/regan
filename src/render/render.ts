@@ -1,9 +1,10 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode, mountHNodes, unmountHNodes} from '../h-node/h-node.ts';
+import {HNode, HNodeCtx, mountHNodes, unmountHNodes} from '../h-node/h-node.ts';
 import {JSXNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
+import {ElementPointer} from '../types.ts';
 
 type Options = {
   jsxPath?: string;
@@ -12,17 +13,34 @@ type Options = {
   data?: Record<any, any>;
 };
 
+export const addElementChildren = ({
+  parent,
+  prev = undefined,
+  elements,
+}: {
+  parent: HTMLElement;
+  prev?: HTMLElement | void;
+  elements: (HTMLElement | string)[];
+}) => {
+  if (!prev) {
+    parent.prepend(...elements);
+    return;
+  }
+
+  prev.after(...elements);
+};
+
 export const addElementChild = ({
   parent,
-  prevEl = undefined,
+  prev,
   el,
 }: {
   parent: HTMLElement;
-  prevEl?: HTMLElement | void;
+  prev?: HTMLElement | void;
   el: HTMLElement | string;
 }) => {
   if (typeof el === 'string') {
-    if (!prevEl) {
+    if (!prev) {
       parent.innerHTML += el;
       return;
     }
@@ -30,111 +48,82 @@ export const addElementChild = ({
     return;
   }
 
-  if (!prevEl) {
+  if (!prev) {
     parent.appendChild(el);
     return;
   }
 
-  prevEl.after(el);
-  // parent.appendChild(child);
-};
-
-export const redner = async (
-  domNode: HTMLElement,
-  node: JSXNode,
-  options: Options
-) => {
-  let el: HTMLElement | string;
-  const changedAtoms: Atom[] = [];
-
-  const {hNode} = await node.render({
-    // dom: {parent: domNode},
-    parentHNode: options.parentHNode,
-    jsxSegmentStr: '',
-    globalCtx: new GlobalCtx({
-      window: options.window || window,
-      stage: 'render',
-      root: options.parentHNode?.globalCtx.root ?? new Root(),
-    }),
-    addElementToParent: (localEl) => {
-      el = localEl;
-    },
-    renderCtx: {
-      snapshot: new TreeAtomsSnapshot(),
-      changedAtoms,
-    },
-  });
-
-  if (options.parentHNode?.unmounted === true) {
-    return false;
-  }
-
-  addElementChild({parent: domNode, el: el!});
-  mountHNodes(hNode);
-
-  // return (parent: HTMLElement, prevEl: HTMLElement | number = 0) => {
-  //   if (prevEl === 0) {
-  //     addElementChild(parent, el);
-  //   }
-  //   addElementChild();
-  // };
-
-  return true;
+  prev.after(el);
 };
 
 export const rednerRaw = async ({
   node,
-  options,
+  window: localWindow = window,
+  getElemPointer,
+  parentHNode,
+  data,
+  jsxSegmentStr = '',
 }: {
   node: JSXNode;
-  options: Options;
+  getElemPointer: () => ElementPointer;
+  window?: Window;
+  data?: Record<any, any>;
+  parentHNode?: HNode;
+  jsxSegmentStr?: string;
 }) => {
-  let el: HTMLElement | string;
+  const elements: (HTMLElement | string)[] = [];
   const changedAtoms: Atom[] = [];
 
   const {hNode} = await node.render({
-    // dom: {parent: domNode},
-    parentHNode: options.parentHNode,
-    jsxSegmentStr: '',
-    globalCtx: new GlobalCtx({
-      window: options.window || window,
-      stage: 'render',
-      root: options.parentHNode?.globalCtx.root ?? new Root(),
-    }),
+    parentHNode: parentHNode,
+    jsxSegmentStr,
+    globalCtx:
+      parentHNode?.globalCtx ??
+      new GlobalCtx({
+        data,
+        mode: 'client',
+        root: new Root(),
+      }),
+    hNodeCtx:
+      parentHNode?.hNodeCtx ??
+      new HNodeCtx({
+        window: localWindow,
+        getInitElemPointer: getElemPointer,
+      }),
     addElementToParent: (localEl) => {
-      el = localEl;
+      elements.push(localEl);
     },
     renderCtx: {
       snapshot: new TreeAtomsSnapshot(),
       changedAtoms,
     },
   });
-
-  // return ({
-  //   parent,
-  //   prevEl,
-  // }: {
-  //   parent: HTMLElement;
-  //   prevEl?: HTMLElement | void;
-  // }) => {
-  //   addElementChild({parent, prevEl, el});
-  //   mountHNodes(hNode);
-  // };
 
   return {
     hNode,
     unmount: () => {
       unmountHNodes(hNode);
     },
-    mount: ({
-      parent,
-      prevEl,
-    }: {
-      parent: HTMLElement;
-      prevEl?: HTMLElement | void;
-    }) => {
-      addElementChild({parent, prevEl, el});
+    mount: () => {
+      const {parent, prev} = getElemPointer();
+
+      addElementChildren({parent, prev, elements});
       mountHNodes(hNode);
     },
   };
+};
+
+export const render = async (
+  element: HTMLElement,
+  node: JSXNode,
+  options: {window: Window} = {window}
+) => {
+  const {mount} = await rednerRaw({
+    node,
+    getElemPointer: () => ({
+      parent: element,
+    }),
+    window: options.window,
+  });
+  mount();
 };

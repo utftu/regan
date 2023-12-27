@@ -2,6 +2,7 @@ import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JSXNode} from '../node/node.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
+import {Root} from '../root/root.ts';
 
 async function convertStreamToString(stream: ReadableStream) {
   const reader = stream.getReader();
@@ -28,9 +29,9 @@ export async function getString(node: JSXNode, config: GetStringConfig = {}) {
   const stream = await node.getStringStream({
     jsxSegmentStr: '',
     globalCtx: new GlobalCtx({
-      window: null as any,
-      stage: 'string',
+      mode: 'server',
       data: {},
+      root: new Root(),
     }),
     stringContext: {
       snapshot: new TreeAtomsSnapshot(),

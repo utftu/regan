@@ -52,9 +52,9 @@ export class Ctx<TProps extends Record<any, any> = any> {
     // this.jsxPath = jsxPath;
   }
 
-  getStage() {
-    return this.globalCtx.stage;
-  }
+  // getStage() {
+  //   return this.globalCtx.stage;
+  // }
 
   // get status() {
   //   return this.globalCtx.stage;

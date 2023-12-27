@@ -21,3 +21,8 @@ export type FC<TProps extends Record<any, any> = any> = (
   props: TProps,
   ctx: Ctx<TProps>
 ) => FCReturn;
+
+export type ElementPointer = {
+  parent: HTMLElement;
+  prev?: HTMLElement;
+};

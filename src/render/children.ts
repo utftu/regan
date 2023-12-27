@@ -1,5 +1,5 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode} from '../h-node/h-node.ts';
+import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {JSXNode} from '../node/node.ts';
 import {AddElementToParent, RenderCtx} from '../node/render/render.ts';
@@ -12,6 +12,7 @@ export async function handleChildrenRender({
   parentJsxSegment,
   addElementToParent,
   renderCtx,
+  hNodeCtx,
 }: {
   children: Child[];
   parentHNode?: HNode;
@@ -19,6 +20,7 @@ export async function handleChildrenRender({
   parentJsxSegment: JsxSegment;
   addElementToParent: AddElementToParent;
   renderCtx: RenderCtx;
+  hNodeCtx: HNodeCtx;
 }) {
   const hNodes: HNode[] = [];
 
@@ -43,6 +45,7 @@ export async function handleChildrenRender({
       jsxSegmentStr: insertedJsxNodeCount.toString(),
       renderCtx,
       addElementToParent,
+      hNodeCtx,
     });
     hNodes.push(renderResult.hNode);
 

@@ -2,7 +2,6 @@ import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils.ts';
 import {Show} from './show.ts';
-// import {atom} from 'strangelove';
 import {createAtomRegan} from '../../atoms/atoms.ts';
 
 describe('show', () => {
@@ -25,7 +24,7 @@ describe('show', () => {
 
     await insertAndHydrate({jsdom, jsxNode: <Component />});
 
-    expect(!!document.getElementById('child')).toBe(true);
+    expect(document.getElementById('child')).not.toBe(null);
 
     await when.set(false);
 

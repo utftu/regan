@@ -19,6 +19,7 @@ export async function renderComponent(
     parent: ctx.parentHNode,
     jsxSegment,
     globalCtx: ctx.globalCtx,
+    hNodeCtx: ctx.hNodeCtx,
   });
   const componentCtx = new Ctx({
     globalCtx: ctx.globalCtx,
@@ -44,6 +45,7 @@ export async function renderComponent(
     parentJsxSegment: jsxSegment,
     addElementToParent: ctx.addElementToParent,
     renderCtx: ctx.renderCtx,
+    hNodeCtx: ctx.hNodeCtx,
   });
 
   hNode.addChildren(hNodes);

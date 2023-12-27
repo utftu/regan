@@ -52,19 +52,20 @@ describe('hydrate', () => {
       expect(onClick.mock.calls.length).toBe(2);
     });
     it('child component', async () => {
+      debugger;
       const onClick = vi.fn();
       const Child = () => {
         return (
-          <div id='div' click={onClick}>
+          <div id='child' click={onClick}>
             child
           </div>
         );
       };
       const Parent = () => {
         return (
-          <div>
-            <div>123</div>
-            <Child />
+          <div id='wrapper'>
+            <div id='parent'>123</div>
+            <Child id='child-component' />
           </div>
         );
       };
@@ -73,7 +74,7 @@ describe('hydrate', () => {
 
       await insertAndHydrate({jsdom, jsxNode: <Parent />});
 
-      const div = jsdom.window.document.getElementById('div')!;
+      const div = jsdom.window.document.getElementById('child')!;
       div.click();
       expect(onClick.mock.calls.length).toBe(1);
       div.click();

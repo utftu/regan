@@ -1,9 +1,8 @@
-import {Atom, select} from 'strangelove';
-import {FC} from '../../types.ts';
-import {subscribeAtomChange} from '../../atoms/atoms.ts';
+import {Atom} from 'strangelove';
+import {ElementPointer, FC} from '../../types.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {HNodeElement} from '../../h-node/element.ts';
-import {redner, rednerRaw} from '../../render/render.ts';
+import {rednerRaw} from '../../render/render.ts';
 import {JSXNode} from '../../node/node.ts';
 
 type Props = {
@@ -34,10 +33,6 @@ const up = (
   hNode: HNode,
   stopIteratePosition: number = 0
 ): HTMLElement | void => {
-  // if (hNode instanceof HNodeElement) {
-  //   return hNode.el;
-  // }
-
   const possibleDownEl = down(hNode.children, stopIteratePosition);
   if (possibleDownEl) {
     return possibleDownEl;
@@ -76,7 +71,7 @@ export const Show: FC<Props> = (
   {when},
   {hNode, globalCtx, mount, unmount, children}
 ) => {
-  if (globalCtx.stage === 'string') {
+  if (globalCtx.mode === 'server') {
     if (!!when.get() === false) {
       return null;
     }
@@ -89,14 +84,6 @@ export const Show: FC<Props> = (
   };
   globalCtx.root.addExec(when, tempExec);
   const exec = async (value: boolean) => {
-    const parentEl = findParentElement(hNode);
-
-    if (!parentEl) {
-      throw new Error('no parent el??????');
-    }
-
-    const prevEl = findPrevElement(hNode);
-
     hNode.children.forEach((hNodeChild) => {
       hNodeChild.unmount();
       hNodeChild.parent = undefined;
@@ -112,21 +99,33 @@ export const Show: FC<Props> = (
     }
 
     const {mount: childMount} = await rednerRaw({
-      node: children[0],
-      options: {
-        window: globalCtx.window,
-        parentHNode: hNode,
+      node: children[0] as JSXNode,
+      window: hNode.hNodeCtx.window,
+      getElemPointer() {
+        const parent = findParentElement(hNode);
+
+        if (!parent) {
+          return hNode.hNodeCtx.getInitElemPointer();
+        }
+
+        const prev = findPrevElement(hNode);
+
+        return {
+          parent,
+          prev,
+        } as ElementPointer;
       },
+      parentHNode: hNode,
     });
 
-    childMount({parent: parentEl, prevEl});
+    childMount();
   };
 
   mount(() => {
     globalCtx.root.replaceExec(when, tempExec, exec);
 
     if (changedBeforeMount === true) {
-      exec();
+      exec(when.get());
     }
   });
   unmount(() => {

@@ -32,7 +32,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     const prop = this.props[name] as any;
 
     if (prop instanceof Atom) {
-      const atomValue = ctx.hContext.snapshot.parse(prop);
+      const atomValue = ctx.hCtx.snapshot.parse(prop);
 
       if (typeof atomValue === 'function') {
         addEventListenerStore({
@@ -44,7 +44,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
       }
 
       const execTemp = () => {
-        ctx.hContext.changedAtoms.push(prop);
+        ctx.hCtx.changedAtoms.push(prop);
       };
       ctx.globalCtx.root.addExec(prop, execTemp);
       const exec = (value: any) => {
@@ -73,6 +73,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
 
   const hNode = new HNodeElement(
     {
+      hNodeCtx: ctx.hNodeCtx,
       jsxSegment,
       mounts,
       unmounts,
@@ -84,6 +85,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
 
   const {hNodes} = await handleChildrenHydrate({
     parentJsxSegment: jsxSegment,
+    hNodeCtx: ctx.hNodeCtx,
     children: this.children,
     dom: {
       parent: element,
@@ -91,7 +93,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
     },
     parentHNode: hNode,
     globalCtx: ctx.globalCtx,
-    hContext: ctx.hContext,
+    hCtx: ctx.hCtx,
   });
 
   hNode.addChildren(hNodes);

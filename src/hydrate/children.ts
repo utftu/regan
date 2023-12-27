@@ -5,7 +5,7 @@ import {Child} from '../types.ts';
 import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
-import {HNode} from '../h-node/h-node.ts';
+import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.ts';
@@ -63,14 +63,16 @@ export async function handleChildrenHydrate({
   dom,
   globalCtx,
   parentJsxSegment,
-  hContext,
+  hCtx: hContext,
+  hNodeCtx,
 }: {
   dom: DomProps;
   children: Child[];
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
-  hContext: HContext;
+  hCtx: HContext;
+  hNodeCtx: HNodeCtx;
 }) {
   const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
   let position = dom.position;
@@ -93,7 +95,8 @@ export async function handleChildrenHydrate({
       dom: {parent: dom.parent, position},
       parentHNode,
       globalCtx,
-      hContext,
+      hCtx: hContext,
+      hNodeCtx,
     });
     hydrateResults.push(hydrateResult);
 
