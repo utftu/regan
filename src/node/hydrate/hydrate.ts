@@ -5,7 +5,7 @@ import {ParentJsxSegment} from '../../jsx-path/jsx-path.ts';
 import {TreeAtomsSnapshot} from '../../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {DomProps} from '../node.ts';
 
-export type HContext = {
+export type HCtx = {
   snapshot: TreeAtomsSnapshot;
   changedAtoms: Atom[];
 };
@@ -16,6 +16,6 @@ export type HydrateProps = {
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;
   parentJsxSegment?: ParentJsxSegment;
-  hCtx: HContext;
+  hCtx: HCtx;
   hNodeCtx: HNodeCtx;
 };

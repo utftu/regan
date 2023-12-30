@@ -1,9 +1,62 @@
+import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {JSXNode} from '../node/node.ts';
 import {AddElementToParent, RenderCtx} from '../node/render/render.ts';
 import {Child} from '../types.ts';
+import {HCtx} from '../node/hydrate/hydrate.ts';
+import {JSXNodeComponent} from '../node/component/component.ts';
+import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.ts';
+import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
+
+const handleAtom = (
+  atom: Atom,
+  hContext: HCtx
+): {name: string; value: JSXNode} | void => {
+  let value: any;
+  let name: string;
+  if ((atom as any as {[SELECT_REGAN_NAMED]: any})[SELECT_REGAN_NAMED]) {
+    const result = hContext.snapshot.parse(atom);
+    value = result.name;
+    name = result.name;
+  } else {
+    value = hContext.snapshot.parse(atom);
+    name = Date.now().toString();
+  }
+
+  if (value instanceof JSXNode) {
+    return {name: `?a=${name}`, value};
+  } else {
+    return;
+  }
+};
+
+const prepareChild = (child: JSXNode | Atom, hCtx: HCtx) => {
+  let childNode!: JSXNode;
+  let additionalName = '';
+
+  if (child instanceof Atom) {
+    const values = handleAtom(child, hCtx);
+    const wrapper = new JSXNodeComponent({
+      type: AtomWrapper,
+      props: {
+        atom: child,
+      },
+      key: '',
+      children: values ? [values.value] : [],
+    });
+    childNode = wrapper;
+    additionalName = values ? values.name : '';
+  } else {
+    childNode = child;
+  }
+
+  return {
+    childNode,
+    additionalName,
+  };
+};
 
 export async function handleChildrenRender({
   children,

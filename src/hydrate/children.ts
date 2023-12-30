@@ -9,11 +9,11 @@ import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.ts';
-import {HContext} from '../node/hydrate/hydrate.ts';
+import {HCtx} from '../node/hydrate/hydrate.ts';
 
 function handleAtom(
   atom: Atom,
-  hContext: HContext
+  hContext: HCtx
 ): {name: string; value: JSXNode} | void {
   let value: any;
   let name: string;
@@ -31,7 +31,7 @@ function handleAtom(
   }
 }
 
-const prepareChild = (child: JSXNode | Atom, hContext: HContext) => {
+const prepareChild = (child: JSXNode | Atom, hContext: HCtx) => {
   let childNode!: JSXNode;
   let additionalName = '';
 
@@ -71,7 +71,7 @@ export async function handleChildrenHydrate({
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
-  hCtx: HContext;
+  hCtx: HCtx;
   hNodeCtx: HNodeCtx;
 }) {
   const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
