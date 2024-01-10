@@ -26,3 +26,10 @@ export type ElementPointer = {
   parent: HTMLElement;
   prev?: HTMLElement;
 };
+
+export type SystemProps = {
+  key?: string;
+  needAwait?: boolean;
+  insertedTagsCount?: number;
+  ref?: Atom<HTMLElement | void>;
+};

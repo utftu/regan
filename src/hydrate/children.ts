@@ -42,7 +42,6 @@ const prepareChild = (child: JSXNode | Atom, hContext: HCtx) => {
       props: {
         atom: child,
       },
-      key: '',
       children: values ? [values.value] : [],
     });
     childNode = wrapper;

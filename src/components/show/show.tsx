@@ -1,7 +1,8 @@
 import {Atom} from 'strangelove';
 import {ElementPointer, FC} from '../../types.ts';
 import {rednerRaw} from '../../render/render.ts';
-import {JSXNode} from '../../node/node.ts';
+// import {JSXNode} from '../../node/node.ts';
+import {Fragment} from '../fragment/fragment.ts';
 import {
   findParentElement,
   findPrevElement,
@@ -19,8 +20,10 @@ export const Show: FC<Props> = (
     if (!!when.get() === false) {
       return null;
     }
-    return children;
+    console.log('-----', 'short end');
+    return <Fragment>{children}</Fragment>;
   }
+  const clientHNode = hNode!;
 
   let changedBeforeMount = false;
   const tempExec = () => {
@@ -28,13 +31,16 @@ export const Show: FC<Props> = (
   };
   globalCtx.root.addExec(when, tempExec);
   const exec = async (value: boolean) => {
-    hNode.children.forEach((hNodeChild) => {
+    // console.log('-----', 'exec', clientHNode.children);
+    clientHNode.children.forEach((hNodeChild) => {
+      console.log('-----', 'hNodeChild', hNodeChild);
       hNodeChild.unmount();
       hNodeChild.parent = undefined;
     });
-    hNode.children.length = 0;
+    console.log('-----', 'reset');
+    clientHNode.children.length = 0;
 
-    if (hNode.unmounted === true) {
+    if (clientHNode.unmounted === true) {
       return;
     }
 
@@ -43,16 +49,16 @@ export const Show: FC<Props> = (
     }
 
     const {mount: childMount} = await rednerRaw({
-      node: children[0] as JSXNode,
-      window: hNode.hNodeCtx.window,
+      node: <Fragment>{children}</Fragment>,
+      window: clientHNode.hNodeCtx.window,
       getElemPointer() {
-        const parent = findParentElement(hNode);
+        const parent = findParentElement(clientHNode);
 
         if (!parent) {
-          return hNode.hNodeCtx.getInitElemPointer();
+          return clientHNode.hNodeCtx.getInitElemPointer();
         }
 
-        const prev = findPrevElement(hNode);
+        const prev = findPrevElement(clientHNode);
 
         return {
           parent,
@@ -79,5 +85,8 @@ export const Show: FC<Props> = (
   if (!!when.get() === false) {
     return null;
   }
-  return children;
+
+  console.log('-----', 'end');
+  // return children;
+  return <Fragment id='frag'>{children}</Fragment>;
 };

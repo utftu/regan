@@ -20,9 +20,8 @@ type PropsCtx<TProps> = {
   state: State;
   children: Child[];
   jsxSegment: JsxSegment;
-  hNode: HNode;
+  hNode?: HNode;
   globalCtx: GlobalCtx;
-  // jsxPath: string;
 };
 
 export class Ctx<TProps extends Record<any, any> = any> {
@@ -30,9 +29,8 @@ export class Ctx<TProps extends Record<any, any> = any> {
   props: TProps;
   children: Child[];
   jsxSegment: JsxSegment;
-  hNode: HNode;
+  hNode?: HNode;
   globalCtx: GlobalCtx;
-  // jsxPath: string;
 
   constructor({
     props,

@@ -18,6 +18,7 @@ export async function getStringStreamComponent(
   const state = {
     mounts: [],
     atoms: [],
+    unmounts: [],
   };
 
   const rawChidlren = await this.type(
@@ -26,7 +27,8 @@ export async function getStringStreamComponent(
       globalCtx: ctx.globalCtx,
       jsxSegment: jsxSegment,
       props: this.props,
-      state: state,
+      state,
+      // hNode,
       children: this.children,
     })
   );

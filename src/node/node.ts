@@ -1,8 +1,9 @@
-import {Child, Props} from '../types.ts';
+import {Child, Props, SystemProps} from '../types.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {RenderProps} from './render/render.ts';
 import {HydrateProps} from './hydrate/hydrate.ts';
 import {GetStringStreamProps} from './string/string.ts';
+import {Atom} from 'strangelove';
 
 export type DomSimpleProps = {
   parent: HTMLElement;
@@ -14,25 +15,29 @@ export type DomProps = DomSimpleProps & {
 
 export abstract class JSXNode<TType = any, TProps extends Props = any> {
   type: TType;
-  key: string;
+  // key: string;
   props: TProps;
+  systemProps: SystemProps;
   children: Child[];
 
   constructor({
     type,
     props,
-    key = '',
+    // key = '',
     children,
+    systemProps = {},
   }: {
     type: TType;
     props: TProps;
-    key: string;
+    // key: string;
     children: Child[];
+    systemProps?: SystemProps;
   }) {
     this.type = type;
-    this.key = key;
+    // this.key = key;
     this.props = props;
     this.children = children;
+    this.systemProps = systemProps;
   }
   abstract getStringStream(
     ctx: GetStringStreamProps

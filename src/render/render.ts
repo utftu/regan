@@ -56,6 +56,10 @@ export const rednerRaw = async ({
       unmountHNodes(hNode);
     },
     mount: () => {
+      if (parentHNode) {
+        parentHNode.addChildren([hNode]);
+      }
+
       const {parent, prev} = getElemPointer();
 
       addElementChildren({parent, prev, elements});
