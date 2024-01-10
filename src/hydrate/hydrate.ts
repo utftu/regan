@@ -6,10 +6,10 @@ import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {ElementPointer} from '../types.ts';
 
-type HydrateConfig = {
-  window?: Window;
-  jsxPath?: string;
-};
+// type HydrateConfig = {
+//   window?: Window;
+//   jsxPath?: string;
+// };
 
 // export async function hydrate(
 //   domNode: HTMLElement,

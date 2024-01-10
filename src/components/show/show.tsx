@@ -7,6 +7,7 @@ import {
   findParentElement,
   findPrevElement,
 } from '../../h-node/helpers/elements.ts';
+import {unmountHNodes} from '../../h-node/h-node.ts';
 
 type Props = {
   when: Atom<any>;
@@ -20,7 +21,6 @@ export const Show: FC<Props> = (
     if (!!when.get() === false) {
       return null;
     }
-    console.log('-----', 'short end');
     return <Fragment>{children}</Fragment>;
   }
   const clientHNode = hNode!;
@@ -31,13 +31,10 @@ export const Show: FC<Props> = (
   };
   globalCtx.root.addExec(when, tempExec);
   const exec = async (value: boolean) => {
-    // console.log('-----', 'exec', clientHNode.children);
     clientHNode.children.forEach((hNodeChild) => {
-      console.log('-----', 'hNodeChild', hNodeChild);
-      hNodeChild.unmount();
+      unmountHNodes(hNodeChild);
       hNodeChild.parent = undefined;
     });
-    console.log('-----', 'reset');
     clientHNode.children.length = 0;
 
     if (clientHNode.unmounted === true) {
@@ -86,7 +83,6 @@ export const Show: FC<Props> = (
     return null;
   }
 
-  console.log('-----', 'end');
   // return children;
-  return <Fragment id='frag'>{children}</Fragment>;
+  return <Fragment>{children}</Fragment>;
 };
