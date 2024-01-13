@@ -105,7 +105,6 @@ export const AtomWrapper: FC<Props> = (
 
   jsxSegment.clearCache();
   jsxSegment.segment += additionalPart;
-  console.log('-----', 'here');
 
   return <Fragment>{value}</Fragment>;
 };
