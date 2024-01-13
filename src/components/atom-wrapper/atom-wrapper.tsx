@@ -38,7 +38,11 @@ export const AtomWrapper: FC<Props> = (
   {hNode, globalCtx, mount, unmount, stage, jsxSegment}
 ) => {
   if (globalCtx.mode === 'server') {
-    return <Fragment>{atom.get()}</Fragment>;
+    const {additionalPart, value} = parseAtom(atom, false);
+
+    jsxSegment.clearCache();
+    jsxSegment.segment += additionalPart;
+    return <Fragment>{value}</Fragment>;
   }
   const clientHNode = hNode!;
 
@@ -101,6 +105,7 @@ export const AtomWrapper: FC<Props> = (
 
   jsxSegment.clearCache();
   jsxSegment.segment += additionalPart;
+  console.log('-----', 'here');
 
   return <Fragment>{value}</Fragment>;
 };
