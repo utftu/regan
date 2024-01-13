@@ -125,14 +125,15 @@ describe('render', () => {
       // 0
       return <Level3 />;
     };
+    const level1Atom = atom(<Level2 />);
     const Level1 = () => {
       return (
         <div>
           level1
           <div>empty</div>
           <div>empty</div>
-          {/* 0.2 */}
-          <Level2 />
+          {/* 0.2(atom-wrapper)?a=0.0(fragment).0(component) */}
+          {level1Atom}
         </div>
       );
     };
@@ -149,11 +150,10 @@ describe('render', () => {
     };
 
     const jsdom = new JSDOM();
-    const document = jsdom.window.document;
 
-    await render(document.body, <Level0 />, {
+    await render(jsdom.window.document.body, <Level0 />, {
       window: jsdom.window as any as Window,
     });
-    expect(level3JsxPath).toBe('0.1.0.0.2.0');
+    expect(/0\.1\.0\.0\.2\?a=\d+\.0\.0\.0/.test(level3JsxPath)).toBe(true);
   });
 });

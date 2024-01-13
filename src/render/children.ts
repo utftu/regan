@@ -9,6 +9,7 @@ import {HCtx} from '../node/hydrate/hydrate.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
+import {formatJsxValue} from '../utils/jsx.ts';
 
 const handleAtom = (
   atom: Atom,
@@ -77,14 +78,30 @@ export async function handleChildrenRender({
   const hNodes: HNode[] = [];
 
   for (let i = 0, insertedJsxNodeCount = 0; i <= children.length; i++) {
-    const child = children[i];
-    if (!child) {
+    // const child = children[i];
+    const childOrAtom = await formatJsxValue(children[i]);
+
+    if (!childOrAtom) {
       continue;
     }
 
-    if (typeof child === 'string') {
-      addElementToParent(child);
+    if (typeof childOrAtom === 'string') {
+      addElementToParent(childOrAtom);
       continue;
+    }
+
+    let child: JSXNode;
+    if (childOrAtom instanceof Atom) {
+      child = new JSXNodeComponent({
+        type: AtomWrapper,
+        children: [],
+        props: {
+          atom: childOrAtom,
+        },
+        systemProps: {},
+      });
+    } else {
+      child = childOrAtom;
     }
 
     const renderResult = await (child as JSXNode).render({

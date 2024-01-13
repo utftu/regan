@@ -250,7 +250,7 @@ describe('hydrate', () => {
           level1
           <div>empty</div>
           <div>empty</div>
-          {/* 0.2(virtual)?a=0.0(fragment).0(component) */}
+          {/* 0.2(atom-wrapper)?a=0.0(fragment).0(component) */}
           {level1Atom}
         </div>
       );
