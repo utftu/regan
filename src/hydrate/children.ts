@@ -10,6 +10,7 @@ import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx} from '../node/hydrate/hydrate.ts';
+import {formatJsxValue} from '../utils/jsx.ts';
 
 function handleAtom(
   atom: Atom,
@@ -76,17 +77,31 @@ export async function handleChildrenHydrate({
   const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
   let position = dom.position;
   for (let i = 0, jsxNodeCount = 0; i <= children.length; i++) {
-    const rawChild = children[i];
-    const child = typeof rawChild === 'function' ? rawChild() : rawChild;
+    // const rawChild = children[i];
+    const childOrAtom = await formatJsxValue(children[i]);
 
-    if (!(child instanceof JSXNode) && !(child instanceof Atom)) {
+    if (!(childOrAtom instanceof JSXNode) && !(childOrAtom instanceof Atom)) {
       continue;
     }
 
-    const {childNode, additionalName} = prepareChild(child, hContext);
+    let child: JSXNode;
+    if (childOrAtom instanceof Atom) {
+      child = new JSXNodeComponent({
+        type: AtomWrapper,
+        children: [],
+        props: {
+          atom: childOrAtom,
+        },
+        systemProps: {},
+      });
+    } else {
+      child = childOrAtom;
+    }
 
-    const hydrateResult = childNode.hydrate({
-      jsxSegmentStr: `${jsxNodeCount}${additionalName}`,
+    // const {childNode, additionalName} = prepareChild(childOrAtom, hContext);
+
+    const hydrateResult = child.hydrate({
+      jsxSegmentStr: `${jsxNodeCount}`,
       parentJsxSegment: {
         jsxSegment: parentJsxSegment,
         position: jsxNodeCount,
@@ -99,12 +114,12 @@ export async function handleChildrenHydrate({
     });
     hydrateResults.push(hydrateResult);
 
-    if (childNode instanceof JSXNodeElement) {
+    if (child instanceof JSXNodeElement) {
       position++;
-    } else if (childNode instanceof JSXNodeComponent) {
-      if (INSERTED_COUNT in childNode.type) {
-        if (childNode.type[INSERTED_COUNT] !== DYNAMIC_INSERTED_COUNT) {
-          position += childNode.type[INSERTED_COUNT] as number;
+    } else if (child instanceof JSXNodeComponent) {
+      if (INSERTED_COUNT in child.type) {
+        if (child.type[INSERTED_COUNT] !== DYNAMIC_INSERTED_COUNT) {
+          position += child.type[INSERTED_COUNT] as number;
         } else {
           const awaitedhResult = await hydrateResult;
           position += awaitedhResult.insertedCount;

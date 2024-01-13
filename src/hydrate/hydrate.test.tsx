@@ -250,7 +250,7 @@ describe('hydrate', () => {
           level1
           <div>empty</div>
           <div>empty</div>
-          {/* 0.2(virtual)?a=0.0(component) */}
+          {/* 0.2(virtual)?a=0.0(fragment).0(component) */}
           {level1Atom}
         </div>
       );
@@ -270,7 +270,7 @@ describe('hydrate', () => {
     const jsdom = new JSDOM();
 
     await insertAndHydrate({jsdom, jsxNode: <Level0 />});
-    expect(level3JsxPath).toBe('0.1.0.0.2?a=0.0.0');
+    expect(level3JsxPath).toBe('0.1.0.0.2?a=0.0.0.0');
   });
   it('async child', async () => {
     const childClick = vi.fn();
