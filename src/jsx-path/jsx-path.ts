@@ -11,7 +11,6 @@ export type ParentJsxSegment = {
 export class JsxSegment {
   segment: string;
   parent?: Parent;
-  // constructor(segment: string, parent?: JsxSegment) {
   constructor({segment, parent}: {segment: string; parent?: Parent}) {
     this.segment = segment;
     this.parent = parent;
@@ -36,6 +35,11 @@ export class JsxSegment {
     const id = getHashFromString(this.getJsxPath());
     this.idCached = id;
     return id;
+  }
+
+  clearCache() {
+    this.jsxPathCached = null;
+    this.idCached = null;
   }
 }
 

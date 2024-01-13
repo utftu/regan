@@ -29,6 +29,7 @@ export async function hydrateComponent(
     children: this.children,
     jsxSegment,
     hNode,
+    stage: 'hydrate',
   });
 
   const rawChidlren = await this.type(this.props, componentCtx);

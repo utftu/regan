@@ -15,6 +15,8 @@ type State = {
   atoms: (Atom | Promise<Atom>)[];
 };
 
+type Stage = 'render' | 'hydrate' | 'string';
+
 type PropsCtx<TProps> = {
   props: TProps;
   state: State;
@@ -22,6 +24,7 @@ type PropsCtx<TProps> = {
   jsxSegment: JsxSegment;
   hNode?: HNode;
   globalCtx: GlobalCtx;
+  stage: Stage;
 };
 
 export class Ctx<TProps extends Record<any, any> = any> {
@@ -31,6 +34,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
   jsxSegment: JsxSegment;
   hNode?: HNode;
   globalCtx: GlobalCtx;
+  stage: Stage;
 
   constructor({
     props,
@@ -39,6 +43,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     jsxSegment,
     hNode,
     globalCtx,
+    stage,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -46,6 +51,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.jsxSegment = jsxSegment;
     this.hNode = hNode;
     this.globalCtx = globalCtx;
+    this.stage = stage;
 
     // this.jsxPath = jsxPath;
   }

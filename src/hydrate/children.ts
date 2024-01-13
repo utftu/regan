@@ -2,13 +2,13 @@ import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {DomProps, JSXNode} from '../node/node.ts';
 import {Child} from '../types.ts';
-import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
+import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.ts';
+import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx} from '../node/hydrate/hydrate.ts';
 
 function handleAtom(
@@ -17,7 +17,7 @@ function handleAtom(
 ): {name: string; value: JSXNode} | void {
   let value: any;
   let name: string;
-  if ((atom as any as {[SELECT_REGAN_NAMED]: any})[SELECT_REGAN_NAMED]) {
+  if ((atom as any as {[NAMED_ATOM_REGAN]: any})[NAMED_ATOM_REGAN]) {
     [name, value] = hContext.snapshot.parse(atom);
   } else {
     value = hContext.snapshot.parse(atom);

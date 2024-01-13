@@ -7,8 +7,8 @@ import {AddElementToParent, RenderCtx} from '../node/render/render.ts';
 import {Child} from '../types.ts';
 import {HCtx} from '../node/hydrate/hydrate.ts';
 import {JSXNodeComponent} from '../node/component/component.ts';
-import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.ts';
-import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
+import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
+import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 
 const handleAtom = (
   atom: Atom,
@@ -16,7 +16,7 @@ const handleAtom = (
 ): {name: string; value: JSXNode} | void => {
   let value: any;
   let name: string;
-  if ((atom as any as {[SELECT_REGAN_NAMED]: any})[SELECT_REGAN_NAMED]) {
+  if ((atom as any as {[NAMED_ATOM_REGAN]: any})[NAMED_ATOM_REGAN]) {
     const result = hContext.snapshot.parse(atom);
     value = result.name;
     name = result.name;

@@ -2,7 +2,7 @@ import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JSXNode} from '../node/node.ts';
 import {Child} from '../types.ts';
-import {SELECT_REGAN_NAMED} from '../atoms/atoms.ts';
+import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {StringContext} from '../node/string/string.ts';
 
@@ -46,7 +46,7 @@ export async function handleChildrenString({
     if (child instanceof Atom) {
       let value: any;
       let name: string;
-      if ((child as any)[SELECT_REGAN_NAMED]) {
+      if ((child as any)[NAMED_ATOM_REGAN]) {
         [name, value] = stringContext.snapshot.parse(child);
       } else {
         value = stringContext.snapshot.parse(child);

@@ -28,6 +28,7 @@ export async function renderComponent(
     state: new ComponentState(),
     children: this.children,
     hNode,
+    stage: 'render',
   });
 
   const rawChidlren = await this.type(this.props, componentCtx);

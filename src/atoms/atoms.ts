@@ -42,15 +42,22 @@ export function subscribeAtomChange(atom: Atom, exec: () => void) {
   return newAtom;
 }
 
-export const SELECT_REGAN_NAMED = Symbol('SELECT_REGAN_NAMED');
-export function selectReganNamed<TCb extends SelectCb>(cb: TCb) {
+export const NAMED_ATOM_REGAN = Symbol('SELECT_REGAN_NAMED');
+export function selectNamedRegan<TCb extends SelectCb>(cb: TCb) {
   return selectBase<TCb>(cb, {
     root: getRoot(),
     onAtomCreate: (atom) => {
-      (atom as any)[SELECT_REGAN_NAMED] = true;
+      (atom as any)[NAMED_ATOM_REGAN] = true;
     },
   });
 }
+
+export const checkNamedAtom = (atom: Atom) => {
+  if (NAMED_ATOM_REGAN in atom) {
+    return true;
+  }
+  return false;
+};
 
 export function destroyAtom(atom: Atom) {
   for (const parent of atom.relations.parents) {

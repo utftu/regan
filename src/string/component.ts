@@ -30,6 +30,7 @@ export async function getStringStreamComponent(
       state,
       // hNode,
       children: this.children,
+      stage: 'string',
     })
   );
 
