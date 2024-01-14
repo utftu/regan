@@ -3,7 +3,6 @@ import {JSXNodeElement} from '../node/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HNode} from '../h-node/h-node.ts';
 import {HydrateProps} from '../node/hydrate/hydrate.ts';
 import {HNodeElement} from '../h-node/element.ts';
 

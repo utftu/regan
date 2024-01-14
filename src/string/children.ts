@@ -5,6 +5,8 @@ import {Child} from '../types.ts';
 import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {StringContext} from '../node/string/string.ts';
+import {Ctx} from '../ctx/ctx.ts';
+import {formatJsxValue} from '../utils/jsx.ts';
 
 type StringStream = TransformStream<string, string>;
 
@@ -20,13 +22,19 @@ export async function handleChildrenString({
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
   stringContext: StringContext;
+  parentCtx?: Ctx;
 }) {
   // run iteration twice
   // first - to start stream process in children
   // second - to handle results
 
   let jsxNodeCount = 0;
+
+  // for (let i = 0, jsxNodeCount = 0; i <= children.length; i++) {
+
+  // Ъ
   const childrenStreams = children.map((rawChild) => {
+    // const childOrAtom = await formatJsxValue(children[i]);
     const child = typeof rawChild === 'function' ? rawChild() : rawChild;
 
     if (child instanceof JSXNode) {

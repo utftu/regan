@@ -23,18 +23,15 @@ export abstract class JSXNode<TType = any, TProps extends Props = any> {
   constructor({
     type,
     props,
-    // key = '',
     children,
     systemProps = {},
   }: {
     type: TType;
     props: TProps;
-    // key: string;
     children: Child[];
     systemProps?: SystemProps;
   }) {
     this.type = type;
-    // this.key = key;
     this.props = props;
     this.children = children;
     this.systemProps = systemProps;
