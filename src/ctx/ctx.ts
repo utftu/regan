@@ -25,6 +25,7 @@ type PropsCtx<TProps> = {
   hNode?: HNode;
   globalCtx: GlobalCtx;
   stage: Stage;
+  parent?: Ctx;
 };
 
 export class Ctx<TProps extends Record<any, any> = any> {
@@ -35,6 +36,8 @@ export class Ctx<TProps extends Record<any, any> = any> {
   hNode?: HNode;
   globalCtx: GlobalCtx;
   stage: Stage;
+  parent?: Ctx;
+  contexts?: Map<any, any>;
 
   constructor({
     props,
@@ -44,6 +47,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     hNode,
     globalCtx,
     stage,
+    parent,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -52,6 +56,10 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.hNode = hNode;
     this.globalCtx = globalCtx;
     this.stage = stage;
+
+    if (parent) {
+      this.parent = parent;
+    }
 
     // this.jsxPath = jsxPath;
   }
