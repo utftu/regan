@@ -56,10 +56,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.hNode = hNode;
     this.globalCtx = globalCtx;
     this.stage = stage;
-
-    if (parent) {
-      this.parent = parent;
-    }
+    this.parent = parent;
 
     // this.jsxPath = jsxPath;
   }
