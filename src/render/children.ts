@@ -6,7 +6,7 @@ import {JSXNode} from '../node/node.ts';
 import {AddElementToParent, RenderCtx} from '../node/render/render.ts';
 import {Child} from '../types.ts';
 import {HCtx} from '../node/hydrate/hydrate.ts';
-import {JSXNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/component/component.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
@@ -39,7 +39,7 @@ const prepareChild = (child: JSXNode | Atom, hCtx: HCtx) => {
 
   if (child instanceof Atom) {
     const values = handleAtom(child, hCtx);
-    const wrapper = new JSXNodeComponent({
+    const wrapper = new JsxNodeComponent({
       type: AtomWrapper,
       props: {
         atom: child,
@@ -92,7 +92,7 @@ export async function handleChildrenRender({
 
     let child: JSXNode;
     if (childOrAtom instanceof Atom) {
-      child = new JSXNodeComponent({
+      child = new JsxNodeComponent({
         type: AtomWrapper,
         children: [],
         props: {

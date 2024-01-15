@@ -1,4 +1,5 @@
 import {Ctx} from '../ctx/ctx.ts';
+import {FC} from '../types.ts';
 
 type Context<TValue = any> = {};
 
@@ -22,23 +23,14 @@ export const getContextValue = <TValue = any>(
 };
 
 // FC<{value: any, context: Context}>
-export const ContextProvider = <TValue = any>(
-  {
-    value,
-    context,
-  }: {
+export const ContextProvider = (<TValue = any>(
+  _props: {
     value: TValue;
     context: Context<TValue>;
   },
   ctx: Ctx
 ) => {
-  if (!ctx.contexts) {
-    ctx.contexts = new Map();
-  }
-
-  ctx.contexts.set(context, value);
-
   return ctx.children;
-};
+}) satisfies FC;
 
 // const ContextProvider: FC<{value: any}> = <T>(context: Context, value: any) => {};

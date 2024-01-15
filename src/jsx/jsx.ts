@@ -1,4 +1,4 @@
-import {JSXNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/component/component.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {Child, FC, Props} from '../types.ts';
 import {separateProps} from './props/props.ts';
@@ -22,7 +22,7 @@ const prepare = ({type, props, children}: PropsPrepareRaw) => {
       children,
     });
   }
-  return new JSXNodeComponent({type, props, children});
+  return new JsxNodeComponent({type, props, children});
 };
 
 export const normalizeChildren = (rawChildren: RawChildren) => {

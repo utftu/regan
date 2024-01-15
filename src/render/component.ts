@@ -1,6 +1,6 @@
 import {ComponentState, HNode} from '../h-node/h-node.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
-import {JSXNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenRender} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
@@ -8,7 +8,7 @@ import {RenderProps} from '../node/render/render.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
 
 export async function renderComponent(
-  this: JSXNodeComponent,
+  this: JsxNodeComponent,
   ctx: RenderProps
 ) {
   const jsxSegment = new JsxSegment({
@@ -25,6 +25,7 @@ export async function renderComponent(
     globalCtx: ctx.globalCtx,
     jsxSegment,
     props: this.props,
+    systemProps: this.systemProps,
     state: new ComponentState(),
     children: this.children,
     hNode,

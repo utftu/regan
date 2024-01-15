@@ -8,7 +8,7 @@ import {StringContext} from '../node/string/string.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
-import {JSXNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/component/component.ts';
 
 type StringStream = TransformStream<string, string>;
 
@@ -51,7 +51,7 @@ export async function handleChildrenString({
 
     let child: JSXNode;
     if (childOrAtom instanceof Atom) {
-      child = new JSXNodeComponent({
+      child = new JsxNodeComponent({
         type: AtomWrapper,
         children: [],
         props: {

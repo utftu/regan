@@ -1,12 +1,12 @@
 import {normalizeChildren} from '../jsx/jsx.ts';
-import {JSXNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenString} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {GetStringStreamProps} from '../node/string/string.ts';
 
 export async function getStringStreamComponent(
-  this: JSXNodeComponent,
+  this: JsxNodeComponent,
   ctx: GetStringStreamProps
 ) {
   const jsxSegment = new JsxSegment({
@@ -27,8 +27,8 @@ export async function getStringStreamComponent(
       globalCtx: ctx.globalCtx,
       jsxSegment: jsxSegment,
       props: this.props,
+      systemProps: this.systemProps,
       state,
-      // hNode,
       children: this.children,
       stage: 'string',
     })

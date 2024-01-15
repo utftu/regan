@@ -1,5 +1,5 @@
 import {Atom, selectBase} from 'strangelove';
-import {Child, Mount, Unmount} from '../types.ts';
+import {Child, Mount, SystemProps, Unmount} from '../types.ts';
 import {getRoot} from '../atoms/atoms.ts';
 import {
   JsxSegment,
@@ -8,6 +8,7 @@ import {
 } from '../jsx-path/jsx-path.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {JsxNodeComponent} from '../node/component/component.ts';
 
 type State = {
   mounts: Mount[];
@@ -19,6 +20,7 @@ type Stage = 'render' | 'hydrate' | 'string';
 
 type PropsCtx<TProps> = {
   props: TProps;
+  systemProps: SystemProps;
   state: State;
   children: Child[];
   jsxSegment: JsxSegment;
@@ -31,13 +33,19 @@ type PropsCtx<TProps> = {
 export class Ctx<TProps extends Record<any, any> = any> {
   state: State;
   props: TProps;
+  systemProps: SystemProps;
   children: Child[];
   jsxSegment: JsxSegment;
   hNode?: HNode;
   globalCtx: GlobalCtx;
   stage: Stage;
   parent?: Ctx;
-  contexts?: Map<any, any>;
+  // jsxNodeComponent: JsxNodeComponent;
+  // contexts?: Map<any, any>;
+  // context?: {
+  //   key: {};
+  //   value: any;
+  // };
 
   constructor({
     props,
@@ -48,6 +56,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     globalCtx,
     stage,
     parent,
+    systemProps,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -57,8 +66,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.globalCtx = globalCtx;
     this.stage = stage;
     this.parent = parent;
-
-    // this.jsxPath = jsxPath;
+    this.systemProps = systemProps;
   }
 
   // getStage() {
@@ -77,7 +85,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.state.unmounts.push(fn);
   };
 
-  atom<TValue>(value: TValue) {
+  createAtom = <TValue>(value: TValue) => {
     const atom = Atom.new({
       value: value,
       root: getRoot(),
@@ -86,7 +94,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.state.atoms.push(atom);
 
     return atom;
-  }
+  };
 
   select<TCb extends (...args: any) => any>(
     cb: TCb

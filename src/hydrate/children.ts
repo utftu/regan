@@ -4,7 +4,7 @@ import {DomProps, JSXNode} from '../node/node.ts';
 import {Child} from '../types.ts';
 import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
-import {JSXNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/component/component.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {DYNAMIC_INSERTED_COUNT, INSERTED_COUNT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
@@ -38,7 +38,7 @@ const prepareChild = (child: JSXNode | Atom, hContext: HCtx) => {
 
   if (child instanceof Atom) {
     const values = handleAtom(child, hContext);
-    const wrapper = new JSXNodeComponent({
+    const wrapper = new JsxNodeComponent({
       type: AtomWrapper,
       props: {
         atom: child,
@@ -86,7 +86,7 @@ export async function handleChildrenHydrate({
 
     let child: JSXNode;
     if (childOrAtom instanceof Atom) {
-      child = new JSXNodeComponent({
+      child = new JsxNodeComponent({
         type: AtomWrapper,
         children: [],
         props: {
@@ -116,7 +116,7 @@ export async function handleChildrenHydrate({
 
     if (child instanceof JSXNodeElement) {
       position++;
-    } else if (child instanceof JSXNodeComponent) {
+    } else if (child instanceof JsxNodeComponent) {
       if (INSERTED_COUNT in child.type) {
         if (child.type[INSERTED_COUNT] !== DYNAMIC_INSERTED_COUNT) {
           position += child.type[INSERTED_COUNT] as number;
