@@ -96,11 +96,11 @@ export class Ctx<TProps extends Record<any, any> = any> {
     return atom;
   };
 
-  select<TCb extends (...args: any) => any>(
+  select = <TCb extends (...args: any) => any>(
     cb: TCb
   ): ReturnType<TCb> extends Promise<infer TResult>
     ? Promise<Atom<TResult>>
-    : Atom<ReturnType<TCb>> {
+    : Atom<ReturnType<TCb>> => {
     const atom = selectBase(cb, {
       root: getRoot(),
       onAtomCreate: () => {},
@@ -109,14 +109,14 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.state.atoms.push(atom);
 
     return atom;
-  }
+  };
 
-  getJsxPath() {
+  getJsxPath = () => {
     return getJsxPath(this.jsxSegment);
-  }
+  };
 
-  getId() {
+  getId = () => {
     const jsxPath = this.getJsxPath();
     return getHashFromString(jsxPath);
-  }
+  };
 }

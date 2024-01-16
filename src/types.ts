@@ -1,6 +1,7 @@
 import {JSXNode} from './node/node.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
+import {Context} from './context/context.tsx';
 
 export type Child =
   | JSXNode
@@ -32,4 +33,6 @@ export type SystemProps = {
   needAwait?: boolean;
   insertedTagsCount?: number;
   ref?: Atom<HTMLElement | void>;
+  context?: Context;
+  contextValue?: any;
 };
