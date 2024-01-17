@@ -33,6 +33,7 @@ export type SystemProps = {
   needAwait?: boolean;
   insertedTagsCount?: number;
   ref?: Atom<HTMLElement | void>;
+  rawHtml?: string;
   context?: Context;
   contextValue?: any;
 };

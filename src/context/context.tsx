@@ -4,7 +4,7 @@ import {FC} from '../types.ts';
 export type Context<TValue = any> = {
   name: string;
   defaultValue: TValue;
-  Provider: any;
+  Provider: FC<{value: TValue}>;
 };
 
 export const createContext = <TValue extends any = any>(
@@ -17,9 +17,9 @@ export const createContext = <TValue extends any = any>(
   } as Context<TValue>;
   context.Provider = (({value}) => (
     <ContextProvider contextValue={value} context={context} />
-  )) satisfies FC<{value: any}>;
+  )) satisfies FC<{value: TValue}>;
 
-  return context satisfies Context;
+  return context;
 };
 
 export const getContextValue = <TValue extends any = any>(
