@@ -1,13 +1,15 @@
 import {Atom} from 'strangelove';
-import {FC} from '../../types.ts';
+import {FC, FCParams} from '../../types.ts';
 import {AtomWrapper} from '../atom-wrapper/atom-wrapper.tsx';
 import {selectNamedRegan} from '../../atoms/atoms.ts';
+import {NEED_AWAIT} from '../../consts.ts';
 
 type Props = {
   when: Atom<boolean>;
 };
 
-export const Show: FC<Props> = ({when}, {children}) => {
+const Show: FC<Props> & FCParams = ({when}, {children, systemProps}) => {
+  systemProps.needAwait = true;
   return (
     <AtomWrapper
       atom={selectNamedRegan((get) => {
@@ -27,3 +29,6 @@ export const Show: FC<Props> = ({when}, {children}) => {
     />
   );
 };
+Show[NEED_AWAIT] = true;
+
+export {Show};

@@ -1,5 +1,5 @@
 import {Atom} from 'strangelove';
-import {ElementPointer, FC} from '../../types.ts';
+import {ElementPointer, FC, FCParams} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {unmountHNodes} from '../../h-node/h-node.ts';
 import {rednerRaw} from '../../render/render.ts';
@@ -8,6 +8,7 @@ import {
   findPrevElement,
 } from '../../h-node/helpers/elements.ts';
 import {checkNamedAtom} from '../../atoms/atoms.ts';
+import {NEED_AWAIT} from '../../consts.ts';
 
 type Props = {
   atom: Atom;
@@ -32,11 +33,12 @@ const parseAtom = (atom: Atom, initRendrering: boolean) => {
 
   return {value, additionalPart};
 };
-// todo
-export const AtomWrapper: FC<Props> = (
+
+const AtomWrapper: FC<Props> & FCParams = (
   {atom},
-  {hNode, globalCtx, mount, unmount, stage, jsxSegment}
+  {hNode, systemProps, globalCtx, mount, unmount, stage, jsxSegment}
 ) => {
+  systemProps.needAwait = true;
   if (globalCtx.mode === 'server') {
     const {additionalPart, value} = parseAtom(atom, false);
 
@@ -108,3 +110,6 @@ export const AtomWrapper: FC<Props> = (
 
   return <Fragment>{value}</Fragment>;
 };
+AtomWrapper[NEED_AWAIT] = true;
+
+export {AtomWrapper};

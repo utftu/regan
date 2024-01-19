@@ -2,6 +2,7 @@ import {JSXNode} from './node/node.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
 import {Context} from './context/context.tsx';
+import {INSERTED_TAGS_COUNT, NEED_AWAIT} from './consts.ts';
 
 export type Child =
   | JSXNode
@@ -36,4 +37,9 @@ export type SystemProps = {
   rawHtml?: string;
   context?: Context;
   contextValue?: any;
+};
+
+export type FCParams = {
+  [NEED_AWAIT]?: boolean;
+  [INSERTED_TAGS_COUNT]?: number;
 };
