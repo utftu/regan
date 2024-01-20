@@ -3,7 +3,6 @@ import {HNode} from '../h-node/h-node.ts';
 import {RenderProps} from './render/render.ts';
 import {HydrateProps} from './hydrate/hydrate.ts';
 import {GetStringStreamProps} from './string/string.ts';
-import {Atom} from 'strangelove';
 
 export type DomSimpleProps = {
   parent: HTMLElement;
@@ -42,5 +41,8 @@ export abstract class JSXNode<TType = any, TProps extends Props = any> {
   abstract hydrate(
     ctx: HydrateProps
   ): Promise<{insertedCount: number; hNode: HNode}>;
-  abstract render(ctx: RenderProps): Promise<{hNode: HNode}>;
+  abstract render(ctx: RenderProps): Promise<{
+    hNode: HNode;
+    // connectElements: (htmlElements: (HTMLElement | string)[]) => void;
+  }>;
 }

@@ -1,7 +1,6 @@
 import {Atom} from 'strangelove';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {handleChildrenRender} from './children.ts';
-import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';

@@ -33,31 +33,6 @@ const handleAtom = (
   }
 };
 
-const prepareChild = (child: JSXNode | Atom, hCtx: HCtx) => {
-  let childNode!: JSXNode;
-  let additionalName = '';
-
-  if (child instanceof Atom) {
-    const values = handleAtom(child, hCtx);
-    const wrapper = new JsxNodeComponent({
-      type: AtomWrapper,
-      props: {
-        atom: child,
-      },
-      children: values ? [values.value] : [],
-    });
-    childNode = wrapper;
-    additionalName = values ? values.name : '';
-  } else {
-    childNode = child;
-  }
-
-  return {
-    childNode,
-    additionalName,
-  };
-};
-
 export async function handleChildrenRender({
   children,
   parentHNode,
@@ -78,7 +53,6 @@ export async function handleChildrenRender({
   const hNodes: HNode[] = [];
 
   for (let i = 0, insertedJsxNodeCount = 0; i <= children.length; i++) {
-    // const child = children[i];
     const childOrAtom = await formatJsxValue(children[i]);
 
     if (!childOrAtom) {
