@@ -1,5 +1,5 @@
 import {Atom} from 'strangelove';
-import {FC, FCParams} from '../../types.ts';
+import {FC, FCStaticParams} from '../../types.ts';
 import {AtomWrapper} from '../atom-wrapper/atom-wrapper.tsx';
 import {selectNamedRegan} from '../../atoms/atoms.ts';
 import {NEED_AWAIT} from '../../consts.ts';
@@ -8,7 +8,7 @@ type Props = {
   when: Atom<boolean>;
 };
 
-const Show: FC<Props> & FCParams = ({when}, {children, systemProps}) => {
+const Show: FC<Props> & FCStaticParams = ({when}, {children, systemProps}) => {
   systemProps.needAwait = true;
   return (
     <AtomWrapper

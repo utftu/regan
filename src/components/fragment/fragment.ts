@@ -1,7 +1,7 @@
 import {NEED_AWAIT} from '../../consts.ts';
-import {FC, FCParams} from '../../types.ts';
+import {FC, FCStaticParams} from '../../types.ts';
 
-const Fragment: FC & FCParams = (_, {systemProps, children}) => {
+const Fragment: FC & FCStaticParams = (_, {systemProps, children}) => {
   systemProps.needAwait = true;
   return children;
 };

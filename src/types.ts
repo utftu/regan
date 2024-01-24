@@ -39,7 +39,9 @@ export type SystemProps = {
   contextValue?: any;
 };
 
-export type FCParams = {
+export type FCStaticParams = {
   [NEED_AWAIT]?: boolean;
   [INSERTED_TAGS_COUNT]?: number;
 };
+
+export type HtmlChild = HTMLElement | string;

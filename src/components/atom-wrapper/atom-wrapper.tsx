@@ -1,5 +1,5 @@
 import {Atom} from 'strangelove';
-import {ElementPointer, FC, FCParams} from '../../types.ts';
+import {ElementPointer, FC, FCStaticParams} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {unmountHNodes} from '../../h-node/h-node.ts';
 import {rednerRaw} from '../../render/render.ts';
@@ -34,7 +34,7 @@ const parseAtom = (atom: Atom, initRendrering: boolean) => {
   return {value, additionalPart};
 };
 
-const AtomWrapper: FC<Props> & FCParams = (
+const AtomWrapper: FC<Props> & FCStaticParams = (
   {atom},
   {hNode, systemProps, globalCtx, mount, unmount, stage, jsxSegment}
 ) => {

@@ -1,7 +1,7 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {DomProps, JSXNode} from '../node/node.ts';
-import {Child, FCParams} from '../types.ts';
+import {Child, FCStaticParams} from '../types.ts';
 import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {JSXNodeElement} from '../node/element/element.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
@@ -91,7 +91,7 @@ export async function handleChildrenHydrate({
     } else if (child instanceof JsxNodeComponent) {
       if (
         child.systemProps.needAwait === true ||
-        (child.type as FCParams)[NEED_AWAIT] === true
+        (child.type as FCStaticParams)[NEED_AWAIT] === true
       ) {
         const awaitedhResult = await hydrateResult;
         position += awaitedhResult.insertedCount;
