@@ -30,6 +30,8 @@ export async function hydrateComponent(
     children: this.children,
     jsxSegment,
     hNode,
+    jsxNodeComponent: this,
+    parentCtx: ctx.parentCtx,
     stage: 'hydrate',
   });
 
@@ -45,6 +47,7 @@ export async function hydrateComponent(
     hNodeCtx: ctx.hNodeCtx,
     parentJsxSegment: jsxSegment,
     parentHNode: hNode,
+    parentCtx: componentCtx,
     children,
     dom: ctx.dom,
     globalCtx: ctx.globalCtx,

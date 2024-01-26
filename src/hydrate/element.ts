@@ -1,12 +1,12 @@
 import {Atom} from 'strangelove';
-import {JSXNodeElement} from '../node/element/element.ts';
+import {JsxNodeElement} from '../node/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HydrateProps} from '../node/hydrate/hydrate.ts';
 import {HNodeElement} from '../h-node/element.ts';
 
-export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
+export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
   const jsxSegment = new JsxSegment({
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
@@ -91,6 +91,7 @@ export async function hydrateElement(this: JSXNodeElement, ctx: HydrateProps) {
       position: 0,
     },
     parentHNode: hNode,
+    parentCtx: ctx.parentCtx,
     globalCtx: ctx.globalCtx,
     hCtx: ctx.hCtx,
   });

@@ -1,5 +1,5 @@
 import {Atom} from 'strangelove';
-import {JSXNodeElement} from '../node/element/element.ts';
+import {JsxNodeElement} from '../node/element/element.ts';
 import {handleChildrenRender} from './children.ts';
 import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
@@ -7,7 +7,7 @@ import {RenderProps} from '../node/render/render.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {addElementChildren, appendElementChild} from '../utils/dom.ts';
 
-export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
+export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
   const jsxSegment = new JsxSegment({
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
@@ -98,6 +98,7 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     parentJsxSegment: jsxSegment,
     renderCtx: ctx.renderCtx,
     hNodeCtx: ctx.hNodeCtx,
+    parentCtx: ctx.parentCtx,
   });
   hNode.addChildren(hNodes);
 

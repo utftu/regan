@@ -1,5 +1,5 @@
 import {JsxNodeComponent} from '../node/component/component.ts';
-import {JSXNodeElement} from '../node/element/element.ts';
+import {JsxNodeElement} from '../node/element/element.ts';
 import {Child, FC, Props} from '../types.ts';
 import {separateProps} from './props/props.ts';
 
@@ -15,7 +15,7 @@ type PropsPrepareRaw = {
 const prepare = ({type, props, children}: PropsPrepareRaw) => {
   const {userProps, systemProps} = separateProps(props);
   if (typeof type === 'string') {
-    return new JSXNodeElement({
+    return new JsxNodeElement({
       type,
       props: userProps,
       systemProps,

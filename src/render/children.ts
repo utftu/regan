@@ -2,12 +2,13 @@ import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {JSXNode} from '../node/node.ts';
+import {JsxNode} from '../node/node.ts';
 import {RenderCtx} from '../node/render/render.ts';
 import {Child} from '../types.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {formatJsxValue} from '../utils/jsx.ts';
+import {Ctx} from '../ctx/ctx.ts';
 
 export async function handleChildrenRender({
   children,
@@ -16,6 +17,7 @@ export async function handleChildrenRender({
   parentJsxSegment,
   renderCtx,
   hNodeCtx,
+  parentCtx,
 }: {
   children: Child[];
   parentHNode?: HNode;
@@ -23,6 +25,7 @@ export async function handleChildrenRender({
   parentJsxSegment: JsxSegment;
   renderCtx: RenderCtx;
   hNodeCtx: HNodeCtx;
+  parentCtx?: Ctx;
 }) {
   const hNodes: HNode[] = [];
   const rawResults = [];
@@ -39,7 +42,7 @@ export async function handleChildrenRender({
       continue;
     }
 
-    let child: JSXNode;
+    let child: JsxNode;
     if (childOrAtom instanceof Atom) {
       child = new JsxNodeComponent({
         type: AtomWrapper,
@@ -56,6 +59,7 @@ export async function handleChildrenRender({
     const renderResult = child.render({
       parentHNode,
       globalCtx,
+      parentCtx,
       parentJsxSegment: {
         jsxSegment: parentJsxSegment,
         position: insertedJsxNodeCount,

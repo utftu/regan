@@ -16,7 +16,7 @@ type State = {
   atoms: (Atom | Promise<Atom>)[];
 };
 
-type Stage = 'render' | 'hydrate' | 'string';
+export type Stage = 'render' | 'hydrate' | 'string';
 
 type PropsCtx<TProps> = {
   props: TProps;
@@ -27,7 +27,8 @@ type PropsCtx<TProps> = {
   hNode?: HNode;
   globalCtx: GlobalCtx;
   stage: Stage;
-  parent?: Ctx;
+  parentCtx?: Ctx;
+  jsxNodeComponent: JsxNodeComponent;
 };
 
 export class Ctx<TProps extends Record<any, any> = any> {
@@ -39,13 +40,9 @@ export class Ctx<TProps extends Record<any, any> = any> {
   hNode?: HNode;
   globalCtx: GlobalCtx;
   stage: Stage;
-  parent?: Ctx;
-  // jsxNodeComponent: JsxNodeComponent;
-  // contexts?: Map<any, any>;
-  // context?: {
-  //   key: {};
-  //   value: any;
-  // };
+  parentCtx?: Ctx;
+  jsxNodeComponent: JsxNodeComponent;
+  ctx: Ctx;
 
   constructor({
     props,
@@ -55,8 +52,9 @@ export class Ctx<TProps extends Record<any, any> = any> {
     hNode,
     globalCtx,
     stage,
-    parent,
+    parentCtx,
     systemProps,
+    jsxNodeComponent,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -65,17 +63,11 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.hNode = hNode;
     this.globalCtx = globalCtx;
     this.stage = stage;
-    this.parent = parent;
+    this.parentCtx = parentCtx;
     this.systemProps = systemProps;
+    this.jsxNodeComponent = jsxNodeComponent;
+    this.ctx = this;
   }
-
-  // getStage() {
-  //   return this.globalCtx.stage;
-  // }
-
-  // get status() {
-  //   return this.globalCtx.stage;
-  // }
 
   mount = (fn: Mount) => {
     this.state.mounts.push(fn);

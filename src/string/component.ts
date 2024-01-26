@@ -21,18 +21,19 @@ export async function getStringStreamComponent(
     unmounts: [],
   };
 
-  const rawChidlren = await this.type(
-    this.props,
-    new Ctx({
-      globalCtx: ctx.globalCtx,
-      jsxSegment: jsxSegment,
-      props: this.props,
-      systemProps: this.systemProps,
-      state,
-      children: this.children,
-      stage: 'string',
-    })
-  );
+  const funcCtx = new Ctx({
+    globalCtx: ctx.globalCtx,
+    jsxSegment: jsxSegment,
+    props: this.props,
+    systemProps: this.systemProps,
+    state,
+    children: this.children,
+    parentCtx: ctx.parentCtx,
+    stage: 'string',
+    jsxNodeComponent: this,
+  });
+
+  const rawChidlren = await this.type(this.props, funcCtx);
 
   const children = normalizeChildren(rawChidlren);
 
@@ -43,6 +44,8 @@ export async function getStringStreamComponent(
       parentJsxSegment: jsxSegment,
       globalCtx: ctx.globalCtx,
       stringContext: ctx.stringContext,
+      parentCtx: funcCtx,
+      parentJsxNode: this,
     });
     await streams.writable.close();
   });

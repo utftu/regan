@@ -29,6 +29,8 @@ export async function renderComponent(
     state: new ComponentState(),
     children: this.children,
     hNode,
+    jsxNodeComponent: this,
+    parentCtx: ctx.parentCtx,
     stage: 'render',
   });
 
@@ -47,6 +49,7 @@ export async function renderComponent(
     parentJsxSegment: jsxSegment,
     renderCtx: ctx.renderCtx,
     hNodeCtx: ctx.hNodeCtx,
+    parentCtx: componentCtx,
   });
 
   hNode.addChildren(hNodes);

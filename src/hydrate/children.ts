@@ -1,9 +1,9 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {DomProps, JSXNode} from '../node/node.ts';
+import {DomProps, JsxNode} from '../node/node.ts';
 import {Child, FCStaticParams} from '../types.ts';
 import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
-import {JSXNodeElement} from '../node/element/element.ts';
+import {JsxNodeElement} from '../node/element/element.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {INSERTED_TAGS_COUNT, NEED_AWAIT} from '../consts.ts';
@@ -11,11 +11,12 @@ import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
+import {Ctx} from '../ctx/ctx.ts';
 
 function handleAtom(
   atom: Atom,
   hContext: HCtx
-): {name: string; value: JSXNode} | void {
+): {name: string; value: JsxNode} | void {
   let value: any;
   let name: string;
   if ((atom as any as {[NAMED_ATOM_REGAN]: any})[NAMED_ATOM_REGAN]) {
@@ -25,7 +26,7 @@ function handleAtom(
     name = '0';
   }
 
-  if (value instanceof JSXNode) {
+  if (value instanceof JsxNode) {
     return {name: `?a=${name}`, value};
   } else {
     return;
@@ -40,6 +41,7 @@ export async function handleChildrenHydrate({
   parentJsxSegment,
   hCtx: hContext,
   hNodeCtx,
+  parentCtx,
 }: {
   dom: DomProps;
   children: Child[];
@@ -48,17 +50,18 @@ export async function handleChildrenHydrate({
   parentJsxSegment: JsxSegment;
   hCtx: HCtx;
   hNodeCtx: HNodeCtx;
+  parentCtx?: Ctx;
 }) {
-  const hydrateResults: ReturnType<JSXNode['hydrate']>[] = [];
+  const hydrateResults: ReturnType<JsxNode['hydrate']>[] = [];
   let position = dom.position;
   for (let i = 0, jsxNodeCount = 0; i <= children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
 
-    if (!(childOrAtom instanceof JSXNode) && !(childOrAtom instanceof Atom)) {
+    if (!(childOrAtom instanceof JsxNode) && !(childOrAtom instanceof Atom)) {
       continue;
     }
 
-    let child: JSXNode;
+    let child: JsxNode;
     if (childOrAtom instanceof Atom) {
       child = new JsxNodeComponent({
         type: AtomWrapper,
@@ -81,12 +84,13 @@ export async function handleChildrenHydrate({
       dom: {parent: dom.parent, position},
       parentHNode,
       globalCtx,
+      parentCtx,
       hCtx: hContext,
       hNodeCtx,
     });
     hydrateResults.push(hydrateResult);
 
-    if (child instanceof JSXNodeElement) {
+    if (child instanceof JsxNodeElement) {
       position++;
     } else if (child instanceof JsxNodeComponent) {
       if (

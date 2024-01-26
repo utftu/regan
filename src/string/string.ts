@@ -1,6 +1,6 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {JSXNode} from '../node/node.ts';
+import {JsxNode} from '../node/node.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {Root} from '../root/root.ts';
 
@@ -25,7 +25,7 @@ type GetStringConfig = {
   jsxPath?: string;
 };
 
-export async function getString(node: JSXNode, config: GetStringConfig = {}) {
+export async function getString(node: JsxNode, config: GetStringConfig = {}) {
   const stream = await node.getStringStream({
     jsxSegmentStr: '',
     globalCtx: new GlobalCtx({

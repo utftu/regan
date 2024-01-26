@@ -1,5 +1,5 @@
 import {hydrate} from '../hydrate/hydrate.ts';
-import {JSXNode} from '../node/node.ts';
+import {JsxNode} from '../node/node.ts';
 import {getString} from '../string/string.ts';
 import {JSDOM} from 'jsdom';
 
@@ -8,7 +8,7 @@ export async function insertAndHydrate({
   jsxNode,
 }: {
   jsdom: JSDOM;
-  jsxNode: JSXNode;
+  jsxNode: JsxNode;
 }) {
   const root = jsdom.window.document.createElement('div');
   root.setAttribute('id', 'root');

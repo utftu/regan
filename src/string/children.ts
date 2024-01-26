@@ -1,6 +1,6 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {JSXNode} from '../node/node.ts';
+import {JsxNode} from '../node/node.ts';
 import {Child} from '../types.ts';
 import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
@@ -27,6 +27,8 @@ export async function handleChildrenString({
   globalCtx,
   parentJsxSegment,
   stringContext,
+  parentCtx,
+  parentJsxNode,
 }: {
   children: Child[];
   streams: StringStream;
@@ -34,6 +36,7 @@ export async function handleChildrenString({
   parentJsxSegment: JsxSegment;
   stringContext: StringContext;
   parentCtx?: Ctx;
+  parentJsxNode: JsxNode;
 }) {
   // run iteration twice
   // first - to start stream process in children
@@ -49,7 +52,7 @@ export async function handleChildrenString({
       continue;
     }
 
-    let child: JSXNode;
+    let child: JsxNode;
     if (childOrAtom instanceof Atom) {
       child = new JsxNodeComponent({
         type: AtomWrapper,
@@ -63,7 +66,7 @@ export async function handleChildrenString({
       child = childOrAtom;
     }
 
-    if (child instanceof JSXNode) {
+    if (child instanceof JsxNode) {
       const result = child.getStringStream({
         globalCtx,
         jsxSegmentStr: jsxNodeCount.toString(),
@@ -72,6 +75,8 @@ export async function handleChildrenString({
           position: jsxNodeCount,
         },
         stringContext: stringContext,
+        parentCtx,
+        parentJsxNode,
       });
       jsxNodeCount++;
       results.push(result);
@@ -81,52 +86,6 @@ export async function handleChildrenString({
 
     results.push(child);
   }
-  // const childrenStreams = children.map((rawChild) => {
-  //   // const childOrAtom = await formatJsxValue(children[i]);
-  //   const child = typeof rawChild === 'function' ? rawChild() : rawChild;
-
-  //   if (child instanceof JSXNode) {
-  //     const stream = child.getStringStream({
-  //       globalCtx,
-  //       jsxSegmentStr: jsxNodeCount.toString(),
-  //       parentJsxSegment: {
-  //         jsxSegment: parentJsxSegment,
-  //         position: jsxNodeCount,
-  //       },
-  //       stringContext: stringContext,
-  //     });
-  //     jsxNodeCount++;
-  //     return stream;
-  //   }
-
-  //   if (child instanceof Atom) {
-  //     let value: any;
-  //     let name: string;
-  //     if ((child as any)[NAMED_ATOM_REGAN]) {
-  //       [name, value] = stringContext.snapshot.parse(child);
-  //     } else {
-  //       value = stringContext.snapshot.parse(child);
-  //       name = '0';
-  //     }
-
-  //     if (value instanceof JSXNode) {
-  //       return value.getStringStream({
-  //         globalCtx,
-  //         jsxSegmentStr: `${jsxNodeCount.toString()}?a=${name}`,
-  //         parentJsxSegment: {
-  //           jsxSegment: parentJsxSegment,
-  //           position: jsxNodeCount,
-  //         },
-  //         stringContext: stringContext,
-  //       });
-  //     }
-
-  //     jsxNodeCount++;
-  //     return value;
-  //   }
-
-  //   return rawChild;
-  // });
 
   for (const childStream of results) {
     if (typeof childStream === 'string' || typeof childStream === 'number') {

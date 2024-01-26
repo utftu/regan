@@ -1,55 +1,11 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode, HNodeCtx, mountHNodes} from '../h-node/h-node.ts';
-import {JSXNode} from '../node/node.ts';
+import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {ElementPointer} from '../types.ts';
-
-// type HydrateConfig = {
-//   window?: Window;
-//   jsxPath?: string;
-// };
-
-// export async function hydrate(
-//   domNode: HTMLElement,
-//   node: JSXNode,
-//   config: HydrateConfig = {window}
-// ) {
-//   const changedAtoms: Atom[] = [];
-//   const root = new Root();
-//   const globalCtx = new GlobalCtx({
-//     mode: 'server',
-//     root,
-//   });
-//   const {hNode} = await node.hydrate({
-//     jsxSegmentStr: '',
-//     dom: {parent: domNode, position: 0},
-//     parentHNode: undefined,
-//     globalCtx,
-//     hNodeCtx: new HNodeCtx({
-//       window: config.window || window,
-//       getInitElemPointer() {
-//         return {
-//           parent: domNode.parentElement!,
-//           prev: domNode.previousElementSibling as HTMLElement,
-//         };
-//       },
-//     }),
-//     hCtx: {
-//       snapshot: new TreeAtomsSnapshot(),
-//       changedAtoms,
-//     },
-//   });
-
-//   root.addTx(
-//     changedAtoms.reduce((store, atom) => {
-//       store.set(atom, atom.get());
-//       return store;
-//     }, new Map())
-//   );
-//   mountHNodes(hNode);
-// }
+import {Ctx} from '../ctx/ctx.ts';
 
 const getPosition = (parent: HTMLElement, prev: HTMLElement | void) => {
   if (!prev) {
@@ -65,10 +21,12 @@ export async function hydrateRaw({
   parentHNode,
   window: windowLocal = window,
   data = {},
+  parentCtx,
 }: {
   getElementPointer: () => ElementPointer;
   parentHNode?: HNode;
-  node: JSXNode;
+  parentCtx?: Ctx;
+  node: JsxNode;
   window?: Window;
   data?: Record<any, any>;
 }) {
@@ -86,6 +44,7 @@ export async function hydrateRaw({
     dom: {parent, position: getPosition(parent, prev)},
     parentHNode,
     globalCtx,
+
     hNodeCtx:
       parentHNode?.hNodeCtx ??
       new HNodeCtx({
@@ -109,7 +68,7 @@ export async function hydrateRaw({
 
 export const hydrate = (
   element: HTMLElement,
-  node: JSXNode,
+  node: JsxNode,
   options: {window: Window} = {window}
 ) => {
   return hydrateRaw({

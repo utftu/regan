@@ -20,8 +20,8 @@ export const createContext = <TValue extends any = any>(
     name,
     defaultValue,
   } as Context<TValue>;
-  context.Provider = (({value}) => (
-    <ContextProvider context={{context, value}} />
+  context.Provider = (({value}, {children}) => (
+    <ContextProvider context={{context, value}}>{children}</ContextProvider>
   )) satisfies FC<{value: TValue}>;
 
   return context;
@@ -29,14 +29,14 @@ export const createContext = <TValue extends any = any>(
 
 export const getContextValue = <TValue extends any = any>(
   context: Context<TValue>,
-  {parent, systemProps}: Ctx
+  {parentCtx: parent, systemProps}: Ctx
 ): TValue | void => {
   if (systemProps.context?.context === context) {
     return systemProps.context.value;
   }
 
   if (!parent) {
-    return systemProps.context?.context.defaultValue;
+    return context.defaultValue;
   }
 
   return getContextValue(context, parent);

@@ -3,6 +3,7 @@ import {GlobalCtx} from '../../global-ctx/global-ctx.ts';
 import {HNode, HNodeCtx} from '../../h-node/h-node.ts';
 import {ParentJsxSegment} from '../../jsx-path/jsx-path.ts';
 import {TreeAtomsSnapshot} from '../../tree-atoms-snapshot/tree-aroms-snapshot.ts';
+import {Ctx} from '../../ctx/ctx.ts';
 
 export type AddElementToParent = (elem: HTMLElement | string) => void;
 
@@ -16,7 +17,7 @@ export type RenderProps = {
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;
   parentJsxSegment?: ParentJsxSegment;
-  // addElementToParent: AddElementToParent;
   renderCtx: RenderCtx;
   hNodeCtx: HNodeCtx;
+  parentCtx?: Ctx;
 };

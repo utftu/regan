@@ -12,15 +12,9 @@ export type DomProps = DomSimpleProps & {
   position: number;
 };
 
-// type ConnectElements = () => HTMLElement[][];
-
-// export type ConnectElementRender = (
-//   cb: (children: (ConnectElementElements | string)[]) => void
-// ) => void;
-// export type ConnectElementElements = () => HTMLElement[];
 export type ConnectElements = () => (HTMLElement | string)[];
 
-export abstract class JSXNode<TType = any, TProps extends Props = any> {
+export abstract class JsxNode<TType = any, TProps extends Props = any> {
   type: TType;
 
   props: TProps;

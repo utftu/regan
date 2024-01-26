@@ -1,11 +1,12 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode, HNodeCtx, mountHNodes, unmountHNodes} from '../h-node/h-node.ts';
-import {JSXNode} from '../node/node.ts';
+import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {ElementPointer} from '../types.ts';
 import {addElementChildren} from '../utils/dom.ts';
+import {Ctx} from '../ctx/ctx.ts';
 
 export const rednerRaw = async ({
   node,
@@ -14,20 +15,22 @@ export const rednerRaw = async ({
   parentHNode,
   data,
   jsxSegmentStr = '',
+  parentCtx,
 }: {
-  node: JSXNode;
+  node: JsxNode;
   getElemPointer: () => ElementPointer;
   window?: Window;
   data?: Record<any, any>;
   parentHNode?: HNode;
   jsxSegmentStr?: string;
+  parentCtx?: Ctx;
 }) => {
-  const elements: (HTMLElement | string)[] = [];
   const changedAtoms: Atom[] = [];
 
   const {hNode, connectElements} = await node.render({
     parentHNode: parentHNode,
     jsxSegmentStr,
+    parentCtx,
     globalCtx:
       parentHNode?.globalCtx ??
       new GlobalCtx({
@@ -41,9 +44,6 @@ export const rednerRaw = async ({
         window: localWindow,
         getInitElemPointer: getElemPointer,
       }),
-    // addElementToParent: (localEl) => {
-    //   elements.push(localEl);
-    // },
     renderCtx: {
       snapshot: new TreeAtomsSnapshot(),
       changedAtoms,
@@ -70,7 +70,7 @@ export const rednerRaw = async ({
 
 export const render = async (
   element: HTMLElement,
-  node: JSXNode,
+  node: JsxNode,
   options: {window: Window} = {window}
 ) => {
   const {mount} = await rednerRaw({

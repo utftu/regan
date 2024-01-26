@@ -1,5 +1,5 @@
 import {Div} from './jsx/elements.ts';
-import {JSXNode} from './node/node.ts';
+import {JsxNode} from './node/node.ts';
 import {FC, FCReturn} from './types.ts';
 
 export {render} from './render/render.ts';

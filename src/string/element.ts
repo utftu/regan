@@ -1,12 +1,12 @@
 import {Atom} from 'strangelove';
-import {JSXNodeElement} from '../node/element/element.ts';
+import {JsxNodeElement} from '../node/element/element.ts';
 import {createElementString} from './flat.ts';
 import {handleChildrenString} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {GetStringStreamProps} from '../node/string/string.ts';
 
 export async function getStringStreamElement(
-  this: JSXNodeElement,
+  this: JsxNodeElement,
   ctx: GetStringStreamProps
 ) {
   const jsxSegment = new JsxSegment({
@@ -52,6 +52,8 @@ export async function getStringStreamElement(
       parentJsxSegment: jsxSegment,
       globalCtx: ctx.globalCtx,
       stringContext: ctx.stringContext,
+      parentCtx: ctx.parentCtx,
+      parentJsxNode: this,
     });
 
     const writer2 = streams.writable.getWriter();

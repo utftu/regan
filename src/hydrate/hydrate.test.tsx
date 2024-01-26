@@ -1,5 +1,5 @@
 import {describe, expect, it, vi} from 'vitest';
-import {JSXNode} from '../node/node.ts';
+import {JsxNode} from '../node/node.ts';
 import {JSDOM} from 'jsdom';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {FC} from '../types.ts';

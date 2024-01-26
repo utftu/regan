@@ -1,11 +1,11 @@
-import {JSXNode} from './node/node.ts';
+import {JsxNode} from './node/node.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
 import {Context, ContextValue} from './context/context.tsx';
 import {INSERTED_TAGS_COUNT, NEED_AWAIT} from './consts.ts';
 
 export type Child =
-  | JSXNode
+  | JsxNode
   | string
   | null
   | undefined
