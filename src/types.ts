@@ -1,7 +1,7 @@
 import {JSXNode} from './node/node.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
-import {Context} from './context/context.tsx';
+import {Context, ContextValue} from './context/context.tsx';
 import {INSERTED_TAGS_COUNT, NEED_AWAIT} from './consts.ts';
 
 export type Child =
@@ -35,8 +35,7 @@ export type SystemProps = {
   insertedTagsCount?: number;
   ref?: Atom<HTMLElement | void>;
   rawHtml?: string;
-  context?: Context;
-  contextValue?: any;
+  context?: ContextValue;
 };
 
 export type FCStaticParams = {

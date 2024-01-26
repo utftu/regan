@@ -7,6 +7,11 @@ export type Context<TValue = any> = {
   Provider: FC<{value: TValue}>;
 };
 
+export type ContextValue<TValue = any> = {
+  context: Context<TValue>;
+  value: TValue;
+};
+
 export const createContext = <TValue extends any = any>(
   name: string,
   defaultValue: TValue
@@ -16,7 +21,7 @@ export const createContext = <TValue extends any = any>(
     defaultValue,
   } as Context<TValue>;
   context.Provider = (({value}) => (
-    <ContextProvider contextValue={value} context={context} />
+    <ContextProvider context={{context, value}} />
   )) satisfies FC<{value: TValue}>;
 
   return context;
@@ -26,28 +31,22 @@ export const getContextValue = <TValue extends any = any>(
   context: Context<TValue>,
   {parent, systemProps}: Ctx
 ): TValue | void => {
-  if (systemProps.context === context) {
-    return systemProps.contextValue;
+  if (systemProps.context?.context === context) {
+    return systemProps.context.value;
   }
 
   if (!parent) {
-    return systemProps.context?.defaultValue;
+    return systemProps.context?.context.defaultValue;
   }
 
   return getContextValue(context, parent);
 };
 
 export const ContextProvider = <TValue extends any = any>(
-  {
-    contextValue,
-    context,
-  }: {
-    contextValue: TValue;
-    context: Context<TValue>;
-  },
+  {context}: {context: ContextValue<TValue>},
   {systemProps, children}: Ctx
 ) => {
   systemProps.context = context;
-  systemProps.contextValue = contextValue;
+
   return children;
 };
