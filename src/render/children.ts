@@ -5,33 +5,9 @@ import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {JSXNode} from '../node/node.ts';
 import {AddElementToParent, RenderCtx} from '../node/render/render.ts';
 import {Child} from '../types.ts';
-import {HCtx} from '../node/hydrate/hydrate.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
-import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
-
-const handleAtom = (
-  atom: Atom,
-  hContext: HCtx
-): {name: string; value: JSXNode} | void => {
-  let value: any;
-  let name: string;
-  if ((atom as any as {[NAMED_ATOM_REGAN]: any})[NAMED_ATOM_REGAN]) {
-    const result = hContext.snapshot.parse(atom);
-    value = result.name;
-    name = result.name;
-  } else {
-    value = hContext.snapshot.parse(atom);
-    name = Date.now().toString();
-  }
-
-  if (value instanceof JSXNode) {
-    return {name: `?a=${name}`, value};
-  } else {
-    return;
-  }
-};
 
 export async function handleChildrenRender({
   children,
@@ -51,6 +27,7 @@ export async function handleChildrenRender({
   hNodeCtx: HNodeCtx;
 }) {
   const hNodes: HNode[] = [];
+  const rawResults = [];
 
   for (let i = 0, insertedJsxNodeCount = 0; i <= children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
@@ -60,7 +37,8 @@ export async function handleChildrenRender({
     }
 
     if (typeof childOrAtom === 'string') {
-      addElementToParent(childOrAtom);
+      // addElementToParent(childOrAtom);
+      rawResults.push(childOrAtom);
       continue;
     }
 
@@ -78,7 +56,7 @@ export async function handleChildrenRender({
       child = childOrAtom;
     }
 
-    const renderResult = await (child as JSXNode).render({
+    const renderResult = child.render({
       parentHNode,
       globalCtx,
       parentJsxSegment: {
@@ -90,12 +68,39 @@ export async function handleChildrenRender({
       addElementToParent,
       hNodeCtx,
     });
-    hNodes.push(renderResult.hNode);
+    rawResults.push(renderResult);
+
+    // const renderResult = await (child as JSXNode).render({
+    //   parentHNode,
+    //   globalCtx,
+    //   parentJsxSegment: {
+    //     jsxSegment: parentJsxSegment,
+    //     position: insertedJsxNodeCount,
+    //   },
+    //   jsxSegmentStr: insertedJsxNodeCount.toString(),
+    //   renderCtx,
+    //   addElementToParent,
+    //   hNodeCtx,
+    // });
+    // hNodes.push(renderResult.hNode);
 
     insertedJsxNodeCount++;
   }
 
+  const results = await Promise.all(rawResults);
+
+  const rawConnectElements = results.map((value) => {
+    if (typeof value === 'string') {
+      return value;
+    }
+
+    const {hNode, connectElements} = value;
+    hNodes.push(hNode);
+    return connectElements;
+  });
+
   return {
     hNodes,
+    rawConnectElements,
   };
 }

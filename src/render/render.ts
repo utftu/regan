@@ -25,7 +25,7 @@ export const rednerRaw = async ({
   const elements: (HTMLElement | string)[] = [];
   const changedAtoms: Atom[] = [];
 
-  const {hNode} = await node.render({
+  const {hNode, connectElements} = await node.render({
     parentHNode: parentHNode,
     jsxSegmentStr,
     globalCtx:
@@ -59,9 +59,19 @@ export const rednerRaw = async ({
       if (parentHNode) {
         parentHNode.addChildren([hNode]);
       }
-
       const {parent, prev} = getElemPointer();
 
+      // connectElements(() => {
+      //   const elements = children.map((child) => {
+      //     if (typeof child === 'function') {
+      //       return child();
+      //     }
+      //     return child;
+      //   });
+
+      //   addElementChildren({parent, prev, elements});
+      // });
+      const elements = connectElements();
       addElementChildren({parent, prev, elements});
       mountHNodes(hNode);
     },

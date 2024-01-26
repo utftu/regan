@@ -5,7 +5,7 @@ import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {appendElementChild} from '../utils/dom.ts';
+import {addElementChildren, appendElementChild} from '../utils/dom.ts';
 
 export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   const jsxSegment = new JsxSegment({
@@ -93,7 +93,7 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
 
   ctx.addElementToParent(element);
 
-  const {hNodes} = await handleChildrenRender({
+  const {hNodes, rawConnectElements} = await handleChildrenRender({
     children: this.children,
     parentHNode: hNode,
     globalCtx: ctx.globalCtx,
@@ -106,5 +106,23 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
   });
   hNode.addChildren(hNodes);
 
-  return {hNode};
+  return {
+    hNode,
+    connectElements: () => {
+      const flatElements: (HTMLElement | string)[] = [];
+      rawConnectElements.forEach((child) => {
+        if (typeof child === 'function') {
+          const elements = child();
+          elements.forEach((elem) => {
+            flatElements.push(elem);
+          });
+        }
+        return child;
+      });
+
+      addElementChildren({parent: element, elements: flatElements});
+
+      return [element];
+    },
+  };
 }

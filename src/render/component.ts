@@ -40,7 +40,7 @@ export async function renderComponent(
   hNode.mounts.push(smartMount);
   hNode.unmounts.push(...componentCtx.state.unmounts);
 
-  const {hNodes} = await handleChildrenRender({
+  const {hNodes, rawConnectElements} = await handleChildrenRender({
     parentHNode: hNode,
     children,
     globalCtx: ctx.globalCtx,
@@ -52,5 +52,31 @@ export async function renderComponent(
 
   hNode.addChildren(hNodes);
 
-  return {hNode};
+  return {
+    hNode,
+    connectElements: () => {
+      const flatElements: (HTMLElement | string)[] = [];
+      rawConnectElements.forEach((child) => {
+        if (typeof child === 'function') {
+          const elements = child();
+          elements.forEach((elem) => {
+            flatElements.push(elem);
+          });
+        }
+        return child;
+      });
+
+      return flatElements;
+    },
+    // connectElements: () => {
+    //   const elements = rawConnectElements.map((child) => {
+    //     if (typeof child === 'function') {
+    //       return child();
+    //     }
+    //     return child;
+    //   });
+
+    //   return elements.flat();
+    // },
+  };
 }
