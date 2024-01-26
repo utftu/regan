@@ -45,7 +45,6 @@ export async function renderComponent(
     children,
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
-    addElementToParent: ctx.addElementToParent,
     renderCtx: ctx.renderCtx,
     hNodeCtx: ctx.hNodeCtx,
   });
@@ -62,21 +61,12 @@ export async function renderComponent(
           elements.forEach((elem) => {
             flatElements.push(elem);
           });
+          return;
         }
-        return child;
+        flatElements.push(child);
       });
 
       return flatElements;
     },
-    // connectElements: () => {
-    //   const elements = rawConnectElements.map((child) => {
-    //     if (typeof child === 'function') {
-    //       return child();
-    //     }
-    //     return child;
-    //   });
-
-    //   return elements.flat();
-    // },
   };
 }

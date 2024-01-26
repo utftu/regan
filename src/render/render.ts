@@ -41,9 +41,9 @@ export const rednerRaw = async ({
         window: localWindow,
         getInitElemPointer: getElemPointer,
       }),
-    addElementToParent: (localEl) => {
-      elements.push(localEl);
-    },
+    // addElementToParent: (localEl) => {
+    //   elements.push(localEl);
+    // },
     renderCtx: {
       snapshot: new TreeAtomsSnapshot(),
       changedAtoms,
@@ -61,16 +61,6 @@ export const rednerRaw = async ({
       }
       const {parent, prev} = getElemPointer();
 
-      // connectElements(() => {
-      //   const elements = children.map((child) => {
-      //     if (typeof child === 'function') {
-      //       return child();
-      //     }
-      //     return child;
-      //   });
-
-      //   addElementChildren({parent, prev, elements});
-      // });
       const elements = connectElements();
       addElementChildren({parent, prev, elements});
       mountHNodes(hNode);

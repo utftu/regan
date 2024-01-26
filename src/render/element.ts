@@ -91,16 +91,11 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
     element
   );
 
-  ctx.addElementToParent(element);
-
   const {hNodes, rawConnectElements} = await handleChildrenRender({
     children: this.children,
     parentHNode: hNode,
     globalCtx: ctx.globalCtx,
     parentJsxSegment: jsxSegment,
-    addElementToParent: (child: HTMLElement | string) => {
-      appendElementChild({parent: element, el: child});
-    },
     renderCtx: ctx.renderCtx,
     hNodeCtx: ctx.hNodeCtx,
   });
@@ -116,8 +111,9 @@ export async function renderElement(this: JSXNodeElement, ctx: RenderProps) {
           elements.forEach((elem) => {
             flatElements.push(elem);
           });
+          return;
         }
-        return child;
+        flatElements.push(child);
       });
 
       addElementChildren({parent: element, elements: flatElements});
