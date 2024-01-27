@@ -5,6 +5,20 @@ import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HydrateProps} from '../node/hydrate/hydrate.ts';
 import {HNodeElement} from '../h-node/element.ts';
+import {Ctx} from '../ctx/ctx.ts';
+import {getContextValue} from '../context/context.tsx';
+import {errorContext} from '../errors/errors.tsx';
+
+const prepareListener = (listener: (...args: any[]) => any, ctx?: Ctx) => {
+  return (...args: any[]) => {
+    try {
+      listener(...args);
+    } catch (error) {
+      const errorConfig = getContextValue(errorContext, ctx);
+      errorConfig.error({error});
+    }
+  };
+};
 
 export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
   const jsxSegment = new JsxSegment({
@@ -35,7 +49,8 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
 
       if (typeof atomValue === 'function') {
         addEventListenerStore({
-          listener: atomValue,
+          // listener: atomValue,
+          listener: prepareListener(atomValue, ctx.parentCtx),
           store: listeners,
           elem: element,
           name,
@@ -49,7 +64,8 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
       const exec = (value: any) => {
         if (typeof value === 'function') {
           addEventListenerStore({
-            listener: value,
+            // listener: value,
+            listener: prepareListener(value, ctx.parentCtx),
             store: listeners,
             elem: element,
             name,
@@ -62,7 +78,8 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
       unmounts.push(() => ctx.globalCtx.root.removeExec(prop, exec));
     } else if (typeof prop === 'function') {
       addEventListenerStore({
-        listener: prop,
+        // listener: prop,
+        listener: prepareListener(prop, ctx.parentCtx),
         store: listeners,
         elem: element,
         name,

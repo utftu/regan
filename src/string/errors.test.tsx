@@ -12,15 +12,17 @@ describe('string errors', () => {
     expect(str).toBe('');
   });
 
-  it.only('error handler', async () => {
+  it('error handler', async () => {
     const Child = () => {
       throw new Error('my error');
     };
 
     const Parent = () => {
       return (
-        <ErrorGuard error={() => 'error'}>
-          <Child />;
+        <ErrorGuard errorJsx={() => 'error'}>
+          <>
+            <Child />
+          </>
         </ErrorGuard>
       );
     };

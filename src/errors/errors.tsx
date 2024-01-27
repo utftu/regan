@@ -3,19 +3,27 @@ import {h} from '../jsx/jsx.ts';
 import {FC} from '../types.ts';
 
 const defaultErrorHandler = () => null;
-export const errorContext = createContext<(...values: any[]) => any>(
-  'system error',
-  defaultErrorHandler
-);
 
-export const ErrorGuard: FC<{error: (error: Error) => ReturnType<FC>}> = (
-  {error},
+const defaultErrorConfig = {
+  error: defaultErrorHandler,
+  errorJsx: defaultErrorHandler,
+};
+export const errorContext = createContext<{
+  error: (...args: any[]) => any;
+  errorJsx: FC;
+}>('system error', defaultErrorConfig);
+
+export const ErrorGuard: FC<{error?: any; errorJsx?: FC}> = (
+  {error, errorJsx},
   {children}
 ) => {
   return h(
     errorContext.Provider,
     {
-      value: error,
+      value: {
+        error: error ?? defaultErrorHandler,
+        errorJsx: errorJsx ?? defaultErrorHandler,
+      },
     },
     children
   );

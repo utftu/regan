@@ -40,15 +40,13 @@ export async function getStringStreamComponent(
   try {
     rawChidlren = await this.type(this.props, funcCtx);
   } catch (error) {
-    const errorHandler = getContextValue(errorContext, ctx.parentCtx);
-    console.log('-----', 'errorHandler', errorHandler);
-
-    // const children = await errorHandler(error);
-    // console.log('-----', 'error handler', error);
+    const errorHandlerConfig = getContextValue(errorContext, ctx.parentCtx);
 
     return new JsxNodeComponent({
-      type: errorHandler,
-      props: {},
+      type: errorHandlerConfig.errorJsx,
+      props: {
+        error,
+      },
       systemProps: {},
       children: [],
     }).getStringStream(ctx);

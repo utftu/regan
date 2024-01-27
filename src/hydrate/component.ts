@@ -6,6 +6,8 @@ import {ComponentState, HNode} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HydrateProps} from '../node/hydrate/hydrate.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
+import {errorContext} from '../errors/errors.tsx';
+import {getContextValue} from '../context/context.tsx';
 
 export async function hydrateComponent(
   this: JsxNodeComponent,
@@ -35,7 +37,23 @@ export async function hydrateComponent(
     stage: 'hydrate',
   });
 
-  const rawChidlren = await this.type(this.props, componentCtx);
+  let rawChidlren;
+  try {
+    rawChidlren = await this.type(this.props, componentCtx);
+  } catch (error) {
+    const errorHandlers = getContextValue(errorContext, ctx.parentCtx);
+
+    return new JsxNodeComponent({
+      type: errorHandlers.errorJsx,
+      props: {
+        error,
+      },
+      systemProps: {},
+      children: [],
+    }).hydrate(ctx);
+  }
+
+  // const rawChidlren = await this.type(this.props, componentCtx);
 
   const smartMount = createSmartMount(componentCtx);
   hNode.unmounts = componentCtx.state.unmounts;
