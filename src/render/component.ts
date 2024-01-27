@@ -6,6 +6,8 @@ import {handleChildrenRender} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
+import {getContextValue} from '../context/context.tsx';
+import {errorContext} from '../errors/errors.tsx';
 
 export async function renderComponent(
   this: JsxNodeComponent,
@@ -34,7 +36,24 @@ export async function renderComponent(
     stage: 'render',
   });
 
-  const rawChidlren = await this.type(this.props, componentCtx);
+  let rawChidlren;
+  try {
+    rawChidlren = await this.type(this.props, componentCtx);
+  } catch (error) {
+    const errorHandlers = getContextValue(errorContext, ctx.parentCtx);
+
+    return new JsxNodeComponent({
+      type: errorHandlers.errorJsx,
+      props: {
+        error,
+        jsxNode: this,
+      },
+      systemProps: {},
+      children: [],
+    }).render(ctx);
+  }
+
+  // const rawChidlren = await this.type(this.props, componentCtx);
 
   const children = normalizeChildren(rawChidlren);
 

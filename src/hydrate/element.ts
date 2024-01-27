@@ -1,7 +1,6 @@
 import {Atom} from 'strangelove';
 import {JsxNodeElement} from '../node/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
-import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HydrateProps} from '../node/hydrate/hydrate.ts';
 import {HNodeElement} from '../h-node/element.ts';
@@ -9,25 +8,27 @@ import {Ctx} from '../ctx/ctx.ts';
 import {getContextValue} from '../context/context.tsx';
 import {errorContext} from '../errors/errors.tsx';
 import {JsxNode} from '../node/node.ts';
+import {addEventListenerStore} from '../utils/listeners.ts';
+import {prepareListener} from '../utils/errors.ts';
 
-const prepareListener = ({
-  listener,
-  ctx,
-  jsxNode,
-}: {
-  listener: (...args: any[]) => any;
-  ctx?: Ctx;
-  jsxNode: JsxNode;
-}) => {
-  return (...args: any[]) => {
-    try {
-      listener(...args);
-    } catch (error) {
-      const errorConfig = getContextValue(errorContext, ctx);
-      errorConfig.error({error: error as Error, jsxNode});
-    }
-  };
-};
+// const prepareListener = ({
+//   listener,
+//   ctx,
+//   jsxNode,
+// }: {
+//   listener: (...args: any[]) => any;
+//   ctx?: Ctx;
+//   jsxNode: JsxNode;
+// }) => {
+//   return (...args: any[]) => {
+//     try {
+//       listener(...args);
+//     } catch (error) {
+//       const errorConfig = getContextValue(errorContext, ctx);
+//       errorConfig.error({error: error as Error, jsxNode});
+//     }
+//   };
+// };
 
 export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
   const jsxSegment = new JsxSegment({

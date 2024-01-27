@@ -1,11 +1,14 @@
 import {Atom} from 'strangelove';
 import {JsxNodeElement} from '../node/element/element.ts';
 import {handleChildrenRender} from './children.ts';
-import {addEventListenerStore} from '../utils.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {addElementChildren, appendElementChild} from '../utils/dom.ts';
+import {addElementChildren} from '../utils/dom.ts';
+import {
+  addEventListenerStore,
+  prepareEventListener,
+} from '../utils/listeners.ts';
 
 export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
   const jsxSegment = new JsxSegment({
@@ -37,7 +40,13 @@ export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
 
       if (typeof atomValue === 'function') {
         addEventListenerStore({
-          listener: atomValue,
+          listener: prepareEventListener({
+            listener: atomValue,
+            ctx: ctx.parentCtx,
+            jsxNode: this,
+          }),
+
+          // listener: atomValue,
           store: listeners,
           elem: element,
           name,
@@ -53,7 +62,13 @@ export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
       const exec = (value: any) => {
         if (typeof value === 'function') {
           addEventListenerStore({
-            listener: value,
+            listener: prepareEventListener({
+              listener: value,
+              ctx: ctx.parentCtx,
+              jsxNode: this,
+            }),
+
+            // listener: value,
             store: listeners,
             elem: element,
             name,
@@ -70,7 +85,13 @@ export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
     if (typeof prop === 'function') {
       addEventListenerStore({
         name,
-        listener: prop,
+        // listener: prop,
+        listener: prepareEventListener({
+          listener: prop,
+          ctx: ctx.parentCtx,
+          jsxNode: this,
+        }),
+
         store: listeners,
         elem: element,
       });
