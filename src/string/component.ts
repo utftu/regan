@@ -4,6 +4,9 @@ import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenString} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {GetStringStreamProps} from '../node/string/string.ts';
+import {getContextValue} from '../context/context.tsx';
+import {errorContext} from '../errors/errors.tsx';
+import {Fragment} from '../components/fragment/fragment.ts';
 
 export async function getStringStreamComponent(
   this: JsxNodeComponent,
@@ -33,7 +36,23 @@ export async function getStringStreamComponent(
     jsxNodeComponent: this,
   });
 
-  const rawChidlren = await this.type(this.props, funcCtx);
+  let rawChidlren;
+  try {
+    rawChidlren = await this.type(this.props, funcCtx);
+  } catch (error) {
+    const errorHandler = getContextValue(errorContext, ctx.parentCtx);
+    console.log('-----', 'errorHandler', errorHandler);
+
+    // const children = await errorHandler(error);
+    // console.log('-----', 'error handler', error);
+
+    return new JsxNodeComponent({
+      type: errorHandler,
+      props: {},
+      systemProps: {},
+      children: [],
+    }).getStringStream(ctx);
+  }
 
   const children = normalizeChildren(rawChidlren);
 

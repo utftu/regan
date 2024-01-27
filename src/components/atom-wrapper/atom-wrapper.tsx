@@ -36,7 +36,7 @@ const parseAtom = (atom: Atom, initRendrering: boolean) => {
 
 const AtomWrapper: FC<Props> & FCStaticParams = (
   {atom},
-  {hNode, systemProps, globalCtx, mount, unmount, stage, jsxSegment}
+  {hNode, systemProps, globalCtx, mount, unmount, stage, jsxSegment, ctx}
 ) => {
   systemProps.needAwait = true;
   if (globalCtx.mode === 'server') {
@@ -86,6 +86,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
           prev,
         } as ElementPointer;
       },
+      parentCtx: ctx.parentCtx,
       parentHNode: hNode,
     });
 

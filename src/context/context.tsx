@@ -29,8 +29,13 @@ export const createContext = <TValue extends any = any>(
 
 export const getContextValue = <TValue extends any = any>(
   context: Context<TValue>,
-  {parentCtx: parent, systemProps}: Ctx
-): TValue | void => {
+  ctx?: Ctx
+): TValue => {
+  if (!ctx) {
+    return context.defaultValue;
+  }
+  const {parentCtx: parent, systemProps} = ctx;
+
   if (systemProps.context?.context === context) {
     return systemProps.context.value;
   }
