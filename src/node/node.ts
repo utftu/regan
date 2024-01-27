@@ -14,6 +14,15 @@ export type DomProps = DomSimpleProps & {
 
 export type ConnectElements = () => (HTMLElement | string)[];
 
+export type RenderResult = Promise<{
+  hNode: HNode;
+  connectElements: ConnectElements;
+}>;
+
+export type HydrateResult = Promise<{insertedCount: number; hNode: HNode}>;
+
+export type StringResult = Promise<ReadableStream<string>>;
+
 export abstract class JsxNode<TType = any, TProps extends Props = any> {
   type: TType;
 
@@ -37,14 +46,7 @@ export abstract class JsxNode<TType = any, TProps extends Props = any> {
     this.children = children;
     this.systemProps = systemProps;
   }
-  abstract getStringStream(
-    ctx: GetStringStreamProps
-  ): Promise<ReadableStream<string>>;
-  abstract hydrate(
-    ctx: HydrateProps
-  ): Promise<{insertedCount: number; hNode: HNode}>;
-  abstract render(ctx: RenderProps): Promise<{
-    hNode: HNode;
-    connectElements: ConnectElements;
-  }>;
+  abstract getStringStream(ctx: GetStringStreamProps): StringResult;
+  abstract hydrate(ctx: HydrateProps): HydrateResult;
+  abstract render(ctx: RenderProps): RenderResult;
 }

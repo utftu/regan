@@ -6,11 +6,12 @@ import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {GetStringStreamProps} from '../node/string/string.ts';
 import {getContextValue} from '../context/context.tsx';
 import {errorContext} from '../errors/errors.tsx';
+import {StringResult} from '../node/node.ts';
 
 export async function getStringStreamComponent(
   this: JsxNodeComponent,
   ctx: GetStringStreamProps
-) {
+): StringResult {
   const jsxSegment = new JsxSegment({
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,

@@ -8,11 +8,12 @@ import {RenderProps} from '../node/render/render.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
 import {getContextValue} from '../context/context.tsx';
 import {errorContext} from '../errors/errors.tsx';
+import {RenderResult} from '../node/node.ts';
 
 export async function renderComponent(
   this: JsxNodeComponent,
   ctx: RenderProps
-) {
+): RenderResult {
   const jsxSegment = new JsxSegment({
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
@@ -52,8 +53,6 @@ export async function renderComponent(
       children: [],
     }).render(ctx);
   }
-
-  // const rawChidlren = await this.type(this.props, componentCtx);
 
   const children = normalizeChildren(rawChidlren);
 

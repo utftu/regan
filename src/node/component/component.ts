@@ -1,4 +1,4 @@
-import {JsxNode} from '../node.ts';
+import {JsxNode, StringResult} from '../node.ts';
 import {getStringStreamComponent} from '../../string/component.ts';
 import {hydrateComponent} from '../../hydrate/component.ts';
 import {renderComponent} from '../../render/component.ts';
