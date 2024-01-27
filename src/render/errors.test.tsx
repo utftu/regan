@@ -1,6 +1,5 @@
 import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
-import {insertAndHydrate} from '../utils/tests.ts';
 import {ErrorGuard, defaultErrorJsx} from '../errors/errors.tsx';
 import {render} from './render.ts';
 
