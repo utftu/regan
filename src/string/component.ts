@@ -6,7 +6,6 @@ import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {GetStringStreamProps} from '../node/string/string.ts';
 import {getContextValue} from '../context/context.tsx';
 import {errorContext} from '../errors/errors.tsx';
-import {Fragment} from '../components/fragment/fragment.ts';
 
 export async function getStringStreamComponent(
   this: JsxNodeComponent,
@@ -46,6 +45,7 @@ export async function getStringStreamComponent(
       type: errorHandlerConfig.errorJsx,
       props: {
         error,
+        jsxNode: this,
       },
       systemProps: {},
       children: [],

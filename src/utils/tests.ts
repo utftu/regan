@@ -16,6 +16,7 @@ export async function insertAndHydrate({
 
   const str = await getString(jsxNode);
   root.innerHTML = str;
+  console.log('-----', 'str', str);
 
   await hydrate(root, jsxNode, {window: jsdom.window as any});
 

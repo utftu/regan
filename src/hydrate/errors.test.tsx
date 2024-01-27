@@ -53,7 +53,7 @@ describe('hydrate errors', () => {
 
     expect(parentChild.mock.calls.length).toBe(1);
   });
-  it('deep', async () => {
+  it.only('deep', async () => {
     const parentChild = vi.fn();
     const ChildJsxError = () => {
       throw new Error('jsx error');
@@ -84,7 +84,8 @@ describe('hydrate errors', () => {
     };
 
     const jsdom = new JSDOM();
-    await insertAndHydrate({jsdom, jsxNode: <Parent />});
+    const root = await insertAndHydrate({jsdom, jsxNode: <Parent />});
+    console.log('-----', 'root', root.innerHTML);
     jsdom.window.document.getElementById('parent')!.click();
 
     // expect(parentChild.mock.calls.length).toBe(1);

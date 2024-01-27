@@ -12,26 +12,31 @@ import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
+import {h} from '../jsx/jsx.ts';
 
-function handleAtom(
-  atom: Atom,
-  hContext: HCtx
-): {name: string; value: JsxNode} | void {
-  let value: any;
-  let name: string;
-  if ((atom as any as {[NAMED_ATOM_REGAN]: any})[NAMED_ATOM_REGAN]) {
-    [name, value] = hContext.snapshot.parse(atom);
-  } else {
-    value = hContext.snapshot.parse(atom);
-    name = '0';
+const createJsxErrorDump = (count: number) => {
+  if (count === 0) {
+    return null;
   }
 
-  if (value instanceof JsxNode) {
-    return {name: `?a=${name}`, value};
-  } else {
-    return;
+  return new Array(count).fill(null).map(() => h('fragment', {}, []));
+};
+
+const getCount = ({jsxNode}: {jsxNode: JsxNode}) => {
+  if (jsxNode instanceof JsxNodeElement) {
+    return 1;
   }
-}
+
+  if ('insertedTagsCount' in jsxNode.systemProps) {
+    return jsxNode.systemProps.insertedTagsCount!;
+  }
+
+  if (INSERTED_TAGS_COUNT in jsxNode.type) {
+    return jsxNode.type[INSERTED_TAGS_COUNT] as number;
+  }
+
+  return 0;
+};
 
 export async function handleChildrenHydrate({
   children,
