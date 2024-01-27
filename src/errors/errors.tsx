@@ -5,12 +5,17 @@ import {JsxNodeElement} from '../node/element/element.ts';
 import {JsxNode} from '../node/node.ts';
 import {FC, FCStaticParams} from '../types.ts';
 
-const createJsxErrorDump = (count: number) => {
+type Props = {error: Error; jsxNode: JsxNode};
+
+type ErrorHandler = ({error, jsxNode}: Props) => void;
+type ErrorJsx = FC<Props>;
+
+const createJsxErrorDump = (count: number): JsxNode[] | null => {
   if (count === 0) {
     return null;
   }
 
-  return new Array(count).fill(null).map(() => h('div', {}, []));
+  return new Array(count).fill(null).map(() => h('fragment', {}, []));
 };
 
 const getElementsCount = ({jsxNode}: {jsxNode: JsxNode}) => {
@@ -36,8 +41,8 @@ const getElementsCount = ({jsxNode}: {jsxNode: JsxNode}) => {
   return 1;
 };
 
-const defaultErrorHandler = () => <div></div>;
-const defaultErrorJsx: FC<{jsxNode: JsxNode}> = ({jsxNode}) => {
+export const defaultErrorHandler = () => {};
+export const defaultErrorJsx = ({jsxNode}: Props) => {
   const count = getElementsCount({jsxNode});
 
   return createJsxErrorDump(count);
@@ -48,11 +53,11 @@ const defaultErrorConfig = {
   errorJsx: defaultErrorJsx,
 };
 export const errorContext = createContext<{
-  error: (...args: any[]) => any;
-  errorJsx: FC<{jsxNode: JsxNode}>;
+  error: ErrorHandler;
+  errorJsx: ErrorJsx;
 }>('system error', defaultErrorConfig);
 
-export const ErrorGuard: FC<{error?: any; errorJsx?: FC}> = (
+export const ErrorGuard: FC<{error?: ErrorHandler; errorJsx?: FC}> = (
   {error, errorJsx},
   {children}
 ) => {
@@ -61,7 +66,7 @@ export const ErrorGuard: FC<{error?: any; errorJsx?: FC}> = (
     {
       value: {
         error: error ?? defaultErrorHandler,
-        errorJsx: errorJsx ?? defaultErrorHandler,
+        errorJsx: errorJsx ?? defaultErrorJsx,
       },
     },
     children

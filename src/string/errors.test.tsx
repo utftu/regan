@@ -2,6 +2,8 @@ import {describe, expect, it} from 'vitest';
 import {getString} from './string.ts';
 import {ErrorGuard} from '../errors/errors.tsx';
 
+const defaultAnswer = '<fragment></fragment>';
+
 describe('string errors', () => {
   it('default error', async () => {
     const Component = () => {
@@ -9,7 +11,7 @@ describe('string errors', () => {
     };
 
     const str = await getString(<Component />);
-    expect(str).toBe('');
+    expect(str).toBe(defaultAnswer);
   });
 
   it('error handler', async () => {

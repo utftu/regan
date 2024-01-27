@@ -40,7 +40,6 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
       }
     },
   ];
-  console.log('-----', 'element', element);
 
   for (const name in this.props) {
     const prop = this.props[name] as any;

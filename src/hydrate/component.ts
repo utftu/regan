@@ -47,6 +47,7 @@ export async function hydrateComponent(
       type: errorHandlers.errorJsx,
       props: {
         error,
+        jsxNode: this,
       },
       systemProps: {},
       children: [],

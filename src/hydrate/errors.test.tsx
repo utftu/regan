@@ -1,33 +1,15 @@
 import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../utils/tests.ts';
-import {ErrorGuard} from '../errors/errors.tsx';
+import {ErrorGuard, defaultErrorJsx} from '../errors/errors.tsx';
 
 describe('hydrate errors', () => {
-  it('default click handler', async () => {
-    const Component = () => {
-      return (
-        <div
-          click={() => {
-            throw new Error('my error');
-          }}
-          id='div'
-        >
-          component
-        </div>
-      );
-    };
-
-    const jsdom = new JSDOM();
-    const root = await insertAndHydrate({jsdom, jsxNode: <Component />});
-
-    jsdom.window.document.getElementById('div')!.click();
-
-    expect(root.innerHTML).toBe('<div id="div">component</div>');
-  });
-  it('default jsx handler', async () => {
+  it('default', async () => {
     const parentChild = vi.fn();
-    const Child = () => {
+    const ChildJsx = () => {
+      throw new Error('child');
+    };
+    const ChildHandler = () => {
       return (
         <div
           id='child'
@@ -42,7 +24,8 @@ describe('hydrate errors', () => {
       return (
         <div id='parent' click={parentChild}>
           parent
-          <Child />
+          <ChildJsx />
+          <ChildHandler />
         </div>
       );
     };
@@ -53,17 +36,21 @@ describe('hydrate errors', () => {
 
     expect(parentChild.mock.calls.length).toBe(1);
   });
-  it.only('deep', async () => {
+  it('deep', async () => {
     const parentChild = vi.fn();
+    const errorJsx = new Error('jsx error');
+    const errorHandler = new Error('handler error');
+    let savedJsxError;
+    let savedHandlerError;
     const ChildJsxError = () => {
-      throw new Error('jsx error');
+      throw errorJsx;
     };
     const ChildHandlerError = () => {
       return (
         <div
           id='child'
           click={() => {
-            throw new Error('child');
+            throw errorHandler;
           }}
         >
           handler
@@ -73,7 +60,16 @@ describe('hydrate errors', () => {
 
     const Parent = () => {
       return (
-        <ErrorGuard>
+        <ErrorGuard
+          error={({error}) => {
+            savedHandlerError = error;
+          }}
+          errorJsx={({error, jsxNode}) => {
+            savedJsxError = error;
+
+            return defaultErrorJsx({error, jsxNode});
+          }}
+        >
           <div id='parent' click={parentChild}>
             parent
             <ChildJsxError />
@@ -84,10 +80,17 @@ describe('hydrate errors', () => {
     };
 
     const jsdom = new JSDOM();
-    const root = await insertAndHydrate({jsdom, jsxNode: <Parent />});
-    console.log('-----', 'root', root.innerHTML);
+    await insertAndHydrate({jsdom, jsxNode: <Parent />});
+
     jsdom.window.document.getElementById('parent')!.click();
 
-    // expect(parentChild.mock.calls.length).toBe(1);
+    expect(parentChild.mock.calls.length).toBe(1);
+
+    jsdom.window.document.getElementById('child')!.click();
+
+    expect(parentChild.mock.calls.length).toBe(2);
+
+    expect(savedJsxError).toBe(errorJsx);
+    expect(savedHandlerError).toBe(errorHandler);
   });
 });
