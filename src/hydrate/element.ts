@@ -8,14 +8,23 @@ import {HNodeElement} from '../h-node/element.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {getContextValue} from '../context/context.tsx';
 import {errorContext} from '../errors/errors.tsx';
+import {JsxNode} from '../node/node.ts';
 
-const prepareListener = (listener: (...args: any[]) => any, ctx?: Ctx) => {
+const prepareListener = ({
+  listener,
+  ctx,
+  jsxNode,
+}: {
+  listener: (...args: any[]) => any;
+  ctx?: Ctx;
+  jsxNode: JsxNode;
+}) => {
   return (...args: any[]) => {
     try {
       listener(...args);
     } catch (error) {
       const errorConfig = getContextValue(errorContext, ctx);
-      errorConfig.error({error});
+      errorConfig.error({error: error as Error, jsxNode});
     }
   };
 };
@@ -49,8 +58,11 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
 
       if (typeof atomValue === 'function') {
         addEventListenerStore({
-          // listener: atomValue,
-          listener: prepareListener(atomValue, ctx.parentCtx),
+          listener: prepareListener({
+            listener: atomValue,
+            ctx: ctx.parentCtx,
+            jsxNode: this,
+          }),
           store: listeners,
           elem: element,
           name,
@@ -64,8 +76,11 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
       const exec = (value: any) => {
         if (typeof value === 'function') {
           addEventListenerStore({
-            // listener: value,
-            listener: prepareListener(value, ctx.parentCtx),
+            listener: prepareListener({
+              listener: value,
+              ctx: ctx.parentCtx,
+              jsxNode: this,
+            }),
             store: listeners,
             elem: element,
             name,
@@ -78,8 +93,11 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
       unmounts.push(() => ctx.globalCtx.root.removeExec(prop, exec));
     } else if (typeof prop === 'function') {
       addEventListenerStore({
-        // listener: prop,
-        listener: prepareListener(prop, ctx.parentCtx),
+        listener: prepareListener({
+          listener: prop,
+          ctx: ctx.parentCtx,
+          jsxNode: this,
+        }),
         store: listeners,
         elem: element,
         name,
