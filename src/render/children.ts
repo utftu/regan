@@ -9,6 +9,7 @@ import {JsxNodeComponent} from '../node/component/component.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
+import {Fragment} from '../components/fragment/fragment.ts';
 
 export async function handleChildrenRender({
   children,
@@ -50,6 +51,13 @@ export async function handleChildrenRender({
         props: {
           atom: childOrAtom,
         },
+        systemProps: {},
+      });
+    } else if (Array.isArray(childOrAtom)) {
+      child = new JsxNodeComponent({
+        type: Fragment,
+        children: childOrAtom,
+        props: {},
         systemProps: {},
       });
     } else {

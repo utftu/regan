@@ -12,6 +12,7 @@ import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
+import {Fragment} from '../components/fragment/fragment.ts';
 
 export async function handleChildrenHydrate({
   children,
@@ -49,6 +50,13 @@ export async function handleChildrenHydrate({
         props: {
           atom: childOrAtom,
         },
+        systemProps: {},
+      });
+    } else if (Array.isArray(childOrAtom)) {
+      child = new JsxNodeComponent({
+        type: Fragment,
+        children: childOrAtom,
+        props: {},
         systemProps: {},
       });
     } else {

@@ -8,6 +8,7 @@ import {Ctx} from '../ctx/ctx.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {JsxNodeComponent} from '../node/component/component.ts';
+import {Fragment} from '../components/fragment/fragment.ts';
 
 type StringStream = TransformStream<string, string>;
 
@@ -59,6 +60,13 @@ export async function handleChildrenString({
         props: {
           atom: childOrAtom,
         },
+        systemProps: {},
+      });
+    } else if (Array.isArray(childOrAtom)) {
+      child = new JsxNodeComponent({
+        type: Fragment,
+        children: childOrAtom,
+        props: {},
         systemProps: {},
       });
     } else {
