@@ -1,3 +1,4 @@
+import {Fragment} from '../components/fragment/fragment.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {JsxNodeElement} from '../node/element/element.ts';
 import {Child, FC, Props} from '../types.ts';
@@ -35,6 +36,20 @@ export const normalizeChildren = (rawChildren: RawChildren) => {
   }
 };
 
+export const wrapArray = (children: Child[]): Child[] => {
+  // console.log('-----', 'here');
+  return children.map((child) => {
+    // console.log('-----', 'here2', child);
+    if (Array.isArray(child)) {
+      console.log('-----', 'here3', normalizeChildren(child));
+      // console.log('-----', 'child', child);
+      return h(Fragment, {}, normalizeChildren(child));
+    }
+
+    return child;
+  });
+};
+
 export const createElement = (
   type: ElementType,
   props: Props,
@@ -43,7 +58,7 @@ export const createElement = (
   return prepare({
     type,
     props,
-    children: normalizeChildren(rawChildren),
+    children: wrapArray(normalizeChildren(rawChildren)),
   });
 };
 
@@ -60,7 +75,7 @@ export function jsx<TProps extends Props>(
       ...props,
       key,
     },
-    children: normalizeChildren(rawChildren),
+    children: wrapArray(normalizeChildren(rawChildren)),
   });
 }
 
@@ -68,6 +83,6 @@ export function h(type: ElementType, props: Props, children: Child[]) {
   return prepare({
     type,
     props,
-    children: normalizeChildren(children),
+    children: wrapArray(normalizeChildren(children)),
   });
 }

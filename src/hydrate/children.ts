@@ -12,31 +12,6 @@ import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
-import {h} from '../jsx/jsx.ts';
-
-const createJsxErrorDump = (count: number) => {
-  if (count === 0) {
-    return null;
-  }
-
-  return new Array(count).fill(null).map(() => h('fragment', {}, []));
-};
-
-const getCount = ({jsxNode}: {jsxNode: JsxNode}) => {
-  if (jsxNode instanceof JsxNodeElement) {
-    return 1;
-  }
-
-  if ('insertedTagsCount' in jsxNode.systemProps) {
-    return jsxNode.systemProps.insertedTagsCount!;
-  }
-
-  if (INSERTED_TAGS_COUNT in jsxNode.type) {
-    return jsxNode.type[INSERTED_TAGS_COUNT] as number;
-  }
-
-  return 0;
-};
 
 export async function handleChildrenHydrate({
   children,

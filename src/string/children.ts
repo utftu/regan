@@ -2,7 +2,6 @@ import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
 import {Child} from '../types.ts';
-import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {StringContext} from '../node/string/string.ts';
 import {Ctx} from '../ctx/ctx.ts';
@@ -12,9 +11,9 @@ import {JsxNodeComponent} from '../node/component/component.ts';
 
 type StringStream = TransformStream<string, string>;
 
-const checkValidPrimitive = (value: any) => {
+const checkPrimitive = (value: any) => {
   const type = typeof value;
-  if (type === 'number' || type === 'string') {
+  if (type === 'string' || type === 'number') {
     return true;
   }
 
@@ -48,7 +47,7 @@ export async function handleChildrenString({
   for (let i = 0; i <= children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
 
-    if (!childOrAtom) {
+    if (!childOrAtom && checkPrimitive(childOrAtom) === false) {
       continue;
     }
 
