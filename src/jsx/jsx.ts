@@ -36,15 +36,15 @@ export const normalizeChildren = (rawChildren: RawChildren) => {
   }
 };
 
-export const wrapArray = (children: Child[]): Child[] => {
-  return children.map((child) => {
-    if (Array.isArray(child)) {
-      return h(Fragment, {}, normalizeChildren(child));
-    }
+// export const wrapArray = (children: Child[]): Child[] => {
+//   return children.map((child) => {
+//     if (Array.isArray(child)) {
+//       return h(Fragment, {}, normalizeChildren(child));
+//     }
 
-    return child;
-  });
-};
+//     return child;
+//   });
+// };
 
 export const createElement = (
   type: ElementType,
@@ -54,7 +54,7 @@ export const createElement = (
   return prepare({
     type,
     props,
-    children: wrapArray(normalizeChildren(rawChildren)),
+    children: normalizeChildren(rawChildren),
   });
 };
 
@@ -71,7 +71,7 @@ export function jsx<TProps extends Props>(
       ...props,
       key,
     },
-    children: wrapArray(normalizeChildren(rawChildren)),
+    children: normalizeChildren(rawChildren),
   });
 }
 
@@ -79,6 +79,6 @@ export function h(type: ElementType, props: Props, children: Child[]) {
   return prepare({
     type,
     props,
-    children: wrapArray(normalizeChildren(children)),
+    children: normalizeChildren(children),
   });
 }
