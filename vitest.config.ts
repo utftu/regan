@@ -10,5 +10,10 @@ export default mergeConfig(
         provider: 'istanbul', // or 'v8'
       },
     },
+    resolve: {
+      alias: {
+        'my-jsx': new URL('./jsx-build/jsx-runtime', import.meta.url).pathname,
+      },
+    },
   })
 );

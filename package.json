@@ -24,6 +24,7 @@
     "strangelove": "^1.0.16",
     "utftu": "^1.0.26",
     "vite": "^5.0.10",
+    "vite-plugin-dts": "^3.7.2",
     "vitest": "^1.1.0"
   },
   "dependencies": {
