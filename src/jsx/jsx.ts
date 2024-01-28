@@ -37,12 +37,8 @@ export const normalizeChildren = (rawChildren: RawChildren) => {
 };
 
 export const wrapArray = (children: Child[]): Child[] => {
-  // console.log('-----', 'here');
   return children.map((child) => {
-    // console.log('-----', 'here2', child);
     if (Array.isArray(child)) {
-      console.log('-----', 'here3', normalizeChildren(child));
-      // console.log('-----', 'child', child);
       return h(Fragment, {}, normalizeChildren(child));
     }
 

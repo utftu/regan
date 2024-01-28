@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {getString} from './string.ts';
 import {ErrorGuard} from '../errors/errors.tsx';
+import {Fragment} from '../components/fragment/fragment.ts';
 
 const defaultAnswer = '<fragment></fragment>';
 
@@ -22,9 +23,9 @@ describe('string errors', () => {
     const Parent = () => {
       return (
         <ErrorGuard errorJsx={() => 'error'}>
-          <>
+          <Fragment>
             <Child />
-          </>
+          </Fragment>
         </ErrorGuard>
       );
     };
