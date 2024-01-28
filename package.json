@@ -8,7 +8,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "types": "tsc --project tsconfig.json",
-    "build": "npx vite"
+    "build": "vite build"
   },
   "files": [
     "dist/**/*"

@@ -25,7 +25,7 @@ type GetStringConfig = {
   jsxPath?: string;
 };
 
-export async function getString(node: JsxNode, config: GetStringConfig = {}) {
+export const getStringStream = async (node: JsxNode) => {
   const stream = await node.getStringStream({
     jsxSegmentStr: '',
     globalCtx: new GlobalCtx({
@@ -37,6 +37,11 @@ export async function getString(node: JsxNode, config: GetStringConfig = {}) {
       snapshot: new TreeAtomsSnapshot(),
     },
   });
+  return stream;
+};
+
+export async function getString(node: JsxNode) {
+  const stream = await getStringStream(node);
   const str = await convertStreamToString(stream);
   return str;
 }

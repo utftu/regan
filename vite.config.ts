@@ -8,6 +8,13 @@ export default defineConfig({
   //   jsxFragment: 'Fragment',
   //   jsxInject: `import {jsx} from 'my-jsx'`,
   // },
+  build: {
+    outDir: './dist',
+    lib: {
+      entry: ['./src/regan.ts'],
+      formats: ['es'],
+    },
+  },
   resolve: {
     alias: {
       'my-jsx': new URL('./src/jsx/jsx-runtime', import.meta.url).pathname,
