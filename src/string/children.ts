@@ -52,39 +52,79 @@ export async function handleChildrenString({
       continue;
     }
 
-    let child: JsxNode;
-    if (childOrAtom instanceof Atom) {
-      child = new JsxNodeComponent({
-        type: AtomWrapper,
-        children: [],
-        props: {
-          atom: childOrAtom,
-        },
-        systemProps: {},
-      });
-    } else {
-      child = childOrAtom;
+    const innerArr = Array.isArray(childOrAtom) ? childOrAtom : [childOrAtom];
+
+    for (let j = 0; j <= innerArr.length; j++) {
+      const value = innerArr[j];
+
+      let child: JsxNode;
+      if (value instanceof Atom) {
+        child = new JsxNodeComponent({
+          type: AtomWrapper,
+          children: [],
+          props: {
+            atom: value,
+          },
+          systemProps: {},
+        });
+      } else {
+        child = value;
+      }
+
+      if (child instanceof JsxNode) {
+        const result = child.getStringStream({
+          globalCtx,
+          jsxSegmentStr: jsxNodeCount.toString(),
+          parentJsxSegment: {
+            jsxSegment: parentJsxSegment,
+            position: jsxNodeCount,
+          },
+          stringContext: stringContext,
+          parentCtx,
+          parentJsxNode,
+        });
+        jsxNodeCount++;
+        results.push(result);
+
+        continue;
+      }
+
+      results.push(child);
     }
 
-    if (child instanceof JsxNode) {
-      const result = child.getStringStream({
-        globalCtx,
-        jsxSegmentStr: jsxNodeCount.toString(),
-        parentJsxSegment: {
-          jsxSegment: parentJsxSegment,
-          position: jsxNodeCount,
-        },
-        stringContext: stringContext,
-        parentCtx,
-        parentJsxNode,
-      });
-      jsxNodeCount++;
-      results.push(result);
+    // let child: JsxNode;
+    // if (childOrAtom instanceof Atom) {
+    //   child = new JsxNodeComponent({
+    //     type: AtomWrapper,
+    //     children: [],
+    //     props: {
+    //       atom: childOrAtom,
+    //     },
+    //     systemProps: {},
+    //   });
+    // } else {
+    //   child = childOrAtom;
+    // }
 
-      continue;
-    }
+    // if (child instanceof JsxNode) {
+    //   const result = child.getStringStream({
+    //     globalCtx,
+    //     jsxSegmentStr: jsxNodeCount.toString(),
+    //     parentJsxSegment: {
+    //       jsxSegment: parentJsxSegment,
+    //       position: jsxNodeCount,
+    //     },
+    //     stringContext: stringContext,
+    //     parentCtx,
+    //     parentJsxNode,
+    //   });
+    //   jsxNodeCount++;
+    //   results.push(result);
 
-    results.push(child);
+    //   continue;
+    // }
+
+    // results.push(child);
   }
 
   for (const childStream of results) {
