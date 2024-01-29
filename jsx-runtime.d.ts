@@ -1,1 +1,1 @@
-export * from './src/jsx/jsx.ts';
+// export * from './src/jsx/jsx.ts';
