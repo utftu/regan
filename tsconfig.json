@@ -8,6 +8,6 @@
     "jsx": "preserve",
     "noEmit": true
   },
-  "include": ["./src/**/*.(ts|tsx)"],
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"],
   "files": ["jsx.global.d.ts"]
 }
