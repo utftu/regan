@@ -42,6 +42,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   if (globalCtx.mode === 'server') {
     const {additionalPart, value} = parseAtom(atom, false);
 
+    // todo ?
     jsxSegment.clearCache();
     jsxSegment.segment += additionalPart;
     return <Fragment>{value}</Fragment>;

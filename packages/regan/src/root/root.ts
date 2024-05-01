@@ -8,7 +8,6 @@ export type Action = () => void;
 export type Exec = (value: any) => Promise<any> | any;
 
 export class Root {
-  // planner = new Planner();
   links: Links;
   atoms: Map<Atom, ExecConfig> = new Map();
 

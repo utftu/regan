@@ -11,21 +11,7 @@ export class GlobalCtx {
   data: Data;
   root: Root;
   mode: Mode;
-  constructor({
-    // window,
-    // stage: status,
-    data = {},
-    root,
-    mode,
-  }: {
-    // window: Window;
-    // stage: Stage;
-    data?: Data;
-    root: Root;
-    mode: Mode;
-  }) {
-    // this.window = window;
-    // this.stage = status;
+  constructor({data = {}, root, mode}: {data?: Data; root: Root; mode: Mode}) {
     this.data = data;
     this.root = root;
     this.mode = mode;

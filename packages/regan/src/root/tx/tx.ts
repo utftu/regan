@@ -29,7 +29,9 @@ export class Tx {
         });
       }
 
-      new TxShard(this, this.root.atoms.get(atom)!);
+      const shard = new TxShard(this, this.root.atoms.get(atom)!);
+      this.shards.push(shard);
+      this.root.atoms.get(atom)!.shards.push(shard);
     }
   }
 

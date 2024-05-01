@@ -11,8 +11,8 @@ export class TxShard {
 
   constructor(tx: Tx, execConfig: ExecConfig) {
     this.tx = tx;
-    tx.shards.push(this);
-    execConfig.shards.push(this);
+    // tx.shards.push(this);
+    // execConfig.shards.push(this);
     this.execConfig = execConfig;
   }
 }
