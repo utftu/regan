@@ -4,8 +4,6 @@ import {AtomWrapper} from './atom-wrapper.tsx';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
 
-window.X;
-
 describe('atom-wrapper', () => {
   it('simple', async () => {
     const onClick = vi.fn();
