@@ -14,7 +14,7 @@ type Props = {
   atom: Atom;
 };
 
-const parseAtom = (atom: Atom, initRendrering: boolean) => {
+const parseAtom = (atom: Atom, renderMode: boolean = false) => {
   let additionalPart = '?a=';
   let value;
   if (checkNamedAtom(atom)) {
@@ -24,7 +24,7 @@ const parseAtom = (atom: Atom, initRendrering: boolean) => {
   } else {
     value = atom.get();
 
-    if (initRendrering) {
+    if (renderMode) {
       additionalPart += Date.now();
     } else {
       additionalPart += '0';
@@ -42,8 +42,8 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   if (globalCtx.mode === 'server') {
     const {additionalPart, value} = parseAtom(atom, false);
 
-    // todo ?
-    jsxSegment.clearCache();
+    // todo
+    // jsxSegment.clearCache();
     jsxSegment.segment += additionalPart;
     return <Fragment>{value}</Fragment>;
   }
@@ -55,17 +55,17 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   };
   globalCtx.root.links.addExec(atom, tempExec);
   const exec = async () => {
+    if (clientHNode.unmounted === true) {
+      return;
+    }
+
     clientHNode.children.forEach((hNodeChild) => {
       unmountHNodes(hNodeChild);
       hNodeChild.parent = undefined;
     });
     clientHNode.children.length = 0;
 
-    if (clientHNode.unmounted === true) {
-      return;
-    }
-
-    const {value, additionalPart} = parseAtom(atom, true);
+    const {value, additionalPart} = parseAtom(atom, false);
 
     jsxSegment.clearCache();
     jsxSegment.segment = (jsxSegment.parent?.position || '') + additionalPart;
@@ -107,7 +107,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
 
   const {value, additionalPart} = parseAtom(atom, stage === 'render');
 
-  jsxSegment.clearCache();
+  // jsxSegment.clearCache();
   jsxSegment.segment += additionalPart;
 
   return <Fragment>{value}</Fragment>;

@@ -2,7 +2,6 @@ import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {DomProps, JsxNode} from '../node/node.ts';
 import {Child, FCStaticParams} from '../types.ts';
-import {NAMED_ATOM_REGAN} from '../atoms/atoms.ts';
 import {JsxNodeElement} from '../node/element/element.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';

@@ -21,7 +21,6 @@ export async function hydrateRaw({
   parentHNode,
   window: windowLocal = window,
   data = {},
-  parentCtx,
 }: {
   getElementPointer: () => ElementPointer;
   parentHNode?: HNode;

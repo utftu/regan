@@ -104,11 +104,10 @@ export class Ctx<TProps extends Record<any, any> = any> {
   };
 
   getJsxPath = () => {
-    return getJsxPath(this.jsxSegment);
+    return this.jsxSegment.getJsxPath();
   };
 
   getId = () => {
-    const jsxPath = this.getJsxPath();
-    return getHashFromString(jsxPath);
+    return this.jsxSegment.getId();
   };
 }

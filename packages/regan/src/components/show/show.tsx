@@ -16,13 +16,15 @@ const Show: FC<Props> & FCStaticParams = ({when}, {children, systemProps}) => {
         const needShow = get(when);
         if (needShow === true) {
           return {
-            name: 't',
+            // enabled
+            name: 'e',
             value: children,
           };
         }
 
         return {
-          name: 'f',
+          // disabled
+          name: 'd',
           value: null,
         };
       })}
