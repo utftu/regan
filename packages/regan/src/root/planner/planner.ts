@@ -1,9 +1,10 @@
 import {PromiseControls, createControlledPromise} from 'utftu';
 import {Action} from '../root.ts';
-import {Exec} from '../links/links.ts';
+import {Exec as Atom} from '../links/links.ts';
 
+// UNUSED
 export class Planner {
-  plans: Map<Exec, Action> = new Map();
+  plans: Map<Atom, Action> = new Map();
 
   status: 'idle' | 'running' = 'idle';
 
@@ -17,8 +18,8 @@ export class Planner {
   promise: Promise<void>;
   promiseControls: PromiseControls<void>;
 
-  plan(exec: Exec, action: Action) {
-    this.plans.set(exec, action);
+  plan(atom: Atom, action: Action) {
+    this.plans.set(atom, action);
 
     if (this.status === 'idle') {
       const [promise, controls] = createControlledPromise<void>();

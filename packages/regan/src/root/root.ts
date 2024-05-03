@@ -43,6 +43,7 @@ export class Root {
   addTx(changes: Changes) {
     const tx = new Tx(changes, this);
 
+    // doubtfull but ok
     queueMicrotask(() => {
       this.handleTx(tx);
     });
@@ -58,9 +59,7 @@ export class Root {
       }
       const atomConfigShards = linkConfig.shards;
 
-      const position = atomConfigShards.indexOf(shard);
-
-      if (atomConfigShards.length - 1 === position) {
+      if (atomConfigShards.at(-1) === shard) {
         return false;
       }
     }
@@ -107,7 +106,6 @@ export class Root {
     return true;
   }
 
-  // r
   async exec(tx: Tx) {
     tx.status = 'running';
 
@@ -126,6 +124,7 @@ export class Root {
         execResults.push(exec(value));
       });
     }
+    // exec should be awaited
     await Promise.all(execResults);
 
     this.finish(tx);
@@ -138,7 +137,8 @@ export class Root {
       linkConfig.shards.splice(0, 1);
     });
 
-    tx.promiseControls.resolve();
+    tx.finish();
+
     tx.shards.forEach((shard) => {
       const linkConfig = this.links.get(shard.atom)!;
       linkConfig.omittedShards.forEach((shard) => {
@@ -158,7 +158,8 @@ export class Root {
 
   finishOmitted(tx: Tx) {
     tx.status = 'closed';
-    // todo reolve
+    tx.finish();
+
     tx.shards.forEach((shard) => {
       const linkConfig = this.links.get(shard.atom)!;
       const omittedShards = linkConfig.omittedShards;

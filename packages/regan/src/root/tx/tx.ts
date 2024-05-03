@@ -32,6 +32,10 @@ export class Tx {
   // init => omitted => closed
   status: 'init' | 'omitted' | 'running' | 'finished' | 'closed' = 'init';
 
+  finish() {
+    this.promiseControls.resolve();
+  }
+
   // // r
   // checkOmmit() {
   //   for (const shard of this.shards) {
