@@ -1,6 +1,5 @@
 import {destroyAtom} from '../atoms/atoms.ts';
 import {Ctx} from '../ctx/ctx.ts';
-import {HNodeElement} from './element.ts';
 import {HNode} from './h-node.ts';
 
 export const createSmartMount = (ctx: Ctx) => (hNode: HNode) => {

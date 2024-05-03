@@ -55,8 +55,6 @@ export async function hydrateComponent(
     }).hydrate(ctx);
   }
 
-  // const rawChidlren = await this.type(this.props, componentCtx);
-
   const smartMount = createSmartMount(componentCtx);
   hNode.unmounts = componentCtx.state.unmounts;
   hNode.mounts.push(smartMount);

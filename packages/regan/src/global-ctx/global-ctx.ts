@@ -6,8 +6,6 @@ type Mode = 'server' | 'client';
 type Data = Record<any, any>;
 
 export class GlobalCtx {
-  // window: Window;
-  // stage: Stage;
   data: Data;
   root: Root;
   mode: Mode;

@@ -10,6 +10,7 @@ type Props = {error: Error; jsxNode: JsxNode};
 type ErrorHandler = ({error, jsxNode}: Props) => void;
 type ErrorJsx = FC<Props>;
 
+// insert native html fragment to save css styles
 const createJsxErrorDump = (count: number): JsxNode[] | null => {
   if (count === 0) {
     return null;
@@ -18,6 +19,7 @@ const createJsxErrorDump = (count: number): JsxNode[] | null => {
   return new Array(count).fill(null).map(() => h('fragment', {}, []));
 };
 
+// try to understand how many places should be occupied
 const getElementsCount = ({jsxNode}: {jsxNode: JsxNode}) => {
   if (jsxNode instanceof JsxNodeElement) {
     return 1;

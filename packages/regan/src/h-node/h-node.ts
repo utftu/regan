@@ -22,7 +22,8 @@ export type PropsHNode = {
   hNodeCtx: HNodeCtx;
 };
 
-// HNode
+// HNode = HydratedNode
+// attribute for interactive component
 export class HNode {
   children: HNode[] = [];
   mounts: MountUnmounFunc[] = [];
