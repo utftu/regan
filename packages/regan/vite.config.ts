@@ -28,6 +28,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      // 'my-jsx': new URL('./jsx-build/jsx-runtime', import.meta.url).pathname,
       'my-jsx': new URL('./src/jsx', import.meta.url).pathname,
     },
   },
