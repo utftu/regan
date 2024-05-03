@@ -1,15 +1,11 @@
-import {Atom} from 'strangelove';
-import {Planner} from './planner/planner.ts';
 import {Links} from './links/links.ts';
 import {Changes, Tx} from './tx/tx.ts';
-import {ExecConfig} from './tx/shard.ts';
 
+const OMITTED_LIMIT = 10;
 export type Action = () => void;
-export type Exec = (value: any) => Promise<any> | any;
 
 export class Root {
   links: Links;
-  atoms: Map<Atom, ExecConfig> = new Map();
 
   constructor() {
     this.links = new Links(this);
@@ -33,13 +29,13 @@ export class Root {
       return;
     }
 
-    if (tx.status === 'init' && tx.checkOmmit()) {
-      tx.omit();
+    if (tx.status === 'init' && this.checkOmmit(tx)) {
+      this.omit(tx);
       return;
     }
 
-    if (tx.status === 'init' && tx.checkExec()) {
-      tx.exec();
+    if (tx.status === 'init' && this.checkExec(tx)) {
+      this.exec(tx);
       return;
     }
   }
@@ -54,31 +50,122 @@ export class Root {
     return tx.promise;
   }
 
-  addExec(atom: Atom, exec: Exec) {
-    this.links.add(atom, exec);
-    if (!this.atoms.has(atom)) {
-      this.atoms.set(atom, new ExecConfig());
+  checkOmmit(tx: Tx) {
+    for (const shard of tx.shards) {
+      const linkConfig = this.links.get(shard.atom)!;
+      if (linkConfig.omittedShards.length > OMITTED_LIMIT) {
+        return false;
+      }
+      const atomConfigShards = linkConfig.shards;
+
+      const position = atomConfigShards.indexOf(shard);
+
+      if (atomConfigShards.length - 1 === position) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  omit(tx: Tx) {
+    tx.status = 'omitted';
+    const positions = [];
+    for (const shard of tx.shards) {
+      const linkConfig = this.links.get(shard.atom)!;
+      const atomConfigShards = linkConfig.shards;
+
+      const position = atomConfigShards.indexOf(shard);
+      positions.push(position);
+
+      atomConfigShards.splice(position, 1);
+      linkConfig.omittedShards.push(shard);
+    }
+
+    for (let i = 0; i < tx.shards.length; i++) {
+      const shard = tx.shards[i];
+      const linkConfig = this.links.get(shard.atom)!;
+
+      const atomConfigShards = linkConfig.shards;
+      const nextShard = atomConfigShards[positions[i]];
+
+      if (nextShard) {
+        nextShard.tx.root.handleTx(nextShard.tx);
+      }
     }
   }
 
-  removeExec(atom: Atom, exec: Exec) {
-    this.links.remove(atom, exec);
-    if (!this.links.check(atom)) {
-      this.atoms.delete(atom);
+  checkExec(tx: Tx) {
+    for (const shard of tx.shards) {
+      const linkConfig = this.links.get(shard.atom)!;
+      const atomConfigShards = linkConfig.shards;
+
+      if (atomConfigShards[0] !== shard) {
+        return false;
+      }
     }
+
+    return true;
   }
 
-  replaceExec(atom: Atom, exec: Exec, newExec: Exec) {
-    if (!this.links.check(atom)) {
-      return;
-    }
+  // r
+  async exec(tx: Tx) {
+    tx.status = 'running';
 
-    const execs = this.links.get(atom)!.execs;
-    const i = execs.indexOf(exec);
-    if (i === -1) {
-      return;
-    }
+    const execResults: Promise<Action>[] = [];
 
-    execs[i] = newExec;
+    for (const change of tx.changes) {
+      const [atom, value] = change;
+
+      if (!this.links.check(atom)) {
+        continue;
+      }
+
+      const execsForAtom = this.links.get(atom)!;
+
+      execsForAtom.execs.forEach((exec) => {
+        execResults.push(exec(value));
+      });
+    }
+    await Promise.all(execResults);
+
+    this.finish(tx);
+  }
+
+  finish(tx: Tx) {
+    tx.status = 'finished';
+    tx.shards.forEach((shard) => {
+      const linkConfig = this.links.get(shard.atom)!;
+      linkConfig.shards.splice(0, 1);
+    });
+
+    tx.promiseControls.resolve();
+    tx.shards.forEach((shard) => {
+      const linkConfig = this.links.get(shard.atom)!;
+      linkConfig.omittedShards.forEach((shard) => {
+        this.finishOmitted(shard.tx);
+        // shard.tx.finishOmitted();
+      });
+
+      const shards = linkConfig.shards;
+
+      if (shards.length > 0) {
+        this.handleTx(shards[0].tx);
+      }
+    });
+
+    tx.status = 'closed';
+  }
+
+  finishOmitted(tx: Tx) {
+    tx.status = 'closed';
+    // todo reolve
+    tx.shards.forEach((shard) => {
+      const linkConfig = this.links.get(shard.atom)!;
+      const omittedShards = linkConfig.omittedShards;
+
+      const position = omittedShards.indexOf(shard);
+
+      omittedShards.splice(position, 1);
+    });
   }
 }

@@ -53,7 +53,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   const tempExec = () => {
     changedBeforeMount = true;
   };
-  globalCtx.root.addExec(atom, tempExec);
+  globalCtx.root.links.addExec(atom, tempExec);
   const exec = async () => {
     clientHNode.children.forEach((hNodeChild) => {
       unmountHNodes(hNodeChild);
@@ -95,14 +95,14 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   };
 
   mount(() => {
-    globalCtx.root.replaceExec(atom, tempExec, exec);
+    globalCtx.root.links.replaceExec(atom, tempExec, exec);
 
     if (changedBeforeMount === true) {
       exec();
     }
   });
   unmount(() => {
-    globalCtx.root.removeExec(atom, exec);
+    globalCtx.root.links.removeExec(atom, exec);
   });
 
   const {value, additionalPart} = parseAtom(atom, stage === 'render');

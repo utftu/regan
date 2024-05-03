@@ -58,7 +58,7 @@ export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
       const execTemp = () => {
         ctx.renderCtx.changedAtoms.push(prop);
       };
-      ctx.globalCtx.root.addExec(prop, execTemp);
+      ctx.globalCtx.root.links.addExec(prop, execTemp);
       const exec = (value: any) => {
         if (typeof value === 'function') {
           addEventListenerStore({
@@ -77,8 +77,10 @@ export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
           element.setAttribute(name, value);
         }
       };
-      mounts.push(() => ctx.globalCtx.root.replaceExec(prop, execTemp, exec));
-      unmounts.push(() => ctx.globalCtx.root.removeExec(prop, exec));
+      mounts.push(() =>
+        ctx.globalCtx.root.links.replaceExec(prop, execTemp, exec)
+      );
+      unmounts.push(() => ctx.globalCtx.root.links.removeExec(prop, exec));
       continue;
     }
 

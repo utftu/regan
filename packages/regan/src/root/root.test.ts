@@ -1,7 +1,8 @@
 import {Mock, describe, expect, it, vi} from 'vitest';
-import {Exec, Root} from './root.ts';
+import {Root} from './root.ts';
 import {createAtomRegan} from '../atoms/atoms.ts';
 import {Atom} from 'strangelove';
+import {Exec} from './links/links.ts';
 
 type MockedExec = Exec & Mock;
 
@@ -11,7 +12,7 @@ describe('root', () => {
       const externalAtom = createAtomRegan('1');
       const exec = vi.fn() as Exec & Mock;
       const root = new Root();
-      root.links.add(externalAtom, exec);
+      root.links.addExec(externalAtom, exec);
 
       root.addTx(new Map([[externalAtom, '2']]));
       await root.addTx(new Map([[externalAtom, '3']]));
@@ -25,8 +26,8 @@ describe('root', () => {
       const exec = vi.fn() as MockedExec;
       const exec2 = vi.fn() as MockedExec;
       const root = new Root();
-      root.links.add(externalAtom, exec);
-      root.links.add(externalAtom2, exec2);
+      root.links.addExec(externalAtom, exec);
+      root.links.addExec(externalAtom2, exec2);
 
       root.addTx(
         new Map<Atom, any>([
@@ -53,8 +54,8 @@ describe('root', () => {
       const action2 = vi.fn();
       const exec2 = vi.fn(() => action2) as MockedExec;
 
-      root.links.add(atom1, exec1);
-      root.links.add(atom2, exec2);
+      root.links.addExec(atom1, exec1);
+      root.links.addExec(atom2, exec2);
 
       root.addTx(
         new Map([
@@ -78,7 +79,7 @@ describe('root', () => {
       const atom1 = createAtomRegan('1 atom');
       const exec1 = vi.fn() as MockedExec;
 
-      root.links.add(atom1, exec1);
+      root.links.addExec(atom1, exec1);
 
       const txs = new Array(11).fill(null).map((_, i) => {
         return root.addTx(new Map([[atom1, (i + 1).toString()]]));

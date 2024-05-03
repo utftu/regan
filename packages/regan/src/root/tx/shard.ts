@@ -1,3 +1,4 @@
+import {Atom} from 'strangelove';
 import {Tx} from './tx.ts';
 
 export class ExecConfig {
@@ -7,12 +8,10 @@ export class ExecConfig {
 
 export class TxShard {
   tx: Tx;
-  execConfig: ExecConfig;
+  atom: Atom;
 
-  constructor(tx: Tx, execConfig: ExecConfig) {
+  constructor(tx: Tx, atom: Atom) {
     this.tx = tx;
-    // tx.shards.push(this);
-    // execConfig.shards.push(this);
-    this.execConfig = execConfig;
+    this.atom = atom;
   }
 }

@@ -73,7 +73,7 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
       const execTemp = () => {
         ctx.hCtx.changedAtoms.push(prop);
       };
-      ctx.globalCtx.root.addExec(prop, execTemp);
+      ctx.globalCtx.root.links.addExec(prop, execTemp);
       const exec = (value: any) => {
         if (typeof value === 'function') {
           addEventListenerStore({
@@ -90,8 +90,10 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
           element.setAttribute(name, value);
         }
       };
-      mounts.push(() => ctx.globalCtx.root.replaceExec(prop, execTemp, exec));
-      unmounts.push(() => ctx.globalCtx.root.removeExec(prop, exec));
+      mounts.push(() =>
+        ctx.globalCtx.root.links.replaceExec(prop, execTemp, exec)
+      );
+      unmounts.push(() => ctx.globalCtx.root.links.removeExec(prop, exec));
     } else if (typeof prop === 'function') {
       addEventListenerStore({
         listener: prepareListener({

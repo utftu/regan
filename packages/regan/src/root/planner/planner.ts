@@ -1,5 +1,6 @@
 import {PromiseControls, createControlledPromise} from 'utftu';
-import {Action, Exec} from '../root.ts';
+import {Action} from '../root.ts';
+import {Exec} from '../links/links.ts';
 
 export class Planner {
   plans: Map<Exec, Action> = new Map();

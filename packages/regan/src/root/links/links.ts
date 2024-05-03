@@ -1,51 +1,24 @@
-import {Atom, connectAtoms} from 'strangelove';
-import {Exec, Root} from '../root.ts';
-import {destroyAtom} from '../../atoms/atoms.ts';
+import {Atom} from 'strangelove';
+import {Root} from '../root.ts';
+import {LinkConfig} from './link-config.ts';
 
-type LinkConfig = {
-  execs: Exec[];
-  subsribeAtom: Atom;
-};
+export type Exec = (value: any) => Promise<any> | any;
 
 export class Links {
   links: Map<Atom, LinkConfig> = new Map();
   root: Root;
 
   private create(atom: Atom) {
-    const subsribeAtom = new Atom({
-      root: atom.root,
-      exec: async () => {
-        const value = atom.get();
-
-        const promise = this.root.addTx(new Map([[atom, value]]));
-
-        await promise;
-        return true;
-      },
-    });
-    connectAtoms(atom, subsribeAtom);
-
-    this.links.set(atom, {
-      execs: [],
-      subsribeAtom,
-    });
+    this.links.set(atom, new LinkConfig(atom, this.root));
   }
 
   private delete(atom: Atom) {
-    destroyAtom(this.links.get(atom)!.subsribeAtom);
+    this.links.get(atom)!.clean();
     this.links.delete(atom);
   }
 
   constructor(root: Root) {
     this.root = root;
-  }
-
-  add(atom: Atom, exec: Exec) {
-    if (!this.links.has(atom)) {
-      this.create(atom);
-    }
-
-    this.links.get(atom)!.execs.push(exec);
   }
 
   get(atom: Atom) {
@@ -56,18 +29,36 @@ export class Links {
     return this.links.has(atom);
   }
 
-  remove(atom: Atom, exec: Exec) {
+  addExec(atom: Atom, exec: Exec) {
     if (!this.links.has(atom)) {
-      return;
+      this.create(atom);
     }
-    const newExecs = this.links
-      .get(atom)!
-      .execs.filter((execLocal) => exec !== execLocal);
+
+    this.links.get(atom)!.execs.push(exec);
+  }
+
+  removeExec(atom: Atom, exec: Exec) {
+    const linkConfig = this.links.get(atom)!;
+    const newExecs = linkConfig.execs.filter((execLocal) => exec !== execLocal);
 
     if (newExecs.length === 0) {
       this.delete(atom);
     } else {
-      this.links.get(atom)!.execs = newExecs;
+      linkConfig.execs = newExecs;
     }
+  }
+
+  replaceExec(atom: Atom, exec: Exec, newExec: Exec) {
+    if (!this.check(atom)) {
+      return;
+    }
+
+    const execs = this.links.get(atom)!.execs;
+    const i = execs.indexOf(exec);
+    if (i === -1) {
+      return;
+    }
+
+    execs[i] = newExec;
   }
 }
