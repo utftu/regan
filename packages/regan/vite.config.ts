@@ -17,7 +17,7 @@ export default defineConfig({
   esbuild: {
     jsx: 'automatic',
     jsxDev: true,
-    jsxImportSource: new URL('./jsx-build', import.meta.url).pathname,
+    jsxImportSource: new URL('./src/jsx/FOR_JSX', import.meta.url).pathname,
 
     jsxFragment: 'Fragment',
     jsxFactory: 'createElement',
