@@ -1,4 +1,4 @@
-import {Fragment} from '../components/fragment/fragment.ts';
+// import {Fragment} from '../components/fragment/fragment.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {JsxNodeElement} from '../node/element/element.ts';
 import {Child, FC, Props} from '../types.ts';
@@ -74,6 +74,8 @@ export function jsx<TProps extends Props>(
     children: normalizeChildren(rawChildren),
   });
 }
+
+export const jsxs = jsx;
 
 export function h(type: ElementType, props: Props, children: Child[]) {
   return prepare({

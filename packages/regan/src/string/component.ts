@@ -38,6 +38,7 @@ export async function getStringStreamComponent(
 
   let rawChidlren;
   try {
+    debugger;
     rawChidlren = await this.type(this.props, funcCtx);
   } catch (error) {
     const errorHandlerConfig = getContextValue(errorContext, ctx.parentCtx);
