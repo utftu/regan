@@ -2,14 +2,17 @@
   "name": "regan",
   "version": "0.0.1",
   "description": "",
-  "main": "./dist/regan.ts",
+  "main": "./dist/regan.js",
   "types": "./dist/types/regan.d.ts",
   "type": "module",
+  "exports": {
+
+  },
   "scripts": {
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "types": "tsc --project tsconfig.json",
-    "build": "vite build"
+    "build": "vite build && tsc --project tsconfig.gen.json"
   },
   "files": [
     "dist/**/*"

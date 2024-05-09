@@ -1,12 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "target": "esnext",
-    "strict": true,
-    "jsx": "preserve",
-    "noEmit": true
+    "jsx": "preserve"
   },
   "include": ["./src/**/*.tsx", "./src/**/*.ts"],
   "files": ["jsx.global.d.ts"]
