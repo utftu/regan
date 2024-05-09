@@ -51,6 +51,16 @@ importers:
 
   packages/regan-vite: {}
 
+  packages/run-local:
+    dependencies:
+      regan:
+        specifier: workspace:*
+        version: link:../regan
+    devDependencies:
+      regan-vite:
+        specifier: workspace:*
+        version: link:../regan-vite
+
 packages:
 
   '@ampproject/remapping@2.3.0':

@@ -2,7 +2,8 @@
   "name": "regan",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/regan.ts",
+  "types": "./dist/types/regan.d.ts",
   "type": "module",
   "scripts": {
     "test": "vitest",
