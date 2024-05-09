@@ -1,1 +1,3 @@
-console.log('-----', '123', 123);
+import {render} from 'regan';
+
+render(document.getElementById('app'), <div>hello</div>);
