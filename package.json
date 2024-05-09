@@ -8,5 +8,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "vite-plugin-dts": "^3.9.1"
+  },
+  "dependencies": {
+    "vite": "^5.2.11"
+  }
 }
