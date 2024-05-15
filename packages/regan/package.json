@@ -6,7 +6,8 @@
   "types": "./dist/types/regan.d.ts",
   "type": "module",
   "exports": {
-
+    ".": "./dist/regan.js",
+    "./jsx-runtime": "./dist/regan.js"
   },
   "scripts": {
     "test": "vitest",

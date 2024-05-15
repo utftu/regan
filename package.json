@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "types": "./dist/types/regan.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "exports": {
+    "default": "./dist/regan.js",
+    "jsx-runtime": "./dist/regan.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +19,7 @@
     "vite-plugin-dts": "^3.9.1"
   },
   "dependencies": {
+    "react": "^18.3.1",
     "vite": "^5.2.11"
   }
 }
