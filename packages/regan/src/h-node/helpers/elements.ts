@@ -89,9 +89,13 @@ export const findPrevElement = (hNode: HNode) => {
     return;
   }
 
-  if (!hNodeElement.parent) {
-    return;
-  }
+  console.log('-----', 'hNodeElement.el', hNodeElement.el);
 
-  return up(hNodeElement.parent, hNode.jsxSegment.parent!.position);
+  return hNodeElement.el.parentNode?.childNodes[parentIndex - 1];
+
+  // if (!hNodeElement.parent) {
+  //   return;
+  // }
+
+  // return up(hNodeElement.parent, hNode.jsxSegment.parent!.position);
 };

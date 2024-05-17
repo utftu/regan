@@ -16,6 +16,7 @@ export type ConnectElements = () => (HTMLElement | string)[];
 
 export type RenderResult = Promise<{
   hNode: HNode;
+  insertedDomCount: number;
   connectElements: ConnectElements;
 }>;
 

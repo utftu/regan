@@ -24,3 +24,8 @@ export const appendElementChild = ({
 }) => {
   parent.append(el);
 };
+
+export type DomPointer = {
+  parent: HTMLElement;
+  position: number;
+};
