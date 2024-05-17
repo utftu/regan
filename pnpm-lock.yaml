@@ -21,6 +21,9 @@ importers:
       vite-plugin-dts:
         specifier: ^3.9.1
         version: 3.9.1(@types/node@20.12.8)(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.8))
+      vitest:
+        specifier: ^1.1.0
+        version: 1.6.0(@types/node@20.12.8)(jsdom@23.2.0)
 
   packages/regan:
     devDependencies:

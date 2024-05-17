@@ -9,3 +9,7 @@ export type A = BaseElement & {
   href: string;
   target?: string;
 };
+
+export type Input = BaseElement & {
+  input?: (event: InputEvent) => void;
+};

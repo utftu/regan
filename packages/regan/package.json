@@ -6,8 +6,14 @@
   "types": "./dist/types/regan.d.ts",
   "type": "module",
   "exports": {
-    ".": "./dist/regan.js",
-    "./jsx-runtime": "./dist/regan.js"
+    ".": {
+      "default": "./dist/regan.js",
+      "types": "./dist/types/regan.d.ts"
+    },
+    "./jsx-runtime": {
+      "default": "./dist/regan.js",
+      "types": "./dist/types/regan.d.ts"
+    }
   },
   "scripts": {
     "test": "vitest",

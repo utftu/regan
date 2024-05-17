@@ -7,3 +7,4 @@ export {AtomWrapper} from './components/atom-wrapper/atom-wrapper.tsx';
 export type {FC, Child} from './types.ts';
 export type {JsxNode} from './node/node.ts';
 export {jsx, jsxs} from './jsx/jsx.ts';
+export type {JSX} from './jsx/types.ts';

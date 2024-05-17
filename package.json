@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "./dist/types/regan.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest"
   },
   "exports": {
     "default": "./dist/regan.js",
@@ -16,7 +16,8 @@
   "license": "ISC",
   "devDependencies": {
     "typescript": "^5.3.3",
-    "vite-plugin-dts": "^3.9.1"
+    "vite-plugin-dts": "^3.9.1",
+    "vitest": "^1.1.0"
   },
   "dependencies": {
     "react": "^18.3.1",

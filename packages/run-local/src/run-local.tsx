@@ -1,12 +1,45 @@
-import {render} from 'regan';
+import {FC, JsxNode, render} from 'regan';
+// import {JsxNode as JsxNode2} from '../../regan/src/regan.ts';
 
-render(
-  document.getElementById('app'),
-  <div
-    click={() => {
-      console.log('hello');
-    }}
-  >
-    hello
-  </div>
-);
+const a = <div>2323</div>;
+
+// const aa = null as any as JsxNode;
+// const bb = (<div>123</div>) as JSX.Element;
+// const dd: JsxNode<any, any> = bb;
+
+// console.log('-----', 'dd', dd);
+
+const App: FC = (_, {createAtom, select}) => {
+  const state = createAtom('hello');
+  const savedValue = createAtom('');
+
+  // select((get) => {
+  //   console.log('-----', 'get(savedValue)', get(savedValue));
+  // });
+
+  return (
+    <div>
+      <div>emp</div>
+      <div>Value is {state}</div>
+      <div>
+        New value is{' '}
+        <input
+          value={savedValue}
+          input={(event) => {
+            savedValue.set(event.target!.value);
+          }}
+        ></input>
+      </div>
+      <div
+        click={() => {
+          state.set(savedValue.get());
+        }}
+      >
+        Save
+      </div>
+    </div>
+  );
+};
+// // // const b: JsxNode = null as any as JsxNode2;
+
+render(document.getElementById('app')!, <App />);

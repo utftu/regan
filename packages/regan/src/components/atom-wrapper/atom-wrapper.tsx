@@ -82,6 +82,11 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
 
         const prev = findPrevElement(clientHNode);
 
+        console.log('-----', '12', {
+          parent,
+          prev,
+        });
+
         return {
           parent,
           prev,

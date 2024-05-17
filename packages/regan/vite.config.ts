@@ -18,7 +18,6 @@ export default defineConfig({
     jsx: 'automatic',
     jsxDev: true,
     jsxImportSource: new URL('./src/jsx/FOR_JSX', import.meta.url).pathname,
-
     jsxFragment: 'Fragment',
     jsxFactory: 'createElement',
     // jsxInject: `import {jsx, jsxs} from 'my-jsx'`,

@@ -1,6 +1,17 @@
 import {HNodeElement} from '../element.ts';
 import {HNode} from '../h-node.ts';
 
+const detectElemParentIndex = (el: HTMLElement): number => {
+  const parent = el.parentNode!;
+  for (let i = 0; i <= parent.children.length; i++) {
+    const currEl = parent.children[i];
+    if (currEl === el) {
+      return i;
+    }
+  }
+  return undefined as any as number;
+};
+
 const down = (
   hNodes: HNode[],
   stopIteratePosition: number = 0
@@ -51,10 +62,36 @@ export const findParentElement = (hNode: HNode): HTMLElement | void => {
   return findParentElement(hNode.parent);
 };
 
-export const findPrevElement = (hNode: HNode) => {
+const findParentHNodeElement = (hNode: HNode): HNodeElement | void => {
+  if (hNode instanceof HNodeElement) {
+    return hNode;
+  }
+
   if (!hNode.parent) {
     return;
   }
 
-  return up(hNode.parent, hNode.jsxSegment.parent!.position);
+  return findParentHNodeElement(hNode.parent);
+};
+
+export const findPrevElement = (hNode: HNode) => {
+  const hNodeElement = findParentHNodeElement(hNode);
+
+  if (!hNodeElement) {
+    return;
+  }
+
+  const parentIndex = detectElemParentIndex(hNodeElement.el);
+
+  console.log('-----', 'parentIndex', parentIndex);
+
+  if (parentIndex === 0) {
+    return;
+  }
+
+  if (!hNodeElement.parent) {
+    return;
+  }
+
+  return up(hNodeElement.parent, hNode.jsxSegment.parent!.position);
 };
