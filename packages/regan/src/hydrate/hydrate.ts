@@ -4,7 +4,7 @@ import {HNode, HNodeCtx, mountHNodes} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
-import {ElementPointer} from '../types.ts';
+import {DomPointer, ElementPointer} from '../types.ts';
 import {Ctx} from '../ctx/ctx.ts';
 
 const getPosition = (parent: HTMLElement, prev: HTMLElement | void) => {
@@ -21,6 +21,7 @@ export async function hydrateRaw({
   parentHNode,
   window: windowLocal = window,
   data = {},
+  domPointer,
 }: {
   // getElementPointer: () => ElementPointer;
   parentHNode?: HNode;
@@ -28,6 +29,7 @@ export async function hydrateRaw({
   node: JsxNode;
   window?: Window;
   data?: Record<any, any>;
+  domPointer: DomPointer;
 }) {
   const changedAtoms: Atom[] = [];
   const globalCtx =
@@ -37,10 +39,11 @@ export async function hydrateRaw({
       mode: 'client',
       root: new Root(),
     });
-  const {parent, prev} = getElementPointer();
+  // const {parent, prev} = getElementPointer();
   const {hNode} = await node.hydrate({
     jsxSegmentStr: '',
-    dom: {parent, position: getPosition(parent, prev)},
+    domPointer: domPointer,
+    // dom: {parent, position: getPosition(parent, prev)},
     parentHNode,
     globalCtx,
 
@@ -48,7 +51,8 @@ export async function hydrateRaw({
       parentHNode?.hNodeCtx ??
       new HNodeCtx({
         window: windowLocal,
-        getInitElemPointer: getElementPointer,
+        initDomPointer: domPointer,
+        // getInitElemPointer: getElementPointer,
       }),
     hCtx: {
       snapshot: new TreeAtomsSnapshot(),
@@ -71,6 +75,10 @@ export const hydrate = (
   options: {window: Window} = {window}
 ) => {
   return hydrateRaw({
+    domPointer: {
+      parent: element,
+      position: 0,
+    },
     // getElementPointer() {
     //   return {
     //     parent: element,

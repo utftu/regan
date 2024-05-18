@@ -35,7 +35,9 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
   });
-  const element = ctx.dom.parent.children[ctx.dom.position] as HTMLElement;
+  const element = ctx.domPointer.parent.children[
+    ctx.domPointer.position
+  ] as HTMLElement;
 
   const listeners: Record<string, any> = {};
   const mounts = [];
@@ -117,14 +119,14 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
       parent: ctx.parentHNode,
       globalCtx: ctx.globalCtx,
     },
-    element
+    {domPointer: ctx.domPointer}
   );
 
   const {hNodes} = await handleChildrenHydrate({
     parentJsxSegment: jsxSegment,
     hNodeCtx: ctx.hNodeCtx,
     children: this.children,
-    dom: {
+    parentDomPointer: {
       parent: element,
       position: 0,
     },
@@ -136,5 +138,5 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
 
   hNode.addChildren(hNodes);
 
-  return {insertedCount: 1, hNode};
+  return {insertedDomCount: 1, hNode};
 }

@@ -20,7 +20,7 @@ export type RenderResult = Promise<{
   connectElements: ConnectElements;
 }>;
 
-export type HydrateResult = Promise<{insertedCount: number; hNode: HNode}>;
+export type HydrateResult = Promise<{insertedDomCount: number; hNode: HNode}>;
 
 export type StringResult = Promise<ReadableStream<string>>;
 

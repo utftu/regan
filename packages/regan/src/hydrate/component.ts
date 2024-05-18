@@ -26,6 +26,10 @@ export async function hydrateComponent(
   });
 
   const componentCtx = new Ctx({
+    client: {
+      parentDomPointer: ctx.domPointer,
+      hNode,
+    },
     globalCtx: ctx.globalCtx,
     props: this.props,
     systemProps: this.systemProps,
@@ -61,18 +65,19 @@ export async function hydrateComponent(
 
   const children = normalizeChildren(rawChidlren);
 
-  const {insertedCount, hNodes} = await handleChildrenHydrate({
+  const {insertedDomCount, hNodes} = await handleChildrenHydrate({
     hNodeCtx: ctx.hNodeCtx,
     parentJsxSegment: jsxSegment,
     parentHNode: hNode,
     parentCtx: componentCtx,
     children,
-    dom: ctx.dom,
+    parentDomPointer: ctx.domPointer,
+    // dom: ctx.dom,
     globalCtx: ctx.globalCtx,
     hCtx: ctx.hCtx,
   });
 
   hNode.addChildren(hNodes);
 
-  return {insertedCount, hNode};
+  return {insertedDomCount, hNode};
 }

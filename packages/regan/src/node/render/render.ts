@@ -4,7 +4,7 @@ import {HNode, HNodeCtx} from '../../h-node/h-node.ts';
 import {ParentJsxSegment} from '../../jsx-path/jsx-path.ts';
 import {TreeAtomsSnapshot} from '../../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {Ctx} from '../../ctx/ctx.ts';
-import {DomPointer} from '../../utils/dom.ts';
+import {DomPointer} from '../../types.ts';
 
 export type AddElementToParent = (elem: HTMLElement | string) => void;
 

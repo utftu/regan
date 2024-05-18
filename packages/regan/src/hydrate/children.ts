@@ -1,7 +1,7 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {DomProps, JsxNode} from '../node/node.ts';
-import {Child, FCStaticParams} from '../types.ts';
+import {Child, DomPointer, FCStaticParams} from '../types.ts';
 import {JsxNodeElement} from '../node/element/element.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';
@@ -16,14 +16,15 @@ import {Fragment} from '../components/fragment/fragment.ts';
 export async function handleChildrenHydrate({
   children,
   parentHNode,
-  dom,
+  // dom,
   globalCtx,
   parentJsxSegment,
   hCtx: hContext,
   hNodeCtx,
   parentCtx,
+  parentDomPointer,
 }: {
-  dom: DomProps;
+  // dom: DomProps;
   children: Child[];
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
@@ -31,10 +32,13 @@ export async function handleChildrenHydrate({
   hCtx: HCtx;
   hNodeCtx: HNodeCtx;
   parentCtx?: Ctx;
+  parentDomPointer: DomPointer;
 }) {
   const hydrateResults: ReturnType<JsxNode['hydrate']>[] = [];
-  let position = dom.position;
-  for (let i = 0, jsxNodeCount = 0; i <= children.length; i++) {
+  let insertedDomCount = parentDomPointer.position;
+  let insertedJsxCount = 0;
+
+  for (let i = 0; i <= children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
 
     if (!(childOrAtom instanceof JsxNode) && !(childOrAtom instanceof Atom)) {
@@ -63,12 +67,16 @@ export async function handleChildrenHydrate({
     }
 
     const hydrateResult = child.hydrate({
-      jsxSegmentStr: `${jsxNodeCount}`,
+      jsxSegmentStr: `${insertedJsxCount}`,
       parentJsxSegment: {
         jsxSegment: parentJsxSegment,
-        position: jsxNodeCount,
+        position: insertedJsxCount,
       },
-      dom: {parent: dom.parent, position},
+      domPointer: {
+        parent: parentDomPointer.parent,
+        position: insertedDomCount,
+      },
+      // dom: {parent: dom.parent, position},
       parentHNode,
       globalCtx,
       parentCtx,
@@ -78,30 +86,30 @@ export async function handleChildrenHydrate({
     hydrateResults.push(hydrateResult);
 
     if (child instanceof JsxNodeElement) {
-      position++;
+      insertedDomCount++;
     } else if (child instanceof JsxNodeComponent) {
       if (
         child.systemProps.needAwait === true ||
         (child.type as FCStaticParams)[NEED_AWAIT] === true
       ) {
         const awaitedhResult = await hydrateResult;
-        position += awaitedhResult.insertedCount;
+        insertedDomCount += awaitedhResult.insertedDomCount;
       } else if ('insertedTagsCount' in child.systemProps) {
-        position += child.systemProps.insertedTagsCount!;
+        insertedDomCount += child.systemProps.insertedTagsCount!;
       } else if (INSERTED_TAGS_COUNT in child.type) {
-        position += child.type[INSERTED_TAGS_COUNT] as number;
+        insertedDomCount += child.type[INSERTED_TAGS_COUNT] as number;
       } else {
-        position++;
+        insertedDomCount++;
       }
     }
 
-    jsxNodeCount++;
+    insertedJsxCount++;
   }
 
   const hydrateResultsData = await Promise.all(hydrateResults);
 
   return {
-    insertedCount: position - dom.position,
+    insertedDomCount: insertedDomCount - parentDomPointer.position,
     hNodes: hydrateResultsData.map(({hNode}) => {
       return hNode;
     }),

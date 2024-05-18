@@ -1,5 +1,5 @@
 import {Atom, selectBase} from 'strangelove';
-import {Child, Mount, SystemProps, Unmount} from '../types.ts';
+import {Child, DomPointer, Mount, SystemProps, Unmount} from '../types.ts';
 import {getRoot} from '../atoms/atoms.ts';
 import {
   JsxSegment,
@@ -18,6 +18,11 @@ type State = {
 
 export type Stage = 'render' | 'hydrate' | 'string';
 
+type Client = {
+  hNode: HNode;
+  parentDomPointer: DomPointer;
+};
+
 type PropsCtx<TProps> = {
   props: TProps;
   systemProps: SystemProps;
@@ -29,6 +34,7 @@ type PropsCtx<TProps> = {
   stage: Stage;
   parentCtx?: Ctx;
   jsxNodeComponent: JsxNodeComponent;
+  client?: Client;
 };
 
 export class Ctx<TProps extends Record<any, any> = any> {
@@ -43,6 +49,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
   parentCtx?: Ctx;
   jsxNodeComponent: JsxNodeComponent;
   ctx: Ctx;
+  client?: Client;
 
   constructor({
     props,
@@ -55,6 +62,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     parentCtx,
     systemProps,
     jsxNodeComponent,
+    client,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -66,6 +74,8 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.parentCtx = parentCtx;
     this.systemProps = systemProps;
     this.jsxNodeComponent = jsxNodeComponent;
+    this.client = client;
+
     this.ctx = this;
   }
 

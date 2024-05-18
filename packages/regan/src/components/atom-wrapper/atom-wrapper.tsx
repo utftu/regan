@@ -3,10 +3,9 @@ import {ElementPointer, FC, FCStaticParams} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {unmountHNodes} from '../../h-node/h-node.ts';
 import {rednerRaw} from '../../render/render.ts';
-import {
-  findParentElement,
-  findPrevElement,
-} from '../../h-node/helpers/elements.ts';
+import // findParentElement,
+// findPrevElement,
+'../../h-node/helpers/elements.ts';
 import {checkNamedAtom} from '../../atoms/atoms.ts';
 import {NEED_AWAIT} from '../../consts.ts';
 
@@ -36,7 +35,17 @@ const parseAtom = (atom: Atom, renderMode: boolean = false) => {
 
 const AtomWrapper: FC<Props> & FCStaticParams = (
   {atom},
-  {hNode, systemProps, globalCtx, mount, unmount, stage, jsxSegment, ctx}
+  {
+    hNode,
+    systemProps,
+    globalCtx,
+    mount,
+    unmount,
+    stage,
+    jsxSegment,
+    ctx,
+    client,
+  }
 ) => {
   systemProps.needAwait = true;
   if (globalCtx.mode === 'server') {
@@ -70,28 +79,40 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     jsxSegment.clearCache();
     jsxSegment.segment = (jsxSegment.parent?.position || '') + additionalPart;
 
+    // const parent = findParentElement(clientHNode);
+
+    // if (!parent) {
+    //   return clientHNode.hNodeCtx.initDomPointer();
+    // }
+
+    // const prev = findPrevElement(clientHNode);
+
+    // const parent = findParentElement(clientHNode);
+    // const d = parent
+    //   ? {
+    //       parent,
+    //       position: 0,
+    //     }
+    //   : {};
+
     const {mount: childMount} = await rednerRaw({
       node: <Fragment>{value}</Fragment>,
       window: clientHNode.hNodeCtx.window,
-      getElemPointer() {
-        const parent = findParentElement(clientHNode);
+      domPointer: client!.parentDomPointer,
+      // getElemPointer() {
+      //   const parent = findParentElement(clientHNode);
 
-        if (!parent) {
-          return clientHNode.hNodeCtx.getInitElemPointer();
-        }
+      //   if (!parent) {
+      //     return clientHNode.hNodeCtx.getInitElemPointer();
+      //   }
 
-        const prev = findPrevElement(clientHNode);
+      //   const prev = findPrevElement(clientHNode);
 
-        console.log('-----', '12', {
-          parent,
-          prev,
-        });
-
-        return {
-          parent,
-          prev,
-        } as ElementPointer;
-      },
+      //   return {
+      //     parent,
+      //     prev,
+      //   } as ElementPointer;
+      // },
       parentCtx: ctx.parentCtx,
       parentHNode: hNode,
     });

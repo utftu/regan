@@ -25,6 +25,10 @@ export async function renderComponent(
     hNodeCtx: ctx.hNodeCtx,
   });
   const componentCtx = new Ctx({
+    client: {
+      parentDomPointer: ctx.parentDomPointer,
+      hNode: hNode,
+    },
     globalCtx: ctx.globalCtx,
     jsxSegment,
     props: this.props,

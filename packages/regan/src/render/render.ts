@@ -16,11 +16,11 @@ export const rednerRaw = async ({
   data,
   jsxSegmentStr = '',
   parentCtx,
-  parentDomPointer,
+  domPointer: domPointer,
 }: {
   node: JsxNode;
   // getElemPointer: () => ElementPointer;
-  parentDomPointer: DomPointer;
+  domPointer: DomPointer;
   window?: Window;
   data?: Record<any, any>;
   parentHNode?: HNode;
@@ -31,7 +31,7 @@ export const rednerRaw = async ({
 
   const {hNode, connectElements} = await node.render({
     parentHNode: parentHNode,
-    parentDomPointer,
+    parentDomPointer: domPointer,
     jsxSegmentStr,
     parentCtx,
     globalCtx:
@@ -45,7 +45,7 @@ export const rednerRaw = async ({
       parentHNode?.hNodeCtx ??
       new HNodeCtx({
         window: localWindow,
-        initDomPointer: parentDomPointer,
+        initDomPointer: domPointer,
         // getInitElemPointer: getElemPointer,
       }),
     renderCtx: {
@@ -66,7 +66,7 @@ export const rednerRaw = async ({
       // const {parent, prev} = getElemPointer();
 
       const elements = connectElements();
-      addElementChildren({domPointer: parentDomPointer, elements});
+      addElementChildren({domPointer: domPointer, elements});
       // addElementChildren({parent, prev, elements});
       mountHNodes(hNode);
     },
@@ -80,7 +80,7 @@ export const render = async (
 ) => {
   const {mount} = await rednerRaw({
     node,
-    parentDomPointer: {
+    domPointer: {
       parent: element,
       position: 0,
     },
