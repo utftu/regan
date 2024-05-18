@@ -1,6 +1,6 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {ElementPointer} from '../types.ts';
+import {DomPointer, ElementPointer} from '../types.ts';
 
 type Unmount = () => any;
 export type Mount = () => Unmount;
@@ -76,17 +76,21 @@ export const unmountHNodes = (hNode: HNode) => {
 };
 
 export class HNodeCtx {
-  getInitElemPointer: () => ElementPointer;
+  // getInitElemPointer: () => ElementPointer;
+  initDomPointer: DomPointer;
   window: Window;
 
   constructor({
-    getInitElemPointer,
+    // getInitElemPointer,
     window: localWindow,
+    initDomPointer,
   }: {
-    getInitElemPointer: () => ElementPointer;
+    initDomPointer: DomPointer;
+    // getInitElemPointer: () => ElementPointer;
     window: Window;
   }) {
-    this.getInitElemPointer = getInitElemPointer;
+    // this.getInitElemPointer = getInitElemPointer;
+    this.initDomPointer = initDomPointer;
     this.window = localWindow;
   }
 }

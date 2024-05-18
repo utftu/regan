@@ -4,7 +4,7 @@ import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {JsxNode} from '../node/node.ts';
 import {RenderCtx} from '../node/render/render.ts';
-import {Child, FCStaticParams} from '../types.ts';
+import {Child, DomPointer, FCStaticParams} from '../types.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {formatJsxValue} from '../utils/jsx.ts';
@@ -12,11 +12,10 @@ import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {JsxNodeElement} from '../node/element/element.ts';
 import {INSERTED_TAGS_COUNT, NEED_AWAIT} from '../consts.ts';
-import {DomPointer} from '../utils/dom.ts';
 
 const getInsertedCount = async (
   child: JsxNode,
-  execResult: Promise<{insertedCount: number}>
+  execResult: Promise<{insertedDomCount: number}>
 ) => {
   if (child instanceof JsxNodeElement) {
     return 1;
@@ -25,16 +24,17 @@ const getInsertedCount = async (
       child.systemProps.needAwait === true ||
       (child.type as FCStaticParams)[NEED_AWAIT] === true
     ) {
-      const {insertedCount} = await execResult;
-      return insertedCount;
+      const {insertedDomCount} = await execResult;
+      return insertedDomCount;
     } else if ('insertedTagsCount' in child.systemProps) {
-      return child.systemProps.insertedTagsCount!;
+      return child.systemProps.insertedTagsCount as number;
     } else if (INSERTED_TAGS_COUNT in child.type) {
       return child.type[INSERTED_TAGS_COUNT] as number;
     } else {
       return 1;
     }
   }
+  return 1;
 };
 
 export async function handleChildrenRender({
@@ -59,7 +59,7 @@ export async function handleChildrenRender({
   const hNodes: HNode[] = [];
   const rawResults = [];
 
-  // let insertedDomCount = domPointer.position;
+  let insertedDomCount = domPointer.position;
   let insertedJsxCount = 0;
   for (let i = 0; i <= children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
@@ -70,7 +70,7 @@ export async function handleChildrenRender({
 
     if (typeof childOrAtom === 'string') {
       rawResults.push(childOrAtom);
-      // insertedDomCount++;
+      insertedDomCount++;
       continue;
     }
 
@@ -96,6 +96,10 @@ export async function handleChildrenRender({
     }
 
     const renderResult = child.render({
+      parentDomPointer: {
+        parent: domPointer.parent,
+        position: insertedDomCount,
+      },
       parentHNode,
       globalCtx,
       parentCtx,
@@ -109,6 +113,9 @@ export async function handleChildrenRender({
     });
     rawResults.push(renderResult);
 
+    const iterateInsertedDomCount = await getInsertedCount(child, renderResult);
+
+    insertedDomCount += iterateInsertedDomCount;
     insertedJsxCount++;
   }
 
@@ -127,5 +134,6 @@ export async function handleChildrenRender({
   return {
     hNodes,
     rawConnectElements,
+    insertedDomCount,
   };
 }

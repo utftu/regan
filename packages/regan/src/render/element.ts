@@ -111,10 +111,19 @@ export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
       globalCtx: ctx.globalCtx,
       hNodeCtx: ctx.hNodeCtx,
     },
-    element
+    {
+      domPointer: {
+        parent: ctx.parentDomPointer.parent,
+        position: ctx.parentDomPointer.position,
+      },
+    }
   );
 
   const {hNodes, rawConnectElements} = await handleChildrenRender({
+    domPointer: {
+      parent: element,
+      position: 0,
+    },
     children: this.children,
     parentHNode: hNode,
     globalCtx: ctx.globalCtx,
@@ -127,6 +136,7 @@ export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
 
   return {
     hNode,
+    insertedDomCount: 0,
     connectElements: () => {
       const flatElements: (HTMLElement | string)[] = [];
       rawConnectElements.forEach((child) => {
@@ -140,7 +150,10 @@ export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
         flatElements.push(child);
       });
 
-      addElementChildren({parent: element, elements: flatElements});
+      addElementChildren({
+        domPointer: {parent: element, position: 0},
+        elements: flatElements,
+      });
 
       return [element];
     },

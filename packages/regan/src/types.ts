@@ -44,3 +44,8 @@ export type FCStaticParams = {
 };
 
 export type HtmlChild = HTMLElement | string;
+
+export type DomPointer = {
+  parent: HTMLElement;
+  position: number;
+};

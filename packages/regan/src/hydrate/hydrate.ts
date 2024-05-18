@@ -16,13 +16,13 @@ const getPosition = (parent: HTMLElement, prev: HTMLElement | void) => {
 };
 
 export async function hydrateRaw({
-  getElementPointer,
+  // getElementPointer,
   node,
   parentHNode,
   window: windowLocal = window,
   data = {},
 }: {
-  getElementPointer: () => ElementPointer;
+  // getElementPointer: () => ElementPointer;
   parentHNode?: HNode;
   parentCtx?: Ctx;
   node: JsxNode;
@@ -71,11 +71,11 @@ export const hydrate = (
   options: {window: Window} = {window}
 ) => {
   return hydrateRaw({
-    getElementPointer() {
-      return {
-        parent: element,
-      };
-    },
+    // getElementPointer() {
+    //   return {
+    //     parent: element,
+    //   };
+    // },
     window: options.window,
     node,
   });

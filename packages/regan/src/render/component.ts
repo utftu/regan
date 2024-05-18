@@ -60,20 +60,23 @@ export async function renderComponent(
   hNode.mounts.push(smartMount);
   hNode.unmounts.push(...componentCtx.state.unmounts);
 
-  const {hNodes, rawConnectElements} = await handleChildrenRender({
-    parentHNode: hNode,
-    children,
-    globalCtx: ctx.globalCtx,
-    parentJsxSegment: jsxSegment,
-    renderCtx: ctx.renderCtx,
-    hNodeCtx: ctx.hNodeCtx,
-    parentCtx: componentCtx,
-  });
+  const {hNodes, rawConnectElements, insertedDomCount} =
+    await handleChildrenRender({
+      parentHNode: hNode,
+      domPointer: ctx.parentDomPointer,
+      children,
+      globalCtx: ctx.globalCtx,
+      parentJsxSegment: jsxSegment,
+      renderCtx: ctx.renderCtx,
+      hNodeCtx: ctx.hNodeCtx,
+      parentCtx: componentCtx,
+    });
 
   hNode.addChildren(hNodes);
 
   return {
     hNode,
+    insertedDomCount,
     connectElements: () => {
       const flatElements: (HTMLElement | string)[] = [];
       rawConnectElements.forEach((child) => {

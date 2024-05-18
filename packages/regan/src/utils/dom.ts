@@ -1,18 +1,19 @@
+import {DomPointer} from '../types.ts';
+
 export const addElementChildren = ({
-  parent,
-  prev = undefined,
+  domPointer,
   elements,
 }: {
-  parent: HTMLElement;
+  domPointer: DomPointer;
   prev?: HTMLElement | void;
   elements: (HTMLElement | string)[];
 }) => {
-  if (!prev) {
-    parent.prepend(...elements);
+  if (domPointer.position === 0) {
+    domPointer.parent.prepend(...elements);
     return;
   }
 
-  prev.after(...elements);
+  domPointer.parent.childNodes[domPointer.position - 1].after(...elements);
 };
 
 export const appendElementChild = ({
@@ -23,9 +24,4 @@ export const appendElementChild = ({
   el: HTMLElement | string;
 }) => {
   parent.append(el);
-};
-
-export type DomPointer = {
-  parent: HTMLElement;
-  position: number;
 };

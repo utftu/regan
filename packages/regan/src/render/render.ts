@@ -4,21 +4,23 @@ import {HNode, HNodeCtx, mountHNodes, unmountHNodes} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
-import {ElementPointer} from '../types.ts';
+import {DomPointer, ElementPointer} from '../types.ts';
 import {addElementChildren} from '../utils/dom.ts';
 import {Ctx} from '../ctx/ctx.ts';
 
 export const rednerRaw = async ({
   node,
   window: localWindow = window,
-  getElemPointer,
+  // getElemPointer,
   parentHNode,
   data,
   jsxSegmentStr = '',
   parentCtx,
+  parentDomPointer,
 }: {
   node: JsxNode;
-  getElemPointer: () => ElementPointer;
+  // getElemPointer: () => ElementPointer;
+  parentDomPointer: DomPointer;
   window?: Window;
   data?: Record<any, any>;
   parentHNode?: HNode;
@@ -29,6 +31,7 @@ export const rednerRaw = async ({
 
   const {hNode, connectElements} = await node.render({
     parentHNode: parentHNode,
+    parentDomPointer,
     jsxSegmentStr,
     parentCtx,
     globalCtx:
@@ -42,7 +45,8 @@ export const rednerRaw = async ({
       parentHNode?.hNodeCtx ??
       new HNodeCtx({
         window: localWindow,
-        getInitElemPointer: getElemPointer,
+        initDomPointer: parentDomPointer,
+        // getInitElemPointer: getElemPointer,
       }),
     renderCtx: {
       snapshot: new TreeAtomsSnapshot(),
@@ -59,10 +63,11 @@ export const rednerRaw = async ({
       if (parentHNode) {
         parentHNode.addChildren([hNode]);
       }
-      const {parent, prev} = getElemPointer();
+      // const {parent, prev} = getElemPointer();
 
       const elements = connectElements();
-      addElementChildren({parent, prev, elements});
+      addElementChildren({domPointer: parentDomPointer, elements});
+      // addElementChildren({parent, prev, elements});
       mountHNodes(hNode);
     },
   };
@@ -75,9 +80,13 @@ export const render = async (
 ) => {
   const {mount} = await rednerRaw({
     node,
-    getElemPointer: () => ({
+    parentDomPointer: {
       parent: element,
-    }),
+      position: 0,
+    },
+    // getElemPointer: () => ({
+    //   parent: element,
+    // }),
     window: options.window,
   });
   mount();
