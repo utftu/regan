@@ -49,3 +49,10 @@ export type DomPointer = {
   parent: HTMLElement;
   position: number;
 };
+
+export type DomPointerCertain = DomPointer & {
+  innerPosition: {
+    start: number;
+    finish: number;
+  };
+};

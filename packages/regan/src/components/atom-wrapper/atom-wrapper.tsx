@@ -79,40 +79,10 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     jsxSegment.clearCache();
     jsxSegment.segment = (jsxSegment.parent?.position || '') + additionalPart;
 
-    // const parent = findParentElement(clientHNode);
-
-    // if (!parent) {
-    //   return clientHNode.hNodeCtx.initDomPointer();
-    // }
-
-    // const prev = findPrevElement(clientHNode);
-
-    // const parent = findParentElement(clientHNode);
-    // const d = parent
-    //   ? {
-    //       parent,
-    //       position: 0,
-    //     }
-    //   : {};
-
     const {mount: childMount} = await rednerRaw({
       node: <Fragment>{value}</Fragment>,
       window: clientHNode.hNodeCtx.window,
       domPointer: client!.parentDomPointer,
-      // getElemPointer() {
-      //   const parent = findParentElement(clientHNode);
-
-      //   if (!parent) {
-      //     return clientHNode.hNodeCtx.getInitElemPointer();
-      //   }
-
-      //   const prev = findPrevElement(clientHNode);
-
-      //   return {
-      //     parent,
-      //     prev,
-      //   } as ElementPointer;
-      // },
       parentCtx: ctx.parentCtx,
       parentHNode: hNode,
     });
@@ -133,7 +103,6 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
 
   const {value, additionalPart} = parseAtom(atom, stage === 'render');
 
-  // jsxSegment.clearCache();
   jsxSegment.segment += additionalPart;
 
   return <Fragment>{value}</Fragment>;

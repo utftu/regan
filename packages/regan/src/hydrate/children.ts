@@ -12,6 +12,20 @@ import {HCtx} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
+import {getInsertedCount} from '../utils/inserted-count.ts';
+
+type TextNode = {
+  type: 'text';
+  length: number;
+};
+
+type ElNode = {
+  type: 'el';
+};
+
+const el: ElNode = {type: 'el'};
+
+type InsertedDomNode = (TextNode | ElNode)[];
 
 export async function handleChildrenHydrate({
   children,
@@ -35,11 +49,19 @@ export async function handleChildrenHydrate({
   parentDomPointer: DomPointer;
 }) {
   const hydrateResults: ReturnType<JsxNode['hydrate']>[] = [];
+  const insertedDomNodes: InsertedDomNode = [];
   let insertedDomCount = parentDomPointer.position;
   let insertedJsxCount = 0;
 
   for (let i = 0; i <= children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
+
+    if (typeof childOrAtom === 'string') {
+      insertedDomNodes.push({
+        type: 'text',
+        length: childOrAtom.length,
+      });
+    }
 
     if (!(childOrAtom instanceof JsxNode) && !(childOrAtom instanceof Atom)) {
       continue;
@@ -85,24 +107,27 @@ export async function handleChildrenHydrate({
     });
     hydrateResults.push(hydrateResult);
 
-    if (child instanceof JsxNodeElement) {
-      insertedDomCount++;
-    } else if (child instanceof JsxNodeComponent) {
-      if (
-        child.systemProps.needAwait === true ||
-        (child.type as FCStaticParams)[NEED_AWAIT] === true
-      ) {
-        const awaitedhResult = await hydrateResult;
-        insertedDomCount += awaitedhResult.insertedDomCount;
-      } else if ('insertedTagsCount' in child.systemProps) {
-        insertedDomCount += child.systemProps.insertedTagsCount!;
-      } else if (INSERTED_TAGS_COUNT in child.type) {
-        insertedDomCount += child.type[INSERTED_TAGS_COUNT] as number;
-      } else {
-        insertedDomCount++;
-      }
-    }
+    // if (child instanceof JsxNodeElement) {
+    //   insertedDomCount++;
+    // } else if (child instanceof JsxNodeComponent) {
+    //   if (
+    //     child.systemProps.needAwait === true ||
+    //     (child.type as FCStaticParams)[NEED_AWAIT] === true
+    //   ) {
+    //     const awaitedhResult = await hydrateResult;
+    //     insertedDomCount += awaitedhResult.insertedDomCount;
+    //   } else if ('insertedTagsCount' in child.systemProps) {
+    //     insertedDomCount += child.systemProps.insertedTagsCount!;
+    //   } else if (INSERTED_TAGS_COUNT in child.type) {
+    //     insertedDomCount += child.type[INSERTED_TAGS_COUNT] as number;
+    //   } else {
+    //     insertedDomCount++;
+    //   }
+    // }
 
+    const insertedDomNodeCount = await getInsertedCount(child, hydrateResult);
+
+    insertedDomCount += insertedDomNodeCount;
     insertedJsxCount++;
   }
 
