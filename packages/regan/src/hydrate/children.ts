@@ -1,11 +1,9 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {DomProps, JsxNode} from '../node/node.ts';
-import {Child, DomPointer, FCStaticParams} from '../types.ts';
-import {JsxNodeElement} from '../node/element/element.ts';
+import {JsxNode} from '../node/node.ts';
+import {Child, DomPointer} from '../types.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';
-import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx} from '../node/hydrate/hydrate.ts';
@@ -13,19 +11,6 @@ import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {InsertedDomNodes, getInsertedCount} from '../utils/inserted-dom.ts';
-
-// type TextNode = {
-//   type: 'text';
-//   length: number;
-// };
-
-// type ElNode = {
-//   type: 'el';
-// };
-
-// const el: ElNode = {type: 'el'};
-
-// type InsertedDomNode = (TextNode | ElNode)[];
 
 export async function handleChildrenHydrate({
   children,
