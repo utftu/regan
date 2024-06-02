@@ -2,14 +2,11 @@ import {Atom} from 'strangelove';
 import {JsxNodeElement} from '../node/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HydrateProps} from '../node/hydrate/hydrate.ts';
+import {HydrateProps, HydrateResult} from '../node/hydrate/hydrate.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {Ctx} from '../ctx/ctx.ts';
-import {getContextValue} from '../context/context.tsx';
-import {errorContext} from '../errors/errors.tsx';
-import {JsxNode} from '../node/node.ts';
 import {addEventListenerStore} from '../utils/listeners.ts';
 import {prepareListener} from '../utils/errors.ts';
+import {defaultInsertedDomNodes} from '../utils/inserted-dom.ts';
 
 // const prepareListener = ({
 //   listener,
@@ -30,12 +27,15 @@ import {prepareListener} from '../utils/errors.ts';
 //   };
 // };
 
-export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
+export async function hydrateElement(
+  this: JsxNodeElement,
+  ctx: HydrateProps
+): HydrateResult {
   const jsxSegment = new JsxSegment({
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
   });
-  const element = ctx.domPointer.parent.children[
+  const element = ctx.domPointer.parent.childNodes[
     ctx.domPointer.position
   ] as HTMLElement;
 
@@ -138,5 +138,5 @@ export async function hydrateElement(this: JsxNodeElement, ctx: HydrateProps) {
 
   hNode.addChildren(hNodes);
 
-  return {insertedDomCount: 1, hNode};
+  return {insertedDomNodes: defaultInsertedDomNodes, hNode};
 }

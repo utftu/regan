@@ -10,35 +10,55 @@ const a = <div>2323</div>;
 // console.log('-----', 'dd', dd);
 
 const App: FC = (_, {createAtom, select}) => {
-  const state = createAtom('hello');
-  const savedValue = createAtom('');
+  // const state = createAtom('hello');
+  // const savedValue = createAtom('');
 
+  const name = createAtom('Aleksey');
+  const family = createAtom('Malyuta');
+
+  const MyHello = async () => {
+    // await fetch('234');
+    return 'sdsdssdsdsdsdsds';
+  };
+
+  // MyHello.returnLength = 'sdsdssdsdsdsdsds';
+  const atom = createAtom(MyHello);
+
+  setTimeout(() => {
+    name.set('Ivan');
+  }, 1000);
   // select((get) => {
   //   console.log('-----', 'get(savedValue)', get(savedValue));
   // });
 
   return (
     <div>
-      <div>emp</div>
-      <div>Value is {state}</div>
-      <div>
-        New value is{' '}
-        <input
-          value={savedValue}
-          input={(event) => {
-            savedValue.set(event.target!.value);
-          }}
-        ></input>
-      </div>
-      <div
-        click={() => {
-          state.set(savedValue.get());
-        }}
-      >
-        Save
-      </div>
+      My name is {name} {family} {atom} <MyHello />
     </div>
   );
+
+  // return (
+  //   <div>
+  //     <div>emp</div>
+  //     <div>Value is {state}</div>
+  //     <div>
+  //       New value is{' '}
+  //       <input
+  //         value={savedValue}
+  //         input={(event) => {
+  //           savedValue.set(event.target!.value);
+  //         }}
+  //       ></input>
+  //     </div>
+  //     <div
+  //       click={() => {
+  //         state.set(savedValue.get());
+  //       }}
+  //     >
+  //       Save
+  //     </div>
+  //   </div>
+  // );
 };
 // // // const b: JsxNode = null as any as JsxNode2;
 

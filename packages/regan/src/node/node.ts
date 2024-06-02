@@ -1,26 +1,7 @@
 import {Child, Props, SystemProps} from '../types.ts';
-import {HNode} from '../h-node/h-node.ts';
-import {RenderProps} from './render/render.ts';
-import {HydrateProps} from './hydrate/hydrate.ts';
+import {RenderProps, RenderResult} from './render/render.ts';
+import {HydrateProps, HydrateResult} from './hydrate/hydrate.ts';
 import {GetStringStreamProps} from './string/string.ts';
-
-export type DomSimpleProps = {
-  parent: HTMLElement;
-};
-
-export type DomProps = DomSimpleProps & {
-  position: number;
-};
-
-export type ConnectElements = () => (HTMLElement | string)[];
-
-export type RenderResult = Promise<{
-  hNode: HNode;
-  insertedDomCount: number;
-  connectElements: ConnectElements;
-}>;
-
-export type HydrateResult = Promise<{insertedDomCount: number; hNode: HNode}>;
 
 export type StringResult = Promise<ReadableStream<string>>;
 

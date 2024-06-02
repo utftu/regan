@@ -5,27 +5,27 @@ import {Child, DomPointer, FCStaticParams} from '../types.ts';
 import {JsxNodeElement} from '../node/element/element.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';
-import {INSERTED_TAGS_COUNT, NEED_AWAIT} from '../consts.ts';
+import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
-import {getInsertedCount} from '../utils/inserted-count.ts';
+import {InsertedDomNodes, getInsertedCount} from '../utils/inserted-dom.ts';
 
-type TextNode = {
-  type: 'text';
-  length: number;
-};
+// type TextNode = {
+//   type: 'text';
+//   length: number;
+// };
 
-type ElNode = {
-  type: 'el';
-};
+// type ElNode = {
+//   type: 'el';
+// };
 
-const el: ElNode = {type: 'el'};
+// const el: ElNode = {type: 'el'};
 
-type InsertedDomNode = (TextNode | ElNode)[];
+// type InsertedDomNode = (TextNode | ElNode)[];
 
 export async function handleChildrenHydrate({
   children,
@@ -49,8 +49,8 @@ export async function handleChildrenHydrate({
   parentDomPointer: DomPointer;
 }) {
   const hydrateResults: ReturnType<JsxNode['hydrate']>[] = [];
-  const insertedDomNodes: InsertedDomNode = [];
-  let insertedDomCount = parentDomPointer.position;
+  const insertedDomNodes: InsertedDomNodes = [];
+  // let insertedDomCount = parentDomPointer.position;
   let insertedJsxCount = 0;
 
   for (let i = 0; i <= children.length; i++) {
@@ -96,7 +96,8 @@ export async function handleChildrenHydrate({
       },
       domPointer: {
         parent: parentDomPointer.parent,
-        position: insertedDomCount,
+        position: parentDomPointer.position + insertedDomNodes.length,
+        // position: insertedDomCount,
       },
       // dom: {parent: dom.parent, position},
       parentHNode,
@@ -107,34 +108,19 @@ export async function handleChildrenHydrate({
     });
     hydrateResults.push(hydrateResult);
 
-    // if (child instanceof JsxNodeElement) {
-    //   insertedDomCount++;
-    // } else if (child instanceof JsxNodeComponent) {
-    //   if (
-    //     child.systemProps.needAwait === true ||
-    //     (child.type as FCStaticParams)[NEED_AWAIT] === true
-    //   ) {
-    //     const awaitedhResult = await hydrateResult;
-    //     insertedDomCount += awaitedhResult.insertedDomCount;
-    //   } else if ('insertedTagsCount' in child.systemProps) {
-    //     insertedDomCount += child.systemProps.insertedTagsCount!;
-    //   } else if (INSERTED_TAGS_COUNT in child.type) {
-    //     insertedDomCount += child.type[INSERTED_TAGS_COUNT] as number;
-    //   } else {
-    //     insertedDomCount++;
-    //   }
-    // }
+    const insertedDomNodesLocal = await getInsertedCount(child, hydrateResult);
 
-    const insertedDomNodeCount = await getInsertedCount(child, hydrateResult);
+    insertedDomNodes.push(...insertedDomNodesLocal);
 
-    insertedDomCount += insertedDomNodeCount;
+    // insertedDomCount += insertedDomNodeCount;
     insertedJsxCount++;
   }
 
   const hydrateResultsData = await Promise.all(hydrateResults);
 
   return {
-    insertedDomCount: insertedDomCount - parentDomPointer.position,
+    insertedDomNodes,
+    // insertedDomCount: insertedDomCount - parentDomPointer.position,
     hNodes: hydrateResultsData.map(({hNode}) => {
       return hNode;
     }),

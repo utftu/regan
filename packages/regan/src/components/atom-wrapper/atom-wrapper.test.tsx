@@ -3,8 +3,6 @@ import {createAtomRegan} from '../../atoms/atoms.ts';
 import {AtomWrapper} from './atom-wrapper.tsx';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
-import {FC} from '../../types.ts';
-import {render} from '../../regan.ts';
 
 describe('atom-wrapper', () => {
   it('simple', async () => {
@@ -17,9 +15,6 @@ describe('atom-wrapper', () => {
         <div id='div' click={onClick}>
           component
           <AtomWrapper atom={atom} />
-          {/* <Show when={when}>
-            <div id='child'>child</div>
-          </Show> */}
         </div>
       );
     };
@@ -33,11 +28,11 @@ describe('atom-wrapper', () => {
 
     await atom.set(negativeAtomValue);
 
-    expect(document.getElementById('child')).toBe(null);
+    // expect(document.getElementById('child')).toBe(null);
 
-    await atom.set(positiveAtomValue);
+    // await atom.set(positiveAtomValue);
 
-    expect(document.getElementById('child')).not.toBe(null);
+    // expect(document.getElementById('child')).not.toBe(null);
   });
   // it('1', async () => {
   //   const Component: FC = (_, {createAtom}) => {

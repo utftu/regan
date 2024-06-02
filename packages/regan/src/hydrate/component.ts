@@ -4,11 +4,10 @@ import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {ComponentState, HNode} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HydrateProps} from '../node/hydrate/hydrate.ts';
+import {HydrateProps, HydrateResult} from '../node/hydrate/hydrate.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
 import {errorContext} from '../errors/errors.tsx';
 import {getContextValue} from '../context/context.tsx';
-import {HydrateResult} from '../node/node.ts';
 
 export async function hydrateComponent(
   this: JsxNodeComponent,
@@ -65,7 +64,7 @@ export async function hydrateComponent(
 
   const children = normalizeChildren(rawChidlren);
 
-  const {insertedDomCount, hNodes} = await handleChildrenHydrate({
+  const {insertedDomNodes, hNodes} = await handleChildrenHydrate({
     hNodeCtx: ctx.hNodeCtx,
     parentJsxSegment: jsxSegment,
     parentHNode: hNode,
@@ -79,5 +78,5 @@ export async function hydrateComponent(
 
   hNode.addChildren(hNodes);
 
-  return {insertedDomCount, hNode};
+  return {insertedDomNodes: insertedDomNodes, hNode};
 }

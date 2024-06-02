@@ -4,16 +4,8 @@ import {HNode, HNodeCtx, mountHNodes} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
-import {DomPointer, ElementPointer} from '../types.ts';
+import {DomPointer} from '../types.ts';
 import {Ctx} from '../ctx/ctx.ts';
-
-const getPosition = (parent: HTMLElement, prev: HTMLElement | void) => {
-  if (!prev) {
-    return 0;
-  }
-
-  return Array.from(parent.children).indexOf(prev);
-};
 
 export async function hydrateRaw({
   // getElementPointer,

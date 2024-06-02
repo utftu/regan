@@ -1,4 +1,4 @@
-import {INSERTED_TAGS_COUNT, NEED_AWAIT} from '../consts.ts';
+import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
 import {createContext} from '../context/context.tsx';
 import {h} from '../jsx/jsx.ts';
 import {JsxNodeElement} from '../node/element/element.ts';
@@ -29,8 +29,8 @@ const getElementsCount = ({jsxNode}: {jsxNode: JsxNode}) => {
     return jsxNode.systemProps.insertedTagsCount!;
   }
 
-  if (INSERTED_TAGS_COUNT in jsxNode.type) {
-    return jsxNode.type[INSERTED_TAGS_COUNT] as number;
+  if (INSERTED_DOM_NODES in jsxNode.type) {
+    return jsxNode.type[INSERTED_DOM_NODES];
   }
 
   if (

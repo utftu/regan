@@ -2,7 +2,8 @@ import {JsxNode} from './node/node.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
 import {Context, ContextValue} from './context/context.tsx';
-import {INSERTED_TAGS_COUNT, NEED_AWAIT} from './consts.ts';
+import {INSERTED_DOM_NODES, NEED_AWAIT} from './consts.ts';
+import {InsertedDomNodes} from './utils/inserted-dom.ts';
 
 export type Child =
   | JsxNode
@@ -32,7 +33,8 @@ export type ElementPointer = {
 export type SystemProps = {
   key?: string;
   needAwait?: boolean;
-  insertedTagsCount?: number;
+  // insertedTagsCount?: number;
+  insertedDomNodes?: InsertedDomNodes;
   ref?: Atom<HTMLElement | void>;
   rawHtml?: string;
   context?: ContextValue;
@@ -40,7 +42,7 @@ export type SystemProps = {
 
 export type FCStaticParams = {
   [NEED_AWAIT]?: boolean;
-  [INSERTED_TAGS_COUNT]?: number;
+  [INSERTED_DOM_NODES]?: number;
 };
 
 export type HtmlChild = HTMLElement | string;

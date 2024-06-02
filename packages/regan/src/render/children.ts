@@ -11,8 +11,11 @@ import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {JsxNodeElement} from '../node/element/element.ts';
-import {INSERTED_TAGS_COUNT, NEED_AWAIT} from '../consts.ts';
-import {getInsertedCount} from '../utils/inserted-count.ts';
+import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
+import {
+  getInsertedCount,
+  getInsertedCountRender,
+} from '../utils/inserted-dom.ts';
 
 export async function handleChildrenRender({
   children,
@@ -90,9 +93,9 @@ export async function handleChildrenRender({
     });
     rawResults.push(renderResult);
 
-    const iterateInsertedDomCount = await getInsertedCount(child, renderResult);
+    const insertedDomNodes = await getInsertedCountRender(child, renderResult);
 
-    insertedDomCount += iterateInsertedDomCount;
+    insertedDomCount += insertedDomNodes;
     insertedJsxCount++;
   }
 

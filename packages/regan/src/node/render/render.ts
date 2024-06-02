@@ -6,6 +6,8 @@ import {TreeAtomsSnapshot} from '../../tree-atoms-snapshot/tree-aroms-snapshot.t
 import {Ctx} from '../../ctx/ctx.ts';
 import {DomPointer} from '../../types.ts';
 
+type ConnectElements = () => (HTMLElement | string)[];
+
 export type AddElementToParent = (elem: HTMLElement | string) => void;
 
 export type RenderCtx = {
@@ -23,3 +25,9 @@ export type RenderProps = {
   hNodeCtx: HNodeCtx;
   parentCtx?: Ctx;
 };
+
+export type RenderResult = Promise<{
+  hNode: HNode;
+  insertedDomCount: number;
+  connectElements: ConnectElements;
+}>;
