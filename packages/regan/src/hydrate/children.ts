@@ -35,6 +35,7 @@ export async function handleChildrenHydrate({
 }) {
   const hydrateResults: ReturnType<JsxNode['hydrate']>[] = [];
   const insertedDomNodes: InsertedDomNodes = [];
+  const readlParentDomPointer = parentDomPointer;
   // let insertedDomCount = parentDomPointer.position;
   let insertedJsxCount = 0;
 
@@ -42,6 +43,18 @@ export async function handleChildrenHydrate({
     const childOrAtom = await formatJsxValue(children[i]);
 
     if (typeof childOrAtom === 'string') {
+      // const currentDomNode =
+      //   parentDomPointer.parent.childNodes[parentDomPointer.position];
+
+      // const textNode = hNodeCtx.window.document.createTextNode(
+      //   (currentDomNode.textContent || '').slice(0, childOrAtom.length)
+      // );
+      // const otherTextNode = hNodeCtx.window.document.createTextNode(
+      //   (currentDomNode.textContent || '').slice(childOrAtom.length)
+      // );
+
+      // currentDomNode.replaceWith(textNode, otherTextNode);
+
       insertedDomNodes.push({
         type: 'text',
         length: childOrAtom.length,
