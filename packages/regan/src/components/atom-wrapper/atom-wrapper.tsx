@@ -1,17 +1,22 @@
 import {Atom} from 'strangelove';
-import {ElementPointer, FC, FCStaticParams} from '../../types.ts';
+import {FC, FCStaticParams} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {unmountHNodes} from '../../h-node/h-node.ts';
 import {rednerRaw} from '../../render/render.ts';
-import // findParentElement,
-// findPrevElement,
-'../../h-node/helpers/elements.ts';
 import {checkNamedAtom} from '../../atoms/atoms.ts';
 import {NEED_AWAIT} from '../../consts.ts';
 
 type Props = {
   atom: Atom;
 };
+
+// const a = () => {
+//   return (
+//     <AtomWrapper>
+//       <Fragment>hello</Fragment>
+//     </AtomWrapper>
+//   );
+// };
 
 const parseAtom = (atom: Atom, renderMode: boolean = false) => {
   let additionalPart = '?a=';

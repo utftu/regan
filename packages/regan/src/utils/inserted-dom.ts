@@ -1,3 +1,4 @@
+import {createControlledPromise} from 'utftu';
 import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
 import {JsxNodeComponent} from '../node/component/component.ts';
 import {JsxNodeElement} from '../node/element/element.ts';
@@ -44,7 +45,7 @@ export const getInsertedCountRender = async (
 
 export const getInsertedCount = async (
   child: JsxNode,
-  execResult: Promise<{insertedDomNodes: InsertedDomNodes}>
+  awaitInsertedDomNodes: Promise<InsertedDomNodes>
 ): Promise<InsertedDomNodes> => {
   if (child instanceof JsxNodeElement) {
     return defaultInsertedDomNodes;
@@ -53,7 +54,7 @@ export const getInsertedCount = async (
       child.systemProps.needAwait === true ||
       (child.type as FCStaticParams)[NEED_AWAIT] === true
     ) {
-      const {insertedDomNodes} = await execResult;
+      const insertedDomNodes = await awaitInsertedDomNodes;
       return insertedDomNodes;
     } else if ('insertedDomNodes' in child.systemProps) {
       return child.systemProps.insertedDomNodes!;
@@ -65,3 +66,36 @@ export const getInsertedCount = async (
   }
   return defaultInsertedDomNodes;
 };
+
+export const createInsertedDomNodePromise = () => {
+  const [promise, promiseControls] =
+    createControlledPromise<InsertedDomNodes>();
+  return {
+    promise,
+    promiseControls,
+  };
+};
+
+// export const getInsertedCount = async (
+//   child: JsxNode,
+//   execResult: Promise<any>
+// ): Promise<InsertedDomNodes> => {
+//   if (child instanceof JsxNodeElement) {
+//     return defaultInsertedDomNodes;
+//   } else if (child instanceof JsxNodeComponent) {
+//     if (
+//       child.systemProps.needAwait === true ||
+//       (child.type as FCStaticParams)[NEED_AWAIT] === true
+//     ) {
+//       const {insertedDomNodes} = await execResult;
+//       return insertedDomNodes;
+//     } else if ('insertedDomNodes' in child.systemProps) {
+//       return child.systemProps.insertedDomNodes!;
+//     } else if (INSERTED_DOM_NODES in child.type) {
+//       return child.type[INSERTED_DOM_NODES] as InsertedDomNodes;
+//     } else {
+//       return defaultInsertedDomNodes;
+//     }
+//   }
+//   return defaultInsertedDomNodes;
+// };

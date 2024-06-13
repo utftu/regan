@@ -31,6 +31,7 @@ export async function hydrateElement(
   this: JsxNodeElement,
   ctx: HydrateProps
 ): HydrateResult {
+  ctx.insertedDomNodesPromise.promiseControls.resolve(defaultInsertedDomNodes);
   const jsxSegment = new JsxSegment({
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,

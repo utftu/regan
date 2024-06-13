@@ -6,11 +6,12 @@ import {JsxNodeComponent} from '../node/component/component.ts';
 import {HNode, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
-import {HCtx} from '../node/hydrate/hydrate.ts';
+import {HCtx, InsertedDomNodesPromise} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {InsertedDomNodes, getInsertedCount} from '../utils/inserted-dom.ts';
+import {createControlledPromise} from 'utftu';
 
 export async function handleChildrenHydrate({
   children,
@@ -22,6 +23,7 @@ export async function handleChildrenHydrate({
   hNodeCtx,
   parentCtx,
   parentDomPointer,
+  insertedDomNodesPromise,
 }: {
   // dom: DomProps;
   children: Child[];
@@ -32,10 +34,10 @@ export async function handleChildrenHydrate({
   hNodeCtx: HNodeCtx;
   parentCtx?: Ctx;
   parentDomPointer: DomPointer;
+  insertedDomNodesPromise: InsertedDomNodesPromise;
 }) {
   const hydrateResults: ReturnType<JsxNode['hydrate']>[] = [];
   const insertedDomNodes: InsertedDomNodes = [];
-  const readlParentDomPointer = parentDomPointer;
   // let insertedDomCount = parentDomPointer.position;
   let insertedJsxCount = 0;
 
@@ -44,7 +46,9 @@ export async function handleChildrenHydrate({
 
     if (typeof childOrAtom === 'string') {
       // const currentDomNode =
-      //   parentDomPointer.parent.childNodes[parentDomPointer.position];
+      //   parentDomPointer.parent.childNodes[
+      //     parentDomPointer.position + insertedDomNodes.length
+      //   ];
 
       // const textNode = hNodeCtx.window.document.createTextNode(
       //   (currentDomNode.textContent || '').slice(0, childOrAtom.length)
@@ -85,9 +89,16 @@ export async function handleChildrenHydrate({
     } else {
       child = childOrAtom;
     }
+    const [promise, promiseControls] =
+      createControlledPromise<InsertedDomNodes>();
 
     const hydrateResult = child.hydrate({
       jsxSegmentStr: `${insertedJsxCount}`,
+      insertedDomNodesPromise: {
+        promise,
+        promiseControls,
+      },
+
       parentJsxSegment: {
         jsxSegment: parentJsxSegment,
         position: insertedJsxCount,
@@ -95,9 +106,7 @@ export async function handleChildrenHydrate({
       domPointer: {
         parent: parentDomPointer.parent,
         position: parentDomPointer.position + insertedDomNodes.length,
-        // position: insertedDomCount,
       },
-      // dom: {parent: dom.parent, position},
       parentHNode,
       globalCtx,
       parentCtx,
@@ -106,13 +115,15 @@ export async function handleChildrenHydrate({
     });
     hydrateResults.push(hydrateResult);
 
-    const insertedDomNodesLocal = await getInsertedCount(child, hydrateResult);
+    const insertedDomNodesLocal = await getInsertedCount(child, promise);
 
     insertedDomNodes.push(...insertedDomNodesLocal);
 
     // insertedDomCount += insertedDomNodeCount;
     insertedJsxCount++;
   }
+
+  insertedDomNodesPromise.promiseControls.resolve(insertedDomNodes);
 
   const hydrateResultsData = await Promise.all(hydrateResults);
 

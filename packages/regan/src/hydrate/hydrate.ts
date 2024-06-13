@@ -6,16 +6,15 @@ import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {DomPointer} from '../types.ts';
 import {Ctx} from '../ctx/ctx.ts';
+import {createInsertedDomNodePromise} from '../utils/inserted-dom.ts';
 
 export async function hydrateRaw({
-  // getElementPointer,
   node,
   parentHNode,
   window: windowLocal = window,
   data = {},
   domPointer,
 }: {
-  // getElementPointer: () => ElementPointer;
   parentHNode?: HNode;
   parentCtx?: Ctx;
   node: JsxNode;
@@ -31,20 +30,19 @@ export async function hydrateRaw({
       mode: 'client',
       root: new Root(),
     });
-  // const {parent, prev} = getElementPointer();
+
   const {hNode} = await node.hydrate({
     jsxSegmentStr: '',
     domPointer: domPointer,
-    // dom: {parent, position: getPosition(parent, prev)},
     parentHNode,
     globalCtx,
+    insertedDomNodesPromise: createInsertedDomNodePromise(),
 
     hNodeCtx:
       parentHNode?.hNodeCtx ??
       new HNodeCtx({
         window: windowLocal,
         initDomPointer: domPointer,
-        // getInitElemPointer: getElementPointer,
       }),
     hCtx: {
       snapshot: new TreeAtomsSnapshot(),

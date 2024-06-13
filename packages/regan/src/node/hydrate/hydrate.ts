@@ -6,14 +6,19 @@ import {TreeAtomsSnapshot} from '../../tree-atoms-snapshot/tree-aroms-snapshot.t
 import {Ctx} from '../../ctx/ctx.ts';
 import {DomPointer} from '../../types.ts';
 import {InsertedDomNodes} from '../../utils/inserted-dom.ts';
+import {PromiseControls} from 'utftu';
 
 export type HCtx = {
   snapshot: TreeAtomsSnapshot;
   changedAtoms: Atom[];
 };
 
+export type InsertedDomNodesPromise = {
+  promise: Promise<InsertedDomNodes>;
+  promiseControls: PromiseControls<InsertedDomNodes>;
+};
+
 export type HydrateProps = {
-  // dom: DomProps;
   domPointer: DomPointer;
   parentHNode?: HNode;
   parentCtx?: Ctx;
@@ -22,6 +27,7 @@ export type HydrateProps = {
   parentJsxSegment?: ParentJsxSegment;
   hCtx: HCtx;
   hNodeCtx: HNodeCtx;
+  insertedDomNodesPromise: InsertedDomNodesPromise;
 };
 
 export type HydrateResult = Promise<{
