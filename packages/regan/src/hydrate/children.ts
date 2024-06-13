@@ -10,7 +10,11 @@ import {HCtx, InsertedDomNodesPromise} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
-import {InsertedDomNodes, getInsertedCount} from '../utils/inserted-dom.ts';
+import {
+  InsertedDomNodes,
+  createInsertedDomNodePromise,
+  getInsertedCount,
+} from '../utils/inserted-dom.ts';
 import {createControlledPromise} from 'utftu';
 
 export async function handleChildrenHydrate({
@@ -89,15 +93,14 @@ export async function handleChildrenHydrate({
     } else {
       child = childOrAtom;
     }
-    const [promise, promiseControls] =
-      createControlledPromise<InsertedDomNodes>();
+
+    const insertedDomNodesPromise = createInsertedDomNodePromise();
+    // const [promise, promiseControls] =
+    //   createControlledPromise<InsertedDomNodes>();
 
     const hydrateResult = child.hydrate({
       jsxSegmentStr: `${insertedJsxCount}`,
-      insertedDomNodesPromise: {
-        promise,
-        promiseControls,
-      },
+      insertedDomNodesPromise: insertedDomNodesPromise,
 
       parentJsxSegment: {
         jsxSegment: parentJsxSegment,
@@ -115,7 +118,10 @@ export async function handleChildrenHydrate({
     });
     hydrateResults.push(hydrateResult);
 
-    const insertedDomNodesLocal = await getInsertedCount(child, promise);
+    const insertedDomNodesLocal = await getInsertedCount(
+      child,
+      insertedDomNodesPromise.promise
+    );
 
     insertedDomNodes.push(...insertedDomNodesLocal);
 
