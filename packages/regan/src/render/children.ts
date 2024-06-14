@@ -5,12 +5,12 @@ import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {JsxNode} from '../node/node.ts';
 import {RenderCtx} from '../node/render/render.ts';
 import {Child, DomPointer, FCStaticParams} from '../types.ts';
-import {JsxNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
-import {JsxNodeElement} from '../node/element/element.ts';
+import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
 import {
   getInsertedCount,

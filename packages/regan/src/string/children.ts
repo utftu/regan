@@ -7,7 +7,7 @@ import {StringContext} from '../node/string/string.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
-import {JsxNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 
 type StringStream = TransformStream<string, string>;

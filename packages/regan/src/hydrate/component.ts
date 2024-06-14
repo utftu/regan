@@ -1,5 +1,5 @@
 import {normalizeChildren} from '../jsx/jsx.ts';
-import {JsxNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {ComponentState, HNode} from '../h-node/h-node.ts';

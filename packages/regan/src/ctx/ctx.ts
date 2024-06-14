@@ -8,7 +8,7 @@ import {
 } from '../jsx-path/jsx-path.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {JsxNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/variants/component/component.ts';
 
 type State = {
   mounts: Mount[];

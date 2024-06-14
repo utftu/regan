@@ -1,7 +1,7 @@
 import {createControlledPromise} from 'utftu';
 import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
-import {JsxNodeComponent} from '../node/component/component.ts';
-import {JsxNodeElement} from '../node/element/element.ts';
+import {JsxNodeComponent} from '../node/variants/component/component.ts';
+import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {JsxNode} from '../node/node.ts';
 import {FCStaticParams} from '../types.ts';
 

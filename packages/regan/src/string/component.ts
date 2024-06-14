@@ -1,5 +1,5 @@
 import {normalizeChildren} from '../jsx/jsx.ts';
-import {JsxNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenString} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';

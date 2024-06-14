@@ -1,5 +1,5 @@
 import {Atom} from 'strangelove';
-import {JsxNodeElement} from '../node/element/element.ts';
+import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenRender} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';

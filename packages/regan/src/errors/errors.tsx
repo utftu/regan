@@ -1,7 +1,7 @@
 import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
 import {createContext} from '../context/context.tsx';
 import {h} from '../jsx/jsx.ts';
-import {JsxNodeElement} from '../node/element/element.ts';
+import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {JsxNode} from '../node/node.ts';
 import {FC, FCStaticParams} from '../types.ts';
 

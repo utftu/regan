@@ -1,6 +1,6 @@
 import {ComponentState, HNode} from '../h-node/h-node.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
-import {JsxNodeComponent} from '../node/component/component.ts';
+import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenRender} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';

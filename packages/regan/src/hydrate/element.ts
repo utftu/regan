@@ -1,5 +1,5 @@
 import {Atom} from 'strangelove';
-import {JsxNodeElement} from '../node/element/element.ts';
+import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HydrateProps, HydrateResult} from '../node/hydrate/hydrate.ts';
