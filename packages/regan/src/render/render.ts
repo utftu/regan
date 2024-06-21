@@ -1,6 +1,11 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode, HNodeCtx, mountHNodes, unmountHNodes} from '../h-node/h-node.ts';
+import {
+  HNodeBase,
+  HNodeCtx,
+  mountHNodes,
+  unmountHNodes,
+} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
@@ -23,7 +28,7 @@ export const rednerRaw = async ({
   domPointer: DomPointer;
   window?: Window;
   data?: Record<any, any>;
-  parentHNode?: HNode;
+  parentHNode?: HNodeBase;
   jsxSegmentStr?: string;
   parentCtx?: Ctx;
 }) => {

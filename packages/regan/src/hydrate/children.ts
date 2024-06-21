@@ -3,7 +3,7 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
 import {Child, DomPointer} from '../types.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
-import {HNode, HNodeCtx} from '../h-node/h-node.ts';
+import {HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx, InsertedDomNodesPromise} from '../node/hydrate/hydrate.ts';
@@ -15,7 +15,6 @@ import {
   createInsertedDomNodePromise,
   getInsertedCount,
 } from '../utils/inserted-dom.ts';
-import {createControlledPromise} from 'utftu';
 
 export async function handleChildrenHydrate({
   children,
@@ -31,7 +30,7 @@ export async function handleChildrenHydrate({
 }: {
   // dom: DomProps;
   children: Child[];
-  parentHNode?: HNode;
+  parentHNode?: HNodeBase;
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
   hCtx: HCtx;

@@ -2,7 +2,7 @@ import {normalizeChildren} from '../jsx/jsx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenHydrate} from './children.ts';
-import {ComponentState, HNode} from '../h-node/h-node.ts';
+import {ComponentState, HNodeBase} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HydrateProps, HydrateResult} from '../node/hydrate/hydrate.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
@@ -17,7 +17,7 @@ export async function hydrateComponent(
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
   });
-  const hNode = new HNode({
+  const hNode = new HNodeBase({
     hNodeCtx: ctx.hNodeCtx,
     jsxSegment,
     parent: ctx.parentHNode,

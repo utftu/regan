@@ -1,4 +1,4 @@
-import {ComponentState, HNode} from '../h-node/h-node.ts';
+import {ComponentState, HNodeBase} from '../h-node/h-node.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
@@ -18,7 +18,7 @@ export async function renderComponent(
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
   });
-  const hNode = new HNode({
+  const hNode = new HNodeBase({
     parent: ctx.parentHNode,
     jsxSegment,
     globalCtx: ctx.globalCtx,

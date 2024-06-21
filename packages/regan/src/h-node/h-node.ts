@@ -1,6 +1,8 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {DomPointer, ElementPointer} from '../types.ts';
+import {HNodeTextDynamic} from '../node/variants/dynamic-text/dynamic-text.ts';
+import {DomPointer} from '../types.ts';
+import {HNodeElement} from './element.ts';
 
 type Unmount = () => any;
 export type Mount = () => Unmount;
@@ -11,7 +13,7 @@ export class ComponentState {
   atoms = [];
 }
 
-type MountUnmounFunc = (hNode: HNode) => void;
+type MountUnmounFunc = (hNode: HNodeBase) => void;
 
 export type PropsHNode = {
   mounts?: MountUnmounFunc[];
@@ -22,9 +24,7 @@ export type PropsHNode = {
   hNodeCtx: HNodeCtx;
 };
 
-// HNode = HydratedNode
-// attribute for interactive component
-export class HNode {
+export class HNodeBase {
   children: HNode[] = [];
   mounts: MountUnmounFunc[] = [];
   unmounts: MountUnmounFunc[] = [];
@@ -60,37 +60,35 @@ export class HNode {
     this.unmounted = true;
   }
 
-  addChildren(children: HNode[]) {
+  addChildren(children: HNodeBase[]) {
     children.forEach((hNode) => this.children.push(hNode));
   }
 }
 
-export const mountHNodes = (hNode: HNode) => {
+export const mountHNodes = (hNode: HNodeBase) => {
   hNode.mount();
   hNode.children.forEach((hNode) => mountHNodes(hNode));
 };
 
-export const unmountHNodes = (hNode: HNode) => {
+export const unmountHNodes = (hNode: HNodeBase) => {
   hNode.unmount();
   hNode.children.forEach((hNode) => unmountHNodes(hNode));
 };
 
 export class HNodeCtx {
-  // getInitElemPointer: () => ElementPointer;
   initDomPointer: DomPointer;
   window: Window;
 
   constructor({
-    // getInitElemPointer,
     window: localWindow,
     initDomPointer,
   }: {
     initDomPointer: DomPointer;
-    // getInitElemPointer: () => ElementPointer;
     window: Window;
   }) {
-    // this.getInitElemPointer = getInitElemPointer;
     this.initDomPointer = initDomPointer;
     this.window = localWindow;
   }
 }
+
+type HNode = HNodeBase | HNodeElement | HNodeTextDynamic;

@@ -6,7 +6,7 @@ import {
   getHashFromString,
   getJsxPath,
 } from '../jsx-path/jsx-path.ts';
-import {HNode} from '../h-node/h-node.ts';
+import {HNodeBase} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 
@@ -19,7 +19,7 @@ type State = {
 export type Stage = 'render' | 'hydrate' | 'string';
 
 type Client = {
-  hNode: HNode;
+  hNode: HNodeBase;
   parentDomPointer: DomPointer;
 };
 
@@ -29,7 +29,7 @@ type PropsCtx<TProps> = {
   state: State;
   children: Child[];
   jsxSegment: JsxSegment;
-  hNode?: HNode;
+  hNode?: HNodeBase;
   globalCtx: GlobalCtx;
   stage: Stage;
   parentCtx?: Ctx;
@@ -43,7 +43,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
   systemProps: SystemProps;
   children: Child[];
   jsxSegment: JsxSegment;
-  hNode?: HNode;
+  hNode?: HNodeBase;
   globalCtx: GlobalCtx;
   stage: Stage;
   parentCtx?: Ctx;

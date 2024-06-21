@@ -1,6 +1,6 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode, HNodeCtx} from '../h-node/h-node.ts';
+import {HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {JsxNode} from '../node/node.ts';
 import {RenderCtx} from '../node/render/render.ts';
@@ -29,14 +29,14 @@ export async function handleChildrenRender({
 }: {
   domPointer: DomPointer;
   children: Child[];
-  parentHNode?: HNode;
+  parentHNode?: HNodeBase;
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
   renderCtx: RenderCtx;
   hNodeCtx: HNodeCtx;
   parentCtx?: Ctx;
 }) {
-  const hNodes: HNode[] = [];
+  const hNodes: HNodeBase[] = [];
   const rawResults = [];
 
   let insertedDomCount = domPointer.position;

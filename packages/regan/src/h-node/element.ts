@@ -1,7 +1,7 @@
 import {DomPointer} from '../types.ts';
-import {HNode, PropsHNode} from './h-node.ts';
+import {HNodeBase, PropsHNode} from './h-node.ts';
 
-export class HNodeElement extends HNode {
+export class HNodeElement extends HNodeBase {
   // el: HTMLElement;
   domPointer: DomPointer;
   constructor(props: PropsHNode, {domPointer}: {domPointer: DomPointer}) {
