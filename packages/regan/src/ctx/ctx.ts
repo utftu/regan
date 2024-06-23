@@ -18,6 +18,8 @@ type State = {
 
 export type Stage = 'render' | 'hydrate' | 'string';
 
+type AnyProps = Record<any, any>;
+
 type Client = {
   hNode: HNodeBase;
   parentDomPointer: DomPointer;
@@ -35,6 +37,7 @@ type PropsCtx<TProps> = {
   parentCtx?: Ctx;
   jsxNodeComponent: JsxNodeComponent;
   client?: Client;
+  propsFromAncestors?: AnyProps;
 };
 
 export class Ctx<TProps extends Record<any, any> = any> {
@@ -50,6 +53,8 @@ export class Ctx<TProps extends Record<any, any> = any> {
   jsxNodeComponent: JsxNodeComponent;
   ctx: Ctx;
   client?: Client;
+  propsToDescendants: AnyProps = {};
+  propsFromAncestors: AnyProps;
 
   constructor({
     props,
@@ -63,6 +68,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     systemProps,
     jsxNodeComponent,
     client,
+    propsFromAncestors = {},
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -75,6 +81,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.systemProps = systemProps;
     this.jsxNodeComponent = jsxNodeComponent;
     this.client = client;
+    this.propsFromAncestors = propsFromAncestors;
 
     this.ctx = this;
   }

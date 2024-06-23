@@ -30,6 +30,8 @@ export type HydrateProps = {
   hCtx: HCtx;
   hNodeCtx: HNodeCtx;
   insertedDomNodesPromise: InsertedDomNodesPromise;
+  atomDescendant: boolean;
+  atomDirectNode: boolean;
 };
 
 export type HydrateResult = Promise<{

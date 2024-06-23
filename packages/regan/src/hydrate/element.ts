@@ -124,6 +124,8 @@ export async function hydrateElement(
   );
 
   const {hNodes} = await handleChildrenHydrate({
+    atomDescendant: ctx.atomDescendant,
+    atomDirectNode: false,
     insertedDomNodesPromise: ctx.insertedDomNodesPromise,
     parentJsxSegment: jsxSegment,
     hNodeCtx: ctx.hNodeCtx,

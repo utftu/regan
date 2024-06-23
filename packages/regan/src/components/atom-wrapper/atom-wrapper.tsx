@@ -42,7 +42,6 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   {atom},
   {
     hNode,
-    systemProps,
     globalCtx,
     mount,
     unmount,
@@ -50,9 +49,10 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     jsxSegment,
     ctx,
     client,
+    propsToDescendants,
   }
 ) => {
-  systemProps.needAwait = true;
+  propsToDescendants.hasParentAtom = true;
   if (globalCtx.mode === 'server') {
     const {additionalPart, value} = parseAtom(atom, false);
 

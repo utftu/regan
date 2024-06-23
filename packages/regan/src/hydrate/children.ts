@@ -16,6 +16,28 @@ import {
   getInsertedCount,
 } from '../utils/inserted-dom.ts';
 
+const wrapChildIfNeed = (child: JsxNode | Atom) => {
+  if (child instanceof Atom) {
+    return new JsxNodeComponent({
+      type: AtomWrapper,
+      children: [],
+      props: {
+        atom: child,
+      },
+      systemProps: {},
+    });
+  } else if (Array.isArray(child)) {
+    return new JsxNodeComponent({
+      type: Fragment,
+      children: child,
+      props: {},
+      systemProps: {},
+    });
+  } else {
+    return child;
+  }
+};
+
 export async function handleChildrenHydrate({
   children,
   parentHNode,
@@ -27,6 +49,8 @@ export async function handleChildrenHydrate({
   parentCtx,
   parentDomPointer,
   insertedDomNodesPromise,
+  atomDescendant,
+  atomDirectNode,
 }: {
   // dom: DomProps;
   children: Child[];
@@ -38,8 +62,10 @@ export async function handleChildrenHydrate({
   parentCtx?: Ctx;
   parentDomPointer: DomPointer;
   insertedDomNodesPromise: InsertedDomNodesPromise;
+  atomDescendant: boolean;
+  atomDirectNode: boolean;
 }) {
-  const hydrateResults: ReturnType<JsxNode['hydrate']>[] = [];
+  const hydrateResults: (ReturnType<JsxNode['hydrate']> | HNodeBase)[] = [];
   const insertedDomNodes: InsertedDomNodes = [];
   // let insertedDomCount = parentDomPointer.position;
   let insertedJsxCount = 0;
@@ -72,32 +98,39 @@ export async function handleChildrenHydrate({
       continue;
     }
 
-    let child: JsxNode;
-    if (childOrAtom instanceof Atom) {
-      child = new JsxNodeComponent({
-        type: AtomWrapper,
-        children: [],
-        props: {
-          atom: childOrAtom,
-        },
-        systemProps: {},
-      });
-    } else if (Array.isArray(childOrAtom)) {
-      child = new JsxNodeComponent({
-        type: Fragment,
-        children: childOrAtom,
-        props: {},
-        systemProps: {},
-      });
-    } else {
-      child = childOrAtom;
-    }
+    const atomComponent = childOrAtom instanceof Atom;
+    const child = wrapChildIfNeed(childOrAtom);
+
+    // let child: JsxNode;
+    // let isAtom = false;
+    // if (childOrAtom instanceof Atom) {
+    //   isAtom = true;
+    //   child = new JsxNodeComponent({
+    //     type: AtomWrapper,
+    //     children: [],
+    //     props: {
+    //       atom: childOrAtom,
+    //     },
+    //     systemProps: {},
+    //   });
+    // } else if (Array.isArray(childOrAtom)) {
+    //   child = new JsxNodeComponent({
+    //     type: Fragment,
+    //     children: childOrAtom,
+    //     props: {},
+    //     systemProps: {},
+    //   });
+    // } else {
+    //   child = childOrAtom;
+    // }
 
     const insertedDomNodesPromise = createInsertedDomNodePromise();
     // const [promise, promiseControls] =
     //   createControlledPromise<InsertedDomNodes>();
 
     const hydrateResult = child.hydrate({
+      atomDescendant: atomComponent || atomDescendant,
+      atomDirectNode: atomComponent || atomDirectNode,
       jsxSegmentStr: `${insertedJsxCount}`,
       insertedDomNodesPromise: insertedDomNodesPromise,
 
@@ -135,8 +168,11 @@ export async function handleChildrenHydrate({
   return {
     insertedDomNodes,
     // insertedDomCount: insertedDomCount - parentDomPointer.position,
-    hNodes: hydrateResultsData.map(({hNode}) => {
-      return hNode;
+    hNodes: hydrateResultsData.map((value) => {
+      if (value instanceof HNodeBase) {
+        return value;
+      }
+      return value.hNode;
     }),
   };
 }
