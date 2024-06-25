@@ -31,7 +31,9 @@ export async function hydrateElement(
   this: JsxNodeElement,
   ctx: HydrateProps
 ): HydrateResult {
-  ctx.insertedDomNodesPromise.promiseControls.resolve(defaultInsertedDomNodes);
+  ctx.parentInsertedDomNodesPromise.promiseControls.resolve(
+    defaultInsertedDomNodes
+  );
   const jsxSegment = new JsxSegment({
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
@@ -124,9 +126,10 @@ export async function hydrateElement(
   );
 
   const {hNodes} = await handleChildrenHydrate({
+    insertedDomNodes: [],
     atomDescendant: ctx.atomDescendant,
     atomDirectNode: false,
-    insertedDomNodesPromise: ctx.insertedDomNodesPromise,
+    parentInsertedDomNodesPromise: ctx.parentInsertedDomNodesPromise,
     parentJsxSegment: jsxSegment,
     hNodeCtx: ctx.hNodeCtx,
     children: this.children,

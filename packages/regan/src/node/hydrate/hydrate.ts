@@ -29,7 +29,8 @@ export type HydrateProps = {
   parentJsxSegment?: ParentJsxSegment;
   hCtx: HCtx;
   hNodeCtx: HNodeCtx;
-  insertedDomNodesPromise: InsertedDomNodesPromise;
+  parentInsertedDomNodesPromise: InsertedDomNodesPromise;
+  insertedDomNodes: InsertedDomNodes;
   atomDescendant: boolean;
   atomDirectNode: boolean;
 };

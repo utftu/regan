@@ -36,8 +36,8 @@ export async function hydrateRaw({
     domPointer: domPointer,
     parentHNode,
     globalCtx,
-    insertedDomNodesPromise: createInsertedDomNodePromise(),
-
+    parentInsertedDomNodesPromise: createInsertedDomNodePromise(),
+    insertedDomNodes: [],
     hNodeCtx:
       parentHNode?.hNodeCtx ??
       new HNodeCtx({
@@ -48,6 +48,8 @@ export async function hydrateRaw({
       snapshot: new TreeAtomsSnapshot(),
       changedAtoms,
     },
+    atomDescendant: false,
+    atomDirectNode: false,
   });
 
   globalCtx.root.addTx(

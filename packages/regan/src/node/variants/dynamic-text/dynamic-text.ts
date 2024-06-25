@@ -3,8 +3,6 @@ import {HNodeBase, HNodeCtx, PropsHNode} from '../../../h-node/h-node.ts';
 import {JsxSegment} from '../../../jsx-path/jsx-path.ts';
 import {DomPointer} from '../../../types.ts';
 import {InsertedDomNodes} from '../../../utils/inserted-dom.ts';
-import {HydrateProps, HydrateResult} from '../../hydrate/hydrate.ts';
-import {JsxNode} from '../../node.ts';
 
 export class HNodeTextDynamic extends HNodeBase {
   domPointer: DomPointer;
