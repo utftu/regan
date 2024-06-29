@@ -64,9 +64,8 @@ export async function hydrateComponent(
 
   const children = normalizeChildren(rawChidlren);
 
-  const {insertedDomNodes, hNodes} = await handleChildrenHydrate({
-    insertedDomNodes: ctx.insertedDomNodes,
-    parentInsertedDomNodesPromise: ctx.parentInsertedDomNodesPromise,
+  const {hNodes} = await handleChildrenHydrate({
+    parentInsertedDomNodesPromise: ctx.parentWait,
     hNodeCtx: ctx.hNodeCtx,
     parentJsxSegment: jsxSegment,
     parentHNode: hNode,
@@ -81,5 +80,5 @@ export async function hydrateComponent(
 
   hNode.addChildren(hNodes);
 
-  return {insertedDomNodes: insertedDomNodes, hNode};
+  return {hNode};
 }

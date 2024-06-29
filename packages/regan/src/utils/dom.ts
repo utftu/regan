@@ -1,10 +1,10 @@
-import {DomPointer} from '../types.ts';
+import {DomPointer, DomPointerElement} from '../types.ts';
 
 export const addElementChildren = ({
   domPointer,
   elements,
 }: {
-  domPointer: DomPointer;
+  domPointer: DomPointerElement;
   prev?: HTMLElement | void;
   elements: (HTMLElement | string)[];
 }) => {

@@ -4,7 +4,7 @@ import {JsxSegment} from '../../../jsx-path/jsx-path.ts';
 import {DomPointer} from '../../../types.ts';
 import {InsertedDomNodes} from '../../../utils/inserted-dom.ts';
 
-export class HNodeTextDynamic extends HNodeBase {
+export class HNodeText extends HNodeBase {
   domPointer: DomPointer;
   start: number;
   finish: number;
@@ -48,7 +48,7 @@ export const hydrateDynamicText = ({
     textPadding += insertedDomNode.length;
   }
 
-  const hNode = new HNodeTextDynamic(
+  const hNode = new HNodeText(
     {
       jsxSegment,
       globalCtx,

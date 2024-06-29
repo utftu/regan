@@ -3,10 +3,10 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
 import {Child, DomPointer} from '../types.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
-import {HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
+import {HNode, HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
-import {HCtx, InsertedDomNodesPromise} from '../node/hydrate/hydrate.ts';
+import {HCtx, ParentWait} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
@@ -15,7 +15,7 @@ import {
   createInsertedDomNodePromise,
   getInsertedCount,
 } from '../utils/inserted-dom.ts';
-import {hydrateDynamicText} from '../node/variants/dynamic-text/dynamic-text.ts';
+import {HNodeText} from '../h-node/text.ts';
 
 const wrapChildIfNeed = (child: JsxNode | Atom) => {
   if (child instanceof Atom) {
@@ -49,45 +49,57 @@ export async function handleChildrenHydrate({
   parentCtx,
   parentDomPointer,
   parentInsertedDomNodesPromise,
-  insertedDomNodes,
+  // insertedDomNodes,
   atomDescendant,
   atomDirectNode,
-}: {
+}: // prevElemsCount,
+// elemsCount,
+{
   children: Child[];
-  parentHNode?: HNodeBase;
+  parentHNode?: HNode;
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
   hCtx: HCtx;
   hNodeCtx: HNodeCtx;
   parentCtx?: Ctx;
   parentDomPointer: DomPointer;
-  parentInsertedDomNodesPromise: InsertedDomNodesPromise;
-  insertedDomNodes: InsertedDomNodes;
+  parentInsertedDomNodesPromise: ParentWait;
+  // insertedDomNodes: InsertedDomNodes;
   atomDescendant: boolean;
   atomDirectNode: boolean;
 }) {
   const hydrateResults: (ReturnType<JsxNode['hydrate']> | HNodeBase)[] = [];
-  const localInsertedDomNodes: InsertedDomNodes = [];
+  let position = parentDomPointer.position;
+  let textLength = 0;
   let insertedJsxCount = 0;
 
-  for (let i = 0; i <= children.length; i++) {
+  for (let i = 0; i < children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
 
     if (typeof childOrAtom === 'string') {
-      localInsertedDomNodes.push({
-        type: 'text',
-        length: childOrAtom.length,
-      });
+      if (atomDescendant) {
+        let textNodeStart = textLength;
+        textLength += childOrAtom.length;
 
-      if (atomDirectNode) {
-        const hNode = hydrateDynamicText({
-          text: childOrAtom,
-          domPointer: parentDomPointer,
-          insertedDomNodes: [...insertedDomNodes, ...localInsertedDomNodes],
-          hNodeCtx,
-          jsxSegment: parentJsxSegment,
-          globalCtx,
-        });
+        const hNode = new HNodeText(
+          {
+            jsxSegment: parentJsxSegment,
+            globalCtx,
+            hNodeCtx,
+          },
+          {
+            domPointer: {
+              parent: parentDomPointer.parent,
+              position: position,
+            },
+          },
+          {
+            start: textNodeStart,
+            finish: textNodeStart + childOrAtom.length,
+          }
+        );
+
+        hydrateResults.push(hNode);
       }
     }
 
@@ -104,8 +116,7 @@ export async function handleChildrenHydrate({
       atomDescendant: isAtom || atomDescendant,
       atomDirectNode: isAtom || atomDirectNode,
       jsxSegmentStr: `${insertedJsxCount}`,
-      parentInsertedDomNodesPromise: insertedDomNodesPromise,
-      insertedDomNodes: [...insertedDomNodes, ...localInsertedDomNodes],
+      parentWait: insertedDomNodesPromise,
 
       parentJsxSegment: {
         jsxSegment: parentJsxSegment,
@@ -113,7 +124,7 @@ export async function handleChildrenHydrate({
       },
       domPointer: {
         parent: parentDomPointer.parent,
-        position: parentDomPointer.position + localInsertedDomNodes.length,
+        position: position,
       },
       parentHNode,
       globalCtx,
@@ -123,21 +134,31 @@ export async function handleChildrenHydrate({
     });
     hydrateResults.push(hydrateResult);
 
-    const insertedDomNodesLocal = await getInsertedCount(
+    const insertedCount = await getInsertedCount(
       child,
       insertedDomNodesPromise.promise
     );
 
-    localInsertedDomNodes.push(...insertedDomNodesLocal);
+    // console.log('-----', childOrAtom, insertedCount.elemsCount);
+
+    // if (children.length === 2) {
+    //   console.log('-----', 'insertedCount', insertedCount);
+    // }
+
+    position += insertedCount.elemsCount;
+    textLength += insertedCount.textLength;
+
     insertedJsxCount++;
   }
 
-  parentInsertedDomNodesPromise.promiseControls.resolve(localInsertedDomNodes);
+  parentInsertedDomNodesPromise.promiseControls.resolve({
+    elemsCount: position - parentDomPointer.position,
+    textLength,
+  });
 
   const hydrateResultsData = await Promise.all(hydrateResults);
 
   return {
-    insertedDomNodes: localInsertedDomNodes,
     hNodes: hydrateResultsData.map((value) => {
       if (value instanceof HNodeBase) {
         return value;

@@ -36,8 +36,8 @@ export async function hydrateRaw({
     domPointer: domPointer,
     parentHNode,
     globalCtx,
-    parentInsertedDomNodesPromise: createInsertedDomNodePromise(),
-    insertedDomNodes: [],
+    parentWait: createInsertedDomNodePromise(),
+    // insertedDomNodes: [],
     hNodeCtx:
       parentHNode?.hNodeCtx ??
       new HNodeCtx({

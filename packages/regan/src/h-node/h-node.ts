@@ -1,8 +1,8 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HNodeTextDynamic} from '../node/variants/dynamic-text/dynamic-text.ts';
+import {HNodeText} from '../node/variants/dynamic-text/dynamic-text.ts';
 import {DomPointer} from '../types.ts';
-import {HNodeElement} from './element.ts';
+import {HNodeDomNode} from './element.ts';
 
 type Unmount = () => any;
 export type Mount = () => Unmount;
@@ -91,4 +91,4 @@ export class HNodeCtx {
   }
 }
 
-type HNode = HNodeBase | HNodeElement | HNodeTextDynamic;
+export type HNode = HNodeBase | HNodeDomNode | HNodeText;

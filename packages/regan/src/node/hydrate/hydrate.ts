@@ -1,11 +1,10 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../../global-ctx/global-ctx.ts';
-import {HNodeBase, HNodeCtx} from '../../h-node/h-node.ts';
+import {HNode, HNodeBase, HNodeCtx} from '../../h-node/h-node.ts';
 import {ParentJsxSegment} from '../../jsx-path/jsx-path.ts';
 import {TreeAtomsSnapshot} from '../../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {Ctx} from '../../ctx/ctx.ts';
 import {DomPointer} from '../../types.ts';
-import {InsertedDomNodes} from '../../utils/inserted-dom.ts';
 import {PromiseControls} from 'utftu';
 import {JsxNode} from '../node.ts';
 
@@ -14,28 +13,33 @@ export type HCtx = {
   changedAtoms: Atom[];
 };
 
-export type InsertedDomNodesPromise = {
-  promise: Promise<InsertedDomNodes>;
-  promiseControls: PromiseControls<InsertedDomNodes>;
+export type DomNodesInfo = {
+  elemsCount: number;
+  textLength: number;
+};
+
+export type ParentWait = {
+  promise: Promise<DomNodesInfo>;
+  promiseControls: PromiseControls<DomNodesInfo>;
 };
 
 export type HydrateProps = {
   parent?: JsxNode;
   domPointer: DomPointer;
-  parentHNode?: HNodeBase;
+  parentHNode?: HNode;
   parentCtx?: Ctx;
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;
   parentJsxSegment?: ParentJsxSegment;
   hCtx: HCtx;
   hNodeCtx: HNodeCtx;
-  parentInsertedDomNodesPromise: InsertedDomNodesPromise;
-  insertedDomNodes: InsertedDomNodes;
+  parentWait: ParentWait;
+  // insertedDomNodes: InsertedDomNodes;
   atomDescendant: boolean;
   atomDirectNode: boolean;
 };
 
 export type HydrateResult = Promise<{
-  insertedDomNodes: InsertedDomNodes;
-  hNode: HNodeBase;
+  // insertedDomNodes: InsertedDomNodes;
+  hNode: HNode;
 }>;

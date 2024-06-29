@@ -3,7 +3,7 @@ import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenRender} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
-import {HNodeElement} from '../h-node/element.ts';
+import {HNodeDomNode} from '../h-node/element.ts';
 import {addElementChildren} from '../utils/dom.ts';
 import {
   addEventListenerStore,
@@ -102,7 +102,7 @@ export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
     }
   }
 
-  const hNode = new HNodeElement(
+  const hNode = new HNodeDomNode(
     {
       unmounts,
       mounts,

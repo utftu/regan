@@ -1,9 +1,15 @@
 import {createControlledPromise} from 'utftu';
-import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
+import {
+  DOM_NODES_INFO,
+  INSERTED_DOM_NODES,
+  NEED_AWAIT,
+  defaultDomNodesInfo,
+} from '../consts.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {JsxNode} from '../node/node.ts';
 import {FCStaticParams} from '../types.ts';
+import {DomNodesInfo} from '../node/hydrate/hydrate.ts';
 
 export type TextDomNode = {
   type: 'text';
@@ -45,10 +51,10 @@ export const getInsertedCountRender = async (
 
 export const getInsertedCount = async (
   child: JsxNode,
-  awaitInsertedDomNodes: Promise<InsertedDomNodes>
-): Promise<InsertedDomNodes> => {
+  awaitInsertedDomNodes: Promise<DomNodesInfo>
+): Promise<DomNodesInfo> => {
   if (child instanceof JsxNodeElement) {
-    return defaultInsertedDomNodes;
+    return defaultDomNodesInfo;
   } else if (child instanceof JsxNodeComponent) {
     if (
       child.systemProps.needAwait === true ||
@@ -56,20 +62,17 @@ export const getInsertedCount = async (
     ) {
       const insertedDomNodes = await awaitInsertedDomNodes;
       return insertedDomNodes;
-    } else if ('insertedDomNodes' in child.systemProps) {
-      return child.systemProps.insertedDomNodes!;
-    } else if (INSERTED_DOM_NODES in child.type) {
-      return child.type[INSERTED_DOM_NODES] as InsertedDomNodes;
+    } else if (DOM_NODES_INFO in child.type) {
+      return child.type[DOM_NODES_INFO] as DomNodesInfo;
     } else {
-      return defaultInsertedDomNodes;
+      return defaultDomNodesInfo;
     }
   }
-  return defaultInsertedDomNodes;
+  return defaultDomNodesInfo;
 };
 
 export const createInsertedDomNodePromise = () => {
-  const [promise, promiseControls] =
-    createControlledPromise<InsertedDomNodes>();
+  const [promise, promiseControls] = createControlledPromise<DomNodesInfo>();
   return {
     promise,
     promiseControls,

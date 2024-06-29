@@ -1,9 +1,10 @@
 import {JsxNode} from './node/node.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
-import {Context, ContextValue} from './context/context.tsx';
-import {INSERTED_DOM_NODES, NEED_AWAIT} from './consts.ts';
+import {ContextValue} from './context/context.tsx';
+import {DOM_NODES_INFO, NEED_AWAIT} from './consts.ts';
 import {InsertedDomNodes} from './utils/inserted-dom.ts';
+import {DomNodesInfo} from './node/hydrate/hydrate.ts';
 
 export type Child =
   | JsxNode
@@ -42,15 +43,18 @@ export type SystemProps = {
 
 export type FCStaticParams = {
   [NEED_AWAIT]?: boolean;
-  [INSERTED_DOM_NODES]?: number;
+  [DOM_NODES_INFO]?: DomNodesInfo;
+  // [INSERTED_DOM_NODES]?: number;
 };
 
 export type HtmlChild = HTMLElement | string;
 
-export type DomPointer = {
-  parent: Node;
+export type DomPointer<Parent extends Node = Node> = {
+  parent: Parent;
   position: number;
 };
+
+export type DomPointerElement = DomPointer<Element>;
 
 export type DomPointerCertain = DomPointer & {
   innerPosition: {

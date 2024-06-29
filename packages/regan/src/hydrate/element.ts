@@ -3,10 +3,11 @@ import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HydrateProps, HydrateResult} from '../node/hydrate/hydrate.ts';
-import {HNodeElement} from '../h-node/element.ts';
+import {HNodeDomNode} from '../h-node/element.ts';
 import {addEventListenerStore} from '../utils/listeners.ts';
 import {prepareListener} from '../utils/errors.ts';
 import {defaultInsertedDomNodes} from '../utils/inserted-dom.ts';
+import {defaultDomNodesInfo} from '../consts.ts';
 
 // const prepareListener = ({
 //   listener,
@@ -31,14 +32,12 @@ export async function hydrateElement(
   this: JsxNodeElement,
   ctx: HydrateProps
 ): HydrateResult {
-  ctx.parentInsertedDomNodesPromise.promiseControls.resolve(
-    defaultInsertedDomNodes
-  );
+  ctx.parentWait.promiseControls.resolve(defaultDomNodesInfo);
   const jsxSegment = new JsxSegment({
     segment: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
   });
-  const element = ctx.domPointer.parent.childNodes[
+  const element = (ctx.domPointer.parent as Element).children[
     ctx.domPointer.position
   ] as HTMLElement;
 
@@ -113,7 +112,7 @@ export async function hydrateElement(
     }
   }
 
-  const hNode = new HNodeElement(
+  const hNode = new HNodeDomNode(
     {
       hNodeCtx: ctx.hNodeCtx,
       jsxSegment,
@@ -126,10 +125,9 @@ export async function hydrateElement(
   );
 
   const {hNodes} = await handleChildrenHydrate({
-    insertedDomNodes: [],
     atomDescendant: ctx.atomDescendant,
     atomDirectNode: false,
-    parentInsertedDomNodesPromise: ctx.parentInsertedDomNodesPromise,
+    parentInsertedDomNodesPromise: ctx.parentWait,
     parentJsxSegment: jsxSegment,
     hNodeCtx: ctx.hNodeCtx,
     children: this.children,
@@ -145,5 +143,5 @@ export async function hydrateElement(
 
   hNode.addChildren(hNodes);
 
-  return {insertedDomNodes: defaultInsertedDomNodes, hNode};
+  return {hNode};
 }
