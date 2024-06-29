@@ -131,7 +131,6 @@ export class FastUpdater implements Updater {
         }
 
         atom.listeners.trigger(atom);
-        // this.delayedCalls.add(atom, () => atom.listeners.trigger(atom));
 
         this.updateChildren(atom, transaction);
         this.finishTransactionOnAtom(transaction);

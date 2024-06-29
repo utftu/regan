@@ -10,14 +10,6 @@ type Props = {
   atom: Atom;
 };
 
-// const a = () => {
-//   return (
-//     <AtomWrapper>
-//       <Fragment>hello</Fragment>
-//     </AtomWrapper>
-//   );
-// };
-
 const parseAtom = (atom: Atom, renderMode: boolean = false) => {
   let additionalPart = '?a=';
   let value;
@@ -56,8 +48,6 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   if (globalCtx.mode === 'server') {
     const {additionalPart, value} = parseAtom(atom, false);
 
-    // todo
-    // jsxSegment.clearCache();
     jsxSegment.segment += additionalPart;
     return <Fragment>{value}</Fragment>;
   }

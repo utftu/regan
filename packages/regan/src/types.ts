@@ -34,7 +34,6 @@ export type ElementPointer = {
 export type SystemProps = {
   key?: string;
   needAwait?: boolean;
-  // insertedTagsCount?: number;
   insertedDomNodes?: InsertedDomNodes;
   ref?: Atom<HTMLElement | void>;
   rawHtml?: string;
@@ -44,7 +43,6 @@ export type SystemProps = {
 export type FCStaticParams = {
   [NEED_AWAIT]?: boolean;
   [DOM_NODES_INFO]?: DomNodesInfo;
-  // [INSERTED_DOM_NODES]?: number;
 };
 
 export type HtmlChild = HTMLElement | string;
