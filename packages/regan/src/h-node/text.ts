@@ -1,16 +1,16 @@
 import {DomPointer} from '../types.ts';
-import {HNodeDomNode} from './element.ts';
-import {PropsHNode} from './h-node.ts';
+import {HNodeBase, PropsHNode} from './h-node.ts';
 
-export class HNodeText extends HNodeDomNode {
+export class HNodeText extends HNodeBase {
   start: number;
   finish: number;
+  domNode: Node;
   constructor(
     props: PropsHNode,
-    secondProps: {domPointer: DomPointer},
-    {start, finish}: {start: number; finish: number}
+    {domNode, start, finish}: {start: number; finish: number; domNode: Node}
   ) {
-    super(props, secondProps);
+    super(props);
+    this.domNode = domNode;
     this.start = start;
     this.finish = finish;
   }

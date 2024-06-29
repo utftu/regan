@@ -1,7 +1,7 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
-import {Child, DomPointer} from '../types.ts';
+import {Child, DomPointer, DomPointerElement} from '../types.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {HNode, HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
@@ -11,11 +11,35 @@ import {formatJsxValue} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {
-  InsertedDomNodes,
   createInsertedDomNodePromise,
   getInsertedCount,
 } from '../utils/inserted-dom.ts';
 import {HNodeText} from '../h-node/text.ts';
+
+const getPrevTextNode = (
+  customWindow: Window,
+  parent: Element,
+  nextElemPosition: number
+) => {
+  let childNodeToCheck;
+
+  if (nextElemPosition === 0) {
+    childNodeToCheck = parent.childNodes[0];
+  } else {
+    const prevEl = parent.children[nextElemPosition - 1];
+    childNodeToCheck = prevEl.nextSibling;
+  }
+
+  while (
+    childNodeToCheck &&
+    childNodeToCheck.nodeType !== customWindow.document.ELEMENT_NODE
+  ) {
+    if (childNodeToCheck.nodeType === customWindow.document.TEXT_NODE) {
+      return childNodeToCheck;
+    }
+    childNodeToCheck = childNodeToCheck.nextSibling;
+  }
+};
 
 const wrapChildIfNeed = (child: JsxNode | Atom) => {
   if (child instanceof Atom) {
@@ -49,12 +73,9 @@ export async function handleChildrenHydrate({
   parentCtx,
   parentDomPointer,
   parentInsertedDomNodesPromise,
-  // insertedDomNodes,
   atomDescendant,
   atomDirectNode,
-}: // prevElemsCount,
-// elemsCount,
-{
+}: {
   children: Child[];
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
@@ -62,9 +83,8 @@ export async function handleChildrenHydrate({
   hCtx: HCtx;
   hNodeCtx: HNodeCtx;
   parentCtx?: Ctx;
-  parentDomPointer: DomPointer;
+  parentDomPointer: DomPointerElement;
   parentInsertedDomNodesPromise: ParentWait;
-  // insertedDomNodes: InsertedDomNodes;
   atomDescendant: boolean;
   atomDirectNode: boolean;
 }) {
@@ -78,6 +98,11 @@ export async function handleChildrenHydrate({
 
     if (typeof childOrAtom === 'string') {
       if (atomDescendant) {
+        const textNode = getPrevTextNode(
+          hNodeCtx.window,
+          parentDomPointer.parent,
+          position
+        )!;
         let textNodeStart = textLength;
         textLength += childOrAtom.length;
 
@@ -88,12 +113,7 @@ export async function handleChildrenHydrate({
             hNodeCtx,
           },
           {
-            domPointer: {
-              parent: parentDomPointer.parent,
-              position: position,
-            },
-          },
-          {
+            domNode: textNode,
             start: textNodeStart,
             finish: textNodeStart + childOrAtom.length,
           }
@@ -138,12 +158,6 @@ export async function handleChildrenHydrate({
       child,
       insertedDomNodesPromise.promise
     );
-
-    // console.log('-----', childOrAtom, insertedCount.elemsCount);
-
-    // if (children.length === 2) {
-    //   console.log('-----', 'insertedCount', insertedCount);
-    // }
 
     position += insertedCount.elemsCount;
     textLength += insertedCount.textLength;

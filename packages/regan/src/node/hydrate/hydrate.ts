@@ -40,6 +40,5 @@ export type HydrateProps = {
 };
 
 export type HydrateResult = Promise<{
-  // insertedDomNodes: InsertedDomNodes;
   hNode: HNode;
 }>;

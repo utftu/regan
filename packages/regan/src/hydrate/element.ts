@@ -3,7 +3,7 @@ import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HydrateProps, HydrateResult} from '../node/hydrate/hydrate.ts';
-import {HNodeDomNode} from '../h-node/element.ts';
+import {HNodeElement} from '../h-node/element.ts';
 import {addEventListenerStore} from '../utils/listeners.ts';
 import {prepareListener} from '../utils/errors.ts';
 import {defaultInsertedDomNodes} from '../utils/inserted-dom.ts';
@@ -112,7 +112,7 @@ export async function hydrateElement(
     }
   }
 
-  const hNode = new HNodeDomNode(
+  const hNode = new HNodeElement(
     {
       hNodeCtx: ctx.hNodeCtx,
       jsxSegment,
