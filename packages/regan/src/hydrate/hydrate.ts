@@ -4,7 +4,7 @@ import {HNodeBase, HNodeCtx, mountHNodes} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
-import {DomPointer} from '../types.ts';
+import {DomPointer, DomPointerElement} from '../types.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {createInsertedDomNodePromise} from '../utils/inserted-dom.ts';
 
@@ -20,7 +20,7 @@ export async function hydrateRaw({
   node: JsxNode;
   window?: Window;
   data?: Record<any, any>;
-  domPointer: DomPointer;
+  domPointer: DomPointerElement;
 }) {
   const changedAtoms: Atom[] = [];
   const globalCtx =
@@ -37,7 +37,6 @@ export async function hydrateRaw({
     parentHNode,
     globalCtx,
     parentWait: createInsertedDomNodePromise(),
-    // insertedDomNodes: [],
     hNodeCtx:
       parentHNode?.hNodeCtx ??
       new HNodeCtx({

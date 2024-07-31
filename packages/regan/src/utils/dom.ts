@@ -29,3 +29,28 @@ export const appendElementChild = ({
 export const getElFromDomPointer = (domPointer: DomPointer) => {
   return domPointer.parent.childNodes[domPointer.position];
 };
+
+export const getPrevTextNode = (
+  customWindow: Window,
+  parent: Element,
+  nextElemPosition: number
+) => {
+  let childNodeToCheck;
+
+  if (nextElemPosition === 0) {
+    childNodeToCheck = parent.childNodes[0];
+  } else {
+    const prevEl = parent.children[nextElemPosition - 1];
+    childNodeToCheck = prevEl.nextSibling;
+  }
+
+  while (
+    childNodeToCheck &&
+    childNodeToCheck.nodeType !== customWindow.document.ELEMENT_NODE
+  ) {
+    if (childNodeToCheck.nodeType === customWindow.document.TEXT_NODE) {
+      return childNodeToCheck;
+    }
+    childNodeToCheck = childNodeToCheck.nextSibling;
+  }
+};

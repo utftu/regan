@@ -1,5 +1,12 @@
 import {Atom, selectBase} from 'strangelove';
-import {Child, DomPointer, Mount, SystemProps, Unmount} from '../types.ts';
+import {
+  Child,
+  DomPointer,
+  DomPointerElement,
+  Mount,
+  SystemProps,
+  Unmount,
+} from '../types.ts';
 import {getRoot} from '../atoms/atoms.ts';
 import {
   JsxSegment,
@@ -22,7 +29,7 @@ type AnyProps = Record<any, any>;
 
 type Client = {
   hNode: HNodeBase;
-  parentDomPointer: DomPointer;
+  parentDomPointer: DomPointerElement;
 };
 
 type PropsCtx<TProps> = {

@@ -1,17 +1,28 @@
-import {DomPointer} from '../types.ts';
 import {HNodeBase, PropsHNode} from './h-node.ts';
+
+export type HNodeTextProps = {
+  atomDirectNode: boolean;
+  start: number;
+  finish: number;
+  domNode: Node;
+  text: string;
+};
 
 export class HNodeText extends HNodeBase {
   start: number;
   finish: number;
+  text: string;
   domNode: Node;
+  atomDirectNode: boolean;
   constructor(
     props: PropsHNode,
-    {domNode, start, finish}: {start: number; finish: number; domNode: Node}
+    {domNode, start, finish, atomDirectNode, text}: HNodeTextProps
   ) {
     super(props);
     this.domNode = domNode;
     this.start = start;
     this.finish = finish;
+    this.atomDirectNode = atomDirectNode;
+    this.text = text;
   }
 }

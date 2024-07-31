@@ -78,27 +78,3 @@ export const createInsertedDomNodePromise = () => {
     promiseControls,
   };
 };
-
-// export const getInsertedCount = async (
-//   child: JsxNode,
-//   execResult: Promise<any>
-// ): Promise<InsertedDomNodes> => {
-//   if (child instanceof JsxNodeElement) {
-//     return defaultInsertedDomNodes;
-//   } else if (child instanceof JsxNodeComponent) {
-//     if (
-//       child.systemProps.needAwait === true ||
-//       (child.type as FCStaticParams)[NEED_AWAIT] === true
-//     ) {
-//       const {insertedDomNodes} = await execResult;
-//       return insertedDomNodes;
-//     } else if ('insertedDomNodes' in child.systemProps) {
-//       return child.systemProps.insertedDomNodes!;
-//     } else if (INSERTED_DOM_NODES in child.type) {
-//       return child.type[INSERTED_DOM_NODES] as InsertedDomNodes;
-//     } else {
-//       return defaultInsertedDomNodes;
-//     }
-//   }
-//   return defaultInsertedDomNodes;
-// };

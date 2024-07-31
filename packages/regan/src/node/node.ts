@@ -5,7 +5,10 @@ import {GetStringStreamProps} from './string/string.ts';
 
 export type StringResult = Promise<ReadableStream<string>>;
 
-export abstract class JsxNode<TType = any, TProps extends Props = any> {
+export abstract class JsxNode<
+  TType = any,
+  TProps extends Props = Record<string, any>
+> {
   type: TType;
 
   props: TProps;

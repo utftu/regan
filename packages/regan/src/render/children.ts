@@ -1,21 +1,18 @@
-import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
+import {HNode, HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {JsxNode} from '../node/node.ts';
 import {RenderCtx} from '../node/render/render.ts';
-import {Child, DomPointer, FCStaticParams} from '../types.ts';
-import {JsxNodeComponent} from '../node/variants/component/component.ts';
-import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
-import {formatJsxValue} from '../utils/jsx.ts';
+import {Child, DomPointerElement} from '../types.ts';
+import {formatJsxValue, wrapChildIfNeed} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
-import {Fragment} from '../components/fragment/fragment.ts';
-import {JsxNodeElement} from '../node/variants/element/element.ts';
-import {INSERTED_DOM_NODES, NEED_AWAIT} from '../consts.ts';
 import {
+  createInsertedDomNodePromise,
   getInsertedCount,
-  getInsertedCountRender,
 } from '../utils/inserted-dom.ts';
+import {HNodeText} from '../h-node/text.ts';
+import {ParentWait} from '../node/hydrate/hydrate.ts';
+import {getPrevTextNode} from '../utils/dom.ts';
 
 export async function handleChildrenRender({
   children,
@@ -25,9 +22,11 @@ export async function handleChildrenRender({
   renderCtx,
   hNodeCtx,
   parentCtx,
-  domPointer,
-}: {
-  domPointer: DomPointer;
+  parentPosition,
+}: // domPointer,
+{
+  // domPointer: DomPointerElement;
+  parentPosition: number;
   children: Child[];
   parentHNode?: HNodeBase;
   globalCtx: GlobalCtx;
@@ -35,12 +34,14 @@ export async function handleChildrenRender({
   renderCtx: RenderCtx;
   hNodeCtx: HNodeCtx;
   parentCtx?: Ctx;
+  parentWait: ParentWait;
 }) {
-  const hNodes: HNodeBase[] = [];
-  const rawResults = [];
+  const rawResults: (ReturnType<JsxNode['render']> | HNode)[] = [];
 
-  let insertedDomCount = domPointer.position;
+  let position = parentPosition;
+  let textLength = 0;
   let insertedJsxCount = 0;
+
   for (let i = 0; i <= children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
 
@@ -49,37 +50,43 @@ export async function handleChildrenRender({
     }
 
     if (typeof childOrAtom === 'string') {
-      rawResults.push(childOrAtom);
-      insertedDomCount++;
+      // const textNode = getPrevTextNode(
+      //   hNodeCtx.window,
+      //   domPointer.parent,
+      //   position
+      // )!;
+      let textNodeStart = textLength;
+      textLength += childOrAtom.length;
+
+      // const hNode = new HNodeText(
+      //   {
+      //     jsxSegment: parentJsxSegment,
+      //     globalCtx: globalCtx,
+      //     hNodeCtx: hNodeCtx,
+      //   },
+      //   {
+      //     domNode: textNode,
+      //     start: textNodeStart,
+      //     finish: textNodeStart + childOrAtom.length,
+      //   }
+      // );
+
       continue;
     }
 
-    let child: JsxNode;
-    if (childOrAtom instanceof Atom) {
-      child = new JsxNodeComponent({
-        type: AtomWrapper,
-        children: [],
-        props: {
-          atom: childOrAtom,
-        },
-        systemProps: {},
-      });
-    } else if (Array.isArray(childOrAtom)) {
-      child = new JsxNodeComponent({
-        type: Fragment,
-        children: childOrAtom,
-        props: {},
-        systemProps: {},
-      });
-    } else {
-      child = childOrAtom;
-    }
+    const child = wrapChildIfNeed(childOrAtom);
+
+    const insertedDomNodesPromise = createInsertedDomNodePromise();
 
     const renderResult = child.render({
-      parentDomPointer: {
-        parent: domPointer.parent,
-        position: insertedDomCount,
-      },
+      hNodePosition:
+        parentHNode && parentHNode?.children.length + rawResults.length,
+      parentPosition: position,
+      parentWait: insertedDomNodesPromise,
+      // parentDomPointer: {
+      //   parent: domPointer.parent,
+      //   position: position,
+      // },
       parentHNode,
       globalCtx,
       parentCtx,
@@ -93,27 +100,25 @@ export async function handleChildrenRender({
     });
     rawResults.push(renderResult);
 
-    const insertedDomNodes = await getInsertedCountRender(child, renderResult);
+    const insertedCount = await getInsertedCount(
+      child,
+      insertedDomNodesPromise.promise
+    );
 
-    insertedDomCount += insertedDomNodes;
+    position += insertedCount.elemsCount;
+    textLength += insertedCount.textLength;
+
     insertedJsxCount++;
   }
 
-  const results = await Promise.all(rawResults);
-
-  const rawConnectElements = results.map((value) => {
-    if (typeof value === 'string') {
-      return value;
-    }
-
-    const {hNode, connectElements} = value;
-    hNodes.push(hNode);
-    return connectElements;
-  });
+  const renderResults = await Promise.all(rawResults);
 
   return {
-    hNodes,
-    rawConnectElements,
-    insertedDomCount,
+    hNodes: renderResults.map((value) => {
+      if (value instanceof HNodeBase) {
+        return value;
+      }
+      return value.hNode;
+    }),
   };
 }

@@ -80,5 +80,7 @@ export async function hydrateComponent(
 
   hNode.addChildren(hNodes);
 
-  return {hNode};
+  return {
+    hNode,
+  };
 }

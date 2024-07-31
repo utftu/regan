@@ -1,67 +1,18 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
-import {Child, DomPointer, DomPointerElement} from '../types.ts';
-import {JsxNodeComponent} from '../node/variants/component/component.ts';
+import {Child, DomPointerElement} from '../types.ts';
 import {HNode, HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {HCtx, ParentWait} from '../node/hydrate/hydrate.ts';
-import {formatJsxValue} from '../utils/jsx.ts';
+import {formatJsxValue, wrapChildIfNeed} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
-import {Fragment} from '../components/fragment/fragment.ts';
 import {
   createInsertedDomNodePromise,
   getInsertedCount,
 } from '../utils/inserted-dom.ts';
 import {HNodeText} from '../h-node/text.ts';
-
-const getPrevTextNode = (
-  customWindow: Window,
-  parent: Element,
-  nextElemPosition: number
-) => {
-  let childNodeToCheck;
-
-  if (nextElemPosition === 0) {
-    childNodeToCheck = parent.childNodes[0];
-  } else {
-    const prevEl = parent.children[nextElemPosition - 1];
-    childNodeToCheck = prevEl.nextSibling;
-  }
-
-  while (
-    childNodeToCheck &&
-    childNodeToCheck.nodeType !== customWindow.document.ELEMENT_NODE
-  ) {
-    if (childNodeToCheck.nodeType === customWindow.document.TEXT_NODE) {
-      return childNodeToCheck;
-    }
-    childNodeToCheck = childNodeToCheck.nextSibling;
-  }
-};
-
-const wrapChildIfNeed = (child: JsxNode | Atom) => {
-  if (child instanceof Atom) {
-    return new JsxNodeComponent({
-      type: AtomWrapper,
-      children: [],
-      props: {
-        atom: child,
-      },
-      systemProps: {},
-    });
-  } else if (Array.isArray(child)) {
-    return new JsxNodeComponent({
-      type: Fragment,
-      children: child,
-      props: {},
-      systemProps: {},
-    });
-  } else {
-    return child;
-  }
-};
+import {getPrevTextNode} from '../utils/dom.ts';
 
 export async function handleChildrenHydrate({
   children,
@@ -88,7 +39,7 @@ export async function handleChildrenHydrate({
   atomDescendant: boolean;
   atomDirectNode: boolean;
 }) {
-  const hydrateResults: (ReturnType<JsxNode['hydrate']> | HNodeBase)[] = [];
+  const rawHydrate: (ReturnType<JsxNode['hydrate']> | HNode)[] = [];
   let position = parentDomPointer.position;
   let textLength = 0;
   let insertedJsxCount = 0;
@@ -113,14 +64,17 @@ export async function handleChildrenHydrate({
             hNodeCtx,
           },
           {
+            text: childOrAtom,
+            atomDirectNode: atomDirectNode,
             domNode: textNode,
             start: textNodeStart,
-            finish: textNodeStart + childOrAtom.length,
+            finish: textLength,
           }
         );
 
-        hydrateResults.push(hNode);
+        rawHydrate.push(hNode);
       }
+      continue;
     }
 
     if (!(childOrAtom instanceof JsxNode) && !(childOrAtom instanceof Atom)) {
@@ -152,7 +106,7 @@ export async function handleChildrenHydrate({
       hCtx: hContext,
       hNodeCtx,
     });
-    hydrateResults.push(hydrateResult);
+    rawHydrate.push(hydrateResult);
 
     const insertedCount = await getInsertedCount(
       child,
@@ -170,7 +124,7 @@ export async function handleChildrenHydrate({
     textLength,
   });
 
-  const hydrateResultsData = await Promise.all(hydrateResults);
+  const hydrateResultsData = await Promise.all(rawHydrate);
 
   return {
     hNodes: hydrateResultsData.map((value) => {

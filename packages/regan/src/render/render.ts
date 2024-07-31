@@ -9,23 +9,21 @@ import {
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
-import {DomPointer, ElementPointer} from '../types.ts';
-import {addElementChildren} from '../utils/dom.ts';
+import {DomPointerElement} from '../types.ts';
 import {Ctx} from '../ctx/ctx.ts';
+import {createInsertedDomNodePromise} from '../utils/inserted-dom.ts';
 
 export const rednerRaw = async ({
   node,
   window: localWindow = window,
-  // getElemPointer,
   parentHNode,
   data,
   jsxSegmentStr = '',
   parentCtx,
-  domPointer: domPointer,
+  domPointer,
 }: {
   node: JsxNode;
-  // getElemPointer: () => ElementPointer;
-  domPointer: DomPointer;
+  domPointer: DomPointerElement;
   window?: Window;
   data?: Record<any, any>;
   parentHNode?: HNodeBase;
@@ -34,7 +32,8 @@ export const rednerRaw = async ({
 }) => {
   const changedAtoms: Atom[] = [];
 
-  const {hNode, connectElements} = await node.render({
+  const {hNode} = await node.render({
+    parentWait: createInsertedDomNodePromise(),
     parentHNode: parentHNode,
     parentDomPointer: domPointer,
     jsxSegmentStr,
@@ -70,8 +69,8 @@ export const rednerRaw = async ({
       }
       // const {parent, prev} = getElemPointer();
 
-      const elements = connectElements();
-      addElementChildren({domPointer: domPointer, elements});
+      // const elements = connectElements();
+      // addElementChildren({domPointer: domPointer, elements});
       // addElementChildren({parent, prev, elements});
       mountHNodes(hNode);
     },

@@ -4,11 +4,11 @@ import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenRender} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {RenderProps} from '../node/render/render.ts';
+import {RenderProps, RenderResult} from '../node/render/render.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
 import {getContextValue} from '../context/context.tsx';
 import {errorContext} from '../errors/errors.tsx';
-import {RenderResult} from '../node/node.ts';
+// import {RenderResult} from '../node/node.ts';
 
 export async function renderComponent(
   this: JsxNodeComponent,
@@ -25,10 +25,6 @@ export async function renderComponent(
     hNodeCtx: ctx.hNodeCtx,
   });
   const componentCtx = new Ctx({
-    client: {
-      parentDomPointer: ctx.parentDomPointer,
-      hNode: hNode,
-    },
     globalCtx: ctx.globalCtx,
     jsxSegment,
     props: this.props,
@@ -64,37 +60,39 @@ export async function renderComponent(
   hNode.mounts.push(smartMount);
   hNode.unmounts.push(...componentCtx.state.unmounts);
 
-  const {hNodes, rawConnectElements, insertedDomCount} =
-    await handleChildrenRender({
-      parentHNode: hNode,
-      domPointer: ctx.parentDomPointer,
-      children,
-      globalCtx: ctx.globalCtx,
-      parentJsxSegment: jsxSegment,
-      renderCtx: ctx.renderCtx,
-      hNodeCtx: ctx.hNodeCtx,
-      parentCtx: componentCtx,
-    });
+  const {hNodes} = await handleChildrenRender({
+    parentHNode: hNode,
+    parentPosition: ctx.parentPosition,
+    children,
+    globalCtx: ctx.globalCtx,
+    parentJsxSegment: jsxSegment,
+    renderCtx: ctx.renderCtx,
+    hNodeCtx: ctx.hNodeCtx,
+    parentCtx: componentCtx,
+    parentWait: ctx.parentWait,
+  });
 
   hNode.addChildren(hNodes);
 
   return {
     hNode,
-    insertedDomCount,
-    connectElements: () => {
-      const flatElements: (HTMLElement | string)[] = [];
-      rawConnectElements.forEach((child) => {
-        if (typeof child === 'function') {
-          const elements = child();
-          elements.forEach((elem) => {
-            flatElements.push(elem);
-          });
-          return;
-        }
-        flatElements.push(child);
-      });
 
-      return flatElements;
-    },
+    // ??
+    // insertedDomCount,
+    // connectElements: () => {
+    //   const flatElements: (HTMLElement | string)[] = [];
+    //   rawConnectElements.forEach((child) => {
+    //     if (typeof child === 'function') {
+    //       const elements = child();
+    //       elements.forEach((elem) => {
+    //         flatElements.push(elem);
+    //       });
+    //       return;
+    //     }
+    //     flatElements.push(child);
+    //   });
+
+    //   return flatElements;
+    // },
   };
 }

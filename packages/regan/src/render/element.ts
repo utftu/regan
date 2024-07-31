@@ -1,161 +1,97 @@
-import {Atom} from 'strangelove';
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenRender} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {RenderProps} from '../node/render/render.ts';
-import {HNodeElement} from '../h-node/element.ts';
-import {addElementChildren} from '../utils/dom.ts';
+import {defaultDomNodesInfo} from '../consts.ts';
+import {HNodeElementToReplace} from '../v/h-node.ts';
 import {
-  addEventListenerStore,
-  prepareEventListener,
-} from '../utils/listeners.ts';
+  detachDynamicProps,
+  handleProps,
+  initDynamicProps,
+  prepareDynamicProps,
+} from '../utils/props/props.ts';
+import {HNodeElement} from '../h-node/element.ts';
 
-export async function renderElement(this: JsxNodeElement, ctx: RenderProps) {
+export async function renderElement(this: JsxNodeElement, props: RenderProps) {
+  props.parentWait.promiseControls.resolve(defaultDomNodesInfo);
   const jsxSegment = new JsxSegment({
-    segment: ctx.jsxSegmentStr,
-    parent: ctx.parentJsxSegment,
+    segment: props.jsxSegmentStr,
+    parent: props.parentJsxSegment,
   });
-  const element = ctx.hNodeCtx.window.document.createElement(this.type);
 
-  const listeners: Record<string, any> = {};
+  const {dynamicProps} = handleProps({props: this.props});
 
-  const mounts = [];
-  const unmounts = [
-    () => {
-      element.remove();
-    },
-    () => {
-      for (const listenerKey in listeners) {
-        const listener = listeners[listenerKey];
-        element.removeEventListener(listenerKey, listener);
-      }
-    },
-  ];
-
-  for (const name in this.props) {
-    const prop = this.props[name] as any;
-
-    if (prop instanceof Atom) {
-      const atomValue = ctx.renderCtx.snapshot.parse(prop);
-
-      if (typeof atomValue === 'function') {
-        addEventListenerStore({
-          listener: prepareEventListener({
-            listener: atomValue,
-            ctx: ctx.parentCtx,
-            jsxNode: this,
-          }),
-
-          // listener: atomValue,
-          store: listeners,
-          elem: element,
-          name,
-        });
-      } else {
-        element.setAttribute(name, atomValue);
-      }
-
-      const execTemp = () => {
-        ctx.renderCtx.changedAtoms.push(prop);
-      };
-      ctx.globalCtx.root.links.addExec(prop, execTemp);
-      const exec = (value: any) => {
-        if (typeof value === 'function') {
-          addEventListenerStore({
-            listener: prepareEventListener({
-              listener: value,
-              ctx: ctx.parentCtx,
-              jsxNode: this,
-            }),
-
-            // listener: value,
-            store: listeners,
-            elem: element,
-            name,
-          });
-        } else {
-          element.setAttribute(name, value);
-        }
-      };
-      mounts.push(() =>
-        ctx.globalCtx.root.links.replaceExec(prop, execTemp, exec)
-      );
-      unmounts.push(() => ctx.globalCtx.root.links.removeExec(prop, exec));
-      continue;
-    }
-
-    if (typeof prop === 'function') {
-      addEventListenerStore({
-        name,
-        // listener: prop,
-        listener: prepareEventListener({
-          listener: prop,
-          ctx: ctx.parentCtx,
-          jsxNode: this,
-        }),
-
-        store: listeners,
-        elem: element,
-      });
-    } else {
-      element.setAttribute(name, prop);
-    }
-  }
-
-  const hNode = new HNodeElement(
+  const hNode = new HNodeElementToReplace(
     {
-      unmounts,
-      mounts,
+      unmounts: [],
+      mounts: [],
       jsxSegment,
-      parent: ctx.parentHNode,
-      globalCtx: ctx.globalCtx,
-      hNodeCtx: ctx.hNodeCtx,
+      parent: props.parentHNode,
+      globalCtx: props.globalCtx,
+      hNodeCtx: props.hNodeCtx,
     },
     {
-      domPointer: {
-        parent: ctx.parentDomPointer.parent,
-        position: ctx.parentDomPointer.position,
+      jsxNode: this,
+      init: (element: HTMLElement) => {
+        const dynamicPropsEnt = prepareDynamicProps({
+          props: dynamicProps,
+          jsxNode: this,
+          ctx: props.parentCtx,
+          element,
+          globalCtx: props.globalCtx,
+        });
+
+        for (const name in dynamicPropsEnt) {
+          const dynamicPropEnt = dynamicPropsEnt[name];
+          const atomtValue = dynamicPropEnt.atom.get();
+
+          if (typeof atomtValue === 'function') {
+            dynamicPropEnt.listener = atomtValue;
+          }
+        }
+
+        initDynamicProps({
+          dynamicPropsEnt,
+          hNode,
+          changedAtoms: props.renderCtx.changedAtoms,
+          globalCtx: props.globalCtx,
+        });
+
+        hNode.unmounts.push(() => detachDynamicProps(dynamicPropsEnt));
+
+        const newHNode = new HNodeElement(
+          {
+            jsxSegment,
+            globalCtx: props.globalCtx,
+            hNodeCtx: props.hNodeCtx,
+          },
+          {
+            element,
+            jsxNode: this,
+            dynamicPropsEnt,
+          }
+        );
+        if (props.parentHNode) {
+          props.parentHNode.children[props.hNodePosition!] = newHNode;
+        }
       },
     }
   );
 
-  const {hNodes, rawConnectElements} = await handleChildrenRender({
-    domPointer: {
-      parent: element,
-      position: 0,
-    },
+  const {hNodes} = await handleChildrenRender({
+    parentPosition: 0,
     children: this.children,
     parentHNode: hNode,
-    globalCtx: ctx.globalCtx,
+    globalCtx: props.globalCtx,
     parentJsxSegment: jsxSegment,
-    renderCtx: ctx.renderCtx,
-    hNodeCtx: ctx.hNodeCtx,
-    parentCtx: ctx.parentCtx,
+    renderCtx: props.renderCtx,
+    hNodeCtx: props.hNodeCtx,
+    parentCtx: props.parentCtx,
+    parentWait: props.parentWait,
   });
   hNode.addChildren(hNodes);
 
   return {
     hNode,
-    insertedDomCount: 0,
-    connectElements: () => {
-      const flatElements: (HTMLElement | string)[] = [];
-      rawConnectElements.forEach((child) => {
-        if (typeof child === 'function') {
-          const elements = child();
-          elements.forEach((elem) => {
-            flatElements.push(elem);
-          });
-          return;
-        }
-        flatElements.push(child);
-      });
-
-      addElementChildren({
-        domPointer: {parent: element, position: 0},
-        elements: flatElements,
-      });
-
-      return [element];
-    },
   };
 }
