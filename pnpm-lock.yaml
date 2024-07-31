@@ -23,7 +23,7 @@ importers:
         version: 3.9.1(@types/node@20.12.8)(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.8))
       vitest:
         specifier: ^1.1.0
-        version: 1.6.0(@types/node@20.12.8)(jsdom@23.2.0)
+        version: 1.6.0(@types/node@20.12.8)(happy-dom@14.12.3)(jsdom@23.2.0)
 
   packages/regan:
     devDependencies:
@@ -35,7 +35,10 @@ importers:
         version: 4.2.1(vite@5.2.11(@types/node@20.12.8))
       '@vitest/coverage-istanbul':
         specifier: ^1.1.0
-        version: 1.6.0(vitest@1.6.0(@types/node@20.12.8)(jsdom@23.2.0))
+        version: 1.6.0(vitest@1.6.0(@types/node@20.12.8)(happy-dom@14.12.3)(jsdom@23.2.0))
+      happy-dom:
+        specifier: ^14.12.3
+        version: 14.12.3
       jsdom:
         specifier: ^23.0.1
         version: 23.2.0
@@ -56,7 +59,7 @@ importers:
         version: 3.9.0(@types/node@20.12.8)(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.8))
       vitest:
         specifier: ^1.1.0
-        version: 1.6.0(@types/node@20.12.8)(jsdom@23.2.0)
+        version: 1.6.0(@types/node@20.12.8)(happy-dom@14.12.3)(jsdom@23.2.0)
 
   packages/regan-vite: {}
 
@@ -765,6 +768,10 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
+  happy-dom@14.12.3:
+    resolution: {integrity: sha512-vsYlEs3E9gLwA1Hp+w3qzu+RUDFf4VTT8cyKqVICoZ2k7WM++Qyd2LwzyTi5bqMJFiIC/vNpTDYuxdreENRK/g==}
+    engines: {node: '>=16.0.0'}
+
   has-flag@3.0.0:
     resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}
     engines: {node: '>=4'}
@@ -1332,6 +1339,10 @@ packages:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
 
+  whatwg-mimetype@3.0.0:
+    resolution: {integrity: sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q==}
+    engines: {node: '>=12'}
+
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
     engines: {node: '>=18'}
@@ -1803,7 +1814,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-istanbul@1.6.0(vitest@1.6.0(@types/node@20.12.8)(jsdom@23.2.0))':
+  '@vitest/coverage-istanbul@1.6.0(vitest@1.6.0(@types/node@20.12.8)(happy-dom@14.12.3)(jsdom@23.2.0))':
     dependencies:
       debug: 4.3.4
       istanbul-lib-coverage: 3.2.2
@@ -1814,7 +1825,7 @@ snapshots:
       magicast: 0.3.4
       picocolors: 1.0.0
       test-exclude: 6.0.0
-      vitest: 1.6.0(@types/node@20.12.8)(jsdom@23.2.0)
+      vitest: 1.6.0(@types/node@20.12.8)(happy-dom@14.12.3)(jsdom@23.2.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -2116,6 +2127,12 @@ snapshots:
   globals@11.12.0: {}
 
   graceful-fs@4.2.11: {}
+
+  happy-dom@14.12.3:
+    dependencies:
+      entities: 4.5.0
+      webidl-conversions: 7.0.0
+      whatwg-mimetype: 3.0.0
 
   has-flag@3.0.0: {}
 
@@ -2620,7 +2637,7 @@ snapshots:
       '@types/node': 20.12.8
       fsevents: 2.3.3
 
-  vitest@1.6.0(@types/node@20.12.8)(jsdom@23.2.0):
+  vitest@1.6.0(@types/node@20.12.8)(happy-dom@14.12.3)(jsdom@23.2.0):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
@@ -2644,6 +2661,7 @@ snapshots:
       why-is-node-running: 2.2.2
     optionalDependencies:
       '@types/node': 20.12.8
+      happy-dom: 14.12.3
       jsdom: 23.2.0
     transitivePeerDependencies:
       - less
@@ -2675,6 +2693,8 @@ snapshots:
   whatwg-encoding@3.1.1:
     dependencies:
       iconv-lite: 0.6.3
+
+  whatwg-mimetype@3.0.0: {}
 
   whatwg-mimetype@4.0.0: {}
 
