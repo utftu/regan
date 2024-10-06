@@ -12,6 +12,7 @@ import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {DomPointerElement} from '../types.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {createInsertedDomNodePromise} from '../utils/inserted-dom.ts';
+import {convert} from '../v/convert.ts';
 
 export const rednerRaw = async ({
   node,
@@ -35,7 +36,7 @@ export const rednerRaw = async ({
   const {hNode} = await node.render({
     parentWait: createInsertedDomNodePromise(),
     parentHNode: parentHNode,
-    parentDomPointer: domPointer,
+    parentPosition: domPointer.position,
     jsxSegmentStr,
     parentCtx,
     globalCtx:
@@ -58,23 +59,25 @@ export const rednerRaw = async ({
     },
   });
 
-  return {
-    hNode,
-    unmount: () => {
-      unmountHNodes(hNode);
-    },
-    mount: () => {
-      if (parentHNode) {
-        parentHNode.addChildren([hNode]);
-      }
-      // const {parent, prev} = getElemPointer();
+  return {hNode};
 
-      // const elements = connectElements();
-      // addElementChildren({domPointer: domPointer, elements});
-      // addElementChildren({parent, prev, elements});
-      mountHNodes(hNode);
-    },
-  };
+  // return {
+  //   hNode,
+  //   unmount: () => {
+  //     unmountHNodes(hNode);
+  //   },
+  //   mount: () => {
+  //     if (parentHNode) {
+  //       parentHNode.addChildren([hNode]);
+  //     }
+  //     // const {parent, prev} = getElemPointer();
+
+  //     // const elements = connectElements();
+  //     // addElementChildren({domPointer: domPointer, elements});
+  //     // addElementChildren({parent, prev, elements});
+  //     mountHNodes(hNode);
+  //   },
+  // };
 };
 
 export const render = async (
@@ -82,7 +85,7 @@ export const render = async (
   node: JsxNode,
   options: {window: Window} = {window}
 ) => {
-  const {mount} = await rednerRaw({
+  const {hNode} = await rednerRaw({
     node,
     domPointer: {
       parent: element,
@@ -93,5 +96,8 @@ export const render = async (
     // }),
     window: options.window,
   });
-  mount();
+
+  const vNews = convert(hNode);
+
+  // mount();
 };

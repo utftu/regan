@@ -4,6 +4,7 @@ import {VElementNew, VTextNew} from './new.ts';
 export type VElementOld = VElementNew & {
   domNode: HTMLElement;
   dynamicProps: DynamicPropsEnt;
+  children: VOld[];
 };
 
 export type VTextOld = VTextNew & {

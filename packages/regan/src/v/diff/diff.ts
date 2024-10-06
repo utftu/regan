@@ -1,4 +1,13 @@
-import {VElementNew, VNew, VTextNew} from './new.ts';
+import {Atom} from 'strangelove';
+import {VElementNew, VNew, VTextNew} from '../new.ts';
+import {VOld} from '../old.ts';
+
+export type EventDiffPatchElement = {
+  element: Node;
+  type: 'patchElement';
+  newProps: Record<string, any>;
+  oldProps: Record<string, any>;
+};
 
 export type EventDiff =
   | {type: 'delete'}
@@ -6,25 +15,9 @@ export type EventDiff =
   | {type: 'replaceFull'}
   | {type: 'nextText'}
   | {type: 'replaceText'}
-  | {
-      type: 'childrenEl';
-      newProps: Record<string, any>;
-      oldProps: Record<string, any>;
-    };
+  | EventDiffPatchElement;
 
-// type EventDiff =
-//   | {type: 'delete'}
-//   | {type: 'create'}
-//   | {type: 'replaceFull'}
-//   | {type: 'nextText'}
-//   | {type: 'replaceText'}
-//   | {
-//       type: 'elChildren';
-//       newProps: Record<string, any>;
-//       oldProps: Record<string, any>;
-//     };
-
-const diffOne = (vOld?: VNew, vNew?: VNew): EventDiff => {
+export const diffOne = (vNew?: VNew, vOld?: VOld): EventDiff => {
   if (!vNew) {
     return {
       type: 'delete',
@@ -65,14 +58,17 @@ const diffOne = (vOld?: VNew, vNew?: VNew): EventDiff => {
   const newProps: Record<string, any> = {};
 
   for (const key in vNewSure.props) {
-    const attributeNew = vNewSure.props[key];
-    const attributeOld = vOld.props[key];
+    const newValue = vNewSure.props[key];
+    const oldValue = vOld.props[key];
 
-    if (attributeOld === attributeNew) {
+    const realNewValue = newValue instanceof Atom ? newValue.get() : newValue;
+    const realOldValue = oldValue instanceof Atom ? oldValue.get() : oldValue;
+
+    if (realNewValue === realOldValue) {
       continue;
     }
 
-    newProps[key] = attributeNew;
+    newProps[key] = realNewValue;
   }
 
   const oldProps: Record<string, any> = {};
@@ -81,13 +77,16 @@ const diffOne = (vOld?: VNew, vNew?: VNew): EventDiff => {
     if (key in vNewSure) {
       continue;
     }
+    const oldValue = vOld.props[key];
+    const realOldValue = oldValue instanceof Atom ? oldValue.get() : oldValue;
 
-    oldProps[key] = vOld.props[key];
+    oldProps[key] = realOldValue;
   }
 
   return {
+    element: vOld.domNode,
     newProps,
     oldProps,
-    type: 'childrenEl',
+    type: 'patchElement',
   };
 };

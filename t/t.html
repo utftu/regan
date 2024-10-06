@@ -1,14 +1,22 @@
-<div id="div">click</div>
-<div id="unsubscribe">unsubscribe</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Replace Child Text Node</title>
+  </head>
+  <body>
+    <div id="myElement">This is the old text.</div>
 
-<script>
-  const div = document.getElementById('div');
-  const listener = () => {
-    console.log('-----', 'listen');
-  };
-  div.addEventListener('click', listener, {capture: true});
-  const unsubscribe = document.getElementById('unsubscribe');
-  unsubscribe.addEventListener('click', () => {
-    div.removeEventListener('click', listener, {capture: true});
-  });
-</script>
+    <script>
+      // Получаем элемент
+      const element = document.getElementById('myElement');
+
+      // Создаем новый текстовый узел
+      const newText = document.createTextNode('This is the new text.');
+
+      // Заменяем старый текстовый узел на новый
+      element.replaceChild(newText, element.childNodes[0]);
+    </script>
+  </body>
+</html>

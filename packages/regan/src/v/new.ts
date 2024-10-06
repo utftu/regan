@@ -3,7 +3,7 @@ import {HNode} from '../h-node/h-node.ts';
 export type VNew = VElementNew | VTextNew;
 
 export type VElementNew = {
-  type: 'el';
+  type: 'element';
   tag: string;
 
   props: Record<string, any>;

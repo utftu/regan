@@ -1,8 +1,7 @@
-import {HNodeText} from '../h-node/text.ts';
-import {detachDynamicProps} from '../utils/props/props.ts';
-import {EventDiff} from './diff.ts';
-import {VElementNew, VNew, VTextNew} from './new.ts';
-import {VElementOld, VOld, VTextOld} from './old.ts';
+import {EventDiff} from '../diff/diff.ts';
+import {VElementNew, VNew, VTextNew} from '../new.ts';
+import {VElementOld, VOld, VTextOld} from '../old.ts';
+import {Control} from '../v.ts';
 
 const createDomNode = (vNew: VNew, window: Window) => {
   if (vNew.type === 'text') {
@@ -11,46 +10,49 @@ const createDomNode = (vNew: VNew, window: Window) => {
     return textNode;
   }
 
-  const el = window.document.createElement(vNew.tag);
+  const element = window.document.createElement(vNew.tag);
 
   for (const key in vNew.props) {
     const value = vNew.props[key];
     if (typeof value === 'function') {
-      el.setAttribute(key, value);
+      element.addEventListener(key, value);
+    } else {
+      element.setAttribute(key, value);
     }
   }
 
-  return el;
+  return element;
 };
 
-const apply = ({
-  parentEl,
+export const apply = ({
   event,
   vOld,
   vNew,
   window,
+  control,
 }: {
-  parentEl: Element;
   event: EventDiff;
-  vOld: VOld;
-  vNew: VNew;
+  vOld?: VOld;
+  vNew?: VNew;
   window: Window;
+  control: Control;
 }) => {
   if (event.type === 'delete') {
-    vOld.domNode.parentNode!.removeChild(vOld.domNode);
+    vOld!.domNode.parentNode!.removeChild(vOld!.domNode);
     return;
   }
 
   if (event.type === 'create') {
-    const newDomNode = createDomNode(vNew, window);
-    parentEl.appendChild(newDomNode);
-    return;
+    const newDomNode = createDomNode(vNew!, window);
+
+    control.addNode(newDomNode);
+    return newDomNode;
   }
 
   if (event.type === 'replaceFull') {
-    const newDomNode = createDomNode(vNew, window);
-    vOld.domNode.parentNode!.replaceChild(vOld.domNode, newDomNode);
-    return;
+    const newDomNode = createDomNode(vNew!, window);
+    vOld!.domNode.parentElement!.replaceChild(newDomNode, vOld!.domNode);
+    return newDomNode;
   }
 
   if (event.type === 'nextText') {
@@ -61,14 +63,14 @@ const apply = ({
     const vNewText = vNew as VTextNew;
     const vOldText = vOld as VTextOld;
 
-    const textContext = vOld.domNode.textContent!;
-    vOld.domNode.textContent = `${textContext.slice(0, vOldText.start)}${
+    const textContext = vOld!.domNode.textContent!;
+    vOld!.domNode.textContent = `${textContext.slice(0, vOldText.start)}${
       vNewText.text
     }${textContext.slice(vOldText.start)}`;
-    return;
+    return vOld!.domNode;
   }
 
-  if (event.type === 'childrenEl') {
+  if (event.type === 'patchElement') {
     const vOldSure = vOld as VElementOld;
     const vNewSure = vOld as VElementNew;
     const element = vOldSure.domNode;
@@ -85,17 +87,18 @@ const apply = ({
       }
     }
     for (const key in event.newProps) {
-      const value = event.newProps[key];
+      const newValue = event.newProps[key];
 
-      if (typeof value === 'function') {
+      if (typeof newValue === 'function') {
         const oldValue = vOldSure.props[key];
         if (typeof oldValue === 'function') {
           element.removeEventListener(key, oldValue);
         }
-        element.addEventListener(key, value);
+        element.addEventListener(key, newValue);
       } else {
-        element.setAttribute(key, value);
+        element.setAttribute(key, newValue);
       }
     }
+    return vOldSure.domNode;
   }
 };
