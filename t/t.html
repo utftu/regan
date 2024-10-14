@@ -9,14 +9,20 @@
     <div id="myElement">This is the old text.</div>
 
     <script>
-      // Получаем элемент
-      const element = document.getElementById('myElement');
+      const oldHtml = document.documentElement;
 
-      // Создаем новый текстовый узел
-      const newText = document.createTextNode('This is the new text.');
+      const newHtml = document.createElement('html');
+      newHtml.setAttribute('lang', 'fooo');
 
-      // Заменяем старый текстовый узел на новый
-      element.replaceChild(newText, element.childNodes[0]);
+      oldHtml.replaceWith(newHtml);
+      // // Получаем элемент
+      // const element = document.getElementById('myElement');
+
+      // // Создаем новый текстовый узел
+      // const newText = document.createTextNode('This is the new text.');
+
+      // // Заменяем старый текстовый узел на новый
+      // element.replaceChild(newText, element.childNodes[0]);
     </script>
   </body>
 </html>
