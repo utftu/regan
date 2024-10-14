@@ -5,6 +5,11 @@ import {unmountHNodes} from '../../h-node/h-node.ts';
 import {rednerRaw} from '../../render/render.ts';
 import {checkNamedAtom} from '../../atoms/atoms.ts';
 import {NEED_AWAIT} from '../../consts.ts';
+import {h} from '../../jsx/jsx.ts';
+import {
+  convertHydatedToVirtual,
+  convertHydatedToVirtualSingle,
+} from '../../v/v2/convert/convert.ts';
 
 type Props = {
   atom: Atom;
@@ -91,6 +96,8 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     if (changedBeforeMount === true) {
       exec();
     }
+
+    const a = convertHydatedToVirtualSingle(hNode!);
   });
   unmount(() => {
     globalCtx.root.links.removeExec(atom, exec);

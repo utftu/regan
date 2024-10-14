@@ -1,4 +1,5 @@
 import {HNode} from '../h-node/h-node.ts';
+import {InitText} from './h-node.ts';
 
 export type VNew = VElementNew | VTextNew;
 
@@ -18,7 +19,7 @@ export type VTextNew = {
   text: string;
   start: number;
 
-  // hNode: HNode;
+  inits: InitText[];
 };
 
 export type VTextPartlyNew = VTextNew & {

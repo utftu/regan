@@ -2,7 +2,11 @@ import {Atom} from 'strangelove';
 import {HNodeElement} from '../h-node/element.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {HNodeElementToReplace, HNodeVText} from './h-node.ts';
+import {
+  HNodeElementToReplace,
+  HNodeTextToReplace,
+  HNodeVText,
+} from './h-node.ts';
 import {VElementNew, VNew, VTextNew} from './new.ts';
 
 type ConvertStore = {lastVNode?: VNew};
@@ -35,7 +39,7 @@ const createVNodeEl = (
   hNode: HNodeElement | HNodeElementToReplace
 ): VElementNew => {
   const vElement = {
-    type: 'el',
+    type: 'element',
     props: prepareProps(hNode.jsxNode.props),
     tag: hNode.jsxNode.type,
     children: [],
@@ -53,7 +57,10 @@ export const convert = (
   hNode: HNode,
   store: ConvertStore = {}
 ): VNew[] | void => {
-  if (hNode instanceof HNodeText) {
+  if (hNode instanceof HNodeTextToReplace) {
+    return;
+  }
+  if (hNode instanceof HNodeText || hNode instanceof HNodeTextToReplace) {
     if (store.lastVNode?.type === 'text') {
       store.lastVNode.text += hNode.text;
       return;

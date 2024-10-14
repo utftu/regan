@@ -8,6 +8,13 @@ export type HNodeTextProps = {
   text: string;
 };
 
+type HNodeTextType = {
+  start: number;
+  finish: number;
+  text: string;
+  atomDirectNode: boolean;
+};
+
 export class HNodeText extends HNodeBase {
   start: number;
   finish: number;

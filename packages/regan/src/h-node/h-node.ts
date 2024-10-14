@@ -34,6 +34,8 @@ export class HNodeBase {
   globalCtx: GlobalCtx;
   hNodeCtx: HNodeCtx;
 
+  data: Record<string, any> = {};
+
   constructor({
     parent,
     jsxSegment,
@@ -93,8 +95,7 @@ export class HNodeCtx {
 }
 
 export type HNode =
-  | HNodeBase
-  | HNodeElement
-  | HNodeText
-  | HNodeElementToReplace
-  | HNodeVText;
+  // | HNodeBase
+  HNodeElement | HNodeText;
+// | HNodeElementToReplace
+// | HNodeVText;
