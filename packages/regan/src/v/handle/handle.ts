@@ -25,10 +25,10 @@ import {
 
 export type EventDiff =
   | {type: 'delete'; node: null}
-  | {type: 'create'; node: Node}
-  | {type: 'replaceFull'; node: Node}
+  | {type: 'create'; node: Text | Element}
+  | {type: 'replaceFull'; node: Text | Element}
   | {type: 'replaceText'; node: Text}
-  | {type: 'nextText'; node: Text}
+  | {type: 'omitTextReplace'; node: Text}
   | {type: 'patchElement'; node: Element};
 // | EventDiffPatchElement;
 
@@ -60,7 +60,6 @@ const create = (vNew: VNew, window: Window) => {
 const replaceFull = (vNew: VNew, vOld: VOld, window: Window) => {
   const newDomNode = create(vNew, window);
   vOld.node.replaceWith(newDomNode);
-  // vOld!.node.parentElement!.replaceChild(newDomNode, vOld.node);
   return newDomNode;
 };
 
@@ -161,10 +160,12 @@ export const handle = (
       const vNewText = vNew as VNewText;
       const vOldText = vOld as VOldText;
 
-      const oldTextContext = vOld!.node.textContent!;
-      vOldText.node.textContent = `${oldTextContext.slice(0, vOldText.start)}${
-        vNewText.text
-      }${oldTextContext.slice(vOldText.start)}`;
+      vOldText.node.textContent = vNewText.text;
+
+      // const oldTextContext = vOld!.node.textContent!;
+      // vOldText.node.textContent = `${oldTextContext.slice(0, vOldText.start)}${
+      //   vNewText.text
+      // }${oldTextContext.slice(vOldText.start)}`;
 
       return {
         node: vOldText.node,
@@ -173,7 +174,7 @@ export const handle = (
     } else {
       return {
         node: vOld.node!,
-        type: 'nextText',
+        type: 'omitTextReplace',
       };
     }
   }

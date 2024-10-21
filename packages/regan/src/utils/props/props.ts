@@ -1,127 +1,104 @@
 import {Atom} from 'strangelove';
-import {HNode} from '../../h-node/h-node.ts';
-import {Exec} from '../../root/links/links.ts';
-import {GlobalCtx} from '../../global-ctx/global-ctx.ts';
-import {JsxNodeElement} from '../../node/variants/element/element.ts';
 import {Ctx} from '../../ctx/ctx.ts';
-import {prepareListener} from '../errors.ts';
-import {noop} from '../../consts.ts';
+import {AnyProps, AynFunc} from '../../types.ts';
+import {prepareListenerForError} from '../../errors/utils.ts';
+import {HNodeElement} from '../../h-node/element.ts';
+import {JsxNodeComponent} from '../../node/variants/component/component.ts';
+import {JsxNodeElement} from '../../node/variants/element/element.ts';
+import {HNode} from '../../h-node/h-node.ts';
 
-type AnyFunc = (...args: any[]) => any;
 type StaticProps = Record<string, any>;
 type DynamicProps = Record<string, Atom>;
 
-type DynamicPropProps = {
-  exec: Exec;
-  element: HTMLElement;
-  listener?: any;
-  atom: Atom;
-  globalCtx: GlobalCtx;
-};
-
-class DynamicProp implements DynamicPropProps {
-  exec: Exec;
-  element: HTMLElement;
-  listener?: any;
-  atom: Atom;
-  globalCtx: GlobalCtx;
-
-  detach() {
-    this.globalCtx.root.links.removeExec(this.atom, this.exec);
-  }
-
-  constructor({exec, element, listener, atom, globalCtx}: DynamicPropProps) {
-    this.exec = exec;
-    this.element = element;
-    this.atom = atom;
-    this.listener = listener;
-    this.globalCtx = globalCtx;
-  }
-}
-
-export type DynamicPropsEnt = Record<string, DynamicProp>;
-
-export const detachDynamicProps = (dynamicProps: DynamicPropsEnt) => {
-  for (const name in dynamicProps) {
-    dynamicProps[name].detach();
-  }
-};
-
-export const initDynamicProps = ({
-  dynamicPropsEnt,
-  hNode,
-  globalCtx,
-  changedAtoms,
+const createExec = ({
+  name,
+  element,
+  ctx,
+  jsxNode,
+  atom,
 }: {
-  dynamicPropsEnt: DynamicPropsEnt;
-  hNode: HNode;
-  changedAtoms: Atom[];
-  globalCtx: GlobalCtx;
+  name: string;
+  element: HTMLElement;
+  ctx?: Ctx;
+  jsxNode: JsxNodeElement;
+  atom: Atom;
 }) => {
-  for (const name in dynamicPropsEnt) {
-    const prop = dynamicPropsEnt[name];
-    const atom = prop.atom;
+  const item: {listener?: AynFunc} = {};
+  if (typeof atom.get() === 'function') {
+    item.listener = atom.get();
+  }
+
+  const exec = (value: any) => {
+    if (item.listener) {
+      element.removeEventListener(name, item.listener);
+      delete item.listener;
+    }
+
+    if (typeof value === 'function') {
+      const listener = prepareListenerForError({
+        listener: value,
+        ctx,
+        jsxNode,
+      });
+
+      element.addEventListener(name, listener);
+      item.listener = listener;
+    } else {
+      element.setAttribute(name, value);
+    }
+  };
+  return exec;
+};
+
+const subscribeWithAutoRemove = ({
+  hNode,
+  listener,
+  atom,
+}: {
+  atom: Atom;
+  listener: AynFunc;
+  hNode: HNode;
+}) => {
+  hNode.mounts.push(() => {
+    hNode.globalCtx.root.links.addExec(atom, listener);
+    hNode.unmounts.push(() => {
+      hNode.globalCtx.root.links.addExec(atom, listener);
+    });
+  });
+};
+
+export const initDynamicSubsribes = ({
+  dynamicProps,
+  hNode,
+  changedAtoms,
+  ctx,
+  jsxNode,
+}: {
+  dynamicProps: DynamicProps;
+  hNode: HNodeElement;
+  changedAtoms: Atom[];
+  ctx?: Ctx;
+  jsxNode: JsxNodeElement;
+}) => {
+  for (const name in dynamicProps) {
+    const atom = dynamicProps[name];
 
     const execTemp = () => {
       changedAtoms.push(atom);
     };
 
-    globalCtx.root.links.addExec(atom, execTemp);
+    hNode.globalCtx.root.links.addExec(atom, execTemp);
 
-    hNode.mounts.push(() => {
-      globalCtx.root.links.replaceExec(atom, execTemp, prop.exec);
+    const exec = createExec({element: hNode.element, name, ctx, jsxNode, atom});
+
+    hNode.mounts.push((hNode) => {
+      hNode.globalCtx.root.links.replaceExec(atom, execTemp, exec);
+
+      hNode.unmounts.push(() => {
+        hNode.globalCtx.root.links.removeExec(atom, exec);
+      });
     });
   }
-};
-
-export const prepareDynamicProps = ({
-  props,
-  jsxNode,
-  ctx,
-  element,
-  globalCtx,
-}: {
-  props: DynamicProps;
-  jsxNode: JsxNodeElement;
-  ctx?: Ctx;
-  element: HTMLElement;
-  globalCtx: GlobalCtx;
-}) => {
-  const dynamicPropsEnt: DynamicPropsEnt = {};
-  for (const name in props) {
-    const prop = props[name] as any;
-
-    const item = new DynamicProp({
-      element,
-      atom: prop,
-      globalCtx,
-      exec: noop,
-    });
-
-    dynamicPropsEnt[name] = item;
-
-    const exec = (value: any) => {
-      if (item.listener) {
-        item.element.removeEventListener(name, item.listener);
-        delete item.listener;
-      }
-
-      if (typeof value === 'function') {
-        const listener = prepareListener({
-          listener: value,
-          ctx: ctx,
-          jsxNode,
-        });
-
-        item.element.addEventListener(name, listener);
-        item.listener = listener;
-      } else {
-        item.element.setAttribute(name, value);
-      }
-    };
-    item.exec = exec;
-  }
-  return dynamicPropsEnt;
 };
 
 export const initStaticProps = (
@@ -138,79 +115,3 @@ export const initStaticProps = (
     }
   }
 };
-
-export const handleProps = ({props}: {props: Record<string, any>}) => {
-  const dynamicProps: Record<string, Atom> = {};
-  const staticProps: Record<string, any> = {};
-  for (const name in props) {
-    const prop = props[name] as any;
-
-    if (prop instanceof Atom) {
-      dynamicProps[name] = prop;
-    } else {
-      staticProps[name] = prop;
-    }
-  }
-
-  return {dynamicProps, staticProps};
-};
-
-// export const handleProps = ({
-//   props,
-//   jsxNode,
-//   ctx,
-//   element,
-//   globalCtx,
-// }: {
-//   props: Record<string, any>;
-//   jsxNode: JsxNodeElement;
-//   ctx?: Ctx;
-//   element: HTMLElement;
-//   globalCtx: GlobalCtx;
-// }) => {
-//   const dynamicProps: DynamicProps = {};
-//   const staticProps: Record<string, any> = {};
-//   for (const name in props) {
-//     const prop = props[name] as any;
-
-//     // atom
-//     if (prop instanceof Atom) {
-//       const item = new DynamicProp({
-//         element,
-//         atom: prop,
-//         globalCtx,
-//         exec: noop,
-//       });
-
-//       dynamicProps[name] = item;
-
-//       const exec = (value: any) => {
-//         if (item.listener) {
-//           item.element.removeEventListener(name, item.listener);
-//           delete item.listener;
-//         }
-
-//         if (typeof value === 'function') {
-//           const listener = prepareListener({
-//             listener: value,
-//             ctx: ctx,
-//             jsxNode,
-//           });
-
-//           item.element.addEventListener(name, listener);
-//           item.listener = listener;
-//         } else {
-//           item.element.setAttribute(name, value);
-//         }
-//       };
-//       item.exec = exec;
-//     } else {
-//       staticProps[name] = prop;
-//     }
-
-//     // // usual value
-//     // element.setAttribute(name, prop);
-//   }
-
-//   return {dynamicProps, staticProps};
-// };

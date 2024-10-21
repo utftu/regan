@@ -1,9 +1,9 @@
-import {DynamicPropsEnt} from '../utils/props/props.ts';
+import {DynamicPropsEnts} from '../utils/props/props.ts';
 import {VElementNew, VTextNew} from './new.ts';
 
 export type VElementOld = VElementNew & {
   domNode: HTMLElement;
-  dynamicProps: DynamicPropsEnt;
+  dynamicProps: DynamicPropsEnts;
   children: VOld[];
 };
 

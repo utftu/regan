@@ -1,83 +1,90 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {
-  HNodeBase,
-  HNodeCtx,
-  mountHNodes,
-  unmountHNodes,
-} from '../h-node/h-node.ts';
+import {HNode, HNodeBase, HNodeCtx, mountHNodes} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {DomPointerElement} from '../types.ts';
 import {Ctx} from '../ctx/ctx.ts';
-import {createInsertedDomNodePromise} from '../utils/inserted-dom.ts';
-import {convert} from '../v/convert.ts';
+import {JsxSegmentWrapper} from '../jsx-path/jsx-path.ts';
+import {convertFromVirtualToHNodes, createVirtual} from './convert.ts';
+import {virtualApply, VOld} from '../v/v.ts';
+import {insertNodesAtPosition} from '../utils/dom.ts';
+import {RenderTemplateExtended} from './types.ts';
 
-export const rednerRaw = async ({
+export const rednerVirtual = async ({
   node,
   window: localWindow = window,
   parentHNode,
   data,
-  jsxSegmentStr = '',
   parentCtx,
   domPointer,
+  jsxSegmentWrapper,
+  vOlds = [],
 }: {
   node: JsxNode;
   domPointer: DomPointerElement;
   window?: Window;
   data?: Record<any, any>;
-  parentHNode?: HNodeBase;
+  parentHNode?: HNode;
   jsxSegmentStr?: string;
   parentCtx?: Ctx;
+  jsxSegmentWrapper?: JsxSegmentWrapper;
+  vOlds?: VOld[];
 }) => {
-  const changedAtoms: Atom[] = [];
+  const globalCtx =
+    parentHNode?.globalCtx ??
+    new GlobalCtx({
+      data,
+      mode: 'client',
+      root: new Root(),
+    });
 
-  const {hNode} = await node.render({
-    parentWait: createInsertedDomNodePromise(),
-    parentHNode: parentHNode,
-    parentPosition: domPointer.position,
-    jsxSegmentStr,
+  const hNodeCtx =
+    parentHNode?.hNodeCtx ??
+    new HNodeCtx({
+      window: localWindow,
+      initDomPointer: domPointer,
+    });
+  const {renderTemplate} = await node.render({
+    jsxSegmentWrapper: jsxSegmentWrapper ?? {
+      parent: undefined,
+      name: 'root',
+    },
     parentCtx,
-    globalCtx:
-      parentHNode?.globalCtx ??
-      new GlobalCtx({
-        data,
-        mode: 'client',
-        root: new Root(),
-      }),
-    hNodeCtx:
-      parentHNode?.hNodeCtx ??
-      new HNodeCtx({
-        window: localWindow,
-        initDomPointer: domPointer,
-        // getInitElemPointer: getElemPointer,
-      }),
+    globalCtx,
+    hNodeCtx,
     renderCtx: {
       snapshot: new TreeAtomsSnapshot(),
-      changedAtoms,
+      changedAtoms: [],
     },
   });
 
-  return {hNode};
+  const vNews = createVirtual(renderTemplate);
 
-  // return {
-  //   hNode,
-  //   unmount: () => {
-  //     unmountHNodes(hNode);
-  //   },
-  //   mount: () => {
-  //     if (parentHNode) {
-  //       parentHNode.addChildren([hNode]);
-  //     }
-  //     // const {parent, prev} = getElemPointer();
+  const tmpTemplate = localWindow.document.createElement('template');
 
-  //     // const elements = connectElements();
-  //     // addElementChildren({domPointer: domPointer, elements});
-  //     // addElementChildren({parent, prev, elements});
-  //     mountHNodes(hNode);
-  //   },
-  // };
+  virtualApply({
+    vNews,
+    vOlds,
+    window: localWindow,
+    parentElement: tmpTemplate,
+  });
+
+  const children = Array.from(tmpTemplate.content.childNodes);
+
+  insertNodesAtPosition(domPointer.parent, domPointer.position, children);
+
+  const hNode = convertFromVirtualToHNodes({
+    renderTemplate: renderTemplate as RenderTemplateExtended,
+    parentHNode,
+    globalCtx,
+    hNodeCtx,
+  });
+
+  mountHNodes(hNode);
+
+  return hNode;
 };
 
 export const render = async (
@@ -85,19 +92,14 @@ export const render = async (
   node: JsxNode,
   options: {window: Window} = {window}
 ) => {
-  const {hNode} = await rednerRaw({
+  const hNode = await rednerVirtual({
     node,
     domPointer: {
       parent: element,
       position: 0,
     },
-    // getElemPointer: () => ({
-    //   parent: element,
-    // }),
     window: options.window,
   });
 
-  const vNews = convert(hNode);
-
-  // mount();
+  return hNode;
 };

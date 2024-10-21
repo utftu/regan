@@ -6,8 +6,8 @@ import {HNodeElement} from '../h-node/element.ts';
 import {defaultDomNodesInfo} from '../consts.ts';
 import {
   detachDynamicProps,
-  handleProps,
-  initDynamicProps,
+  // handleProps,
+  initDynamicSubsribes,
   initStaticProps,
   prepareDynamicProps,
 } from '../utils/props/props.ts';
@@ -18,7 +18,7 @@ export async function hydrateElement(
 ): HydrateResult {
   props.parentWait.promiseControls.resolve(defaultDomNodesInfo);
   const jsxSegment = new JsxSegment({
-    segment: props.jsxSegmentStr,
+    name: props.jsxSegmentStr,
     parent: props.parentJsxSegment,
   });
 
@@ -56,7 +56,7 @@ export async function hydrateElement(
 
   initStaticProps(element, staticProps);
 
-  initDynamicProps({
+  initDynamicSubsribes({
     dynamicPropsEnt,
     hNode,
     globalCtx: props.globalCtx,

@@ -1,9 +1,9 @@
 import {getContextValue} from '../context/context.tsx';
 import {Ctx} from '../ctx/ctx.ts';
-import {errorContext} from '../errors/errors.tsx';
+import {errorContext} from './errors.tsx';
 import {JsxNode} from '../node/node.ts';
 
-export const prepareListener = ({
+export const prepareListenerForError = ({
   listener,
   ctx,
   jsxNode,

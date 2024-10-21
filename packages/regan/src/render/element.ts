@@ -1,97 +1,69 @@
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenRender} from './children.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {RenderProps} from '../node/render/render.ts';
-import {defaultDomNodesInfo} from '../consts.ts';
-import {HNodeElementToReplace} from '../v/h-node.ts';
-import {
-  detachDynamicProps,
-  handleProps,
-  initDynamicProps,
-  prepareDynamicProps,
-} from '../utils/props/props.ts';
-import {HNodeElement} from '../h-node/element.ts';
+import {RenderProps, RenderTemplate, RenderTemplateElement} from './types.ts';
+import {defaultDomNodesInfo, noop} from '../consts.ts';
+import {initDynamicSubsribes} from '../utils/props/props.ts';
+import {splitProps} from '../v/convert/convert.ts';
+import {subscribeWithAutoRemove} from '../h-node/helpers.ts';
 
 export async function renderElement(this: JsxNodeElement, props: RenderProps) {
-  props.parentWait.promiseControls.resolve(defaultDomNodesInfo);
-  const jsxSegment = new JsxSegment({
-    segment: props.jsxSegmentStr,
-    parent: props.parentJsxSegment,
-  });
+  // props.parentWait.promiseControls.resolve(defaultDomNodesInfo);
+  const jsxSegment = new JsxSegment(props.jsxSegmentWrapper);
 
-  const {dynamicProps} = handleProps({props: this.props});
+  const {dynamicProps, joinedProps} = splitProps(this.props);
 
-  const hNode = new HNodeElementToReplace(
-    {
-      unmounts: [],
-      mounts: [],
-      jsxSegment,
-      parent: props.parentHNode,
-      globalCtx: props.globalCtx,
-      hNodeCtx: props.hNodeCtx,
+  const renderTemplate = {
+    type: 'element',
+    vNew: {
+      type: 'element',
+      tag: this.type,
+      props: joinedProps,
+      init: noop,
+      children: [],
     },
-    {
-      jsxNode: this,
-      init: (element: HTMLElement) => {
-        const dynamicPropsEnt = prepareDynamicProps({
-          props: dynamicProps,
-          jsxNode: this,
-          ctx: props.parentCtx,
-          element,
-          globalCtx: props.globalCtx,
-        });
+    jsxSegment,
+    jsxNode: this,
+    init: (hNode, vOld) => {
+      // all props inited by virtual dom
 
-        for (const name in dynamicPropsEnt) {
-          const dynamicPropEnt = dynamicPropsEnt[name];
-          const atomtValue = dynamicPropEnt.atom.get();
+      initDynamicSubsribes({
+        hNode,
+        dynamicProps,
+        changedAtoms: props.renderCtx.changedAtoms,
+        ctx: props.parentCtx,
+        jsxNode: this,
+      });
 
-          if (typeof atomtValue === 'function') {
-            dynamicPropEnt.listener = atomtValue;
-          }
-        }
+      for (const name in dynamicProps) {
+        const atom = dynamicProps[name];
 
-        initDynamicProps({
-          dynamicPropsEnt,
+        subscribeWithAutoRemove({
           hNode,
-          changedAtoms: props.renderCtx.changedAtoms,
-          globalCtx: props.globalCtx,
-        });
-
-        hNode.unmounts.push(() => detachDynamicProps(dynamicPropsEnt));
-
-        const newHNode = new HNodeElement(
-          {
-            jsxSegment,
-            globalCtx: props.globalCtx,
-            hNodeCtx: props.hNodeCtx,
+          atom,
+          listener: (newValue) => {
+            vOld.props[name] = newValue;
           },
-          {
-            element,
-            jsxNode: this,
-            dynamicPropsEnt,
-          }
-        );
-        if (props.parentHNode) {
-          props.parentHNode.children[props.hNodePosition!] = newHNode;
-        }
-      },
-    }
-  );
+        });
+      }
+    },
+    children: [] as RenderTemplate[],
+  } satisfies RenderTemplateElement;
 
-  const {hNodes} = await handleChildrenRender({
-    parentPosition: 0,
+  const {renderTemplates} = await handleChildrenRender({
+    // parentPosition: 0,
     children: this.children,
-    parentHNode: hNode,
     globalCtx: props.globalCtx,
     parentJsxSegment: jsxSegment,
     renderCtx: props.renderCtx,
     hNodeCtx: props.hNodeCtx,
     parentCtx: props.parentCtx,
-    parentWait: props.parentWait,
+    // parentWait: props.parentWait,
   });
-  hNode.addChildren(hNodes);
+
+  renderTemplate.children = renderTemplates;
 
   return {
-    hNode,
+    renderTemplates,
   };
 }

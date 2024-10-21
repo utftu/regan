@@ -2,6 +2,7 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {DomPointer} from '../types.ts';
 import {HNodeElementToReplace, HNodeVText} from '../v/h-node.ts';
+import {HNodeComponent} from './component.ts';
 import {HNodeElement} from './element.ts';
 import {HNodeText} from './text.ts';
 
@@ -14,11 +15,12 @@ export class ComponentState {
   atoms = [];
 }
 
-type MountUnmounFunc = (hNode: HNodeBase) => void;
+export type MountUnmounFunc = (hNode: HNodeBase) => void;
 
 export type PropsHNode = {
   mounts?: MountUnmounFunc[];
   unmounts?: MountUnmounFunc[];
+  children?: HNode[];
   parent?: HNode;
   jsxSegment: JsxSegment;
   globalCtx: GlobalCtx;
@@ -26,9 +28,9 @@ export type PropsHNode = {
 };
 
 export class HNodeBase {
-  children: HNode[] = [];
-  mounts: MountUnmounFunc[] = [];
-  unmounts: MountUnmounFunc[] = [];
+  children: HNode[];
+  mounts: MountUnmounFunc[];
+  unmounts: MountUnmounFunc[];
   parent?: HNode;
   jsxSegment: JsxSegment;
   globalCtx: GlobalCtx;
@@ -41,6 +43,7 @@ export class HNodeBase {
     jsxSegment,
     mounts = [],
     unmounts = [],
+    children = [],
     globalCtx,
     hNodeCtx,
   }: PropsHNode) {
@@ -50,6 +53,7 @@ export class HNodeBase {
     this.jsxSegment = jsxSegment;
     this.globalCtx = globalCtx;
     this.hNodeCtx = hNodeCtx;
+    this.children = children;
   }
 
   unmounted = false;
@@ -94,8 +98,6 @@ export class HNodeCtx {
   }
 }
 
-export type HNode =
-  // | HNodeBase
-  HNodeElement | HNodeText;
+export type HNode = HNodeComponent | HNodeElement | HNodeText;
 // | HNodeElementToReplace
 // | HNodeVText;

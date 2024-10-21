@@ -3,16 +3,21 @@ type Parent = {
   position: number;
 };
 
+export type JsxSegmentWrapper = {
+  parent?: JsxSegment;
+  name: string;
+};
+
 export type ParentJsxSegment = {
   jsxSegment: JsxSegment;
   position: number;
 };
 
 export class JsxSegment {
-  segment: string;
-  parent?: Parent;
-  constructor({segment, parent}: {segment: string; parent?: Parent}) {
-    this.segment = segment;
+  name: string;
+  parent?: JsxSegment;
+  constructor({name, parent}: {name: string; parent?: JsxSegment}) {
+    this.name = name;
     this.parent = parent;
   }
 
@@ -54,10 +59,10 @@ export function joinPath(oldPart: string, newPart: string) {
 }
 
 export function getJsxPath(jsxSegment: JsxSegment, childJsxPath: string = '') {
-  let jsxPath = joinPath(jsxSegment.segment, childJsxPath);
+  let jsxPath = joinPath(jsxSegment.name, childJsxPath);
 
   if (jsxSegment.parent) {
-    return getJsxPath(jsxSegment.parent.jsxSegment, jsxPath);
+    return getJsxPath(jsxSegment.parent, jsxPath);
   }
   return jsxPath;
 }

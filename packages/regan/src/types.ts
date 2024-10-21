@@ -6,6 +6,9 @@ import {DOM_NODES_INFO, NEED_AWAIT} from './consts.ts';
 import {InsertedDomNodes} from './utils/inserted-dom.ts';
 import {DomNodesInfo} from './node/hydrate/hydrate.ts';
 
+export type AynFunc = (...args: any[]) => any;
+export type AnyProps = Record<any, any>;
+
 export type Child =
   | JsxNode
   | string
@@ -25,11 +28,6 @@ export type FC<TProps extends Record<any, any> = any> = (
   props: TProps,
   ctx: Ctx<TProps>
 ) => FCReturn;
-
-export type ElementPointer = {
-  parent: HTMLElement;
-  prev?: HTMLElement;
-};
 
 export type SystemProps = {
   key?: string;
@@ -53,10 +51,3 @@ export type DomPointer<Parent extends Node = Node> = {
 };
 
 export type DomPointerElement = DomPointer<Element>;
-
-export type DomPointerCertain = DomPointer & {
-  innerPosition: {
-    start: number;
-    finish: number;
-  };
-};

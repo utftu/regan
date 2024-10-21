@@ -4,7 +4,7 @@ import {hydrateComponent} from '../../../hydrate/component.ts';
 import {renderComponent} from '../../../render/component.ts';
 import {GetStringStreamProps} from '../../string/string.ts';
 import {HydrateProps} from '../../hydrate/hydrate.ts';
-import {RenderProps} from '../../render/render.ts';
+import {RenderProps} from '../../../render/types.ts';
 import {FC} from '../../../types.ts';
 
 export class JsxNodeComponent extends JsxNode<FC> implements JsxNode {

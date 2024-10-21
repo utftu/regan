@@ -1,19 +1,14 @@
 import {Atom, selectBase} from 'strangelove';
 import {
   Child,
-  DomPointer,
   DomPointerElement,
   Mount,
   SystemProps,
   Unmount,
 } from '../types.ts';
 import {getRoot} from '../atoms/atoms.ts';
-import {
-  JsxSegment,
-  getHashFromString,
-  getJsxPath,
-} from '../jsx-path/jsx-path.ts';
-import {HNodeBase} from '../h-node/h-node.ts';
+import {JsxSegment} from '../jsx-path/jsx-path.ts';
+import {HNode, HNodeBase} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 
@@ -38,7 +33,7 @@ type PropsCtx<TProps> = {
   state: State;
   children: Child[];
   jsxSegment: JsxSegment;
-  hNode?: HNodeBase;
+  hNode?: HNode;
   globalCtx: GlobalCtx;
   stage: Stage;
   parentCtx?: Ctx;
@@ -47,13 +42,17 @@ type PropsCtx<TProps> = {
   propsFromAncestors?: AnyProps;
 };
 
-export class Ctx<TProps extends Record<any, any> = any> {
+// args to run FC
+export class Ctx<
+  TProps extends Record<any, any> = Record<any, any>,
+  THNode extends HNode | undefined = HNode | undefined
+> {
   state: State;
   props: TProps;
   systemProps: SystemProps;
   children: Child[];
   jsxSegment: JsxSegment;
-  hNode?: HNodeBase;
+  hNode: THNode;
   globalCtx: GlobalCtx;
   stage: Stage;
   parentCtx?: Ctx;
@@ -81,7 +80,7 @@ export class Ctx<TProps extends Record<any, any> = any> {
     this.props = props;
     this.children = children;
     this.jsxSegment = jsxSegment;
-    this.hNode = hNode;
+    this.hNode = hNode as THNode;
     this.globalCtx = globalCtx;
     this.stage = stage;
     this.parentCtx = parentCtx;

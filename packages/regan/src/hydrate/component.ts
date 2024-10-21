@@ -8,16 +8,24 @@ import {HydrateProps, HydrateResult} from '../node/hydrate/hydrate.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
 import {errorContext} from '../errors/errors.tsx';
 import {getContextValue} from '../context/context.tsx';
+import {HNodeComponent} from '../h-node/component.ts';
 
 export async function hydrateComponent(
   this: JsxNodeComponent,
   ctx: HydrateProps
 ): HydrateResult {
   const jsxSegment = new JsxSegment({
-    segment: ctx.jsxSegmentStr,
+    name: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
   });
-  const hNode = new HNodeBase({
+  // const hNode = new HNodeComponent({
+  //   hNodeCtx: ctx.hNodeCtx,
+  //   jsxSegment,
+  //   parent: ctx.parentHNode,
+  //   globalCtx: ctx.globalCtx,
+  // });
+
+  const hNode = new HNodeComponent({
     hNodeCtx: ctx.hNodeCtx,
     jsxSegment,
     parent: ctx.parentHNode,

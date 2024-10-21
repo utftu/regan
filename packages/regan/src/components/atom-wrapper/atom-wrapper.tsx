@@ -53,7 +53,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   if (globalCtx.mode === 'server') {
     const {additionalPart, value} = parseAtom(atom, false);
 
-    jsxSegment.segment += additionalPart;
+    jsxSegment.name += additionalPart;
     return <Fragment>{value}</Fragment>;
   }
   const clientHNode = hNode!;
@@ -77,7 +77,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     const {value, additionalPart} = parseAtom(atom, false);
 
     jsxSegment.clearCache();
-    jsxSegment.segment = (jsxSegment.parent?.position || '') + additionalPart;
+    jsxSegment.name = (jsxSegment.parent?.position || '') + additionalPart;
 
     const {mount: childMount} = await rednerRaw({
       node: <Fragment>{value}</Fragment>,
@@ -105,7 +105,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
 
   const {value, additionalPart} = parseAtom(atom, stage === 'render');
 
-  jsxSegment.segment += additionalPart;
+  jsxSegment.name += additionalPart;
 
   return <Fragment>{value}</Fragment>;
 };

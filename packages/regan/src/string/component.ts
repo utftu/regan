@@ -13,7 +13,7 @@ export async function getStringStreamComponent(
   ctx: GetStringStreamProps
 ): StringResult {
   const jsxSegment = new JsxSegment({
-    segment: ctx.jsxSegmentStr,
+    name: ctx.jsxSegmentStr,
     parent: ctx.parentJsxSegment,
   });
   const streams = new TransformStream<string, string>();

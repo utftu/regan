@@ -1,5 +1,5 @@
 import {Child, Props, SystemProps} from '../types.ts';
-import {RenderProps, RenderResult} from './render/render.ts';
+import {RenderProps, RenderResult} from '../render/types.ts';
 import {HydrateProps, HydrateResult} from './hydrate/hydrate.ts';
 import {GetStringStreamProps} from './string/string.ts';
 

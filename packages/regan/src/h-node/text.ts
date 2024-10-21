@@ -1,35 +1,47 @@
 import {HNodeBase, PropsHNode} from './h-node.ts';
 
 export type HNodeTextProps = {
-  atomDirectNode: boolean;
+  // atomDirectNode: boolean;
   start: number;
-  finish: number;
-  domNode: Node;
+  // finish: number;
+  domNode: Text;
   text: string;
-};
-
-type HNodeTextType = {
-  start: number;
-  finish: number;
-  text: string;
-  atomDirectNode: boolean;
 };
 
 export class HNodeText extends HNodeBase {
   start: number;
-  finish: number;
+  // finish: number;
   text: string;
-  domNode: Node;
-  atomDirectNode: boolean;
+  domNode: Text;
+  // atomDirectNode: boolean;
   constructor(
     props: PropsHNode,
-    {domNode, start, finish, atomDirectNode, text}: HNodeTextProps
+    {
+      domNode,
+      start,
+      // finish,
+      // atomDirectNode,
+      text,
+    }: HNodeTextProps
   ) {
     super(props);
     this.domNode = domNode;
     this.start = start;
-    this.finish = finish;
-    this.atomDirectNode = atomDirectNode;
+    // this.finish = finish;
+    // this.atomDirectNode = atomDirectNode;
     this.text = text;
   }
 }
+
+type A = InstanceType<typeof HNodeText>;
+
+const a = null as any as A;
+
+a.children;
+
+// const a: A = {
+//   start: 1,
+//   finish: 1,
+//   text: '',
+//   atomDirectNode: true,
+// };

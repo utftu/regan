@@ -1,32 +1,27 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode, HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
+import {HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {JsxNode} from '../node/node.ts';
-import {RenderCtx} from '../node/render/render.ts';
-import {Child, DomPointerElement} from '../types.ts';
+import {RenderCtx, RenderTemplateText} from './types.ts';
+import {Child} from '../types.ts';
 import {formatJsxValue, wrapChildIfNeed} from '../utils/jsx.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {
   createInsertedDomNodePromise,
   getInsertedCount,
 } from '../utils/inserted-dom.ts';
-import {HNodeText} from '../h-node/text.ts';
 import {ParentWait} from '../node/hydrate/hydrate.ts';
-import {getPrevTextNode} from '../utils/dom.ts';
 
 export async function handleChildrenRender({
   children,
-  parentHNode,
   globalCtx,
   parentJsxSegment,
   renderCtx,
   hNodeCtx,
   parentCtx,
-  parentPosition,
-}: // domPointer,
+}: // parentPosition,
 {
-  // domPointer: DomPointerElement;
-  parentPosition: number;
+  // parentPosition: number;
   children: Child[];
   parentHNode?: HNodeBase;
   globalCtx: GlobalCtx;
@@ -34,12 +29,15 @@ export async function handleChildrenRender({
   renderCtx: RenderCtx;
   hNodeCtx: HNodeCtx;
   parentCtx?: Ctx;
-  parentWait: ParentWait;
+  // parentWait: ParentWait;
 }) {
-  const rawResults: (ReturnType<JsxNode['render']> | HNode)[] = [];
+  const rawResults: (
+    | ReturnType<JsxNode['render']>
+    | {renderTemplate: RenderTemplateText}
+  )[] = [];
 
-  let position = parentPosition;
-  let textLength = 0;
+  // let position = parentPosition;
+  // let textLength = 0;
   let insertedJsxCount = 0;
 
   for (let i = 0; i <= children.length; i++) {
@@ -50,63 +48,50 @@ export async function handleChildrenRender({
     }
 
     if (typeof childOrAtom === 'string') {
-      // const textNode = getPrevTextNode(
-      //   hNodeCtx.window,
-      //   domPointer.parent,
-      //   position
-      // )!;
-      let textNodeStart = textLength;
-      textLength += childOrAtom.length;
-
-      // const hNode = new HNodeText(
-      //   {
-      //     jsxSegment: parentJsxSegment,
-      //     globalCtx: globalCtx,
-      //     hNodeCtx: hNodeCtx,
-      //   },
-      //   {
-      //     domNode: textNode,
-      //     start: textNodeStart,
-      //     finish: textNodeStart + childOrAtom.length,
-      //   }
-      // );
+      rawResults.push({
+        renderTemplate: {
+          type: 'text',
+          text: childOrAtom,
+          jsxSegment: new JsxSegment({
+            name: insertedJsxCount.toString(),
+            parent: parentJsxSegment.parent,
+          }),
+        } satisfies RenderTemplateText,
+      });
 
       continue;
     }
 
     const child = wrapChildIfNeed(childOrAtom);
 
-    const insertedDomNodesPromise = createInsertedDomNodePromise();
+    // const insertedDomNodesPromise = createInsertedDomNodePromise();
 
     const renderResult = child.render({
-      hNodePosition:
-        parentHNode && parentHNode?.children.length + rawResults.length,
-      parentPosition: position,
-      parentWait: insertedDomNodesPromise,
-      // parentDomPointer: {
-      //   parent: domPointer.parent,
-      //   position: position,
-      // },
-      parentHNode,
+      // parentPosition: position,
+      // parentWait: insertedDomNodesPromise,
       globalCtx,
       parentCtx,
-      parentJsxSegment: {
-        jsxSegment: parentJsxSegment,
-        position: insertedJsxCount,
+      jsxSegmentWrapper: {
+        parent: parentJsxSegment,
+        name: insertedJsxCount.toString(),
       },
-      jsxSegmentStr: insertedJsxCount.toString(),
+      // parentJsxSegment: {
+      //   jsxSegment: parentJsxSegment,
+      //   position: insertedJsxCount,
+      // },
+      // jsxSegmentStr: insertedJsxCount.toString(),
       renderCtx,
       hNodeCtx,
     });
     rawResults.push(renderResult);
 
-    const insertedCount = await getInsertedCount(
-      child,
-      insertedDomNodesPromise.promise
-    );
+    // const insertedCount = await getInsertedCount(
+    //   child,
+    //   insertedDomNodesPromise.promise
+    // );
 
-    position += insertedCount.elemsCount;
-    textLength += insertedCount.textLength;
+    // position += insertedCount.elemsCount;
+    // textLength += insertedCount.textLength;
 
     insertedJsxCount++;
   }
@@ -114,11 +99,8 @@ export async function handleChildrenRender({
   const renderResults = await Promise.all(rawResults);
 
   return {
-    hNodes: renderResults.map((value) => {
-      if (value instanceof HNodeBase) {
-        return value;
-      }
-      return value.hNode;
+    renderTemplates: renderResults.map(({renderTemplate}) => {
+      return renderTemplate;
     }),
   };
 }

@@ -1,34 +1,32 @@
 import {Atom} from 'strangelove';
-import {HNodeText} from '../../../h-node/text.ts';
-import {HNodeElement} from '../../../h-node/element.ts';
 import {VNew, VNewElement, VNewText, VOldElement} from '../v.ts';
+import {HNodeElement} from '../../h-node/element.ts';
+import {HNodeText} from '../../h-node/text.ts';
+import {HNode} from '../../h-node/h-node.ts';
+import {splitProps} from './convert.ts';
 
-const splitProps = (props: Record<string, any>) => {
-  const joinedProps: Record<string, any> = {};
-  const dynamicProps: Record<string, any> = {};
+// const splitProps = (props: Record<string, any>) => {
+//   const joinedProps: Record<string, any> = {};
+//   const dynamicProps: Record<string, any> = {};
 
-  for (const key in props) {
-    const value = props[key];
-    if (value instanceof Atom) {
-      const atomValue = value.get();
-      joinedProps[key] = atomValue;
-    } else {
-      dynamicProps[key] = props[key];
-    }
-  }
+//   for (const key in props) {
+//     const value = props[key];
+//     if (value instanceof Atom) {
+//       const atomValue = value.get();
+//       joinedProps[key] = atomValue;
+//     } else {
+//       dynamicProps[key] = props[key];
+//     }
+//   }
 
-  return {joinedProps, dynamicProps};
-};
+//   return {joinedProps, dynamicProps};
+// };
 
-export const convertHydatedToVirtual = (
-  hNodes: (HNodeElement | HNodeText)[]
-) => {
+export const convertHydatedToVirtualMulti = (hNodes: HNode[]) => {
   return hNodes.map(convertHydatedToVirtualSingle).flat();
 };
 
-export const convertHydatedToVirtualSingle = (
-  hNode: HNodeElement | HNodeText
-): VNew[] => {
+export const convertHydatedToVirtualSingle = (hNode: HNode): VNew[] => {
   if (hNode instanceof HNodeText) {
     return [
       {
@@ -74,5 +72,7 @@ export const convertHydatedToVirtualSingle = (
     ];
   }
 
-  throw new Error('Unknown hNode type');
+  return convertHydatedToVirtualMulti(hNode.children);
+
+  // throw new Error('Unknown hNode type');
 };

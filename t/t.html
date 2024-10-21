@@ -1,28 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Replace Child Text Node</title>
-  </head>
-  <body>
-    <div id="myElement">This is the old text.</div>
+<div id="parent">
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+  <div>Item 4</div>
+  <div>Item 5</div>
+</div>
 
-    <script>
-      const oldHtml = document.documentElement;
+<script>
+  function insertElementsAtPosition(parent, position, ...elements) {
+    const children = parent.children;
+    const insertPosition = position - 1; // Преобразуем позицию к индексу массива (от 0)
 
-      const newHtml = document.createElement('html');
-      newHtml.setAttribute('lang', 'fooo');
+    // Определяем куда вставить: если позиция существует, вставляем перед элементом
+    const referenceNode = children[insertPosition] || null;
 
-      oldHtml.replaceWith(newHtml);
-      // // Получаем элемент
-      // const element = document.getElementById('myElement');
+    elements.forEach((element) => {
+      // Вставляем каждый элемент перед referenceNode (или в конец, если referenceNode === null)
+      parent.insertBefore(element, referenceNode);
+    });
+  }
 
-      // // Создаем новый текстовый узел
-      // const newText = document.createTextNode('This is the new text.');
+  const parent = document.getElementById('parent');
 
-      // // Заменяем старый текстовый узел на новый
-      // element.replaceChild(newText, element.childNodes[0]);
-    </script>
-  </body>
-</html>
+  const newElement1 = document.createElement('div');
+  newElement1.textContent = 'New Element 1';
+
+  const newElement2 = document.createElement('div');
+  newElement2.textContent = 'New Element 2';
+
+  const newElement3 = document.createElement('div');
+  newElement3.textContent = 'New Element 3';
+
+  // Вставляем 3 новых элемента на позицию 4
+  insertElementsAtPosition(parent, 4, newElement1, newElement2, newElement3);
+</script>

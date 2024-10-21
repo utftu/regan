@@ -54,3 +54,20 @@ export const getPrevTextNode = (
     childNodeToCheck = childNodeToCheck.nextSibling;
   }
 };
+
+export const insertNodesAtPosition = (
+  parent: Element,
+  position: number,
+  nodes: Node[]
+) => {
+  const children = parent.children;
+  const insertPosition = position - 1; // Преобразуем позицию к индексу массива (от 0)
+
+  // Определяем куда вставить: если позиция существует, вставляем перед элементом
+  const referenceNode = children[insertPosition] || null;
+
+  nodes.forEach((node) => {
+    // Вставляем каждый элемент перед referenceNode (или в конец, если referenceNode === null)
+    parent.insertBefore(node, referenceNode);
+  });
+};
