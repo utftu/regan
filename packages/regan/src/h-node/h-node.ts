@@ -67,7 +67,7 @@ export class HNodeBase {
     this.unmounted = true;
   }
 
-  addChildren(children: HNodeBase[]) {
+  addChildren(children: HNode[]) {
     children.forEach((hNode) => this.children.push(hNode));
   }
 }
