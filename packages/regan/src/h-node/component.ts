@@ -1,10 +1,17 @@
-import {Ctx} from '../ctx/ctx.ts';
+import {SegmentComponent} from '../segments/component.ts';
 import {HNodeBase, PropsHNode} from './h-node.ts';
 
 export class HNodeComponent extends HNodeBase {
-  ctx: Ctx;
-  constructor(props: PropsHNode, {ctx}: {ctx: Ctx}) {
+  segmentComponentSure: SegmentComponent;
+  constructor(
+    props: PropsHNode,
+    {
+      segmentComponent,
+    }: {
+      segmentComponent: SegmentComponent;
+    }
+  ) {
     super(props);
-    this.ctx = ctx;
+    this.segmentComponentSure = segmentComponent;
   }
 }

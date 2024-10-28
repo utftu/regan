@@ -7,10 +7,10 @@ import {
   Unmount,
 } from '../types.ts';
 import {getRoot} from '../atoms/atoms.ts';
-import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HNode, HNodeBase} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
 
 type State = {
   mounts: Mount[];
@@ -32,11 +32,10 @@ type PropsCtx<TProps> = {
   systemProps: SystemProps;
   state: State;
   children: Child[];
-  jsxSegment: JsxSegment;
   hNode?: HNode;
   globalCtx: GlobalCtx;
   stage: Stage;
-  parentCtx?: Ctx;
+  segmentEnt: SegmentEnt;
   jsxNodeComponent: JsxNodeComponent;
   client?: Client;
   propsFromAncestors?: AnyProps;
@@ -51,7 +50,7 @@ export class Ctx<
   props: TProps;
   systemProps: SystemProps;
   children: Child[];
-  jsxSegment: JsxSegment;
+  segmentEnt: SegmentEnt;
   hNode: THNode;
   globalCtx: GlobalCtx;
   stage: Stage;
@@ -66,28 +65,28 @@ export class Ctx<
     props,
     state,
     children,
-    jsxSegment,
     hNode,
     globalCtx,
     stage,
-    parentCtx,
     systemProps,
     jsxNodeComponent,
     client,
     propsFromAncestors = {},
+    segmentEnt,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
     this.children = children;
-    this.jsxSegment = jsxSegment;
+    // this.jsxSegment = jsxSegment;
     this.hNode = hNode as THNode;
     this.globalCtx = globalCtx;
     this.stage = stage;
-    this.parentCtx = parentCtx;
+    // this.parentCtx = parentCtx;
     this.systemProps = systemProps;
     this.jsxNodeComponent = jsxNodeComponent;
     this.client = client;
     this.propsFromAncestors = propsFromAncestors;
+    this.segmentEnt = segmentEnt;
 
     this.ctx = this;
   }
@@ -127,10 +126,10 @@ export class Ctx<
   };
 
   getJsxPath = () => {
-    return this.jsxSegment.getJsxPath();
+    return this.segmentEnt.jsxSegment.getJsxPath();
   };
 
   getId = () => {
-    return this.jsxSegment.getId();
+    return this.segmentEnt.jsxSegment.getId();
   };
 }

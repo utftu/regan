@@ -23,19 +23,35 @@ export const createSmartMount = (ctx: Ctx) => (hNode: HNodeBase) => {
   });
 };
 
-export const subscribeWithAutoRemove = ({
-  hNode,
-  listener,
-  atom,
-}: {
-  atom: Atom;
-  listener: AynFunc;
-  hNode: HNode;
-}) => {
-  hNode.mounts.push(() => {
-    hNode.globalCtx.root.links.addExec(atom, listener);
-    hNode.unmounts.push(() => {
-      hNode.globalCtx.root.links.addExec(atom, listener);
-    });
-  });
+// export const subscribeWithAutoRemove = ({
+//   hNode,
+//   listener,
+//   atom,
+// }: {
+//   atom: Atom;
+//   listener: AynFunc;
+//   hNode: HNode;
+// }) => {
+//   hNode.mounts.push(() => {
+//     hNode.globalCtx.root.links.addExec(atom, listener);
+//     hNode.unmounts.push(() => {
+//       hNode.globalCtx.root.links.addExec(atom, listener);
+//     });
+//   });
+// };
+
+export const mountHNodes = (hNode: HNodeBase) => {
+  hNode.mount();
+  hNode.children.forEach((hNode) => mountHNodes(hNode));
+};
+
+export const unmountHNodes = (hNode: HNodeBase) => {
+  hNode.systemUnmounts.forEach((fn) => fn());
+  hNode.unmount();
+  hNode.children.forEach((hNode) => unmountHNodes(hNode));
+};
+
+export const unmountSystemHNodes = (hNode: HNodeBase) => {
+  hNode.systemUnmounts.forEach((fn) => fn());
+  hNode.children.forEach((hNode) => unmountHNodes(hNode));
 };

@@ -1,6 +1,6 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../../global-ctx/global-ctx.ts';
-import {HNode, HNodeCtx} from '../../h-node/h-node.ts';
+import {HNode, GlobalClientCtx} from '../../h-node/h-node.ts';
 import {ParentJsxSegment} from '../../jsx-path/jsx-path.ts';
 import {TreeAtomsSnapshot} from '../../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {Ctx} from '../../ctx/ctx.ts';
@@ -32,7 +32,7 @@ export type HydrateProps = {
   jsxSegmentStr: string;
   parentJsxSegment?: ParentJsxSegment;
   hCtx: HCtx;
-  hNodeCtx: HNodeCtx;
+  hNodeCtx: GlobalClientCtx;
   parentWait: ParentWait;
   atomDescendant: boolean;
   atomDirectNode: boolean;

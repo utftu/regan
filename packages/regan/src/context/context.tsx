@@ -12,6 +12,11 @@ export type ContextValue<TValue = any> = {
   value: TValue;
 };
 
+export type ContextEnt = {
+  context: ContextValue;
+  parent?: ContextEnt;
+};
+
 export const createContext = <TValue extends any = any>(
   name: string,
   defaultValue: TValue
@@ -54,4 +59,11 @@ export const ContextProvider = <TValue extends any = any>(
   systemProps.context = context;
 
   return children;
+};
+
+export const defaultContextEnt: ContextEnt = {
+  context: {
+    context: createContext('default', null),
+    value: null,
+  },
 };

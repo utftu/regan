@@ -5,6 +5,12 @@ type Mode = 'server' | 'client';
 
 type Data = Record<any, any>;
 
+type GlobalCtxType = {
+  data: Data;
+  root: Root;
+  mode: Mode;
+};
+
 export class GlobalCtx {
   data: Data;
   root: Root;

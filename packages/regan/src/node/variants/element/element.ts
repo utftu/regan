@@ -4,7 +4,7 @@ import {hydrateElement} from '../../../hydrate/element.ts';
 import {renderElement} from '../../../render/element.ts';
 import {GetStringStreamProps} from '../../string/string.ts';
 import {HydrateProps} from '../../hydrate/hydrate.ts';
-import {RenderProps} from '../../../render/types.ts';
+import {RenderProps, RenderResult} from '../../../render/types.ts';
 
 export class JsxNodeElement extends JsxNode<string> implements JsxNode {
   async getStringStream(ctx: GetStringStreamProps) {
@@ -15,7 +15,7 @@ export class JsxNodeElement extends JsxNode<string> implements JsxNode {
     return hydrateElement.call(this, ctx);
   }
 
-  async render(ctx: RenderProps) {
+  async render(ctx: RenderProps): RenderResult {
     return renderElement.call(this, ctx);
   }
 }

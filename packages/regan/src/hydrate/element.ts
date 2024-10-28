@@ -40,7 +40,7 @@ export async function hydrateElement(
 
   const hNode = new HNodeElement(
     {
-      hNodeCtx: props.hNodeCtx,
+      globalClientCtx: props.hNodeCtx,
       jsxSegment,
       mounts: [() => detachDynamicProps(dynamicPropsEnt)],
       unmounts: [],

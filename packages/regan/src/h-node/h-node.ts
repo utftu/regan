@@ -1,5 +1,7 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
+import {SegmentComponent} from '../segments/component.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
 import {DomPointer} from '../types.ts';
 import {HNodeElementToReplace, HNodeVText} from '../v/h-node.ts';
 import {HNodeComponent} from './component.ts';
@@ -22,9 +24,10 @@ export type PropsHNode = {
   unmounts?: MountUnmounFunc[];
   children?: HNode[];
   parent?: HNode;
-  jsxSegment: JsxSegment;
   globalCtx: GlobalCtx;
-  hNodeCtx: HNodeCtx;
+  globalClientCtx: GlobalClientCtx;
+  segmentEnt: SegmentEnt;
+  segmentComponent?: SegmentComponent;
 };
 
 export class HNodeBase {
@@ -32,28 +35,29 @@ export class HNodeBase {
   mounts: MountUnmounFunc[];
   unmounts: MountUnmounFunc[];
   parent?: HNode;
-  jsxSegment: JsxSegment;
   globalCtx: GlobalCtx;
-  hNodeCtx: HNodeCtx;
+  glocalClientCtx: GlobalClientCtx;
+  segmentEnt: SegmentEnt;
+  systemUnmounts: Unmount[] = [];
 
   data: Record<string, any> = {};
 
   constructor({
     parent,
-    jsxSegment,
     mounts = [],
     unmounts = [],
     children = [],
     globalCtx,
-    hNodeCtx,
+    globalClientCtx,
+    segmentEnt,
   }: PropsHNode) {
     this.mounts = mounts;
     this.unmounts = unmounts;
     this.parent = parent;
-    this.jsxSegment = jsxSegment;
     this.globalCtx = globalCtx;
-    this.hNodeCtx = hNodeCtx;
+    this.glocalClientCtx = globalClientCtx;
     this.children = children;
+    this.segmentEnt = segmentEnt;
   }
 
   unmounted = false;
@@ -72,17 +76,7 @@ export class HNodeBase {
   }
 }
 
-export const mountHNodes = (hNode: HNodeBase) => {
-  hNode.mount();
-  hNode.children.forEach((hNode) => mountHNodes(hNode));
-};
-
-export const unmountHNodes = (hNode: HNodeBase) => {
-  hNode.unmount();
-  hNode.children.forEach((hNode) => unmountHNodes(hNode));
-};
-
-export class HNodeCtx {
+export class GlobalClientCtx {
   initDomPointer: DomPointer;
   window: Window;
 

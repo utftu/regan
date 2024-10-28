@@ -2,7 +2,7 @@ import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
 import {Child, DomPointerElement} from '../types.ts';
-import {HNode, HNodeBase, HNodeCtx} from '../h-node/h-node.ts';
+import {HNode, HNodeBase, GlobalClientCtx} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {HCtx, ParentWait} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue, wrapChildIfNeed} from '../utils/jsx.ts';
@@ -21,7 +21,7 @@ export async function handleChildrenHydrate({
   parentJsxSegment,
   hCtx: hContext,
   hNodeCtx,
-  parentCtx,
+  // parentCtx,
   parentDomPointer,
   parentInsertedDomNodesPromise,
   atomDescendant,
@@ -32,8 +32,8 @@ export async function handleChildrenHydrate({
   globalCtx: GlobalCtx;
   parentJsxSegment: JsxSegment;
   hCtx: HCtx;
-  hNodeCtx: HNodeCtx;
-  parentCtx?: Ctx;
+  hNodeCtx: GlobalClientCtx;
+  // parentCtx?: Ctx;
   parentDomPointer: DomPointerElement;
   parentInsertedDomNodesPromise: ParentWait;
   atomDescendant: boolean;
@@ -61,7 +61,7 @@ export async function handleChildrenHydrate({
           {
             jsxSegment: parentJsxSegment,
             globalCtx,
-            hNodeCtx,
+            globalClientCtx: hNodeCtx,
           },
           {
             text: childOrAtom,
@@ -102,7 +102,7 @@ export async function handleChildrenHydrate({
       },
       parentHNode,
       globalCtx,
-      parentCtx,
+      // parentCtx,
       hCtx: hContext,
       hNodeCtx,
     });

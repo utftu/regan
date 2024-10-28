@@ -4,10 +4,16 @@ import {h} from '../jsx/jsx.ts';
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {JsxNode} from '../node/node.ts';
 import {FC, FCStaticParams} from '../types.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
+import {SegmentComponent} from '../segments/component.ts';
 
-type Props = {error: Error; jsxNode: JsxNode};
+type Props = {
+  error: Error;
+  segmentEnt: SegmentEnt;
+  segmentComponent?: SegmentComponent;
+};
 
-type ErrorHandler = ({error, jsxNode}: Props) => void;
+type ErrorHandler = (props: Props) => void;
 type ErrorJsx = FC<Props>;
 
 // insert native html fragment to save css styles
@@ -20,17 +26,18 @@ const createJsxErrorDump = (count: number): JsxNode[] | null => {
 };
 
 // try to understand how many places should be occupied
-const getElementsCount = ({jsxNode}: {jsxNode: JsxNode}) => {
+const getElementsCount = ({jsxNode}: {jsxNode: JsxNode<FC>}): number => {
   if (jsxNode instanceof JsxNodeElement) {
     return 1;
   }
 
-  if ('insertedTagsCount' in jsxNode.systemProps) {
-    return jsxNode.systemProps.insertedTagsCount!;
+  if (jsxNode.systemProps.insertedDomNodes) {
+    return jsxNode.systemProps.insertedDomNodes.count;
   }
 
-  if (DOM_NODES_INFO in jsxNode.type) {
-    return jsxNode.type[DOM_NODES_INFO];
+  const type = jsxNode.type as FCStaticParams;
+  if (DOM_NODES_INFO in type) {
+    return type[DOM_NODES_INFO]!.elemsCount;
   }
 
   if (
@@ -44,8 +51,8 @@ const getElementsCount = ({jsxNode}: {jsxNode: JsxNode}) => {
 };
 
 export const defaultErrorHandler = () => {};
-export const defaultErrorJsx = ({jsxNode}: Props) => {
-  const count = getElementsCount({jsxNode});
+export const defaultErrorJsx = ({segmentEnt}: Props) => {
+  const count = getElementsCount({jsxNode: segmentEnt.jsxNode});
 
   return createJsxErrorDump(count);
 };

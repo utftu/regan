@@ -26,7 +26,7 @@ export async function hydrateComponent(
   // });
 
   const hNode = new HNodeComponent({
-    hNodeCtx: ctx.hNodeCtx,
+    globalClientCtx: ctx.hNodeCtx,
     jsxSegment,
     parent: ctx.parentHNode,
     globalCtx: ctx.globalCtx,

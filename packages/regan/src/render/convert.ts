@@ -1,6 +1,6 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {HNode, HNodeCtx} from '../h-node/h-node.ts';
+import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {VNew, VNewElement, VNewText} from '../v/v.ts';
 import {
@@ -10,7 +10,7 @@ import {
   RenderTemplateTextExtended,
 } from './types.ts';
 
-export const createVirtual = (
+export const createVirtualFromRenderTemplate = (
   renderTemplate: RenderTemplate,
   store: {vNew?: VNewText} = {}
 ): VNew[] => {
@@ -27,7 +27,7 @@ export const createVirtual = (
 
     const oldInit = store.vNew.init;
     store.vNew.init = (text, vOld) => {
-      oldInit.call(vNew, text, vOld);
+      oldInit?.call(vNew, text, vOld);
       const renderTemplateExtended =
         renderTemplate as RenderTemplateTextExtended;
       renderTemplateExtended.vOld = vOld;
@@ -38,7 +38,9 @@ export const createVirtual = (
   if (renderTemplate.type === 'element') {
     store.vNew = undefined;
     const children = renderTemplate.children
-      .map((renderTemplate) => createVirtual(renderTemplate, store))
+      .map((renderTemplate) =>
+        createVirtualFromRenderTemplate(renderTemplate, store)
+      )
       .flat();
     store.vNew = undefined;
 
@@ -49,7 +51,7 @@ export const createVirtual = (
 
     const oldInit = vNewResult.init;
     vNewResult.init = (elementVirtual, vOld) => {
-      oldInit.call(vNewResult, elementVirtual, vOld);
+      oldInit?.call(vNewResult, elementVirtual, vOld);
       const renderTemplateExtended =
         renderTemplate as RenderTemplateElementExtended;
       renderTemplateExtended.vOld = vOld;
@@ -58,55 +60,48 @@ export const createVirtual = (
     return [vNewResult];
   }
 
+  // component
   return renderTemplate.children
-    .map((renderTemplate) => createVirtual(renderTemplate, store))
+    .map((renderTemplate) =>
+      createVirtualFromRenderTemplate(renderTemplate, store)
+    )
     .flat();
 };
 
 export const convertFromVirtualToHNodes = ({
   renderTemplate,
-  parentHNode,
-  hNodeCtx,
-  globalCtx,
 }: {
   renderTemplate: RenderTemplateExtended;
-  hNodeCtx: HNodeCtx;
-  globalCtx: GlobalCtx;
-  parentHNode?: HNode;
 }): HNode => {
   if (renderTemplate.type === 'text') {
-    return new HNodeText(
-      {
-        parent: parentHNode,
-        jsxSegment: renderTemplate.jsxSegment,
-        hNodeCtx,
-        globalCtx,
-      },
-      {
-        start: renderTemplate.start,
-        text: renderTemplate.vOld.text,
-        domNode: renderTemplate.vOld.node,
-      }
-    );
+    const hNode = renderTemplate.createHNode({
+      start: renderTemplate.start,
+      domNode: renderTemplate.vOld.node,
+    });
+    return hNode;
   } else if (renderTemplate.type === 'element') {
-    return new HNodeElement(
-      {
-        parent: parentHNode,
-        jsxSegment: renderTemplate.jsxSegment,
-        hNodeCtx,
-        globalCtx,
-        children: renderTemplate.children.map((child) =>
-          convertFromVirtualToHNodes({
-            renderTemplate: child,
-            parentHNode,
-            hNodeCtx,
-            globalCtx,
-          })
-        ),
-      },
-      {jsxNode: renderTemplate.jsxNode, element: renderTemplate.vOld.node}
-    );
+    const hNode = renderTemplate.createHNode({
+      vOld: renderTemplate.vOld,
+    });
+
+    hNode.children = renderTemplate.children.map((child) => {
+      const childHNode = convertFromVirtualToHNodes({
+        renderTemplate: child,
+      });
+      childHNode.parent = hNode;
+      return childHNode;
+    });
+    return hNode;
   } else {
-    return renderTemplate.hNode;
+    // component
+    const hNode = renderTemplate.createHNode();
+    hNode.children = renderTemplate.children.map((child) => {
+      const childHNode = convertFromVirtualToHNodes({
+        renderTemplate: child,
+      });
+      childHNode.parent = hNode;
+      return childHNode;
+    });
+    return hNode;
   }
 };

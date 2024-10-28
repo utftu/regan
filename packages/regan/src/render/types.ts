@@ -1,24 +1,23 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode, HNodeCtx} from '../h-node/h-node.ts';
-import {
-  JsxSegment,
-  JsxSegmentWrapper,
-  ParentJsxSegment,
-} from '../jsx-path/jsx-path.ts';
+import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
-import {Ctx} from '../ctx/ctx.ts';
-import {ParentWait} from '../node/hydrate/hydrate.ts';
 import {VNewElement, VNewText, VOldElement, VOldText} from '../v/v.ts';
 import {HNodeElement} from '../h-node/element.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
+import {SegmentComponent} from '../segments/component.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {JsxNodeElement} from '../node/variants/element/element.ts';
+import {HNodeComponent} from '../h-node/component.ts';
+import {ContextEnt} from '../context/context.tsx';
+
+type ConnectHNode = (props: {children: HNode[]; hNode: HNode}) => void;
 
 export type RenderTemplateComponent = {
   type: 'component';
-  hNode: HNode;
-
   children: RenderTemplate[];
+
+  createHNode: () => HNodeComponent;
+  connectHNode: ConnectHNode;
 };
 
 export type RenderTemplateComponentExtended = Omit<
@@ -30,12 +29,11 @@ export type RenderTemplateComponentExtended = Omit<
 
 export type RenderTemplateElement = {
   type: 'element';
-  vNew: VNewElement;
-  jsxSegment: JsxSegment;
-  jsxNode: JsxNodeElement;
-  init: (hNode: HNodeElement, vOld: VOldElement) => void;
-
   children: RenderTemplate[];
+
+  vNew: VNewElement;
+  createHNode: ({vOld}: {vOld: VOldElement}) => HNodeElement;
+  connectHNode: ConnectHNode;
 };
 
 export type RenderTemplateElementExtended = Omit<
@@ -47,15 +45,12 @@ export type RenderTemplateElementExtended = Omit<
   children: RenderTemplateExtended[];
 };
 
-const a: RenderTemplateElementExtended = null as any;
-// a.children
-
 export type RenderTemplateText = {
   type: 'text';
+
   vNew: VNewText;
-  // text: string;
-  jsxSegment: JsxSegment;
-  // init: (hNode: HNodeText, vOld: VOldText) => void;
+
+  createHNode: (props: {start: number; domNode: Text}) => HNodeText;
 };
 
 export type RenderTemplateTextExtended = RenderTemplateText & {
@@ -73,22 +68,18 @@ export type RenderTemplateExtended =
   | RenderTemplateElementExtended
   | RenderTemplateTextExtended;
 
-// export type AddElementToParent = (elem: HTMLElement | string) => void;
-
 export type RenderCtx = {
-  snapshot: TreeAtomsSnapshot;
-  changedAtoms: Atom[];
+  changedAtoms: Set<Atom>;
 };
 
 export type RenderProps = {
   globalCtx: GlobalCtx;
-  // jsxSegmentStr: string;
-  // parentJsxSegment?: ParentJsxSegment;
-  jsxSegmentWrapper: JsxSegmentWrapper;
+  globalClientCtx: GlobalClientCtx;
   renderCtx: RenderCtx;
-  hNodeCtx: HNodeCtx;
-  parentCtx?: Ctx;
-  // parentWait: ParentWait;
+  jsxSegmentName: string;
+  parentSegmentEnt?: SegmentEnt;
+  parentSegmentComponent?: SegmentComponent;
+  parentContextEnt: ContextEnt;
 };
 
 export type RenderResult = Promise<{

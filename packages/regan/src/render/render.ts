@@ -1,25 +1,30 @@
-import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode, HNodeBase, HNodeCtx, mountHNodes} from '../h-node/h-node.ts';
+import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
-import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {DomPointerElement} from '../types.ts';
-import {Ctx} from '../ctx/ctx.ts';
-import {JsxSegmentWrapper} from '../jsx-path/jsx-path.ts';
-import {convertFromVirtualToHNodes, createVirtual} from './convert.ts';
+import {
+  convertFromVirtualToHNodes,
+  createVirtualFromRenderTemplate,
+} from './convert.ts';
 import {virtualApply, VOld} from '../v/v.ts';
 import {insertNodesAtPosition} from '../utils/dom.ts';
 import {RenderTemplateExtended} from './types.ts';
+import {mountHNodes} from '../h-node/helpers.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
+import {SegmentComponent} from '../segments/component.ts';
+import {ContextEnt, defaultContextEnt} from '../context/context.tsx';
 
 export const rednerVirtual = async ({
   node,
   window: localWindow = window,
   parentHNode,
   data,
-  parentCtx,
+  parentSegmentEnt,
+  parentSegmentComponent,
+  parentContextEnt,
   domPointer,
-  jsxSegmentWrapper,
+  jsxSegmentName = 'root',
   vOlds = [],
 }: {
   node: JsxNode;
@@ -27,9 +32,10 @@ export const rednerVirtual = async ({
   window?: Window;
   data?: Record<any, any>;
   parentHNode?: HNode;
-  jsxSegmentStr?: string;
-  parentCtx?: Ctx;
-  jsxSegmentWrapper?: JsxSegmentWrapper;
+  parentSegmentEnt?: SegmentEnt;
+  parentSegmentComponent?: SegmentComponent;
+  parentContextEnt?: ContextEnt;
+  jsxSegmentName?: string;
   vOlds?: VOld[];
 }) => {
   const globalCtx =
@@ -41,26 +47,28 @@ export const rednerVirtual = async ({
     });
 
   const hNodeCtx =
-    parentHNode?.hNodeCtx ??
-    new HNodeCtx({
+    parentHNode?.glocalClientCtx ??
+    new GlobalClientCtx({
       window: localWindow,
       initDomPointer: domPointer,
     });
+
+  const contextEnt = parentContextEnt ?? defaultContextEnt;
+
   const {renderTemplate} = await node.render({
-    jsxSegmentWrapper: jsxSegmentWrapper ?? {
-      parent: undefined,
-      name: 'root',
-    },
-    parentCtx,
+    parentSegmentEnt,
+    parentSegmentComponent,
+
     globalCtx,
-    hNodeCtx,
+    globalClientCtx: hNodeCtx,
+    jsxSegmentName,
+    parentContextEnt: contextEnt,
     renderCtx: {
-      snapshot: new TreeAtomsSnapshot(),
-      changedAtoms: [],
+      changedAtoms: new Set(),
     },
   });
 
-  const vNews = createVirtual(renderTemplate);
+  const vNews = createVirtualFromRenderTemplate(renderTemplate);
 
   const tmpTemplate = localWindow.document.createElement('template');
 
@@ -77,14 +85,34 @@ export const rednerVirtual = async ({
 
   const hNode = convertFromVirtualToHNodes({
     renderTemplate: renderTemplate as RenderTemplateExtended,
-    parentHNode,
-    globalCtx,
-    hNodeCtx,
+    // parentHNode,
+    // globalCtx,
+    // hNodeCtx,
   });
 
-  mountHNodes(hNode);
+  return {
+    hNode,
+    mountHNodes: () => {
+      if (parentHNode) {
+        parentHNode.children.push(hNode);
+        hNode.parent = parentHNode;
 
-  return hNode;
+        // not nessasery detach
+        // parentSegmentEnt and parentContextEnt
+      }
+      mountHNodes(hNode);
+
+      return () => {
+        hNode.unmount();
+        if (parentHNode) {
+          hNode.parent = undefined;
+          parentHNode.children = parentHNode.children.filter(
+            (child) => child !== hNode
+          );
+        }
+      };
+    },
+  };
 };
 
 export const render = async (

@@ -1,9 +1,8 @@
-import {ComponentState, HNodeBase} from '../h-node/h-node.ts';
+import {ComponentState} from '../h-node/h-node.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenRender} from './children.ts';
-import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {
   RenderProps,
   RenderResult,
@@ -11,50 +10,91 @@ import {
   RenderTemplateComponent,
 } from './types.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
-import {getContextValue} from '../context/context.tsx';
+import {
+  ContextEnt,
+  ContextProvider,
+  getContextValue,
+} from '../context/context.tsx';
 import {errorContext} from '../errors/errors.tsx';
 import {HNodeComponent} from '../h-node/component.ts';
-// import {RenderResult} from '../node/node.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
+import {SegmentComponent} from '../segments/component.ts';
 
 export async function renderComponent(
   this: JsxNodeComponent,
   ctx: RenderProps
 ): RenderResult {
-  const jsxSegment = new JsxSegment(ctx.jsxSegmentWrapper);
+  let contextEnt: ContextEnt;
+  if (this.type === ContextProvider) {
+    contextEnt = {
+      context: this.systemProps.context!,
+      parent: ctx.parentContextEnt,
+    };
+  } else {
+    contextEnt = ctx.parentContextEnt;
+  }
+  const segmentComponent = new SegmentComponent({
+    parentSysyemComponent: ctx.parentSegmentComponent,
+    children: [],
+    unmounts: [],
+    ctx: null as any,
+  });
   const hNode = new HNodeComponent(
     {
-      // parent: ctx.parentHNode,
-      jsxSegment,
+      segmentEnt: new SegmentEnt({
+        jsxSegmentName: ctx.jsxSegmentName,
+        parentSystemEnt: ctx.parentSegmentEnt,
+        unmounts: [],
+        jsxNode: this,
+      }),
       globalCtx: ctx.globalCtx,
-      hNodeCtx: ctx.hNodeCtx,
+      globalClientCtx: ctx.globalClientCtx,
+      segmentComponent,
     },
-    {ctx: null as any}
+    {
+      segmentComponent: new SegmentComponent({
+        parentSysyemComponent: ctx.parentSegmentComponent,
+        children: [],
+        unmounts: [],
+        ctx: null as any,
+      }),
+    }
   );
   const componentCtx = new Ctx({
     globalCtx: ctx.globalCtx,
-    jsxSegment,
     props: this.props,
     systemProps: this.systemProps,
     state: new ComponentState(),
     children: this.children,
     hNode,
     jsxNodeComponent: this,
-    parentCtx: ctx.parentCtx,
     stage: 'render',
+    segmentEnt: hNode.segmentEnt,
   });
-  hNode.ctx = componentCtx;
+  hNode.segmentComponentSure.ctx = componentCtx;
 
   const renderTemplate = {
     type: 'component',
-    hNode,
     children: [] as RenderTemplate[],
+    createHNode: () => {
+      return hNode;
+    },
+    connectHNode({children}) {
+      hNode.children = children;
+      children.forEach((child) => {
+        child.parent = hNode;
+      });
+    },
   } satisfies RenderTemplateComponent;
 
   let rawChidlren;
   try {
     rawChidlren = await this.type(this.props, componentCtx);
   } catch (error) {
-    const errorHandlers = getContextValue(errorContext, ctx.parentCtx);
+    const errorHandlers = getContextValue(
+      errorContext,
+      ctx.parentSegmentComponent?.ctx
+    );
 
     return new JsxNodeComponent({
       type: errorHandlers.errorJsx,
@@ -75,14 +115,13 @@ export async function renderComponent(
 
   const {renderTemplates} = await handleChildrenRender({
     parentHNode: hNode,
-    // parentPosition: ctx.parentPosition,
     children,
+    globalClientCtx: ctx.globalClientCtx,
     globalCtx: ctx.globalCtx,
-    parentJsxSegment: jsxSegment,
     renderCtx: ctx.renderCtx,
-    hNodeCtx: ctx.hNodeCtx,
-    parentCtx: componentCtx,
-    // parentWait: ctx.parentWait,
+    parentSegmentEnt: hNode.segmentEnt,
+    parentSegmentComponent: hNode.segmentComponentSure,
+    parentContextEnt: contextEnt,
   });
 
   renderTemplate.children = renderTemplates;

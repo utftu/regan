@@ -6,6 +6,8 @@ import {HNodeElement} from '../../h-node/element.ts';
 import {JsxNodeComponent} from '../../node/variants/component/component.ts';
 import {JsxNodeElement} from '../../node/variants/element/element.ts';
 import {HNode} from '../../h-node/h-node.ts';
+import {SegmentEnt} from '../../segments/ent/ent.ts';
+import {SegmentComponent} from '../../segments/component.ts';
 
 type StaticProps = Record<string, any>;
 type DynamicProps = Record<string, Atom>;
@@ -13,14 +15,18 @@ type DynamicProps = Record<string, Atom>;
 const createExec = ({
   name,
   element,
-  ctx,
-  jsxNode,
+  // ctx,
+  // jsxNode,
   atom,
+  segmentEnt,
+  segmentComponent,
 }: {
   name: string;
-  element: HTMLElement;
-  ctx?: Ctx;
-  jsxNode: JsxNodeElement;
+  element: Element;
+  segmentEnt: SegmentEnt;
+  segmentComponent?: SegmentComponent;
+  // ctx?: Ctx;
+  // jsxNode: JsxNodeElement;
   atom: Atom;
 }) => {
   const item: {listener?: AynFunc} = {};
@@ -37,8 +43,8 @@ const createExec = ({
     if (typeof value === 'function') {
       const listener = prepareListenerForError({
         listener: value,
-        ctx,
-        jsxNode,
+        segmentEnt,
+        segmentComponent,
       });
 
       element.addEventListener(name, listener);
@@ -50,19 +56,33 @@ const createExec = ({
   return exec;
 };
 
-const subscribeWithAutoRemove = ({
+export const subscribeAtom = ({
+  tempExec,
+  exec,
   hNode,
-  listener,
   atom,
+  segmentEnt,
 }: {
-  atom: Atom;
-  listener: AynFunc;
+  tempExec: AynFunc;
+  exec: AynFunc;
   hNode: HNode;
+  atom: Atom;
+  segmentEnt: SegmentEnt;
 }) => {
-  hNode.mounts.push(() => {
-    hNode.globalCtx.root.links.addExec(atom, listener);
+  hNode.globalCtx.root.links.addExec(atom, tempExec);
+  const tempUmount = () => {
+    hNode.globalCtx.root.links.removeExec(atom, tempExec);
+  };
+  segmentEnt.unmounts.push(tempUmount);
+
+  hNode.mounts.push((hNode) => {
+    segmentEnt.unmounts = segmentEnt.unmounts.filter(
+      (item) => item !== tempUmount
+    );
+    hNode.globalCtx.root.links.replaceExec(atom, tempExec, exec);
+
     hNode.unmounts.push(() => {
-      hNode.globalCtx.root.links.addExec(atom, listener);
+      hNode.globalCtx.root.links.removeExec(atom, exec);
     });
   });
 };
@@ -70,33 +90,33 @@ const subscribeWithAutoRemove = ({
 export const initDynamicSubsribes = ({
   dynamicProps,
   hNode,
+  segmentEnt,
+  segmentComponent,
   changedAtoms,
-  ctx,
-  jsxNode,
 }: {
   dynamicProps: DynamicProps;
   hNode: HNodeElement;
-  changedAtoms: Atom[];
-  ctx?: Ctx;
-  jsxNode: JsxNodeElement;
+  segmentEnt: SegmentEnt;
+  segmentComponent?: SegmentComponent;
+  changedAtoms: Set<Atom>;
 }) => {
   for (const name in dynamicProps) {
     const atom = dynamicProps[name];
 
-    const execTemp = () => {
-      changedAtoms.push(atom);
-    };
-
-    hNode.globalCtx.root.links.addExec(atom, execTemp);
-
-    const exec = createExec({element: hNode.element, name, ctx, jsxNode, atom});
-
-    hNode.mounts.push((hNode) => {
-      hNode.globalCtx.root.links.replaceExec(atom, execTemp, exec);
-
-      hNode.unmounts.push(() => {
-        hNode.globalCtx.root.links.removeExec(atom, exec);
-      });
+    subscribeAtom({
+      tempExec: () => {
+        changedAtoms.add(atom);
+      },
+      exec: createExec({
+        element: hNode.element,
+        name,
+        segmentEnt,
+        segmentComponent,
+        atom,
+      }),
+      hNode,
+      atom,
+      segmentEnt,
     });
   }
 };

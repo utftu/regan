@@ -24,6 +24,11 @@ export type Mount = () => Unmount | Promise<Unmount> | any;
 
 export type FCReturn = Child | Child[] | Promise<Child> | Promise<Child[]>;
 
+export type FCStaticParams = {
+  [NEED_AWAIT]?: boolean;
+  [DOM_NODES_INFO]?: DomNodesInfo;
+};
+
 export type FC<TProps extends Record<any, any> = any> = (
   props: TProps,
   ctx: Ctx<TProps>
@@ -36,11 +41,6 @@ export type SystemProps = {
   ref?: Atom<HTMLElement | void>;
   rawHtml?: string;
   context?: ContextValue;
-};
-
-export type FCStaticParams = {
-  [NEED_AWAIT]?: boolean;
-  [DOM_NODES_INFO]?: DomNodesInfo;
 };
 
 export type HtmlChild = HTMLElement | string;

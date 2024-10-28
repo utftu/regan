@@ -2,14 +2,9 @@ import {Atom} from 'strangelove';
 import {FC, FCStaticParams} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {unmountHNodes} from '../../h-node/h-node.ts';
-import {rednerRaw} from '../../render/render.ts';
+import {rednerVirtual} from '../../render/render.ts';
 import {checkNamedAtom} from '../../atoms/atoms.ts';
 import {NEED_AWAIT} from '../../consts.ts';
-import {h} from '../../jsx/jsx.ts';
-import {
-  convertHydatedToVirtual,
-  convertHydatedToVirtualSingle,
-} from '../../v/v2/convert/convert.ts';
 
 type Props = {
   atom: Atom;
@@ -46,23 +41,30 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     jsxSegment,
     ctx,
     client,
-    propsToDescendants,
+    // propsToDescendants,
   }
 ) => {
-  propsToDescendants.hasParentAtom = true;
+  // propsToDescendants.hasParentAtom = true;
+
+  // toString()
   if (globalCtx.mode === 'server') {
     const {additionalPart, value} = parseAtom(atom, false);
 
     jsxSegment.name += additionalPart;
     return <Fragment>{value}</Fragment>;
   }
+
   const clientHNode = hNode!;
 
   let changedBeforeMount = false;
   const tempExec = () => {
     changedBeforeMount = true;
+    globalCtx.root.links.removeExec(atom, tempExec);
   };
   globalCtx.root.links.addExec(atom, tempExec);
+
+  mount(() => {});
+
   const exec = async () => {
     if (clientHNode.unmounted === true) {
       return;
@@ -79,9 +81,9 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     jsxSegment.clearCache();
     jsxSegment.name = (jsxSegment.parent?.position || '') + additionalPart;
 
-    const {mount: childMount} = await rednerRaw({
+    const {hNode, mountHNodes} = await rednerVirtual({
       node: <Fragment>{value}</Fragment>,
-      window: clientHNode.hNodeCtx.window,
+      window: clientHNode.glocalClientCtx.window,
       domPointer: client!.parentDomPointer,
       parentCtx: ctx.parentCtx,
       parentHNode: hNode,
