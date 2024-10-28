@@ -39,6 +39,7 @@ export async function renderElement(
           segmentEnt,
           globalCtx: props.globalCtx,
           globalClientCtx: props.globalClientCtx,
+          contextEnt: props.parentContextEnt,
         },
         {
           element: vOld.node,
@@ -49,8 +50,6 @@ export async function renderElement(
       initDynamicSubsribes({
         hNode,
         dynamicProps,
-        segmentEnt,
-        segmentComponent: props.parentSegmentComponent,
         changedAtoms: props.renderCtx.changedAtoms,
       });
 
@@ -63,7 +62,6 @@ export async function renderElement(
             vOld.props[name] = atom.get();
           },
           atom,
-          segmentEnt,
           hNode,
         });
       }
@@ -83,7 +81,6 @@ export async function renderElement(
     renderCtx: props.renderCtx,
     globalClientCtx: props.globalClientCtx,
     parentSegmentEnt: segmentEnt,
-    parentSegmentComponent: props.parentSegmentComponent,
     parentContextEnt: props.parentContextEnt,
   });
 

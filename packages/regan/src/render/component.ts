@@ -18,50 +18,24 @@ import {
 import {errorContext} from '../errors/errors.tsx';
 import {HNodeComponent} from '../h-node/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
-import {SegmentComponent} from '../segments/component.ts';
 
 export async function renderComponent(
   this: JsxNodeComponent,
-  ctx: RenderProps
+  props: RenderProps
 ): RenderResult {
-  let contextEnt: ContextEnt;
-  if (this.type === ContextProvider) {
-    contextEnt = {
-      context: this.systemProps.context!,
-      parent: ctx.parentContextEnt,
-    };
-  } else {
-    contextEnt = ctx.parentContextEnt;
-  }
-  const segmentComponent = new SegmentComponent({
-    parentSysyemComponent: ctx.parentSegmentComponent,
-    children: [],
-    unmounts: [],
-    ctx: null as any,
+  const hNode = new HNodeComponent({
+    segmentEnt: new SegmentEnt({
+      jsxSegmentName: props.jsxSegmentName,
+      parentSystemEnt: props.parentSegmentEnt,
+      unmounts: [],
+      jsxNode: this,
+    }),
+    globalCtx: props.globalCtx,
+    globalClientCtx: props.globalClientCtx,
+    contextEnt: null as any,
   });
-  const hNode = new HNodeComponent(
-    {
-      segmentEnt: new SegmentEnt({
-        jsxSegmentName: ctx.jsxSegmentName,
-        parentSystemEnt: ctx.parentSegmentEnt,
-        unmounts: [],
-        jsxNode: this,
-      }),
-      globalCtx: ctx.globalCtx,
-      globalClientCtx: ctx.globalClientCtx,
-      segmentComponent,
-    },
-    {
-      segmentComponent: new SegmentComponent({
-        parentSysyemComponent: ctx.parentSegmentComponent,
-        children: [],
-        unmounts: [],
-        ctx: null as any,
-      }),
-    }
-  );
   const componentCtx = new Ctx({
-    globalCtx: ctx.globalCtx,
+    globalCtx: props.globalCtx,
     props: this.props,
     systemProps: this.systemProps,
     state: new ComponentState(),
@@ -71,7 +45,6 @@ export async function renderComponent(
     stage: 'render',
     segmentEnt: hNode.segmentEnt,
   });
-  hNode.segmentComponentSure.ctx = componentCtx;
 
   const renderTemplate = {
     type: 'component',
@@ -91,10 +64,7 @@ export async function renderComponent(
   try {
     rawChidlren = await this.type(this.props, componentCtx);
   } catch (error) {
-    const errorHandlers = getContextValue(
-      errorContext,
-      ctx.parentSegmentComponent?.ctx
-    );
+    const errorHandlers = getContextValue(errorContext, props.parentContextEnt);
 
     return new JsxNodeComponent({
       type: errorHandlers.errorJsx,
@@ -104,8 +74,19 @@ export async function renderComponent(
       },
       systemProps: {},
       children: [],
-    }).render(ctx);
+    }).render(props);
   }
+
+  let contextEnt: ContextEnt;
+  if (this.type === ContextProvider) {
+    contextEnt = {
+      context: this.systemProps.context!,
+      parent: props.parentContextEnt,
+    };
+  } else {
+    contextEnt = props.parentContextEnt;
+  }
+  hNode.contextEnt = contextEnt;
 
   const children = normalizeChildren(rawChidlren);
 
@@ -116,11 +97,10 @@ export async function renderComponent(
   const {renderTemplates} = await handleChildrenRender({
     parentHNode: hNode,
     children,
-    globalClientCtx: ctx.globalClientCtx,
-    globalCtx: ctx.globalCtx,
-    renderCtx: ctx.renderCtx,
+    globalClientCtx: props.globalClientCtx,
+    globalCtx: props.globalCtx,
+    renderCtx: props.renderCtx,
     parentSegmentEnt: hNode.segmentEnt,
-    parentSegmentComponent: hNode.segmentComponentSure,
     parentContextEnt: contextEnt,
   });
 

@@ -1,9 +1,8 @@
+import {ContextEnt} from '../context/context.tsx';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {SegmentComponent} from '../segments/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {DomPointer} from '../types.ts';
-import {HNodeElementToReplace, HNodeVText} from '../v/h-node.ts';
 import {HNodeComponent} from './component.ts';
 import {HNodeElement} from './element.ts';
 import {HNodeText} from './text.ts';
@@ -27,7 +26,7 @@ export type PropsHNode = {
   globalCtx: GlobalCtx;
   globalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
-  segmentComponent?: SegmentComponent;
+  contextEnt: ContextEnt;
 };
 
 export class HNodeBase {
@@ -39,6 +38,7 @@ export class HNodeBase {
   glocalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
   systemUnmounts: Unmount[] = [];
+  contextEnt: ContextEnt;
 
   data: Record<string, any> = {};
 
@@ -50,6 +50,7 @@ export class HNodeBase {
     globalCtx,
     globalClientCtx,
     segmentEnt,
+    contextEnt,
   }: PropsHNode) {
     this.mounts = mounts;
     this.unmounts = unmounts;
@@ -58,6 +59,7 @@ export class HNodeBase {
     this.glocalClientCtx = globalClientCtx;
     this.children = children;
     this.segmentEnt = segmentEnt;
+    this.contextEnt = contextEnt;
   }
 
   unmounted = false;

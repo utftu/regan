@@ -1,13 +1,10 @@
 import {Atom} from 'strangelove';
-import {Ctx} from '../../ctx/ctx.ts';
-import {AnyProps, AynFunc} from '../../types.ts';
+import {AynFunc} from '../../types.ts';
 import {prepareListenerForError} from '../../errors/utils.ts';
 import {HNodeElement} from '../../h-node/element.ts';
-import {JsxNodeComponent} from '../../node/variants/component/component.ts';
-import {JsxNodeElement} from '../../node/variants/element/element.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {SegmentEnt} from '../../segments/ent/ent.ts';
-import {SegmentComponent} from '../../segments/component.ts';
+import {ContextEnt} from '../../context/context.tsx';
 
 type StaticProps = Record<string, any>;
 type DynamicProps = Record<string, Atom>;
@@ -15,18 +12,14 @@ type DynamicProps = Record<string, Atom>;
 const createExec = ({
   name,
   element,
-  // ctx,
-  // jsxNode,
   atom,
   segmentEnt,
-  segmentComponent,
+  contextEnt,
 }: {
   name: string;
   element: Element;
   segmentEnt: SegmentEnt;
-  segmentComponent?: SegmentComponent;
-  // ctx?: Ctx;
-  // jsxNode: JsxNodeElement;
+  contextEnt: ContextEnt;
   atom: Atom;
 }) => {
   const item: {listener?: AynFunc} = {};
@@ -44,7 +37,7 @@ const createExec = ({
       const listener = prepareListenerForError({
         listener: value,
         segmentEnt,
-        segmentComponent,
+        contextEnt,
       });
 
       element.addEventListener(name, listener);
@@ -61,22 +54,22 @@ export const subscribeAtom = ({
   exec,
   hNode,
   atom,
-  segmentEnt,
-}: {
+}: // segmentEnt,
+{
   tempExec: AynFunc;
   exec: AynFunc;
   hNode: HNode;
   atom: Atom;
-  segmentEnt: SegmentEnt;
+  // segmentEnt: SegmentEnt;
 }) => {
   hNode.globalCtx.root.links.addExec(atom, tempExec);
   const tempUmount = () => {
     hNode.globalCtx.root.links.removeExec(atom, tempExec);
   };
-  segmentEnt.unmounts.push(tempUmount);
+  hNode.segmentEnt.unmounts.push(tempUmount);
 
   hNode.mounts.push((hNode) => {
-    segmentEnt.unmounts = segmentEnt.unmounts.filter(
+    hNode.segmentEnt.unmounts = hNode.segmentEnt.unmounts.filter(
       (item) => item !== tempUmount
     );
     hNode.globalCtx.root.links.replaceExec(atom, tempExec, exec);
@@ -90,14 +83,10 @@ export const subscribeAtom = ({
 export const initDynamicSubsribes = ({
   dynamicProps,
   hNode,
-  segmentEnt,
-  segmentComponent,
   changedAtoms,
 }: {
   dynamicProps: DynamicProps;
   hNode: HNodeElement;
-  segmentEnt: SegmentEnt;
-  segmentComponent?: SegmentComponent;
   changedAtoms: Set<Atom>;
 }) => {
   for (const name in dynamicProps) {
@@ -110,13 +99,12 @@ export const initDynamicSubsribes = ({
       exec: createExec({
         element: hNode.element,
         name,
-        segmentEnt,
-        segmentComponent,
+        segmentEnt: hNode.segmentEnt,
+        contextEnt: hNode.contextEnt,
         atom,
       }),
       hNode,
       atom,
-      segmentEnt,
     });
   }
 };

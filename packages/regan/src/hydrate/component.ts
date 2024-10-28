@@ -4,11 +4,11 @@ import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {ComponentState, HNodeBase} from '../h-node/h-node.ts';
 import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HydrateProps, HydrateResult} from '../node/hydrate/hydrate.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
 import {errorContext} from '../errors/errors.tsx';
 import {getContextValue} from '../context/context.tsx';
 import {HNodeComponent} from '../h-node/component.ts';
+import {HydrateProps, HydrateResult} from './types.ts';
 
 export async function hydrateComponent(
   this: JsxNodeComponent,
@@ -42,10 +42,10 @@ export async function hydrateComponent(
     systemProps: this.systemProps,
     state: new ComponentState(),
     children: this.children,
-    jsxSegment,
+    // jsxSegment,
     hNode,
     jsxNodeComponent: this,
-    parentCtx: ctx.parentCtx,
+    // parentCtx: ctx.parentCtx,
     stage: 'hydrate',
   });
 

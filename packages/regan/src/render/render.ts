@@ -57,8 +57,6 @@ export const rednerVirtual = async ({
 
   const {renderTemplate} = await node.render({
     parentSegmentEnt,
-    parentSegmentComponent,
-
     globalCtx,
     globalClientCtx: hNodeCtx,
     jsxSegmentName,

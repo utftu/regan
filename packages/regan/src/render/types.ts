@@ -1,11 +1,9 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
-import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {VNewElement, VNewText, VOldElement, VOldText} from '../v/v.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
-import {SegmentComponent} from '../segments/component.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 import {ContextEnt} from '../context/context.tsx';
@@ -78,7 +76,7 @@ export type RenderProps = {
   renderCtx: RenderCtx;
   jsxSegmentName: string;
   parentSegmentEnt?: SegmentEnt;
-  parentSegmentComponent?: SegmentComponent;
+  // parentSegmentComponent?: SegmentComponent;
   parentContextEnt: ContextEnt;
 };
 

@@ -4,7 +4,6 @@ import {JsxNode} from '../node/node.ts';
 import {RenderCtx, RenderTemplateText} from './types.ts';
 import {Child} from '../types.ts';
 import {formatJsxValue, wrapChildIfNeed} from '../utils/jsx.ts';
-import {SegmentComponent} from '../segments/component.ts';
 import {noop} from '../consts.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
@@ -16,14 +15,12 @@ export async function handleChildrenRender({
   renderCtx,
   globalClientCtx,
   parentSegmentEnt,
-  parentSegmentComponent,
   parentContextEnt,
 }: {
   children: Child[];
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   globalClientCtx: GlobalClientCtx;
-  parentSegmentComponent?: SegmentComponent;
   parentSegmentEnt: SegmentEnt;
   parentContextEnt: ContextEnt;
   renderCtx: RenderCtx;
@@ -59,6 +56,7 @@ export async function handleChildrenRender({
                 globalCtx,
                 globalClientCtx,
                 segmentEnt: parentSegmentEnt,
+                contextEnt: parentContextEnt,
               },
               {
                 domNode,
@@ -81,7 +79,7 @@ export async function handleChildrenRender({
       renderCtx,
       jsxSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,
-      parentSegmentComponent,
+      // parentSegmentComponent,
       parentContextEnt,
     });
     rawResults.push(renderResult);

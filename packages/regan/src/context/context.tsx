@@ -34,22 +34,21 @@ export const createContext = <TValue extends any = any>(
 
 export const getContextValue = <TValue extends any = any>(
   context: Context<TValue>,
-  ctx?: Ctx
+  contextEnt: ContextEnt
 ): TValue => {
-  if (!ctx) {
-    return context.defaultValue;
-  }
-  const {parentCtx: parent, systemProps} = ctx;
-
-  if (systemProps.context?.context === context) {
-    return systemProps.context.value;
-  }
-
-  if (!parent) {
+  if (!contextEnt) {
     return context.defaultValue;
   }
 
-  return getContextValue(context, parent);
+  if (contextEnt.context?.context === context) {
+    return contextEnt.context.value;
+  }
+
+  if (!contextEnt.parent) {
+    return context.defaultValue;
+  }
+
+  return getContextValue(context, contextEnt.parent);
 };
 
 export const ContextProvider = <TValue extends any = any>(

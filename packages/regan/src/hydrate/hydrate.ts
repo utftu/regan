@@ -1,9 +1,9 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNodeBase, GlobalClientCtx, mountHNodes} from '../h-node/h-node.ts';
+import {HNodeBase, GlobalClientCtx} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
-import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
+// import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
 import {DomPointer, DomPointerElement} from '../types.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {createInsertedDomNodePromise} from '../utils/inserted-dom.ts';
@@ -16,9 +16,9 @@ export async function hydrateRaw({
   domPointer,
 }: {
   parentHNode?: HNodeBase;
-  parentCtx?: Ctx;
+  // parentCtx?: Ctx;
   node: JsxNode;
-  window?: Window;
+  // window?: Window;
   data?: Record<any, any>;
   domPointer: DomPointerElement;
 }) {

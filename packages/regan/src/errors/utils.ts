@@ -1,26 +1,21 @@
-import {getContextValue} from '../context/context.tsx';
-import {Ctx} from '../ctx/ctx.ts';
+import {ContextEnt, getContextValue} from '../context/context.tsx';
 import {errorContext} from './errors.tsx';
-import {JsxNode} from '../node/node.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
-import {SegmentComponent} from '../segments/component.ts';
 
 export const prepareListenerForError = ({
   listener,
-  // ctx,
   segmentEnt,
-  segmentComponent,
+  contextEnt,
 }: {
   listener: (...args: any[]) => any;
-  // ctx?: Ctx;
-  segmentComponent?: SegmentComponent;
   segmentEnt: SegmentEnt;
+  contextEnt: ContextEnt;
 }) => {
   return (...args: any[]) => {
     try {
       listener(...args);
     } catch (error) {
-      const errorConfig = getContextValue(errorContext, segmentComponent?.ctx);
+      const errorConfig = getContextValue(errorContext, contextEnt);
       errorConfig.error({error: error as Error, segmentEnt});
     }
   };
