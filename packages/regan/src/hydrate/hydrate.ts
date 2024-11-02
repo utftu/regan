@@ -3,9 +3,7 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNodeBase, GlobalClientCtx} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
-// import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-aroms-snapshot.ts';
-import {DomPointer, DomPointerElement} from '../types.ts';
-import {Ctx} from '../ctx/ctx.ts';
+import {DomPointerElement} from '../types.ts';
 import {createInsertedDomNodePromise} from '../utils/inserted-dom.ts';
 
 export async function hydrateRaw({
@@ -16,13 +14,12 @@ export async function hydrateRaw({
   domPointer,
 }: {
   parentHNode?: HNodeBase;
-  // parentCtx?: Ctx;
   node: JsxNode;
-  // window?: Window;
+  window?: Window;
   data?: Record<any, any>;
   domPointer: DomPointerElement;
 }) {
-  const changedAtoms: Atom[] = [];
+  const changedAtoms = new Set<Atom>();
   const globalCtx =
     parentHNode?.globalCtx ??
     new GlobalCtx({
@@ -32,32 +29,33 @@ export async function hydrateRaw({
     });
 
   const {hNode} = await node.hydrate({
-    jsxSegmentStr: '',
-    domPointer: domPointer,
+    jsxSegmentName: '',
+    textLength: 0,
+    domPointer,
     parentHNode,
     globalCtx,
     parentWait: createInsertedDomNodePromise(),
-    hNodeCtx:
+    globalClientCtx:
       parentHNode?.glocalClientCtx ??
       new GlobalClientCtx({
         window: windowLocal,
         initDomPointer: domPointer,
       }),
-    hCtx: {
-      snapshot: new TreeAtomsSnapshot(),
+    hydrateCtx: {
+      // snapshot: new TreeAtomsSnapshot(),
       changedAtoms,
     },
-    atomDescendant: false,
-    atomDirectNode: false,
+    // atomDescendant: false,
+    // atomDirectNode: false,
   });
 
-  globalCtx.root.addTx(
-    changedAtoms.reduce((store, atom) => {
-      store.set(atom, atom.get());
-      return store;
-    }, new Map())
-  );
-  mountHNodes(hNode);
+  // globalCtx.root.addTx(
+  //   changedAtoms.reduce((store, atom) => {
+  //     store.set(atom, atom.get());
+  //     return store;
+  //   }, new Map())
+  // );
+  // mountHNodes(hNode);
 }
 
 export const hydrate = (

@@ -77,16 +77,14 @@ export async function renderComponent(
     }).render(props);
   }
 
-  let contextEnt: ContextEnt;
   if (this.type === ContextProvider) {
-    contextEnt = {
+    hNode.contextEnt = {
       context: this.systemProps.context!,
       parent: props.parentContextEnt,
     };
   } else {
-    contextEnt = props.parentContextEnt;
+    hNode.contextEnt = props.parentContextEnt;
   }
-  hNode.contextEnt = contextEnt;
 
   const children = normalizeChildren(rawChidlren);
 
@@ -101,7 +99,7 @@ export async function renderComponent(
     globalCtx: props.globalCtx,
     renderCtx: props.renderCtx,
     parentSegmentEnt: hNode.segmentEnt,
-    parentContextEnt: contextEnt,
+    parentContextEnt: hNode.contextEnt,
   });
 
   renderTemplate.children = renderTemplates;

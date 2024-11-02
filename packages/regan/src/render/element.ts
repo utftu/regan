@@ -15,7 +15,7 @@ export async function renderElement(
   this: JsxNodeElement,
   props: RenderProps
 ): RenderResult {
-  const jsxNode = this;
+  // const jsxNode = this;
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
     parentSystemEnt: props.parentSegmentEnt,
@@ -43,7 +43,6 @@ export async function renderElement(
         },
         {
           element: vOld.node,
-          jsxNode,
         }
       );
 

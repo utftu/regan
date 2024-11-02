@@ -1,7 +1,7 @@
 import {Child, Props, SystemProps} from '../types.ts';
 import {RenderProps, RenderResult} from '../render/types.ts';
-import {HydrateProps, HydrateResult} from './hydrate/hydrate.ts';
 import {GetStringStreamProps} from './string/string.ts';
+import {HydrateProps, HydrateResult} from '../hydrate/types.ts';
 
 export type StringResult = Promise<ReadableStream<string>>;
 

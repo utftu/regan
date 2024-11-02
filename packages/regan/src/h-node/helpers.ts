@@ -1,8 +1,6 @@
-import {Atom} from 'strangelove';
 import {destroyAtom} from '../atoms/atoms.ts';
 import {Ctx} from '../ctx/ctx.ts';
-import {HNode, HNodeBase} from './h-node.ts';
-import {AynFunc} from '../types.ts';
+import {HNodeBase} from './h-node.ts';
 
 export const createSmartMount = (ctx: Ctx) => (hNode: HNodeBase) => {
   const unmounts = ctx.state.mounts.map((mount) => mount());
@@ -22,23 +20,6 @@ export const createSmartMount = (ctx: Ctx) => (hNode: HNodeBase) => {
     });
   });
 };
-
-// export const subscribeWithAutoRemove = ({
-//   hNode,
-//   listener,
-//   atom,
-// }: {
-//   atom: Atom;
-//   listener: AynFunc;
-//   hNode: HNode;
-// }) => {
-//   hNode.mounts.push(() => {
-//     hNode.globalCtx.root.links.addExec(atom, listener);
-//     hNode.unmounts.push(() => {
-//       hNode.globalCtx.root.links.addExec(atom, listener);
-//     });
-//   });
-// };
 
 export const mountHNodes = (hNode: HNodeBase) => {
   hNode.mount();

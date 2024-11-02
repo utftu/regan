@@ -1,4 +1,9 @@
 // import {Atom} from 'strangelove';
+import {HNode} from '../../h-node/h-node.ts';
+import {
+  findNextTextNode,
+  findPrevTextNode,
+} from '../../h-node/helpers/find-text.ts';
 import {
   VNewElement,
   VOldElement,
@@ -6,22 +11,7 @@ import {
   VOldText,
   VNew,
   VOld,
-} from '../v.ts';
-
-// export type EventDiffPatchElement = {
-//   element: Node;
-//   type: 'patchElement';
-//   newProps: Record<string, any>;
-//   oldProps: Record<string, any>;
-// };
-
-// export type EventDiff =
-//   | {type: 'delete'}
-//   | {type: 'create'}
-//   | {type: 'replaceFull'}
-//   | {type: 'nextText'}
-//   | {type: 'replaceText'}
-//   | EventDiffPatchElement;
+} from '../types.ts';
 
 export type EventDiff =
   | {type: 'delete'; node: null}
@@ -30,19 +20,22 @@ export type EventDiff =
   | {type: 'replaceText'; node: Text}
   | {type: 'omitTextReplace'; node: Text}
   | {type: 'patchElement'; node: Element};
-// | EventDiffPatchElement;
 
 const deleteFunc = (vOld: VOld) => {
   vOld.node.parentNode!.removeChild(vOld.node);
 };
 
-const create = (vNew: VNew, window: Window) => {
-  if (vNew.type === 'text') {
-    const textNode = window.document.createTextNode(vNew.text);
+const createTextSimple = (text: string, window: Window) => {
+  const textNode = window.document.createTextNode(text);
 
-    return textNode;
-  }
+  return textNode;
+};
 
+const createText = (vNew: VNewText, window: Window) => {
+  return createTextSimple(vNew.text, window);
+};
+
+const createElement = (vNew: VNewElement, window: Window) => {
   const element = window.document.createElement(vNew.tag);
 
   for (const key in vNew.props) {
@@ -55,6 +48,14 @@ const create = (vNew: VNew, window: Window) => {
   }
 
   return element;
+};
+
+const create = (vNew: VNew, window: Window) => {
+  if (vNew.type === 'text') {
+    return createText(vNew, window);
+  }
+
+  return createElement(vNew, window);
 };
 
 const replaceFull = (vNew: VNew, vOld: VOld, window: Window) => {
@@ -121,6 +122,105 @@ const patchElement = (vNew: VNewElement, vOld: VOldElement) => {
     }
   }
   return vOld.node;
+};
+
+const vOldStart = 5; // todo
+
+const findNextTextNodes = (hNode: HNode) => {
+  const nodes = [];
+  let nextNode = findNextTextNode(hNode);
+  while (nextNode) {
+    nodes.push(nextNode);
+    nextNode = findNextTextNode(nextNode);
+  }
+  return nodes;
+};
+
+const bam = (
+  vNew: VNew,
+  vOld: VOld,
+  hNode: HNode,
+  position: ('before' | 'after')[]
+) => {
+  if (vNew.type === 'text' && vOld.type === 'text') {
+    // vOld.node
+    // const prevTextHNode = findPrevTextNode(hNode);
+    // if (!prevTextHNode) {
+    //   return;
+    // }
+  }
+
+  if (vNew.type === 'text' && vOld.type === 'element') {
+    if (position.includes('before')) {
+      const prevTextHNode = findPrevTextNode(hNode);
+
+      if (prevTextHNode) {
+        const startPosition = prevTextHNode.start + prevTextHNode.text.length;
+        const prevTextPart = prevTextHNode.domNode.textContent!.slice(
+          0,
+          startPosition
+        );
+        const nextTextPart = prevTextHNode.domNode.textContent!.slice(
+          startPosition + vNew.text.length
+        );
+        prevTextHNode.domNode.textContent = `${prevTextPart}${vNew.text}${nextTextPart}`;
+      }
+    }
+
+    if (position.includes('after')) {
+      const nextTextHNodes = findNextTextNodes(hNode);
+      if (nextTextHNodes.length > 0) {
+        const firstNextTextNode = nextTextHNodes[0];
+      }
+    }
+
+    const domNode = prevTextHNode.domNode;
+
+    domNode.textContent += vNew.text;
+
+    return domNode;
+  }
+
+  if (vNew.type === 'element' && vOld.type === 'text') {
+    // const element = createElement(vNew, window);
+
+    // const needDeleteNode = vOld.node.textContent!.length !== vOld.text.length;
+    let needDeleteNode = true;
+
+    if (position.includes('before')) {
+      const prevTextHNode = findPrevTextNode(hNode);
+
+      if (prevTextHNode) {
+        prevTextHNode.domNode.textContent =
+          prevTextHNode.domNode.textContent?.slice(0, vOldStart) as any;
+        needDeleteNode = false;
+      }
+    }
+
+    if (position.includes('after')) {
+      const nextTextHNodes = findNextTextNodes(hNode);
+      if (nextTextHNodes.length > 0) {
+        const firstNextTextNode = nextTextHNodes[0];
+        const textNode = createTextSimple(
+          firstNextTextNode.domNode.textContent!.slice(firstNextTextNode.start),
+          window
+        );
+
+        nextTextHNodes.forEach((hNodeText) => {
+          hNodeText.start -= firstNextTextNode.start;
+          hNodeText.domNode = textNode;
+        });
+      }
+    }
+
+    const element = createElement(vNew, window);
+
+    if (needDeleteNode) {
+      vOld.node.replaceWith(element);
+    } else {
+      vOld.node.after(element);
+    }
+  }
 };
 
 export const handle = (
@@ -195,77 +295,3 @@ export const handle = (
     type: 'patchElement',
   };
 };
-
-// export const diffOne = (vNew?: VNew, vOld?: VOld): EventDiff => {
-//   if (!vNew) {
-//     return {
-//       type: 'delete',
-//     } as const;
-//   }
-
-//   if (!vOld) {
-//     return {
-//       type: 'create',
-//     };
-//   }
-
-//   if (vOld.type !== vNew.type) {
-//     return {
-//       type: 'replaceFull',
-//     };
-//   }
-
-//   if (vOld.type === 'text') {
-//     if (vOld.text === (vNew as TextVNew).text) {
-//       return {
-//         type: 'nextText',
-//       };
-//     } else {
-//       return {
-//         type: 'replaceText',
-//       };
-//     }
-//   }
-
-//   const vNewSure = vNew as ElementVNew;
-//   if (vOld.tag !== vNewSure.tag) {
-//     return {
-//       type: 'replaceFull',
-//     };
-//   }
-
-//   const newProps: Record<string, any> = {};
-
-//   for (const key in vNewSure.props) {
-//     const newValue = vNewSure.props[key];
-//     const oldValue = vOld.props[key];
-
-//     const realNewValue = newValue instanceof Atom ? newValue.get() : newValue;
-//     const realOldValue = oldValue instanceof Atom ? oldValue.get() : oldValue;
-
-//     if (realNewValue === realOldValue) {
-//       continue;
-//     }
-
-//     newProps[key] = realNewValue;
-//   }
-
-//   const oldProps: Record<string, any> = {};
-
-//   for (const key in vOld.props) {
-//     if (key in vNewSure) {
-//       continue;
-//     }
-//     const oldValue = vOld.props[key];
-//     const realOldValue = oldValue instanceof Atom ? oldValue.get() : oldValue;
-
-//     oldProps[key] = realOldValue;
-//   }
-
-//   return {
-//     element: vOld.node,
-//     newProps,
-//     oldProps,
-//     type: 'patchElement',
-//   };
-// };

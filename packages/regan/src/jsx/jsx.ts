@@ -1,4 +1,3 @@
-// import {Fragment} from '../components/fragment/fragment.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {Child, FC, Props} from '../types.ts';
@@ -35,16 +34,6 @@ export const normalizeChildren = (rawChildren: RawChildren) => {
     return [rawChildren];
   }
 };
-
-// export const wrapArray = (children: Child[]): Child[] => {
-//   return children.map((child) => {
-//     if (Array.isArray(child)) {
-//       return h(Fragment, {}, normalizeChildren(child));
-//     }
-
-//     return child;
-//   });
-// };
 
 export const createElement = (
   type: ElementType,

@@ -54,13 +54,11 @@ export const subscribeAtom = ({
   exec,
   hNode,
   atom,
-}: // segmentEnt,
-{
+}: {
   tempExec: AynFunc;
   exec: AynFunc;
   hNode: HNode;
   atom: Atom;
-  // segmentEnt: SegmentEnt;
 }) => {
   hNode.globalCtx.root.links.addExec(atom, tempExec);
   const tempUmount = () => {

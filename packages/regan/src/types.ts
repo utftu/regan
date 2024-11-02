@@ -3,8 +3,8 @@ import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
 import {ContextValue} from './context/context.tsx';
 import {DOM_NODES_INFO, NEED_AWAIT} from './consts.ts';
-import {InsertedDomNodes} from './utils/inserted-dom.ts';
-import {DomNodesInfo} from './node/hydrate/hydrate.ts';
+import {InsertedInfo} from './utils/inserted-dom.ts';
+// import {DomNodesInfo} from './node/hydrate/hydrate.ts';
 
 export type AynFunc = (...args: any[]) => any;
 export type AnyProps = Record<any, any>;
@@ -26,7 +26,7 @@ export type FCReturn = Child | Child[] | Promise<Child> | Promise<Child[]>;
 
 export type FCStaticParams = {
   [NEED_AWAIT]?: boolean;
-  [DOM_NODES_INFO]?: DomNodesInfo;
+  [DOM_NODES_INFO]?: InsertedInfo;
 };
 
 export type FC<TProps extends Record<any, any> = any> = (
@@ -37,7 +37,7 @@ export type FC<TProps extends Record<any, any> = any> = (
 export type SystemProps = {
   key?: string;
   needAwait?: boolean;
-  insertedDomNodes?: InsertedDomNodes;
+  insertedDomNodes?: InsertedInfo;
   ref?: Atom<HTMLElement | void>;
   rawHtml?: string;
   context?: ContextValue;

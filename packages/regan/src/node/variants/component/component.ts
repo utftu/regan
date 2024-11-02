@@ -1,17 +1,16 @@
-import {JsxNode, StringResult} from '../../node.ts';
+import {JsxNode} from '../../node.ts';
 import {getStringStreamComponent} from '../../../string/component.ts';
 import {hydrateComponent} from '../../../hydrate/component.ts';
 import {renderComponent} from '../../../render/component.ts';
 import {GetStringStreamProps} from '../../string/string.ts';
-import {HydrateProps} from '../../hydrate/hydrate.ts';
 import {RenderProps} from '../../../render/types.ts';
 import {FC} from '../../../types.ts';
+import {HydrateProps} from '../../../hydrate/types.ts';
 
 export class JsxNodeComponent extends JsxNode<FC> implements JsxNode {
   async getStringStream(ctx: GetStringStreamProps) {
     return getStringStreamComponent.call(this, ctx);
   }
-
   async hydrate(ctx: HydrateProps) {
     return hydrateComponent.call(this, ctx);
   }

@@ -1,83 +1,68 @@
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
-import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HydrateProps, HydrateResult} from '../node/hydrate/hydrate.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {defaultDomNodesInfo} from '../consts.ts';
-import {
-  detachDynamicProps,
-  // handleProps,
-  initDynamicSubsribes,
-  initStaticProps,
-  prepareDynamicProps,
-} from '../utils/props/props.ts';
+import {defaultInsertedInfo} from '../consts.ts';
+import {initDynamicSubsribes, initStaticProps} from '../utils/props/props.ts';
+import {splitProps} from '../v/convert/convert.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
+import {HydrateProps, HydrateResult} from './types.ts';
 
 export async function hydrateElement(
   this: JsxNodeElement,
   props: HydrateProps
 ): HydrateResult {
-  props.parentWait.promiseControls.resolve(defaultDomNodesInfo);
-  const jsxSegment = new JsxSegment({
-    name: props.jsxSegmentStr,
-    parent: props.parentJsxSegment,
+  props.parentWait.promiseControls.resolve(defaultInsertedInfo);
+
+  const segmentEnt = new SegmentEnt({
+    jsxSegmentName: props.jsxSegmentName,
+    parentSystemEnt: props.parentSegmentEnt,
+    unmounts: [],
+    jsxNode: this,
   });
 
   const element = (props.domPointer.parent as Element).children[
     props.domPointer.position
   ] as HTMLElement;
 
-  const {dynamicProps, staticProps} = handleProps({
+  const {dynamicProps, staticProps} = splitProps({
     props: this.props,
-  });
-
-  const dynamicPropsEnt = prepareDynamicProps({
-    props: dynamicProps,
-    jsxNode: this,
-    element,
-    ctx: props.parentCtx,
-    globalCtx: props.globalCtx,
   });
 
   const hNode = new HNodeElement(
     {
-      globalClientCtx: props.hNodeCtx,
-      jsxSegment,
-      mounts: [() => detachDynamicProps(dynamicPropsEnt)],
-      unmounts: [],
+      globalClientCtx: props.globalClientCtx,
       parent: props.parentHNode,
       globalCtx: props.globalCtx,
+      segmentEnt,
+      contextEnt: props.parentContextEnt,
     },
     {
       element,
-      jsxNode: this,
-      dynamicPropsEnt: dynamicPropsEnt,
     }
   );
 
   initStaticProps(element, staticProps);
 
   initDynamicSubsribes({
-    dynamicPropsEnt,
     hNode,
-    globalCtx: props.globalCtx,
-    changedAtoms: props.hCtx.changedAtoms,
+    dynamicProps,
+    changedAtoms: props.hydrateCtx.changedAtoms,
   });
 
   const {hNodes} = await handleChildrenHydrate({
-    atomDescendant: props.atomDescendant,
-    atomDirectNode: false,
+    textLength: 0,
     parentInsertedDomNodesPromise: props.parentWait,
-    parentJsxSegment: jsxSegment,
-    hNodeCtx: props.hNodeCtx,
     children: this.children,
     parentDomPointer: {
       parent: element,
       position: 0,
     },
     parentHNode: hNode,
-    parentCtx: props.parentCtx,
     globalCtx: props.globalCtx,
-    hCtx: props.hCtx,
+    hydrateCtx: props.hydrateCtx,
+    globalClientCtx: props.globalClientCtx,
+    parentSegmentEnt: segmentEnt,
+    parentContextEnt: props.parentContextEnt,
   });
 
   hNode.addChildren(hNodes);

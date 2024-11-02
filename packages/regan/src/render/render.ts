@@ -7,13 +7,13 @@ import {
   convertFromVirtualToHNodes,
   createVirtualFromRenderTemplate,
 } from './convert.ts';
-import {virtualApply, VOld} from '../v/v.ts';
+import {virtualApply} from '../v/v.ts';
 import {insertNodesAtPosition} from '../utils/dom.ts';
 import {RenderTemplateExtended} from './types.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
-import {SegmentComponent} from '../segments/component.ts';
 import {ContextEnt, defaultContextEnt} from '../context/context.tsx';
+import {VOld} from '../v/types.ts';
 
 export const rednerVirtual = async ({
   node,
@@ -21,7 +21,6 @@ export const rednerVirtual = async ({
   parentHNode,
   data,
   parentSegmentEnt,
-  parentSegmentComponent,
   parentContextEnt,
   domPointer,
   jsxSegmentName = 'root',
@@ -33,7 +32,6 @@ export const rednerVirtual = async ({
   data?: Record<any, any>;
   parentHNode?: HNode;
   parentSegmentEnt?: SegmentEnt;
-  parentSegmentComponent?: SegmentComponent;
   parentContextEnt?: ContextEnt;
   jsxSegmentName?: string;
   vOlds?: VOld[];

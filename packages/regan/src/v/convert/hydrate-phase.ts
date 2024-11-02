@@ -5,23 +5,6 @@ import {HNodeText} from '../../h-node/text.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {splitProps} from './convert.ts';
 
-// const splitProps = (props: Record<string, any>) => {
-//   const joinedProps: Record<string, any> = {};
-//   const dynamicProps: Record<string, any> = {};
-
-//   for (const key in props) {
-//     const value = props[key];
-//     if (value instanceof Atom) {
-//       const atomValue = value.get();
-//       joinedProps[key] = atomValue;
-//     } else {
-//       dynamicProps[key] = props[key];
-//     }
-//   }
-
-//   return {joinedProps, dynamicProps};
-// };
-
 export const convertHydatedToVirtualMulti = (hNodes: HNode[]) => {
   return hNodes.map(convertHydatedToVirtualSingle).flat();
 };
@@ -32,7 +15,6 @@ export const convertHydatedToVirtualSingle = (hNode: HNode): VNew[] => {
       {
         type: 'text',
         text: hNode.text,
-        start: hNode.start,
         init: (text: Text) => {
           hNode.domNode = text;
         },

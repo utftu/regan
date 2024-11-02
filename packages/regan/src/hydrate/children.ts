@@ -1,130 +1,153 @@
-import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
 import {Child, DomPointerElement} from '../types.ts';
 import {HNode, HNodeBase, GlobalClientCtx} from '../h-node/h-node.ts';
-import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {HCtx, ParentWait} from '../node/hydrate/hydrate.ts';
 import {formatJsxValue, wrapChildIfNeed} from '../utils/jsx.ts';
-import {Ctx} from '../ctx/ctx.ts';
 import {
   createInsertedDomNodePromise,
-  getInsertedCount,
+  getInsertedInfo,
 } from '../utils/inserted-dom.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
+import {ContextEnt} from '../context/context.tsx';
+import {HydrateCtx, ParentWait} from './types.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {getPrevTextNode} from '../utils/dom.ts';
+
+const handleWait = async (parentWait: ParentWait) => {};
 
 export async function handleChildrenHydrate({
   children,
   parentHNode,
   globalCtx,
-  parentJsxSegment,
-  hCtx: hContext,
-  hNodeCtx,
-  // parentCtx,
+  hydrateCtx,
   parentDomPointer,
   parentInsertedDomNodesPromise,
-  atomDescendant,
-  atomDirectNode,
+  parentSegmentEnt,
+  parentContextEnt,
+  globalClientCtx,
+  textLength,
 }: {
   children: Child[];
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
-  parentJsxSegment: JsxSegment;
-  hCtx: HCtx;
-  hNodeCtx: GlobalClientCtx;
-  // parentCtx?: Ctx;
+  globalClientCtx: GlobalClientCtx;
+  hydrateCtx: HydrateCtx;
   parentDomPointer: DomPointerElement;
   parentInsertedDomNodesPromise: ParentWait;
-  atomDescendant: boolean;
-  atomDirectNode: boolean;
+  parentSegmentEnt: SegmentEnt;
+  parentContextEnt: ContextEnt;
+  textLength: number;
 }) {
-  const rawHydrate: (ReturnType<JsxNode['hydrate']> | HNode)[] = [];
-  let position = parentDomPointer.position;
-  let textLength = 0;
+  const rawHydrates: (ReturnType<JsxNode['hydrate']> | HNode)[] = [];
+  let elementPosition = parentDomPointer.position;
+  let currentTextLength = textLength;
   let insertedJsxCount = 0;
 
   for (let i = 0; i < children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
 
     if (typeof childOrAtom === 'string') {
-      if (atomDescendant) {
-        const textNode = getPrevTextNode(
-          hNodeCtx.window,
-          parentDomPointer.parent,
-          position
-        )!;
-        let textNodeStart = textLength;
-        textLength += childOrAtom.length;
+      currentTextLength += childOrAtom.length;
 
-        const hNode = new HNodeText(
-          {
-            jsxSegment: parentJsxSegment,
-            globalCtx,
-            globalClientCtx: hNodeCtx,
-          },
-          {
-            text: childOrAtom,
-            atomDirectNode: atomDirectNode,
-            domNode: textNode,
-            start: textNodeStart,
-            finish: textLength,
-          }
-        );
+      const textNode = parentDomPointer.parent.childNodes[
+        elementPosition
+      ] as Text;
 
-        rawHydrate.push(hNode);
-      }
+      const textHNode = new HNodeText(
+        {
+          parent: parentHNode,
+          globalCtx,
+          globalClientCtx,
+          segmentEnt: parentSegmentEnt,
+          contextEnt: parentContextEnt,
+        },
+        {
+          domNode: parentDomPointer.parent,
+        }
+      );
+
+      // if (!prevTextHNode) {
+      // }
+
+      // if (atomDescendant) {
+      //   const textNode = getPrevTextNode(
+      //     hNodeCtx.window,
+      //     parentDomPointer.parent,
+      //     position
+      //   )!;
+      //   let textNodeStart = textLength;
+      //   textLength += childOrAtom.length;
+
+      //   const hNode = new HNodeText(
+      //     {
+      //       jsxSegment: parentJsxSegment,
+      //       globalCtx,
+      //       globalClientCtx: hNodeCtx,
+      //     },
+      //     {
+      //       text: childOrAtom,
+      //       atomDirectNode: atomDirectNode,
+      //       domNode: textNode,
+      //       start: textNodeStart,
+      //       finish: textLength,
+      //     }
+      //   );
+
+      // rawHydrate.push(hNode);
+      // }
       continue;
     }
 
-    if (!(childOrAtom instanceof JsxNode) && !(childOrAtom instanceof Atom)) {
-      continue;
-    }
+    const jsxNode = wrapChildIfNeed(childOrAtom);
 
-    const isAtom = childOrAtom instanceof Atom;
-    const child = wrapChildIfNeed(childOrAtom);
+    const insertedDomPromise = createInsertedDomNodePromise();
 
-    const insertedDomNodesPromise = createInsertedDomNodePromise();
-
-    const hydrateResult = child.hydrate({
-      atomDescendant: isAtom || atomDescendant,
-      atomDirectNode: isAtom || atomDirectNode,
-      jsxSegmentStr: `${insertedJsxCount}`,
-      parentWait: insertedDomNodesPromise,
-
-      parentJsxSegment: {
-        jsxSegment: parentJsxSegment,
-        position: insertedJsxCount,
-      },
+    const hydrateResult = jsxNode.hydrate({
+      // atomDescendant: isAtom || atomDescendant,
+      // atomDirectNode: isAtom || atomDirectNode,
+      textLength: currentTextLength,
+      jsxSegmentName: `${insertedJsxCount}`,
+      parentWait: insertedDomPromise,
+      parentContextEnt,
+      parentSegmentEnt,
       domPointer: {
         parent: parentDomPointer.parent,
-        position: position,
+        position: elementPosition,
       },
       parentHNode,
       globalCtx,
-      // parentCtx,
-      hCtx: hContext,
-      hNodeCtx,
+      globalClientCtx,
+      hydrateCtx,
     });
-    rawHydrate.push(hydrateResult);
+    rawHydrates.push(hydrateResult);
 
-    const insertedCount = await getInsertedCount(
-      child,
-      insertedDomNodesPromise.promise
+    // if hydrateResult is faster than no elementChildren and all components await
+    const result = await Promise.race([
+      hydrateResult,
+      insertedDomPromise.promise,
+    ]);
+
+    // if ('hNode' in result) {
+    // }
+
+    // result
+
+    const insertedCount = await getInsertedInfo(
+      jsxNode,
+      insertedDomPromise.promise
     );
 
-    position += insertedCount.elemsCount;
+    elementPosition += insertedCount.elemsCount;
     textLength += insertedCount.textLength;
 
     insertedJsxCount++;
   }
 
   parentInsertedDomNodesPromise.promiseControls.resolve({
-    elemsCount: position - parentDomPointer.position,
+    elemsCount: elementPosition - parentDomPointer.position,
     textLength,
   });
 
-  const hydrateResultsData = await Promise.all(rawHydrate);
+  const hydrateResultsData = await Promise.all(rawHydrates);
 
   return {
     hNodes: hydrateResultsData.map((value) => {

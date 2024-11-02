@@ -1,6 +1,5 @@
 import {ContextEnt} from '../context/context.tsx';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {SegmentComponent} from '../segments/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {DomPointer} from '../types.ts';
 import {HNodeComponent} from './component.ts';
@@ -74,7 +73,10 @@ export class HNodeBase {
   }
 
   addChildren(children: HNode[]) {
-    children.forEach((hNode) => this.children.push(hNode));
+    children.forEach((child) => {
+      this.children.push(child);
+      child.parent = this;
+    });
   }
 }
 
@@ -95,5 +97,3 @@ export class GlobalClientCtx {
 }
 
 export type HNode = HNodeComponent | HNodeElement | HNodeText;
-// | HNodeElementToReplace
-// | HNodeVText;
