@@ -1,36 +1,38 @@
-<div id="parent">
-  <div>Item 1</div>
-  <div>Item 2</div>
-  <div>Item 3</div>
-  <div>Item 4</div>
-  <div>Item 5</div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Проверка синхронных изменений текста</title>
+  </head>
+  <body>
+    <div
+      id="test"
+      style="
+        width: 200px;
+        height: 100px;
+        background-color: lightgray;
+        color: black;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      Старый текст
+    </div>
+    <button onclick="changeText()">Изменить текст</button>
 
-<script>
-  function insertElementsAtPosition(parent, position, ...elements) {
-    const children = parent.children;
-    const insertPosition = position - 1; // Преобразуем позицию к индексу массива (от 0)
+    <script>
+      function changeText() {
+        const element = document.getElementById('test');
 
-    // Определяем куда вставить: если позиция существует, вставляем перед элементом
-    const referenceNode = children[insertPosition] || null;
+        // Сначала очищаем текст
+        element.textContent = '';
 
-    elements.forEach((element) => {
-      // Вставляем каждый элемент перед referenceNode (или в конец, если referenceNode === null)
-      parent.insertBefore(element, referenceNode);
-    });
-  }
-
-  const parent = document.getElementById('parent');
-
-  const newElement1 = document.createElement('div');
-  newElement1.textContent = 'New Element 1';
-
-  const newElement2 = document.createElement('div');
-  newElement2.textContent = 'New Element 2';
-
-  const newElement3 = document.createElement('div');
-  newElement3.textContent = 'New Element 3';
-
-  // Вставляем 3 новых элемента на позицию 4
-  insertElementsAtPosition(parent, 4, newElement1, newElement2, newElement3);
-</script>
+        // Затем добавляем новый текст
+        element.textContent = 'Старый текст';
+      }
+    </script>
+  </body>
+</html>

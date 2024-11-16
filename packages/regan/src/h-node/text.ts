@@ -1,4 +1,4 @@
-import {VOldText} from '../v/v.ts';
+import {VOldText} from '../v/types.ts';
 import {HNodeBase, PropsHNode} from './h-node.ts';
 
 export type HNodeTextProps = {

@@ -25,7 +25,7 @@ const deleteFunc = (vOld: VOld) => {
   vOld.node.parentNode!.removeChild(vOld.node);
 };
 
-const createTextSimple = (text: string, window: Window) => {
+export const createTextSimple = (text: string, window: Window) => {
   const textNode = window.document.createTextNode(text);
 
   return textNode;
@@ -134,6 +134,59 @@ const findNextTextNodes = (hNode: HNode) => {
     nextNode = findNextTextNode(nextNode);
   }
   return nodes;
+};
+
+const a = (vNews: VNew[], vOlds: VOld[], hNode: HNode) => {
+  const lastVNewPosision = vNews.length - 1;
+
+  const lastVNew = vNews[vNews.length - 1];
+  const lastVOld = vOlds[vOlds.length - 1];
+
+  if (lastVOld.type === 'text') {
+  }
+  for (let i = 0; i <= Math.max(vNews.length, vOlds.length); i++) {
+    const vNew: VNew | undefined = vNews[i];
+    const vOld: VOld | undefined = vOlds[i];
+
+    if (vNews.length === 1) {
+    }
+
+    if (vOlds.length === 0) {
+    }
+    if (lastVNewPosision === i) {
+      const lastMeangingVOld = vOlds[vOlds.length - 1];
+
+      if (lastMeangingVOld.type === 'text') {
+        const vNewText = vNew as VNewText;
+        const nextTextHNodes = findNextTextNodes(hNode);
+        if (nextTextHNodes.length > 0) {
+          const firstNextTextNode = nextTextHNodes[0];
+
+          if (lastVOld.type === 'text') {
+            const lengthDiff = vNewText.text.length - lastVOld.text.length;
+            firstNextTextNode.domNode.textContent =
+              vNewText.text +
+              firstNextTextNode.domNode.textContent!.slice(
+                lastVOld.text.length
+              );
+
+            nextTextHNodes.forEach((hNodeText) => {
+              hNodeText.start += lengthDiff;
+            });
+          } else {
+            firstNextTextNode.domNode.textContent =
+              vNewText.text + firstNextTextNode.domNode.textContent!;
+            nextTextHNodes.forEach((hNodeText) => {
+              hNodeText.start += vNewText.text.length;
+            });
+          }
+        }
+        // standart handle
+      } else {
+      }
+      // standart handle
+    }
+  }
 };
 
 const bam = (
