@@ -7,7 +7,7 @@ import {
   convertFromVirtualToHNodes,
   createVirtualFromRenderTemplate,
 } from './convert.ts';
-import {virtualApply} from '../v/v.ts';
+import {virtualApply} from '../v/old-v.ts';
 import {insertNodesAtPosition} from '../utils/dom.ts';
 import {RenderTemplateExtended} from './types.ts';
 import {mountHNodes} from '../h-node/helpers.ts';

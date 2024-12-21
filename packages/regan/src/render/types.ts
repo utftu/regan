@@ -1,7 +1,7 @@
 import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
-import {VNewElement, VNewText, VOldElement, VOldText} from '../v/v.ts';
+import {VNewElement, VNewText, VOldElement, VOldText} from '../v/old-v.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {HNodeText} from '../h-node/text.ts';

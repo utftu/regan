@@ -6,33 +6,16 @@
     <title>Проверка синхронных изменений текста</title>
   </head>
   <body>
-    <div
-      id="test"
-      style="
-        width: 200px;
-        height: 100px;
-        background-color: lightgray;
-        color: black;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      "
-    >
-      Старый текст
-    </div>
-    <button onclick="changeText()">Изменить текст</button>
-
+    <output id="container"></output>
     <script>
-      function changeText() {
-        const element = document.getElementById('test');
+      let fragment = document.createDocumentFragment(); // создаем фрагмент
+      let newElement = document.createElement('div'); // создаем новый элемент
+      newElement.textContent = 'Hello, World!';
+      fragment.appendChild(newElement); // добавляем элемент во фрагмент
 
-        // Сначала очищаем текст
-        element.textContent = '';
-
-        // Затем добавляем новый текст
-        element.textContent = 'Старый текст';
-      }
+      // Добавляем фрагмент в реальный DOM
+      let container = document.getElementById('container');
+      container.appendChild(fragment);
     </script>
   </body>
 </html>

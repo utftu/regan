@@ -2,7 +2,7 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {VNew, VNewElement, VNewText} from '../v/v.ts';
+import {VNew, VNewElement, VNewText} from '../v/old-v.ts';
 import {
   RenderTemplate,
   RenderTemplateElementExtended,

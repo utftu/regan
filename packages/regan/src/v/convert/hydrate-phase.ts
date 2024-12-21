@@ -1,5 +1,5 @@
 import {Atom} from 'strangelove';
-import {VNew, VNewElement, VNewText, VOldElement} from '../v.ts';
+import {VNew, VNewElement, VNewText, VOldElement} from '../old-v.ts';
 import {HNodeElement} from '../../h-node/element.ts';
 import {HNodeText} from '../../h-node/text.ts';
 import {HNode} from '../../h-node/h-node.ts';
@@ -16,7 +16,7 @@ export const convertHydatedToVirtualSingle = (hNode: HNode): VNew[] => {
         type: 'text',
         text: hNode.text,
         init: (text: Text) => {
-          hNode.domNode = text;
+          hNode.textNode = text;
         },
       } satisfies VNewText,
     ];

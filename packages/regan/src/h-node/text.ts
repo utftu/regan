@@ -10,11 +10,11 @@ export type HNodeTextProps = {
 export class HNodeText extends HNodeBase {
   start: number;
   text: string;
-  domNode: Text;
+  textNode: Text;
   vOldText?: VOldText;
   constructor(props: PropsHNode, {domNode, start, text}: HNodeTextProps) {
     super(props);
-    this.domNode = domNode;
+    this.textNode = domNode;
     this.start = start;
     this.text = text;
   }
