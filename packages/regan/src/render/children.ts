@@ -59,7 +59,7 @@ export async function handleChildrenRender({
                 contextEnt: parentContextEnt,
               },
               {
-                domNode,
+                textNode: domNode,
                 text: childOrAtom,
                 start,
               }

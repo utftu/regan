@@ -61,7 +61,7 @@ export async function handleChildrenHydrate({
           contextEnt: parentContextEnt,
         },
         {
-          domNode: parentDomPointer.parent,
+          textNode: parentDomPointer.parent,
         }
       );
 

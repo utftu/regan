@@ -3,7 +3,7 @@ import {HNodeBase, PropsHNode} from './h-node.ts';
 
 export type HNodeTextProps = {
   start: number;
-  domNode: Text;
+  textNode: Text;
   text: string;
 };
 
@@ -12,9 +12,9 @@ export class HNodeText extends HNodeBase {
   text: string;
   textNode: Text;
   vOldText?: VOldText;
-  constructor(props: PropsHNode, {domNode, start, text}: HNodeTextProps) {
+  constructor(props: PropsHNode, {textNode, start, text}: HNodeTextProps) {
     super(props);
-    this.textNode = domNode;
+    this.textNode = textNode;
     this.start = start;
     this.text = text;
   }

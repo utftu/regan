@@ -119,11 +119,6 @@ const patchElement = (vNew: VNewElement, vOld: VOldElement) => {
   return vOld.element;
 };
 
-const init = (vNew: VNew) => {
-  const vOld = vNew as VOld;
-  vNew.init?.(vOld as any);
-};
-
 export const handle = (
   vNew: VNew | undefined,
   vOld: VOld | undefined,
