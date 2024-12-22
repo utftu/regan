@@ -92,53 +92,43 @@ export const virtualApplyExternal = (
   vNews: VNew[],
   vOlds: VOld[],
   hNode: HNode,
-  parentNode: ParentNode,
+  parent: ParentNode,
   window: Window
 ) => {
   count++;
-  console.log('-----', 'before edge', (parentNode as Element).innerHTML);
 
   const actions = handleEdgeTextCases(vNews, vOlds, hNode, window);
   actions.forEach((action) => action());
-
-  console.log('-----', 'before iterate', (parentNode as Element).innerHTML);
 
   for (let i = 0; i < Math.max(vNews.length, vOlds.length); i++) {
     const prevVNew = vNews[i - 1] as VOld | undefined;
     const vNew = vNews[i] as VNew | undefined;
     const vOld = vOlds[i] as VOld | undefined;
 
-    if (count === 2) {
-      console.log('-----', 'vNew', vNew);
-    }
-
     if (checkSkip(vOld) && checkSkip(vNew)) {
-      console.log('-----', 'here');
       continue;
     }
 
     if (checkSkip(vOld)) {
-      console.log('-----', 'here2');
       if (!vNew) {
         continue;
       }
       if (vNew.type === 'text') {
         const textNode = createText(vNew, window);
-        convertTextNewToOld(vNew, textNode);
 
-        insertChild({parent: parentNode, prevVNew, node: textNode, vOld});
-        // parentNode.appendChild(textNode);
+        insertChild({parent: parent, prevVNew, node: textNode, vOld});
+        convertTextNewToOld(vNew, textNode);
       } else {
         const element = createElement(vNew, window);
+
+        insertChild({parent, prevVNew, node: element, vOld});
+
         convertElementNewToOld(vNew, element);
 
-        insertChild({parent: parentNode, prevVNew, node: element, vOld});
-        // parentNode.appendChild(element);
+        virtualApplyInternalSimple({vNew, vOld: undefined, parent, window});
       }
 
       deleteSkip(vOld);
-
-      console.log('-----', '>>>', (parentNode as Element).innerHTML);
 
       continue;
     }
@@ -151,33 +141,45 @@ export const virtualApplyExternal = (
       continue;
     }
 
-    if (count === 2) {
-      console.log('-----', 'before handle');
-    }
-    handle({vNew, vOld, window, parent: parentNode, prevVNew});
+    handle({vNew, vOld, window, parent: parent, prevVNew});
 
     if (vNew?.type === 'element' || vOld?.type === 'element') {
-      virtualApplyInternal({
-        vNews: vNew?.type === 'element' ? vNew.children : [],
-        vOlds: vOld?.type === 'element' ? vOld.children : [],
-        parentNode:
-          vNew?.type === 'element' ? (vNew as VOldElement).element : parentNode,
-        window,
-      });
+      virtualApplyInternalSimple({vNew, vOld, parent, window});
     }
   }
+};
+
+const virtualApplyInternalSimple = ({
+  vNew,
+  vOld,
+  parent,
+  window,
+}: {
+  vNew?: VNew;
+  vOld?: VOld;
+  parent: ParentNode;
+  window: Window;
+}) => {
+  const newParent =
+    vNew?.type === 'element' ? (vNew as VOldElement).element : parent;
+  virtualApplyInternal({
+    vNews: vNew?.type === 'element' ? vNew.children : [],
+    vOlds: vOld?.type === 'element' ? vOld.children : [],
+    parent: newParent,
+    window,
+  });
 };
 
 const virtualApplyInternal = ({
   vNews,
   vOlds,
   window,
-  parentNode,
+  parent,
 }: {
   vNews: VNew[];
   vOlds: VOld[];
   window: Window;
-  parentNode: ParentNode;
+  parent: ParentNode;
 }) => {
   for (let i = 0; i < Math.max(vNews.length, vOlds.length); i++) {
     const prevVNew = vNews[i - 1] as VOld | undefined;
@@ -188,18 +190,12 @@ const virtualApplyInternal = ({
       vNew: vNews[i],
       vOld: vOlds[i],
       window,
-      parent: parentNode,
+      parent: parent,
       prevVNew,
     });
 
     if (vNew?.type === 'element' || vOld?.type === 'element') {
-      virtualApplyInternal({
-        vNews: vNew?.type === 'element' ? vNew.children : [],
-        vOlds: vOld?.type === 'element' ? vOld.children : [],
-        parentNode:
-          vNew?.type === 'element' ? (vNew as VOldElement).element : parentNode,
-        window,
-      });
+      virtualApplyInternalSimple({vNew, vOld, parent, window});
     }
   }
 };

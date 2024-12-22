@@ -11,7 +11,6 @@ const document = window.document;
 
 const createParent = () => {
   return document.createElement('div');
-  // return document.createDocumentFragment();
 };
 
 const createHNodes = () => {
@@ -44,7 +43,7 @@ const vNews: VNew[] = [
       {type: 'text', data: {text: 'helloInner'}},
       {
         type: 'element',
-        data: {tag: 'div', props: {a: 'bInner', b: 'bInner'}},
+        data: {tag: 'div', props: {a: 'aInner', b: 'bInner'}},
         children: [],
       },
     ],
@@ -83,7 +82,7 @@ describe('v/v', () => {
     expect(element.childNodes.length).toBe(2);
 
     expect(element.childNodes[0].textContent).toBe('helloInner');
-    expect((element.childNodes[1] as Element).getAttribute('a')).toBe('aaa');
+    expect((element.childNodes[1] as Element).getAttribute('a')).toBe('aInner');
   });
   it('remove', () => {
     const {leftHText, middleHNode} = createHNodes();
@@ -100,15 +99,13 @@ describe('v/v', () => {
     expect(parent.childNodes.length).toBe(1);
     expect(parent.childNodes[0].textContent).toBe('1');
   });
-  it.only('replace', () => {
+  it('replace', () => {
     const {leftHText, middleHNode} = createHNodes();
     const parent = createParent();
     parent.appendChild(leftHText.textNode);
 
     // to create something before replace
     virtualApplyExternal(vNews, [], middleHNode, parent, window);
-
-    console.log('-----', 'prepare finish', '---------------------------');
 
     const vOlds = vNews as VOld[];
 
@@ -117,9 +114,12 @@ describe('v/v', () => {
     expect(parent.childNodes.length).toBe(3);
     expect(parent.childNodes[0].textContent).toBe('1');
 
-    console.log('-----', 'finish', (parent as Element).innerHTML);
+    expect(parent.childNodes[2].textContent).toBe('world');
 
-    // console.log('-----', 'parent.childNodes[2]', parent.childNodes[2]);
-    // expect(parent.childNodes[2].textContent).toBe('world');
+    const element = parent.childNodes[1] as Element;
+
+    expect(element.getAttribute('a')).toBe('aa2');
+
+    expect(element.childNodes.length).toBe(2);
   });
 });
