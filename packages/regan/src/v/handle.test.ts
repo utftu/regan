@@ -1,0 +1,179 @@
+import {describe, expect, it, Mock, vi} from 'vitest';
+import {VNewElement, VNewText, VOldElement, VOldText} from './types.ts';
+import {JSDOM} from 'jsdom';
+import {handle} from './handle.ts';
+
+const jsdom = new JSDOM();
+const window = jsdom.window as any as Window;
+const document = jsdom.window.document;
+
+const vNewElement: VNewElement = {
+  type: 'element',
+  data: {
+    tag: 'div',
+    props: {
+      a: 'aa',
+      b: 'bb',
+    },
+  },
+  children: [],
+};
+
+const getVOldElement = (): VOldElement => {
+  const element = document.createElement('div');
+  element.setAttribute('a', 'a');
+  element.setAttribute('b', 'b');
+
+  return {
+    type: 'element',
+    data: {
+      tag: 'div',
+      props: {
+        a: 'a',
+        b: 'b',
+      },
+    },
+    element,
+    children: [],
+  };
+};
+
+const vNewText: VNewText = {
+  type: 'text',
+  data: {
+    text: 'helloworld',
+  },
+};
+
+const getVOldText = (): VOldText => {
+  return {
+    type: 'text',
+    data: {
+      text: 'hello',
+    },
+    textNode: document.createTextNode('hello'),
+  };
+};
+
+const createParent = () => {
+  const frgment = jsdom.window.document.createDocumentFragment();
+  return frgment;
+};
+
+describe('v/handle', () => {
+  it('null => text', () => {
+    const parent = createParent();
+
+    handle({
+      vNew: vNewText,
+      window,
+      parent,
+    });
+    expect(parent.childNodes[0].textContent).toBe('helloworld');
+  });
+  it('text => null', () => {
+    const parent = createParent();
+
+    const vOldText = getVOldText();
+    parent.appendChild(vOldText.textNode);
+
+    handle({vOld: vOldText, window, parent});
+    expect(parent.childNodes.length).toBe(0);
+  });
+  it('null => element', () => {
+    const parent = createParent();
+    handle({vNew: vNewElement, window, parent});
+
+    expect(parent.children[0].getAttribute('a')).toBe('aa');
+  });
+  it('element => null', () => {
+    const parent = createParent();
+    const vOldElement = getVOldElement();
+    parent.appendChild(vOldElement.element);
+    handle({vOld: vOldElement, window, parent});
+
+    expect(parent.childNodes.length).toBe(0);
+  });
+  it('text => element', () => {
+    const parent = createParent();
+    const vOldText = getVOldText();
+    parent.appendChild(vOldText.textNode);
+
+    handle({vNew: vNewElement, vOld: vOldText, window, parent});
+    expect(parent.childNodes.length).toBe(1);
+    expect((parent.childNodes[0] as Element).tagName).toBe('DIV');
+  });
+
+  it('element => text', () => {
+    const parent = createParent();
+    const vOldElement = getVOldElement();
+    parent.appendChild(vOldElement.element);
+
+    handle({vNew: vNewText, vOld: vOldElement, window, parent});
+    expect(parent.childNodes.length).toBe(1);
+    expect(parent.childNodes[0].textContent).toBe('helloworld');
+  });
+  it('element => element', () => {
+    const parent = createParent();
+    const vOldElement = getVOldElement();
+    parent.appendChild(vOldElement.element);
+
+    handle({vNew: vNewElement, vOld: vOldElement, window, parent});
+    expect(parent.children[0]).toBe(vOldElement.element);
+    expect(parent.children[0].getAttribute('a')).toBe('aa');
+  });
+  it('element => element (diff tag)', () => {
+    const parent = createParent();
+    const elementSpan = document.createElement('span');
+    elementSpan.setAttribute('a', 'aa');
+    elementSpan.setAttribute('b', 'bb');
+
+    const vOldElement: VOldElement = {
+      type: 'element',
+      data: {
+        tag: 'span',
+        props: {
+          a: 'aa',
+          b: 'bb',
+        },
+      },
+      element: elementSpan,
+      children: [],
+    };
+    parent.appendChild(vOldElement.element);
+
+    handle({vNew: vNewElement, vOld: vOldElement, window, parent});
+
+    expect(parent.children[0].tagName).toBe('DIV');
+    expect(parent.children[0].getAttribute('a')).toBe('aa');
+  });
+  it('text => text', () => {
+    const parent = createParent();
+    const vOldText = getVOldText();
+    parent.appendChild(vOldText.textNode);
+
+    handle({vNew: vNewText, vOld: vOldText, window, parent});
+
+    expect(parent.childNodes[0].textContent).toBe('helloworld');
+  });
+  it('init text', () => {
+    const parent = createParent();
+    const mockFn = vi.fn();
+
+    const vNewTextMy: VNewText = {...vNewText, init: mockFn};
+
+    handle({vNew: vNewTextMy, window, parent});
+    expect(mockFn.mock.calls.length).toBe(1);
+    expect(mockFn.mock.calls[0][0]).toBe(vNewTextMy);
+  });
+  it('init element', () => {
+    const parent = createParent();
+    const mockFn = vi.fn();
+
+    const vNewElementtMy: VNewElement = {...vNewElement, init: mockFn};
+
+    handle({vNew: vNewElementtMy, window, parent});
+    expect(mockFn.mock.calls.length).toBe(1);
+    expect(mockFn.mock.calls[0][0]).toBe(vNewElementtMy);
+  });
+});

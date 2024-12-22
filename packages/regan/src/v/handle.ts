@@ -6,9 +6,9 @@ import {
   VNew,
   VOld,
 } from './types.ts';
-import {convertFromNewToOld} from './v.ts';
+import {convertFromNewToOld, insertChild} from './v.ts';
 
-const getDomNode = (vOld: VOld) => {
+export const getDomNode = (vOld: VOld) => {
   if (vOld.type === 'text') {
     return vOld.textNode;
   }
@@ -119,12 +119,19 @@ const patchElement = (vNew: VNewElement, vOld: VOldElement) => {
   return vOld.element;
 };
 
-export const handle = (
-  vNew: VNew | undefined,
-  vOld: VOld | undefined,
-  window: Window,
-  parentElement: Element
-) => {
+export const handle = ({
+  vNew,
+  vOld,
+  window,
+  parent,
+  prevVNew,
+}: {
+  vNew?: VNew;
+  vOld?: VOld;
+  window: Window;
+  parent: ParentNode;
+  prevVNew?: VOld;
+}) => {
   if (!vNew) {
     deleteFunc(vOld!);
     return;
@@ -132,11 +139,16 @@ export const handle = (
 
   if (!vOld) {
     const newDomNode = create(vNew, window);
-    parentElement.appendChild(newDomNode);
+    // parentNode.appendChild(newDomNode);
+
+    insertChild({parent: parent, prevVNew, node: newDomNode, vOld});
 
     convertFromNewToOld(vNew, newDomNode);
     return;
   }
+
+  // console.log('-----', 'vNew', vNew);
+  // console.log('-----', 'vOld', vOld);
 
   // now we sure that vNew and vOld have one type
   if (vOld.type !== vNew.type) {

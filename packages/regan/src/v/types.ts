@@ -1,8 +1,5 @@
 type MetaExtend = {
-  meta: {
-    // skipEdge: boolean;
-    skip: boolean;
-  };
+  skip?: true;
 };
 
 export type VNewElement = {

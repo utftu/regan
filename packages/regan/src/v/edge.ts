@@ -1,26 +1,17 @@
 import {HNode} from '../h-node/h-node.ts';
 import {
-  findNextTextNode,
-  findPrevTextNode,
+  findNextTextHNodes,
+  findPrevTextHNode,
 } from '../h-node/helpers/find-text.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {VNew, VNewText, VOld, VOldText} from './types.ts';
+import {setSkip} from './v.ts';
 
 const convertTextNewInOld = (vNew: VNewText, textNode: Text) => {
   const vOld = vNew as VOldText;
 
   vOld.textNode = textNode;
   vOld.init?.(vOld);
-};
-
-const findNextTextNodes = (hNode: HNode) => {
-  const nodes = [];
-  let nextNode = findNextTextNode(hNode);
-  while (nextNode) {
-    nodes.push(nextNode);
-    nextNode = findNextTextNode(nextNode);
-  }
-  return nodes;
 };
 
 const recalculateNextTextHNodes = (
@@ -41,7 +32,7 @@ const split = ({
   nextTextHNodes,
   window,
 }: {
-  nextTextHNodes: ReturnType<typeof findNextTextNodes>;
+  nextTextHNodes: HNodeText[];
   window: Window;
 }) => {
   const nextTextHNode = nextTextHNodes[0];
@@ -51,13 +42,14 @@ const split = ({
       nextTextHNode.textNode.textContent!.slice(nextTextHNode.start)
     );
 
-    // const nextTextHNodes = findNextTextNodes(hNode);
+    const oldRightStart = nextTextHNode.start;
+
     const oldLeftTextNode = nextTextHNode.textNode;
     recalculateNextTextHNodes(nextTextHNodes, newNode);
 
     oldLeftTextNode.textContent = oldLeftTextNode.textContent!.slice(
       0,
-      nextTextHNode.start
+      oldRightStart
     );
   }
 };
@@ -75,8 +67,10 @@ const join = ({
   if (prevTextHNode && nextTextHNode) {
     const leftPartFinishPosition =
       prevTextHNode.start + prevTextHNode.text.length + text.length;
-    prevTextHNode.textNode.textContent +=
-      text + nextTextHNode.textNode.textContent!;
+    prevTextHNode.textNode.textContent =
+      prevTextHNode.textNode.textContent! +
+      text +
+      nextTextHNode.textNode.textContent!;
 
     nextTextHNodes.forEach((nextTextHNode) => {
       nextTextHNode.textNode = prevTextHNode.textNode;
@@ -118,8 +112,8 @@ export const handleEdgeTextCases = (
   const firstVNew = vNews[0] as VNew | void;
   const firstVOld = vOlds[0] as VOld | void;
 
-  const prevTextHNode = findPrevTextNode(hNode);
-  const nextTextHNodes = findNextTextNodes(hNode);
+  const prevTextHNode = findPrevTextHNode(hNode);
+  const nextTextHNodes = findNextTextHNodes(hNode);
   const nextTextHNode = nextTextHNodes[0];
 
   const needPureSplitFull = vOlds.length === 0;
@@ -127,8 +121,8 @@ export const handleEdgeTextCases = (
   const needSplitFull = needPureSplitFull || needSplitAndDeleteFull;
 
   const needPureJoinFull = vNews.length === 0;
-  const needJoinAndAddFull = vOlds.length === 1 && vOlds[0].type === 'text';
-  const needJoinFull = needPureJoinFull && needPureJoinFull;
+  const needJoinAndAddFull = vNews.length === 1 && vNews[0].type === 'text';
+  const needJoinFull = needPureJoinFull || needJoinAndAddFull;
 
   const actions: (() => void)[] = [];
 
@@ -150,7 +144,7 @@ export const handleEdgeTextCases = (
     });
 
     if (prevTextHNode) {
-      vOld.meta.skip = true;
+      setSkip(vOld);
     }
   }
 
@@ -162,7 +156,7 @@ export const handleEdgeTextCases = (
           nextTextHNode.textNode.textContent!.slice(lastVOld.data.text.length);
         recalculateNextTextHNodes(nextTextHNodes, lastVOld.textNode, 0);
       });
-      lastVOld.meta.skip = true;
+      setSkip(lastVOld);
     }
   }
 
@@ -181,7 +175,7 @@ export const handleEdgeTextCases = (
           -firstVOld.data.text.length
         );
     });
-    firstVOld.meta.skip = true;
+    setSkip(firstVOld);
   }
 
   // join
@@ -208,7 +202,7 @@ export const handleEdgeTextCases = (
     });
 
     if (prevTextHNode || nextTextHNode) {
-      vNew.meta.skip = true;
+      setSkip(vNew);
     }
   }
 
@@ -223,7 +217,7 @@ export const handleEdgeTextCases = (
       prevTextHNode.textNode.textContent += firstVNew.data.text;
       convertTextNewInOld(firstVNew, prevTextHNode.textNode);
     });
-    firstVNew.meta.skip = true;
+    setSkip(firstVNew);
   }
 
   // join only last part
@@ -241,7 +235,7 @@ export const handleEdgeTextCases = (
       convertTextNewInOld(lastVNew, nextTextHNode.textNode);
     });
 
-    lastVNew.meta.skip = true;
+    setSkip(lastVNew);
   }
 
   return actions;

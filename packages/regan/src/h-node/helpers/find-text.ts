@@ -42,27 +42,8 @@ const findTextNodeUp = (hNode: HNode) => {
   return findTextNodeUp(parent);
 };
 
-export const findNextTextNode = (hNode: HNode) => {
+export const findNextTextHNode = (hNode: HNode) => {
   return findTextNodeUp(hNode);
-};
-
-const findTextNodeDownReverse = (hNode: HNode): HNodeText | void => {
-  if (hNode instanceof HNodeText) {
-    return hNode;
-  }
-
-  if (hNode instanceof HNodeElement) {
-    return;
-  }
-
-  for (let i = hNode.children.length - 1; i >= 0; i--) {
-    const child = hNode.children[i];
-    const result = findTextNodeDown(child);
-
-    if (result) {
-      return result;
-    }
-  }
 };
 
 const findTextNodeUpReverse = (hNode: HNode) => {
@@ -87,6 +68,16 @@ const findTextNodeUpReverse = (hNode: HNode) => {
   return findTextNodeUpReverse(parent);
 };
 
-export const findPrevTextNode = (hNode: HNode) => {
+export const findPrevTextHNode = (hNode: HNode) => {
   return findTextNodeUpReverse(hNode);
+};
+
+export const findNextTextHNodes = (hNode: HNode) => {
+  const nodes = [];
+  let nextNode = findNextTextHNode(hNode);
+  while (nextNode) {
+    nodes.push(nextNode);
+    nextNode = findNextTextHNode(nextNode);
+  }
+  return nodes;
 };
