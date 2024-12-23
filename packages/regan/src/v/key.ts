@@ -1,26 +1,18 @@
 import {patchElement} from './handle.ts';
-import {VNew, VNewElement, VOld, VOldElement} from './types.ts';
+import {VNew, VNewElement, VOldElement} from './types.ts';
 import {setSkip} from './v.ts';
 
-// type StoreKey = {
-//   keys: Map<string, Element>;
-//   allParsed: boolean;
-// };
-
-type StoreKey = Record<string, VNewElement>;
-type StoreKeyOld = Record<string, VOldElement>;
+export type StoreKeyNew = Record<string, VNewElement>;
+export type StoreKeyOld = Record<string, VOldElement>;
 
 const handleKey = ({
   vNew,
-  // vOld,
-  // vNews,
-  // vOlds,
   oldStore,
   newStore,
 }: {
   vNew: VNew;
   oldStore: StoreKeyOld;
-  newStore: StoreKey;
+  newStore: StoreKeyNew;
 }) => {
   if (vNew.type !== 'element' || !('key' in vNew)) {
     return;

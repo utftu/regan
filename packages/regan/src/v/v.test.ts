@@ -72,7 +72,13 @@ describe('v/v', () => {
     const parent = createParent();
     parent.appendChild(leftHText.textNode);
 
-    virtualApplyExternal(vNews, [], middleHNode, parent, window);
+    virtualApplyExternal({
+      vNews,
+      vOlds: [],
+      hNode: middleHNode,
+      parent,
+      window,
+    });
 
     expect(parent.childNodes.length).toBe(2);
     expect(parent.childNodes[0].textContent).toBe('1hello');
@@ -90,11 +96,23 @@ describe('v/v', () => {
     parent.appendChild(leftHText.textNode);
 
     // to create something before remove
-    virtualApplyExternal(vNews, [], middleHNode, parent, window);
+    virtualApplyExternal({
+      vNews: vNews,
+      vOlds: [],
+      hNode: middleHNode,
+      parent,
+      window,
+    });
 
     const vOlds = vNews as VOld[];
 
-    virtualApplyExternal([], vOlds, middleHNode, parent, window);
+    virtualApplyExternal({
+      vNews: [],
+      vOlds,
+      hNode: middleHNode,
+      parent,
+      window,
+    });
 
     expect(parent.childNodes.length).toBe(1);
     expect(parent.childNodes[0].textContent).toBe('1');
@@ -105,11 +123,23 @@ describe('v/v', () => {
     parent.appendChild(leftHText.textNode);
 
     // to create something before replace
-    virtualApplyExternal(vNews, [], middleHNode, parent, window);
+    virtualApplyExternal({
+      vNews,
+      vOlds: [],
+      hNode: middleHNode,
+      parent,
+      window,
+    });
 
     const vOlds = vNews as VOld[];
 
-    virtualApplyExternal(vNews2, vOlds, middleHNode, parent, window);
+    virtualApplyExternal({
+      vNews: vNews2,
+      vOlds,
+      hNode: middleHNode,
+      parent,
+      window,
+    });
 
     expect(parent.childNodes.length).toBe(3);
     expect(parent.childNodes[0].textContent).toBe('1');

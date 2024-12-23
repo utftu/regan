@@ -7,6 +7,7 @@ import {
   getDomNode as getNode,
   handle,
 } from './handle.ts';
+import {StoreKeyOld} from './key.ts';
 import {
   VNewElement,
   VOldElement,
@@ -84,19 +85,19 @@ export const convertFromNewToOld = (vNew: VNew, domNode: Node) => {
   }
 };
 
-// const a: ParentNode = document.createElement('div');
-
-let count = 0;
-
-export const virtualApplyExternal = (
-  vNews: VNew[],
-  vOlds: VOld[],
-  hNode: HNode,
-  parent: ParentNode,
-  window: Window
-) => {
-  count++;
-
+export const virtualApplyExternal = ({
+  vNews,
+  vOlds,
+  hNode,
+  parent,
+  window,
+}: {
+  vNews: VNew[];
+  vOlds: VOld[];
+  hNode: HNode;
+  parent: ParentNode;
+  window: Window;
+}) => {
   const actions = handleEdgeTextCases(vNews, vOlds, hNode, window);
   actions.forEach((action) => action());
 
@@ -113,11 +114,13 @@ const virtualApplyInternalSimple = ({
   vOld,
   parent,
   window,
-}: {
+}: // store = {},
+{
   vNew?: VNew;
   vOld?: VOld;
   parent: ParentNode;
   window: Window;
+  // store: StoreKeyOld;
 }) => {
   const newParent =
     vNew?.type === 'element' ? (vNew as VOldElement).element : parent;
