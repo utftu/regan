@@ -9,8 +9,8 @@ export type VNewElement = {
     tag: string;
     props: Record<string, any>;
   };
-  // tag: string;
-  // props: Record<string, any>;
+
+  key?: string;
   init?: (vOld: VOldElement) => void;
 
   children: VNew[];

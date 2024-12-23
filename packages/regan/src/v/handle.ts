@@ -90,7 +90,7 @@ const splitProps = (vNew: VNewElement, vOld: VOldElement) => {
   };
 };
 
-const patchElement = (vNew: VNewElement, vOld: VOldElement) => {
+export const patchElement = (vNew: VNewElement, vOld: VOldElement) => {
   const {newProps, oldProps} = splitProps(vNew, vOld);
   const element = vOld.element;
 
@@ -139,16 +139,12 @@ export const handle = ({
 
   if (!vOld) {
     const newDomNode = create(vNew, window);
-    // parentNode.appendChild(newDomNode);
 
     insertChild({parent: parent, prevVNew, node: newDomNode, vOld});
 
     convertFromNewToOld(vNew, newDomNode);
     return;
   }
-
-  // console.log('-----', 'vNew', vNew);
-  // console.log('-----', 'vOld', vOld);
 
   // now we sure that vNew and vOld have one type
   if (vOld.type !== vNew.type) {

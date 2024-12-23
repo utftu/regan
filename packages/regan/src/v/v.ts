@@ -100,53 +100,12 @@ export const virtualApplyExternal = (
   const actions = handleEdgeTextCases(vNews, vOlds, hNode, window);
   actions.forEach((action) => action());
 
-  for (let i = 0; i < Math.max(vNews.length, vOlds.length); i++) {
-    const prevVNew = vNews[i - 1] as VOld | undefined;
-    const vNew = vNews[i] as VNew | undefined;
-    const vOld = vOlds[i] as VOld | undefined;
-
-    if (checkSkip(vOld) && checkSkip(vNew)) {
-      continue;
-    }
-
-    if (checkSkip(vOld)) {
-      if (!vNew) {
-        continue;
-      }
-      if (vNew.type === 'text') {
-        const textNode = createText(vNew, window);
-
-        insertChild({parent: parent, prevVNew, node: textNode, vOld});
-        convertTextNewToOld(vNew, textNode);
-      } else {
-        const element = createElement(vNew, window);
-
-        insertChild({parent, prevVNew, node: element, vOld});
-
-        convertElementNewToOld(vNew, element);
-
-        virtualApplyInternalSimple({vNew, vOld: undefined, parent, window});
-      }
-
-      deleteSkip(vOld);
-
-      continue;
-    }
-
-    if (checkSkip(vNew)) {
-      if (vOld) {
-        deleteFunc(vOld);
-      }
-      deleteSkip(vNew);
-      continue;
-    }
-
-    handle({vNew, vOld, window, parent: parent, prevVNew});
-
-    if (vNew?.type === 'element' || vOld?.type === 'element') {
-      virtualApplyInternalSimple({vNew, vOld, parent, window});
-    }
-  }
+  virtualApplyInternal({
+    vNews,
+    vOlds,
+    window,
+    parent,
+  });
 };
 
 const virtualApplyInternalSimple = ({
@@ -185,6 +144,43 @@ const virtualApplyInternal = ({
     const prevVNew = vNews[i - 1] as VOld | undefined;
     const vNew = vNews[i] as VNew | undefined;
     const vOld = vOlds[i] as VOld | undefined;
+
+    if (checkSkip(vOld) && checkSkip(vNew)) {
+      continue;
+    }
+
+    if (checkSkip(vOld)) {
+      deleteSkip(vOld);
+      if (!vNew) {
+        continue;
+      }
+      if (vNew.type === 'text') {
+        const textNode = createText(vNew, window);
+
+        insertChild({parent: parent, prevVNew, node: textNode, vOld});
+        convertTextNewToOld(vNew, textNode);
+      } else {
+        const element = createElement(vNew, window);
+
+        insertChild({parent, prevVNew, node: element, vOld});
+
+        // to not notify too early
+        (vNew as VOldElement).element = element;
+
+        virtualApplyInternalSimple({vNew, vOld: undefined, parent, window});
+        convertElementNewToOld(vNew, element);
+      }
+
+      continue;
+    }
+
+    if (checkSkip(vNew)) {
+      deleteSkip(vNew);
+      if (vOld) {
+        deleteFunc(vOld);
+      }
+      continue;
+    }
 
     handle({
       vNew: vNews[i],
