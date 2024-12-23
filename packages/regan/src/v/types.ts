@@ -1,3 +1,5 @@
+import {KeyStoreNew, KeyStoreOld} from './key.ts';
+
 type MetaExtend = {
   skip?: true;
 };
@@ -12,12 +14,14 @@ export type VNewElement = {
 
   key?: string;
   init?: (vOld: VOldElement) => void;
+  keyStore: KeyStoreNew;
 
   children: VNew[];
 } & MetaExtend;
 
 export type VOldElement = VNewElement & {
   element: Element;
+  keyStore: KeyStoreOld;
 
   children: VOldElement[];
 };

@@ -7,7 +7,7 @@ import {
   getDomNode as getNode,
   handle,
 } from './handle.ts';
-import {StoreKeyOld} from './key.ts';
+import {KeyStoreNew, KeyStoreOld} from './key.ts';
 import {
   VNewElement,
   VOldElement,
@@ -91,21 +91,28 @@ export const virtualApplyExternal = ({
   hNode,
   parent,
   window,
+  keyStoreNew,
+  keyStoreOld,
 }: {
   vNews: VNew[];
   vOlds: VOld[];
   hNode: HNode;
   parent: ParentNode;
   window: Window;
+  keyStoreOld: KeyStoreOld;
+  keyStoreNew: KeyStoreNew;
 }) => {
   const actions = handleEdgeTextCases(vNews, vOlds, hNode, window);
   actions.forEach((action) => action());
 
+  // not use virtualApplyInternalSimple, because it relys that parent is a element
   virtualApplyInternal({
     vNews,
     vOlds,
     window,
     parent,
+    keyStoreNew,
+    keyStoreOld,
   });
 };
 
@@ -120,15 +127,23 @@ const virtualApplyInternalSimple = ({
   vOld?: VOld;
   parent: ParentNode;
   window: Window;
+  // keyStoreOld: KeyStoreOld;
+  // keyStoreNew: KeyStoreNew;
   // store: StoreKeyOld;
 }) => {
-  const newParent =
-    vNew?.type === 'element' ? (vNew as VOldElement).element : parent;
+  const vNewIsElement = vNew?.type === 'element';
+  const vOldIsElement = vOld?.type === 'element';
+  const newParent = vNewIsElement ? (vNew as VOldElement).element : parent;
+  const keyStoreNew = vNewIsElement ? vNew.keyStore : {};
+  const keyStoreOld = vOldIsElement ? vOld.keyStore : {};
+
   virtualApplyInternal({
-    vNews: vNew?.type === 'element' ? vNew.children : [],
-    vOlds: vOld?.type === 'element' ? vOld.children : [],
+    vNews: vNewIsElement ? vNew.children : [],
+    vOlds: vOldIsElement ? vOld.children : [],
     parent: newParent,
     window,
+    keyStoreNew,
+    keyStoreOld,
   });
 };
 
@@ -142,6 +157,8 @@ const virtualApplyInternal = ({
   vOlds: VOld[];
   window: Window;
   parent: ParentNode;
+  keyStoreOld: KeyStoreOld;
+  keyStoreNew: KeyStoreNew;
 }) => {
   for (let i = 0; i < Math.max(vNews.length, vOlds.length); i++) {
     const prevVNew = vNews[i - 1] as VOld | undefined;

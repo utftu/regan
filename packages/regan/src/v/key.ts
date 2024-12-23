@@ -2,30 +2,30 @@ import {patchElement} from './handle.ts';
 import {VNew, VNewElement, VOldElement} from './types.ts';
 import {setSkip} from './v.ts';
 
-export type StoreKeyNew = Record<string, VNewElement>;
-export type StoreKeyOld = Record<string, VOldElement>;
+export type KeyStoreNew = Record<string, VNewElement>;
+export type KeyStoreOld = Record<string, VOldElement>;
 
 const handleKey = ({
   vNew,
-  oldStore,
-  newStore,
+  keyStoreOld,
+  keyStoreNew,
 }: {
   vNew: VNew;
-  oldStore: StoreKeyOld;
-  newStore: StoreKeyNew;
+  keyStoreOld: KeyStoreOld;
+  keyStoreNew: KeyStoreNew;
 }) => {
   if (vNew.type !== 'element' || !('key' in vNew)) {
     return;
   }
   const key = vNew.key!;
 
-  newStore[key] = vNew;
+  keyStoreNew[key] = vNew;
 
-  if (!(key in oldStore)) {
+  if (!(key in keyStoreOld)) {
     return;
   }
 
-  const vOld = oldStore[key];
+  const vOld = keyStoreOld[key];
 
   patchElement(vNew, vOld);
 
