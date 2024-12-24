@@ -7,7 +7,7 @@ import {
   getDomNode as getNode,
   handle,
 } from './handle.ts';
-import {KeyStoreNew, KeyStoreOld} from './key.ts';
+import {handleKey, KeyStoreNew, KeyStoreOld} from './key.ts';
 import {
   VNewElement,
   VOldElement,
@@ -91,16 +91,16 @@ export const virtualApplyExternal = ({
   hNode,
   parent,
   window,
-  keyStoreNew,
-  keyStoreOld,
+  keyStoreNew = {},
+  keyStoreOld = {},
 }: {
   vNews: VNew[];
   vOlds: VOld[];
   hNode: HNode;
   parent: ParentNode;
   window: Window;
-  keyStoreOld: KeyStoreOld;
-  keyStoreNew: KeyStoreNew;
+  keyStoreOld?: KeyStoreOld;
+  keyStoreNew?: KeyStoreNew;
 }) => {
   const actions = handleEdgeTextCases(vNews, vOlds, hNode, window);
   actions.forEach((action) => action());
@@ -116,42 +116,40 @@ export const virtualApplyExternal = ({
   });
 };
 
-const virtualApplyInternalSimple = ({
+export const virtualApplyInternalSimple = ({
   vNew,
   vOld,
   parent,
   window,
-}: // store = {},
-{
+}: {
   vNew?: VNew;
   vOld?: VOld;
   parent: ParentNode;
   window: Window;
-  // keyStoreOld: KeyStoreOld;
-  // keyStoreNew: KeyStoreNew;
-  // store: StoreKeyOld;
 }) => {
   const vNewIsElement = vNew?.type === 'element';
   const vOldIsElement = vOld?.type === 'element';
   const newParent = vNewIsElement ? (vNew as VOldElement).element : parent;
-  const keyStoreNew = vNewIsElement ? vNew.keyStore : {};
-  const keyStoreOld = vOldIsElement ? vOld.keyStore : {};
+  const keyStoreNewMy = vNewIsElement ? vNew.keyStore : {};
+  const keyStoreOldMy = vOldIsElement ? vOld.keyStore : {};
 
   virtualApplyInternal({
     vNews: vNewIsElement ? vNew.children : [],
     vOlds: vOldIsElement ? vOld.children : [],
     parent: newParent,
     window,
-    keyStoreNew,
-    keyStoreOld,
+    keyStoreNew: keyStoreNewMy,
+    keyStoreOld: keyStoreOldMy,
   });
 };
 
-const virtualApplyInternal = ({
+export const virtualApplyInternal = ({
   vNews,
   vOlds,
   window,
   parent,
+  keyStoreNew,
+  keyStoreOld,
 }: {
   vNews: VNew[];
   vOlds: VOld[];
@@ -165,7 +163,13 @@ const virtualApplyInternal = ({
     const vNew = vNews[i] as VNew | undefined;
     const vOld = vOlds[i] as VOld | undefined;
 
+    if (vNew && !checkSkip(vNew)) {
+      handleKey({vNew, window, keyStoreNew, keyStoreOld});
+    }
+
     if (checkSkip(vOld) && checkSkip(vNew)) {
+      deleteSkip(vNew);
+      deleteSkip(vOld);
       continue;
     }
 
@@ -187,7 +191,12 @@ const virtualApplyInternal = ({
         // to not notify too early
         (vNew as VOldElement).element = element;
 
-        virtualApplyInternalSimple({vNew, vOld: undefined, parent, window});
+        virtualApplyInternalSimple({
+          vNew,
+          vOld: undefined,
+          parent,
+          window,
+        });
         convertElementNewToOld(vNew, element);
       }
 
@@ -211,7 +220,12 @@ const virtualApplyInternal = ({
     });
 
     if (vNew?.type === 'element' || vOld?.type === 'element') {
-      virtualApplyInternalSimple({vNew, vOld, parent, window});
+      virtualApplyInternalSimple({
+        vNew,
+        vOld,
+        parent,
+        window,
+      });
     }
   }
 };

@@ -4,14 +4,11 @@ import {HNodeText} from '../h-node/text.ts';
 import {VNew, VOld} from './types.ts';
 import {JSDOM} from 'jsdom';
 import {virtualApplyExternal} from './v.ts';
+import {createParent} from './test-helpers.ts';
 
 const jsdom = new JSDOM();
 const window = jsdom.window as any as Window;
 const document = window.document;
-
-const createParent = () => {
-  return document.createElement('div');
-};
 
 const createHNodes = () => {
   const rootHNode = new HNodeComponent({} as any);
@@ -39,12 +36,14 @@ const vNews: VNew[] = [
   {
     type: 'element',
     data: {tag: 'div', props: {a: 'aa', b: 'bb'}},
+    keyStore: {},
     children: [
       {type: 'text', data: {text: 'helloInner'}},
       {
         type: 'element',
         data: {tag: 'div', props: {a: 'aInner', b: 'bInner'}},
         children: [],
+        keyStore: {},
       },
     ],
   },
@@ -54,11 +53,13 @@ const vNews2: VNew[] = [
   {
     type: 'element',
     data: {tag: 'div', props: {a: 'aa2', b: 'bb2'}},
+    keyStore: {},
     children: [
       {
         type: 'element',
         data: {tag: 'div', props: {a: 'aInner2', b: 'bInner2'}},
         children: [],
+        keyStore: {},
       },
       {type: 'text', data: {text: 'worldInner'}},
     ],
@@ -69,7 +70,7 @@ const vNews2: VNew[] = [
 describe('v/v', () => {
   it('create', () => {
     const {leftHText, middleHNode} = createHNodes();
-    const parent = createParent();
+    const parent = createParent(window);
     parent.appendChild(leftHText.textNode);
 
     virtualApplyExternal({
@@ -92,7 +93,7 @@ describe('v/v', () => {
   });
   it('remove', () => {
     const {leftHText, middleHNode} = createHNodes();
-    const parent = createParent();
+    const parent = createParent(window);
     parent.appendChild(leftHText.textNode);
 
     // to create something before remove
@@ -119,7 +120,7 @@ describe('v/v', () => {
   });
   it('replace', () => {
     const {leftHText, middleHNode} = createHNodes();
-    const parent = createParent();
+    const parent = createParent(window);
     parent.appendChild(leftHText.textNode);
 
     // to create something before replace

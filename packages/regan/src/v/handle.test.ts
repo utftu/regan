@@ -2,6 +2,7 @@ import {describe, expect, it, Mock, vi} from 'vitest';
 import {VNewElement, VNewText, VOldElement, VOldText} from './types.ts';
 import {JSDOM} from 'jsdom';
 import {handle} from './handle.ts';
+import {createParent} from './test-helpers.ts';
 
 const jsdom = new JSDOM();
 const window = jsdom.window as any as Window;
@@ -17,6 +18,7 @@ const vNewElement: VNewElement = {
     },
   },
   children: [],
+  keyStore: {},
 };
 
 const getVOldElement = (): VOldElement => {
@@ -35,6 +37,7 @@ const getVOldElement = (): VOldElement => {
     },
     element,
     children: [],
+    keyStore: {},
   };
 };
 
@@ -55,14 +58,9 @@ const getVOldText = (): VOldText => {
   };
 };
 
-const createParent = () => {
-  const frgment = jsdom.window.document.createDocumentFragment();
-  return frgment;
-};
-
 describe('v/handle', () => {
   it('null => text', () => {
-    const parent = createParent();
+    const parent = createParent(window);
 
     handle({
       vNew: vNewText,
@@ -72,7 +70,7 @@ describe('v/handle', () => {
     expect(parent.childNodes[0].textContent).toBe('helloworld');
   });
   it('text => null', () => {
-    const parent = createParent();
+    const parent = createParent(window);
 
     const vOldText = getVOldText();
     parent.appendChild(vOldText.textNode);
@@ -81,13 +79,13 @@ describe('v/handle', () => {
     expect(parent.childNodes.length).toBe(0);
   });
   it('null => element', () => {
-    const parent = createParent();
+    const parent = createParent(window);
     handle({vNew: vNewElement, window, parent});
 
     expect(parent.children[0].getAttribute('a')).toBe('aa');
   });
   it('element => null', () => {
-    const parent = createParent();
+    const parent = createParent(window);
     const vOldElement = getVOldElement();
     parent.appendChild(vOldElement.element);
     handle({vOld: vOldElement, window, parent});
@@ -95,7 +93,7 @@ describe('v/handle', () => {
     expect(parent.childNodes.length).toBe(0);
   });
   it('text => element', () => {
-    const parent = createParent();
+    const parent = createParent(window);
     const vOldText = getVOldText();
     parent.appendChild(vOldText.textNode);
 
@@ -105,7 +103,7 @@ describe('v/handle', () => {
   });
 
   it('element => text', () => {
-    const parent = createParent();
+    const parent = createParent(window);
     const vOldElement = getVOldElement();
     parent.appendChild(vOldElement.element);
 
@@ -114,7 +112,7 @@ describe('v/handle', () => {
     expect(parent.childNodes[0].textContent).toBe('helloworld');
   });
   it('element => element', () => {
-    const parent = createParent();
+    const parent = createParent(window);
     const vOldElement = getVOldElement();
     parent.appendChild(vOldElement.element);
 
@@ -123,7 +121,7 @@ describe('v/handle', () => {
     expect(parent.children[0].getAttribute('a')).toBe('aa');
   });
   it('element => element (diff tag)', () => {
-    const parent = createParent();
+    const parent = createParent(window);
     const elementSpan = document.createElement('span');
     elementSpan.setAttribute('a', 'aa');
     elementSpan.setAttribute('b', 'bb');
@@ -139,6 +137,7 @@ describe('v/handle', () => {
       },
       element: elementSpan,
       children: [],
+      keyStore: {},
     };
     parent.appendChild(vOldElement.element);
 
@@ -148,7 +147,7 @@ describe('v/handle', () => {
     expect(parent.children[0].getAttribute('a')).toBe('aa');
   });
   it('text => text', () => {
-    const parent = createParent();
+    const parent = createParent(window);
     const vOldText = getVOldText();
     parent.appendChild(vOldText.textNode);
 
@@ -157,7 +156,7 @@ describe('v/handle', () => {
     expect(parent.childNodes[0].textContent).toBe('helloworld');
   });
   it('init text', () => {
-    const parent = createParent();
+    const parent = createParent(window);
     const mockFn = vi.fn();
 
     const vNewTextMy: VNewText = {...vNewText, init: mockFn};
@@ -167,7 +166,7 @@ describe('v/handle', () => {
     expect(mockFn.mock.calls[0][0]).toBe(vNewTextMy);
   });
   it('init element', () => {
-    const parent = createParent();
+    const parent = createParent(window);
     const mockFn = vi.fn();
 
     const vNewElementtMy: VNewElement = {...vNewElement, init: mockFn};

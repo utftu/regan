@@ -19,7 +19,7 @@ export type VNewElement = {
   children: VNew[];
 } & MetaExtend;
 
-export type VOldElement = VNewElement & {
+export type VOldElement = Omit<VNewElement, 'keyStore'> & {
   element: Element;
   keyStore: KeyStoreOld;
 
