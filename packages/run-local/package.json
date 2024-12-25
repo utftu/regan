@@ -9,10 +9,10 @@
     "dev": "vite"
   },
   "dependencies": {
-    "regan": "workspace:*"
+    "regan": "*"
   },
   "devDependencies": {
-    "regan-vite": "workspace:*"
+    "regan-vite": "*"
   },
   "keywords": [],
   "author": "",

@@ -49,8 +49,8 @@ importers:
         specifier: ^5.3.3
         version: 5.4.5
       utftu:
-        specifier: ^1.0.26
-        version: 1.0.26
+        specifier: ^1.0.27
+        version: 1.0.27
       vite-node:
         specifier: ^1.1.0
         version: 1.6.0(@types/node@20.12.8)
@@ -1233,8 +1233,8 @@ packages:
   url-parse@1.5.10:
     resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
 
-  utftu@1.0.26:
-    resolution: {integrity: sha512-ffahwLN0SpRlc1fLGPyHI4ChbDU199kK5D7JotVtMupcl9Xv+8t6ZViUmLKvTtikQQOVihVNNaoOaXIwXoClaA==}
+  utftu@1.0.27:
+    resolution: {integrity: sha512-kUcDB8lc8RfDhMkjs9hSH+eE1OjAS+DTvhTmND/qfbZBDPZCUi9S4PikgfucnvkaDsvW5RVUuCTAJj/29Ui39w==}
 
   validator@13.11.0:
     resolution: {integrity: sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==}
@@ -2573,7 +2573,7 @@ snapshots:
       querystringify: 2.2.0
       requires-port: 1.0.0
 
-  utftu@1.0.26: {}
+  utftu@1.0.27: {}
 
   validator@13.11.0: {}
 
