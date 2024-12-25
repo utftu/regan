@@ -14,6 +14,7 @@ const div: VNewElement = {
     props: {},
   },
   children: [],
+  keyStore: {},
 };
 
 const getOldDiv = (): VOldElement => {
@@ -21,6 +22,7 @@ const getOldDiv = (): VOldElement => {
     ...div,
     children: [],
     element: jsdom.window.document.createElement('div'),
+    keyStore: {},
   };
 };
 

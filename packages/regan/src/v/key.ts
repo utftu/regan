@@ -24,6 +24,7 @@ export const handleKey = ({
   if (vNew.type !== 'element' || !('key' in vNew)) {
     return;
   }
+  // console.log('-----', 'here2', vNew);
   const key = vNew.key!;
 
   keyStoreNew[key] = vNew;
@@ -38,10 +39,13 @@ export const handleKey = ({
     return;
   }
 
+  // console.log('-----', 'here3');
+
   setSkip(vNew);
   setSkip(vOld);
 
   patchElement(vNew, vOld);
+
   virtualApplyInternal({
     vNews: vNew.children,
     vOlds: vOld.children,
@@ -52,4 +56,7 @@ export const handleKey = ({
   });
 
   convertElementNewToOld(vNew, vOld.element);
+  // console.log('-----', 'here4');
+
+  // console.log('-----', 'vNew', vNew);
 };

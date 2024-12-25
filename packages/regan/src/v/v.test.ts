@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {HNodeComponent} from '../h-node/component.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {VNew, VOld} from './types.ts';
+import {VNew, VNewElement, VOld, VOldElement} from './types.ts';
 import {JSDOM} from 'jsdom';
 import {virtualApplyExternal} from './v.ts';
 import {createParent} from './test-helpers.ts';
@@ -31,41 +31,47 @@ const createHNodes = () => {
   };
 };
 
-const vNews: VNew[] = [
-  {type: 'text', data: {text: 'hello'}},
-  {
-    type: 'element',
-    data: {tag: 'div', props: {a: 'aa', b: 'bb'}},
-    keyStore: {},
-    children: [
-      {type: 'text', data: {text: 'helloInner'}},
-      {
-        type: 'element',
-        data: {tag: 'div', props: {a: 'aInner', b: 'bInner'}},
-        children: [],
-        keyStore: {},
-      },
-    ],
-  },
-];
+const createVNews1 = (): VNew[] => {
+  const vNews1: VNew[] = [
+    {type: 'text', data: {text: 'hello'}},
+    {
+      type: 'element',
+      data: {tag: 'div', props: {a: 'aa', b: 'bb'}},
+      keyStore: {},
+      children: [
+        {type: 'text', data: {text: 'helloInner'}},
+        {
+          type: 'element',
+          data: {tag: 'div', props: {a: 'aInner', b: 'bInner'}},
+          children: [],
+          keyStore: {},
+        },
+      ],
+    },
+  ];
+  return vNews1;
+};
 
-const vNews2: VNew[] = [
-  {
-    type: 'element',
-    data: {tag: 'div', props: {a: 'aa2', b: 'bb2'}},
-    keyStore: {},
-    children: [
-      {
-        type: 'element',
-        data: {tag: 'div', props: {a: 'aInner2', b: 'bInner2'}},
-        children: [],
-        keyStore: {},
-      },
-      {type: 'text', data: {text: 'worldInner'}},
-    ],
-  },
-  {type: 'text', data: {text: 'world'}},
-];
+const createVNews2 = (): VNew[] => {
+  const vNews2: VNew[] = [
+    {
+      type: 'element',
+      data: {tag: 'div', props: {a: 'aa2', b: 'bb2'}},
+      keyStore: {},
+      children: [
+        {
+          type: 'element',
+          data: {tag: 'div', props: {a: 'aInner2', b: 'bInner2'}},
+          children: [],
+          keyStore: {},
+        },
+        {type: 'text', data: {text: 'worldInner'}},
+      ],
+    },
+    {type: 'text', data: {text: 'world'}},
+  ];
+  return vNews2;
+};
 
 describe('v/v', () => {
   it('create', () => {
@@ -73,8 +79,10 @@ describe('v/v', () => {
     const parent = createParent(window);
     parent.appendChild(leftHText.textNode);
 
+    const vNews1 = createVNews1();
+
     virtualApplyExternal({
-      vNews,
+      vNews: vNews1,
       vOlds: [],
       hNode: middleHNode,
       parent,
@@ -96,16 +104,18 @@ describe('v/v', () => {
     const parent = createParent(window);
     parent.appendChild(leftHText.textNode);
 
+    const vNews1 = createVNews1();
+
     // to create something before remove
     virtualApplyExternal({
-      vNews: vNews,
+      vNews: vNews1,
       vOlds: [],
       hNode: middleHNode,
       parent,
       window,
     });
 
-    const vOlds = vNews as VOld[];
+    const vOlds = vNews1 as VOld[];
 
     virtualApplyExternal({
       vNews: [],
@@ -123,16 +133,19 @@ describe('v/v', () => {
     const parent = createParent(window);
     parent.appendChild(leftHText.textNode);
 
+    const vNews1 = createVNews1();
+    const vNews2 = createVNews2();
+
     // to create something before replace
     virtualApplyExternal({
-      vNews,
+      vNews: vNews1,
       vOlds: [],
       hNode: middleHNode,
       parent,
       window,
     });
 
-    const vOlds = vNews as VOld[];
+    const vOlds = vNews1 as VOld[];
 
     virtualApplyExternal({
       vNews: vNews2,
@@ -152,5 +165,43 @@ describe('v/v', () => {
     expect(element.getAttribute('a')).toBe('aa2');
 
     expect(element.childNodes.length).toBe(2);
+  });
+  it('key', () => {
+    const parent = createParent(window);
+
+    const vNews1 = createVNews1();
+    (vNews1[1] as VNewElement).key = 'hello';
+    const vNews2 = createVNews2();
+    (vNews2[0] as VNewElement).key = 'hello';
+
+    const parentHNode = new HNodeComponent({} as any);
+
+    const firstRunStore = {};
+
+    // preapre for test
+    virtualApplyExternal({
+      vNews: vNews1,
+      vOlds: [],
+      hNode: parentHNode,
+      parent,
+      window,
+      keyStoreNew: firstRunStore,
+    });
+
+    virtualApplyExternal({
+      keyStoreOld: firstRunStore,
+      vNews: vNews2,
+      vOlds: vNews1 as VOld[],
+      hNode: parentHNode,
+      parent,
+      window,
+    });
+
+    const vNews1ElementVOld = vNews1[1] as VOldElement;
+    const vNews2ElementVOld = vNews2[0] as VOldElement;
+
+    expect(parent.childNodes.length).toBe(2);
+    expect(vNews1ElementVOld.element).toBe(vNews2ElementVOld.element);
+    expect(vNews1ElementVOld.element.getAttribute('a')).toBe('aa2');
   });
 });
