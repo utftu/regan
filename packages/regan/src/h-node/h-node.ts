@@ -1,7 +1,7 @@
 import {ContextEnt} from '../context/context.tsx';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
-import {DomPointer} from '../types.ts';
+import {DomPointerWithText} from '../types.ts';
 import {HNodeComponent} from './component.ts';
 import {HNodeElement} from './element.ts';
 import {HNodeText} from './text.ts';
@@ -25,7 +25,7 @@ export type PropsHNode = {
   globalCtx: GlobalCtx;
   globalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
-  contextEnt: ContextEnt;
+  contextEnt?: ContextEnt;
 };
 
 export class HNodeBase {
@@ -37,7 +37,7 @@ export class HNodeBase {
   glocalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
   systemUnmounts: Unmount[] = [];
-  contextEnt: ContextEnt;
+  contextEnt?: ContextEnt;
 
   data: Record<string, any> = {};
 
@@ -81,14 +81,14 @@ export class HNodeBase {
 }
 
 export class GlobalClientCtx {
-  initDomPointer: DomPointer;
+  initDomPointer: DomPointerWithText;
   window: Window;
 
   constructor({
     window: localWindow,
     initDomPointer,
   }: {
-    initDomPointer: DomPointer;
+    initDomPointer: DomPointerWithText;
     window: Window;
   }) {
     this.initDomPointer = initDomPointer;

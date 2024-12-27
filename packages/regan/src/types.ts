@@ -1,10 +1,8 @@
 import {JsxNode} from './node/node.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {Atom} from 'strangelove';
-import {ContextValue} from './context/context.tsx';
 import {DOM_NODES_INFO, NEED_AWAIT} from './consts.ts';
 import {InsertedInfo} from './utils/inserted-dom.ts';
-// import {DomNodesInfo} from './node/hydrate/hydrate.ts';
 
 export type AynFunc = (...args: any[]) => any;
 export type AnyProps = Record<any, any>;
@@ -36,18 +34,19 @@ export type FC<TProps extends Record<any, any> = any> = (
 
 export type SystemProps = {
   key?: string;
-  needAwait?: boolean;
-  insertedDomNodes?: InsertedInfo;
+  // needAwait?: boolean;
+  // insertedInfo?: InsertedInfo;
   ref?: Atom<HTMLElement | void>;
   rawHtml?: string;
-  context?: ContextValue;
 };
 
 export type HtmlChild = HTMLElement | string;
 
-export type DomPointer<Parent extends Node = Node> = {
-  parent: Parent;
-  position: number;
+export type DomPointerWithText = InsertedInfo & {
+  parent: ParentNode;
 };
 
-export type DomPointerElement = DomPointer<Element>;
+export type DomPointer = {
+  parent: ParentNode;
+  nodeCount: number;
+};

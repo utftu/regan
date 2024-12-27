@@ -1,15 +1,16 @@
-import {Atom} from 'strangelove';
 import {PromiseControls} from 'utftu';
 import {JsxNode} from '../node/node.ts';
-import {DomPointerElement} from '../types.ts';
 import {GlobalClientCtx, HNode} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {ContextEnt} from '../context/context.tsx';
 import {InsertedInfo} from '../utils/inserted-dom.ts';
+import {DomPointerWithText} from '../types.ts';
+import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
 
 export type HydrateCtx = {
-  changedAtoms: Set<Atom>;
+  // changedAtoms: Set<Atom>;
+  treeAtomsSnapshot: TreeAtomsSnapshot;
 };
 
 export type ParentWait = {
@@ -19,19 +20,17 @@ export type ParentWait = {
 
 export type HydrateProps = {
   parent?: JsxNode;
-  domPointer: DomPointerElement;
+  domPointer: DomPointerWithText;
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   jsxSegmentName: string;
   hydrateCtx: HydrateCtx;
   globalClientCtx: GlobalClientCtx;
   parentWait: ParentWait;
-  parentSegmentEnt: SegmentEnt;
-  parentContextEnt: ContextEnt;
-  textLength: number;
+  parentSegmentEnt?: SegmentEnt;
+  parentContextEnt?: ContextEnt;
 };
 
 export type HydrateResult = Promise<{
   hNode: HNode;
-  // hNode: HNode;
 }>;

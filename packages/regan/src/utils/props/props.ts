@@ -19,7 +19,7 @@ const createExec = ({
   name: string;
   element: Element;
   segmentEnt: SegmentEnt;
-  contextEnt: ContextEnt;
+  contextEnt?: ContextEnt;
   atom: Atom;
 }) => {
   const item: {listener?: AynFunc} = {};
@@ -81,18 +81,18 @@ export const subscribeAtom = ({
 export const initDynamicSubsribes = ({
   dynamicProps,
   hNode,
-  changedAtoms,
-}: {
+}: // changedAtoms,
+{
   dynamicProps: DynamicProps;
   hNode: HNodeElement;
-  changedAtoms: Set<Atom>;
+  // changedAtoms: Set<Atom>;
 }) => {
   for (const name in dynamicProps) {
     const atom = dynamicProps[name];
 
     subscribeAtom({
       tempExec: () => {
-        changedAtoms.add(atom);
+        // changedAtoms.add(atom);
       },
       exec: createExec({
         element: hNode.element,

@@ -1,3 +1,4 @@
+import {Value} from 'strangelove/dist/types/value/value.js';
 import {Ctx} from '../ctx/ctx.ts';
 import {FC} from '../types.ts';
 
@@ -7,13 +8,14 @@ export type Context<TValue = any> = {
   Provider: FC<{value: TValue}>;
 };
 
-export type ContextValue<TValue = any> = {
+// export type ContextValue<TValue = any> = {
+//   context: Context<TValue>;
+//   value: TValue;
+// };
+
+export type ContextEnt<TValue = any> = {
   context: Context<TValue>;
   value: TValue;
-};
-
-export type ContextEnt = {
-  context: ContextValue;
   parent?: ContextEnt;
 };
 
@@ -26,7 +28,9 @@ export const createContext = <TValue extends any = any>(
     defaultValue,
   } as Context<TValue>;
   context.Provider = (({value}, {children}) => (
-    <ContextProvider context={{context, value}}>{children}</ContextProvider>
+    <ContextProvider value={value} context={context}>
+      {children}
+    </ContextProvider>
   )) satisfies FC<{value: TValue}>;
 
   return context;
@@ -34,14 +38,14 @@ export const createContext = <TValue extends any = any>(
 
 export const getContextValue = <TValue extends any = any>(
   context: Context<TValue>,
-  contextEnt: ContextEnt
+  contextEnt?: ContextEnt
 ): TValue => {
   if (!contextEnt) {
     return context.defaultValue;
   }
 
-  if (contextEnt.context?.context === context) {
-    return contextEnt.context.value;
+  if (contextEnt.context === context) {
+    return contextEnt.value;
   }
 
   if (!contextEnt.parent) {
@@ -52,17 +56,15 @@ export const getContextValue = <TValue extends any = any>(
 };
 
 export const ContextProvider = <TValue extends any = any>(
-  {context}: {context: ContextValue<TValue>},
-  {systemProps, children}: Ctx
+  _props: {value: TValue; context: Context},
+  {children}: Ctx
 ) => {
-  systemProps.context = context;
+  // systemProps.context = context;
 
   return children;
 };
 
 export const defaultContextEnt: ContextEnt = {
-  context: {
-    context: createContext('default', null),
-    value: null,
-  },
+  context: createContext('default', null),
+  value: null,
 };

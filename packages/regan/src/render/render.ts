@@ -7,13 +7,13 @@ import {
   convertFromVirtualToHNodes,
   createVirtualFromRenderTemplate,
 } from './convert.ts';
-import {virtualApply} from '../v/old-v.ts';
 import {insertNodesAtPosition} from '../utils/dom.ts';
 import {RenderTemplateExtended} from './types.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {ContextEnt, defaultContextEnt} from '../context/context.tsx';
 import {VOld} from '../v/types.ts';
+import {virtualApplyExternal} from '../v/v.ts';
 
 export const rednerVirtual = async ({
   node,
@@ -68,11 +68,13 @@ export const rednerVirtual = async ({
 
   const tmpTemplate = localWindow.document.createElement('template');
 
-  virtualApply({
+  virtualApplyExternal({
     vNews,
     vOlds,
     window: localWindow,
-    parentElement: tmpTemplate,
+    hNode: parentHNode,
+    // parent: domPointer
+    // parentElement: tmpTemplate,
   });
 
   const children = Array.from(tmpTemplate.content.childNodes);

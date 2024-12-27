@@ -3,7 +3,7 @@ import {HNodeBase, PropsHNode} from './h-node.ts';
 
 type HNodeElProps = {
   element: Element;
-  jsxNode: JsxNodeElement;
+  // jsxNode: JsxNodeElement;
 };
 
 export class HNodeElement extends HNodeBase {

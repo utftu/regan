@@ -1,3 +1,6 @@
+import {DomPointer} from '../types.ts';
+import {convertFromNewToOld} from './convert.ts';
+import {insertChild} from './insert.ts';
 import {
   VNewElement,
   VOldElement,
@@ -6,9 +9,8 @@ import {
   VNew,
   VOld,
 } from './types.ts';
-import {convertFromNewToOld, insertChild} from './v.ts';
 
-export const getDomNode = (vOld: VOld) => {
+export const getNodeFromVOld = (vOld: VOld) => {
   if (vOld.type === 'text') {
     return vOld.textNode;
   }
@@ -16,7 +18,7 @@ export const getDomNode = (vOld: VOld) => {
 };
 
 export const deleteFunc = (vOld: VOld) => {
-  getDomNode(vOld).remove();
+  getNodeFromVOld(vOld).remove();
 };
 
 export const createTextSimple = (text: string, window: Window) => {
@@ -54,7 +56,7 @@ const create = (vNew: VNew, window: Window) => {
 
 const replaceFull = (vNew: VNew, vOld: VOld, window: Window) => {
   const newDomNode = create(vNew, window);
-  getDomNode(vOld).replaceWith(newDomNode);
+  getNodeFromVOld(vOld).replaceWith(newDomNode);
 
   return newDomNode;
 };
@@ -123,13 +125,15 @@ export const handle = ({
   vNew,
   vOld,
   window,
-  parent,
+  // parent,
+  domPointer,
   prevVNew,
 }: {
   vNew?: VNew;
   vOld?: VOld;
   window: Window;
-  parent: ParentNode;
+  domPointer: DomPointer;
+  // parent: ParentNode;
   prevVNew?: VOld;
 }) => {
   if (!vNew) {
@@ -140,7 +144,7 @@ export const handle = ({
   if (!vOld) {
     const newDomNode = create(vNew, window);
 
-    insertChild({parent: parent, prevVNew, node: newDomNode, vOld});
+    insertChild({domPointer, prevVNew, node: newDomNode});
 
     convertFromNewToOld(vNew, newDomNode);
     return;

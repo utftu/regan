@@ -1,13 +1,17 @@
 import {HNode} from '../h-node/h-node.ts';
+import {DomPointer} from '../types.ts';
+import {convertElementNewToOld, convertTextNewToOld} from './convert.ts';
 import {handleEdgeTextCases} from './edge.ts';
 import {
   createElement,
   createText,
   deleteFunc,
-  getDomNode as getNode,
+  // getNodeFromVOld,
   handle,
 } from './handle.ts';
+import {insertChild} from './insert.ts';
 import {handleKey, KeyStoreNew, KeyStoreOld} from './key.ts';
+import {checkSkip, deleteSkip} from './skip.ts';
 import {
   VNewElement,
   VOldElement,
@@ -17,100 +21,37 @@ import {
   VOldText,
 } from './types.ts';
 
-export const insertChild = ({
-  parent,
-  prevVNew,
-  node: node,
-  vOld,
-}: {
-  parent: ParentNode;
-  prevVNew: VOld | void;
-  node: Node;
-  vOld: VOld | void;
-}) => {
-  if (prevVNew) {
-    const prevDomNode = getNode(prevVNew);
-    prevDomNode.after(node);
-    return;
-  }
-
-  if (vOld) {
-    const vOldDomNode = getNode(vOld);
-    vOldDomNode.after(node);
-    return;
-  }
-
-  parent.appendChild(node);
-};
-
-export const setSkip = (vNew: VNew | VOld) => {
-  vNew.skip = true;
-};
-export const deleteSkip = (v: VNew | VOld | void) => {
-  if (!v) {
-    return;
-  }
-  delete v.skip;
-};
-export const checkSkip = (vNew: VNew | void) => {
-  if (!vNew) {
-    return false;
-  }
-  if ('skip' in vNew) {
-    return true;
-  }
-  return false;
-};
-
-export const convertTextNewToOld = (vNew: VNewText, textNode: Text) => {
-  const vOld = vNew as VOldText;
-
-  vOld.textNode = textNode;
-  vOld.init?.(vOld);
-};
-
-export const convertElementNewToOld = (vNew: VNewElement, element: Element) => {
-  const vOld = vNew as VOldElement;
-
-  vOld.element = element;
-  vOld.init?.(vOld);
-};
-
-export const convertFromNewToOld = (vNew: VNew, domNode: Node) => {
-  if (vNew.type === 'text') {
-    convertTextNewToOld(vNew, domNode as Text);
-    return vNew;
-  } else if (vNew.type === 'element') {
-    convertElementNewToOld(vNew, domNode as Element);
-  }
-};
-
 export const virtualApplyExternal = ({
   vNews,
   vOlds,
   hNode,
-  parent,
+  // parent,
+  domPointer,
   window,
   keyStoreNew = {},
   keyStoreOld = {},
 }: {
   vNews: VNew[];
   vOlds: VOld[];
-  hNode: HNode;
-  parent: ParentNode;
+  hNode?: HNode;
+  // parent: ParentNode;
+  domPointer: DomPointer;
   window: Window;
   keyStoreOld?: KeyStoreOld;
   keyStoreNew?: KeyStoreNew;
 }) => {
-  const actions = handleEdgeTextCases(vNews, vOlds, hNode, window);
-  actions.forEach((action) => action());
+  if (hNode) {
+    const actions = handleEdgeTextCases(vNews, vOlds, hNode, window);
+    actions.forEach((action) => action());
+  }
 
   // not use virtualApplyInternalSimple, because it relys that parent is a element
   virtualApplyInternal({
     vNews,
     vOlds,
     window,
-    parent,
+    domPointer,
+    // parent,
     keyStoreNew,
     keyStoreOld,
   });
@@ -119,42 +60,52 @@ export const virtualApplyExternal = ({
 export const virtualApplyInternalSimple = ({
   vNew,
   vOld,
-  parent,
+  // parent,
   window,
+  domPointer,
 }: {
   vNew?: VNew;
   vOld?: VOld;
-  parent: ParentNode;
+  // parent: ParentNode;
+  domPointer: DomPointer;
   window: Window;
 }) => {
   const vNewIsElement = vNew?.type === 'element';
   const vOldIsElement = vOld?.type === 'element';
-  const newParent = vNewIsElement ? (vNew as VOldElement).element : parent;
   const keyStoreNewMy = vNewIsElement ? vNew.keyStore : {};
   const keyStoreOldMy = vOldIsElement ? vOld.keyStore : {};
+  const realDomPointer: DomPointer = vNewIsElement
+    ? {parent: (vNew as VOldElement).element, nodeCount: 0}
+    : domPointer;
 
   virtualApplyInternal({
     vNews: vNewIsElement ? vNew.children : [],
     vOlds: vOldIsElement ? vOld.children : [],
-    parent: newParent,
+    // parent: newParent,
+    domPointer: realDomPointer,
     window,
     keyStoreNew: keyStoreNewMy,
     keyStoreOld: keyStoreOldMy,
   });
+
+  if (vNew?.type !== 'element') {
+  }
 };
 
 export const virtualApplyInternal = ({
   vNews,
   vOlds,
   window,
-  parent,
+  // parent,
   keyStoreNew,
   keyStoreOld,
+  domPointer,
 }: {
   vNews: VNew[];
   vOlds: VOld[];
   window: Window;
-  parent: ParentNode;
+  // parent: ParentNode;
+  domPointer: DomPointer;
   keyStoreOld: KeyStoreOld;
   keyStoreNew: KeyStoreNew;
 }) => {
@@ -181,12 +132,12 @@ export const virtualApplyInternal = ({
       if (vNew.type === 'text') {
         const textNode = createText(vNew, window);
 
-        insertChild({parent: parent, prevVNew, node: textNode, vOld});
+        insertChild({domPointer, prevVNew, node: textNode});
         convertTextNewToOld(vNew, textNode);
       } else {
         const element = createElement(vNew, window);
 
-        insertChild({parent, prevVNew, node: element, vOld});
+        insertChild({domPointer, prevVNew, node: element});
 
         // to not notify too early
         (vNew as VOldElement).element = element;
@@ -194,7 +145,7 @@ export const virtualApplyInternal = ({
         virtualApplyInternalSimple({
           vNew,
           vOld: undefined,
-          parent,
+          domPointer,
           window,
         });
         convertElementNewToOld(vNew, element);
@@ -215,7 +166,8 @@ export const virtualApplyInternal = ({
       vNew: vNews[i],
       vOld: vOlds[i],
       window,
-      parent: parent,
+      domPointer,
+      // parent: parent,
       prevVNew,
     });
 
@@ -223,7 +175,8 @@ export const virtualApplyInternal = ({
       virtualApplyInternalSimple({
         vNew,
         vOld,
-        parent,
+        domPointer,
+        // parent,
         window,
       });
     }

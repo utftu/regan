@@ -1,16 +1,15 @@
-import {NEED_AWAIT, DOM_NODES_INFO} from '../consts.ts';
 import {createContext} from '../context/context.tsx';
 import {h} from '../jsx/jsx.ts';
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {JsxNode} from '../node/node.ts';
-import {FC, FCStaticParams} from '../types.ts';
-import {SegmentEnt} from '../segments/ent/ent.ts';
-import {SegmentComponent} from '../segments/component.ts';
+import {FC} from '../types.ts';
+// import {SegmentEnt} from '../segments/ent/ent.ts';
+import {tryDetectInsertedInfoComponentImmediately} from '../utils/inserted-dom.ts';
 
 type Props = {
   error: Error;
-  segmentEnt: SegmentEnt;
-  segmentComponent?: SegmentComponent;
+  // segmentEnt: SegmentEnt;
+  jsxNode: JsxNode;
 };
 
 type ErrorHandler = (props: Props) => void;
@@ -26,33 +25,23 @@ const createJsxErrorDump = (count: number): JsxNode[] | null => {
 };
 
 // try to understand how many places should be occupied
-const getElementsCount = ({jsxNode}: {jsxNode: JsxNode<FC>}): number => {
+const getNodesCount = ({jsxNode}: {jsxNode: JsxNode<FC>}): number => {
   if (jsxNode instanceof JsxNodeElement) {
     return 1;
   }
 
-  if (jsxNode.systemProps.insertedDomNodes) {
-    return jsxNode.systemProps.insertedDomNodes.count;
-  }
+  const insertedInfo = tryDetectInsertedInfoComponentImmediately(jsxNode);
 
-  const type = jsxNode.type as FCStaticParams;
-  if (DOM_NODES_INFO in type) {
-    return type[DOM_NODES_INFO]!.elemsCount;
-  }
-
-  if (
-    jsxNode.systemProps.needAwait === true ||
-    (jsxNode.type as FCStaticParams)[NEED_AWAIT] === true
-  ) {
+  if (!insertedInfo) {
     return 0;
   }
 
-  return 1;
+  return insertedInfo.nodesCount;
 };
 
 export const defaultErrorHandler = () => {};
-export const defaultErrorJsx = ({segmentEnt}: Props) => {
-  const count = getElementsCount({jsxNode: segmentEnt.jsxNode});
+export const defaultErrorJsx = ({jsxNode}: Props) => {
+  const count = getNodesCount({jsxNode});
 
   return createJsxErrorDump(count);
 };

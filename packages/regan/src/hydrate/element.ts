@@ -20,13 +20,14 @@ export async function hydrateElement(
     jsxNode: this,
   });
 
-  const element = (props.domPointer.parent as Element).children[
-    props.domPointer.position
+  const element = props.domPointer.parent.childNodes[
+    props.domPointer.nodesCount
   ] as HTMLElement;
 
-  const {dynamicProps, staticProps} = splitProps({
-    props: this.props,
-  });
+  const {dynamicProps, staticProps} = splitProps(
+    this.props,
+    props.hydrateCtx.treeAtomsSnapshot
+  );
 
   const hNode = new HNodeElement(
     {
@@ -38,6 +39,7 @@ export async function hydrateElement(
     },
     {
       element,
+      // jsxNode: this,
     }
   );
 
@@ -46,16 +48,15 @@ export async function hydrateElement(
   initDynamicSubsribes({
     hNode,
     dynamicProps,
-    changedAtoms: props.hydrateCtx.changedAtoms,
+    // changedAtoms: props.hydrateCtx.changedAtoms,
   });
 
   const {hNodes} = await handleChildrenHydrate({
-    textLength: 0,
     parentInsertedDomNodesPromise: props.parentWait,
     children: this.children,
     parentDomPointer: {
       parent: element,
-      position: 0,
+      nodesCount: 0,
     },
     parentHNode: hNode,
     globalCtx: props.globalCtx,

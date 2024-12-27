@@ -4,8 +4,8 @@ import {
   findPrevTextHNode,
 } from '../h-node/helpers/find-text.ts';
 import {HNodeText} from '../h-node/text.ts';
+import {setSkip} from './skip.ts';
 import {VNew, VNewText, VOld, VOldText} from './types.ts';
-import {setSkip} from './v.ts';
 
 const convertTextNewInOld = (vNew: VNewText, textNode: Text) => {
   const vOld = vNew as VOldText;

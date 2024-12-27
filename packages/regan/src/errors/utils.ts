@@ -9,7 +9,7 @@ export const prepareListenerForError = ({
 }: {
   listener: (...args: any[]) => any;
   segmentEnt: SegmentEnt;
-  contextEnt: ContextEnt;
+  contextEnt?: ContextEnt;
 }) => {
   return (...args: any[]) => {
     try {

@@ -1,4 +1,4 @@
-import {DomPointer, DomPointerElement} from '../types.ts';
+import {DomPointerWithText, DomPointerElement} from '../types.ts';
 
 export const addElementChildren = ({
   domPointer,
@@ -26,8 +26,8 @@ export const appendElementChild = ({
   parent.append(el);
 };
 
-export const getElFromDomPointer = (domPointer: DomPointer) => {
-  return domPointer.parent.childNodes[domPointer.position];
+export const getElFromDomPointer = (domPointer: DomPointerWithText) => {
+  return domPointer.parent.childNodes[domPointer.nodesCount];
 };
 
 export const getPrevTextNode = (

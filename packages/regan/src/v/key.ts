@@ -1,11 +1,8 @@
+import {convertElementNewToOld} from './convert.ts';
 import {patchElement} from './handle.ts';
+import {checkSkip, setSkip} from './skip.ts';
 import {VNew, VNewElement, VOldElement} from './types.ts';
-import {
-  checkSkip,
-  convertElementNewToOld,
-  setSkip,
-  virtualApplyInternal,
-} from './v.ts';
+import {virtualApplyInternal} from './v.ts';
 
 export type KeyStoreNew = Record<string, VNewElement>;
 export type KeyStoreOld = Record<string, VOldElement>;
@@ -39,8 +36,6 @@ export const handleKey = ({
     return;
   }
 
-  // console.log('-----', 'here3');
-
   setSkip(vNew);
   setSkip(vOld);
 
@@ -56,7 +51,4 @@ export const handleKey = ({
   });
 
   convertElementNewToOld(vNew, vOld.element);
-  // console.log('-----', 'here4');
-
-  // console.log('-----', 'vNew', vNew);
 };

@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {createContext, getContextValue} from './context.tsx';
+import {ContextEnt, createContext, getContextValue} from './context.tsx';
 import {FC} from '../types.ts';
 import {insertAndHydrate} from '../utils/tests.ts';
 import {JSDOM} from 'jsdom';
@@ -15,13 +15,19 @@ describe('context', () => {
     };
 
     const context = createContext('test1', 'default');
+    const contextEnt: ContextEnt = {
+      context: {
+        context: context,
+        value: null,
+      },
+    };
     const Elem3: FC = (_, {stage, ctx}) => {
-      const value = getContextValue(context, ctx) as Stage;
+      const value = getContextValue(context, contextEnt) as Stage;
       values[stage].push(value);
     };
 
     const Elem2: FC = (_, {stage, ctx}) => {
-      const value = getContextValue(context, ctx);
+      const value = getContextValue(context, contextEnt);
       values[stage].push(value);
 
       return (

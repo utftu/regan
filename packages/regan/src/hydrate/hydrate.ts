@@ -3,8 +3,10 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNodeBase, GlobalClientCtx} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
-import {DomPointerElement} from '../types.ts';
 import {createInsertedDomNodePromise} from '../utils/inserted-dom.ts';
+import {DomPointerWithText} from '../types.ts';
+import {mountHNodes} from '../h-node/helpers.ts';
+import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
 
 export async function hydrateRaw({
   node,
@@ -17,7 +19,7 @@ export async function hydrateRaw({
   node: JsxNode;
   window?: Window;
   data?: Record<any, any>;
-  domPointer: DomPointerElement;
+  domPointer: DomPointerWithText;
 }) {
   const changedAtoms = new Set<Atom>();
   const globalCtx =
@@ -30,7 +32,6 @@ export async function hydrateRaw({
 
   const {hNode} = await node.hydrate({
     jsxSegmentName: '',
-    textLength: 0,
     domPointer,
     parentHNode,
     globalCtx,
@@ -42,11 +43,9 @@ export async function hydrateRaw({
         initDomPointer: domPointer,
       }),
     hydrateCtx: {
-      // snapshot: new TreeAtomsSnapshot(),
-      changedAtoms,
+      // changedAtoms,
+      treeAtomsSnapshot: new TreeAtomsSnapshot(),
     },
-    // atomDescendant: false,
-    // atomDirectNode: false,
   });
 
   // globalCtx.root.addTx(
@@ -55,7 +54,7 @@ export async function hydrateRaw({
   //     return store;
   //   }, new Map())
   // );
-  // mountHNodes(hNode);
+  mountHNodes(hNode);
 }
 
 export const hydrate = (
@@ -66,7 +65,7 @@ export const hydrate = (
   return hydrateRaw({
     domPointer: {
       parent: element,
-      position: 0,
+      nodesCount: 0,
     },
     // getElementPointer() {
     //   return {

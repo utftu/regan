@@ -11,6 +11,7 @@ import {HNode, HNodeBase} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
+import {ContextEnt} from '../context/context.tsx';
 
 type State = {
   mounts: Mount[];
@@ -38,7 +39,8 @@ type PropsCtx<TProps> = {
   segmentEnt: SegmentEnt;
   jsxNodeComponent: JsxNodeComponent;
   client?: Client;
-  propsFromAncestors?: AnyProps;
+  parentContext?: ContextEnt;
+  // propsFromAncestors?: AnyProps;
 };
 
 // args to run FC
@@ -58,8 +60,9 @@ export class Ctx<
   jsxNodeComponent: JsxNodeComponent;
   ctx: Ctx;
   client?: Client;
-  propsToDescendants: AnyProps = {};
-  propsFromAncestors: AnyProps;
+  parentContext?: ContextEnt;
+  // propsToDescendants: AnyProps = {};
+  // propsFromAncestors: AnyProps;
 
   constructor({
     props,
@@ -71,8 +74,9 @@ export class Ctx<
     systemProps,
     jsxNodeComponent,
     client,
-    propsFromAncestors = {},
+    // propsFromAncestors = {},
     segmentEnt,
+    parentContext,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -85,8 +89,9 @@ export class Ctx<
     this.systemProps = systemProps;
     this.jsxNodeComponent = jsxNodeComponent;
     this.client = client;
-    this.propsFromAncestors = propsFromAncestors;
+    // this.propsFromAncestors = propsFromAncestors;
     this.segmentEnt = segmentEnt;
+    this.parentContext = parentContext;
 
     this.ctx = this;
   }

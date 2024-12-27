@@ -9,15 +9,15 @@ import {ContextProvider, getContextValue} from '../context/context.tsx';
 import {HNodeComponent} from '../h-node/component.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
-import {getComponentDomNodeInfoCount} from '../utils/inserted-dom.ts';
+import {tryDetectInsertedInfoComponentImmediately} from '../utils/inserted-dom.ts';
 
 export async function hydrateComponent(
   this: JsxNodeComponent,
   props: HydrateProps
 ): HydrateResult {
-  const domNodesInfo = getComponentDomNodeInfoCount(this);
-  if (domNodesInfo) {
-    props.parentWait.promiseControls.resolve(domNodesInfo);
+  const insertedInfo = tryDetectInsertedInfoComponentImmediately(this);
+  if (insertedInfo) {
+    props.parentWait.promiseControls.resolve(insertedInfo);
   }
 
   const hNode = new HNodeComponent({
@@ -68,7 +68,8 @@ export async function hydrateComponent(
 
   if (this.type === ContextProvider) {
     hNode.contextEnt = {
-      context: this.systemProps.context!,
+      value: componentCtx.props.value,
+      context: componentCtx.props.value,
       parent: props.parentContextEnt,
     };
   } else {
@@ -82,7 +83,6 @@ export async function hydrateComponent(
   const children = normalizeChildren(rawChidlren);
 
   const {hNodes} = await handleChildrenHydrate({
-    textLength: props.textLength,
     parentInsertedDomNodesPromise: props.parentWait,
     parentHNode: hNode,
     children,
