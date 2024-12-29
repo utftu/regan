@@ -2,7 +2,6 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
-import {DomPointerElement} from '../types.ts';
 import {
   convertFromVirtualToHNodes,
   createVirtualFromRenderTemplate,
@@ -14,6 +13,7 @@ import {SegmentEnt} from '../segments/ent/ent.ts';
 import {ContextEnt, defaultContextEnt} from '../context/context.tsx';
 import {VOld} from '../v/types.ts';
 import {virtualApplyExternal} from '../v/v.ts';
+import {DomPointer, DomPointerWithText} from '../types.ts';
 
 export const rednerVirtual = async ({
   node,
@@ -27,7 +27,7 @@ export const rednerVirtual = async ({
   vOlds = [],
 }: {
   node: JsxNode;
-  domPointer: DomPointerElement;
+  domPointer: DomPointerWithText;
   window?: Window;
   data?: Record<any, any>;
   parentHNode?: HNode;
@@ -73,6 +73,7 @@ export const rednerVirtual = async ({
     vOlds,
     window: localWindow,
     hNode: parentHNode,
+    domPointer,
     // parent: domPointer
     // parentElement: tmpTemplate,
   });

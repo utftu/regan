@@ -36,7 +36,7 @@ const getNodesCount = ({jsxNode}: {jsxNode: JsxNode<FC>}): number => {
     return 0;
   }
 
-  return insertedInfo.nodesCount;
+  return insertedInfo.nodeCount;
 };
 
 export const defaultErrorHandler = () => {};

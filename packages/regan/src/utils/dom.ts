@@ -27,7 +27,7 @@ export const appendElementChild = ({
 };
 
 export const getElFromDomPointer = (domPointer: DomPointerWithText) => {
-  return domPointer.parent.childNodes[domPointer.nodesCount];
+  return domPointer.parent.childNodes[domPointer.nodeCount];
 };
 
 export const getPrevTextNode = (

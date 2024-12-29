@@ -7,7 +7,7 @@ import {FCStaticParams} from '../types.ts';
 
 export type InsertedInfo = {
   // prevType?: 'element' | 'text';
-  nodesCount: number;
+  nodeCount: number;
   // elemsCount: number;
   textLength?: number;
 };

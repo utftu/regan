@@ -4,14 +4,11 @@ import {Fragment} from '../fragment/fragment.ts';
 import {rednerVirtual} from '../../render/render.ts';
 import {checkNamedAtom} from '../../atoms/atoms.ts';
 import {NEED_AWAIT} from '../../consts.ts';
-import {detachChildren, unmountHNodes} from '../../h-node/helpers.ts';
-import {subscribeAtom} from '../../utils/props/props.ts';
+import {unmountHNodes} from '../../h-node/helpers.ts';
 
 type Props = {
   atom: Atom;
 };
-
-const getInsertDomPointer = () => {};
 
 const parseAtom = (atom: Atom, renderMode: boolean = false) => {
   let additionalPart = '?a=';
@@ -60,36 +57,6 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   const clientHNode = hNode!;
 
   let changedBeforeMount = false;
-  subscribeAtom({
-    tempExec: () => {
-      changedBeforeMount = true;
-    },
-    exec: async () => {
-      if (clientHNode.unmounted === true) {
-        return;
-      }
-
-      detachChildren(clientHNode);
-
-      jsxSegment.clearCache();
-
-      const {value, additionalPart} = parseAtom(atom, false);
-      jsxSegment.name = additionalPart;
-
-      const {hNode, mountHNodes} = await rednerVirtual({
-        node: <Fragment>{value}</Fragment>,
-        window: clientHNode.glocalClientCtx.window,
-        domPointer: clientHNode.paretDomPointer,
-        parentHNode: clientHNode,
-      });
-
-      mountHNodes();
-    },
-    hNode: clientHNode,
-    atom,
-  });
-
-  // let changedBeforeMount = false;
   const tempExec = () => {
     changedBeforeMount = true;
     globalCtx.root.links.removeExec(atom, tempExec);

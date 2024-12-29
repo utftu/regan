@@ -1,7 +1,7 @@
 import {ContextEnt} from '../context/context.tsx';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
-import {DomPointerWithText} from '../types.ts';
+import {DomPointer, DomPointerWithText} from '../types.ts';
 import {HNodeComponent} from './component.ts';
 import {HNodeElement} from './element.ts';
 import {HNodeText} from './text.ts';
@@ -81,7 +81,7 @@ export class HNodeBase {
 }
 
 export class GlobalClientCtx {
-  initDomPointer: DomPointerWithText;
+  initDomPointer: DomPointer;
   window: Window;
 
   constructor({

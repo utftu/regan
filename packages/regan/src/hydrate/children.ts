@@ -34,7 +34,7 @@ export async function handleChildrenHydrate({
   parentContextEnt?: ContextEnt;
 }) {
   const rawHydrates: (ReturnType<JsxNode['hydrate']> | HNode)[] = [];
-  let nodesCount = parentDomPointer.nodesCount;
+  let nodesCount = parentDomPointer.nodeCount;
   let textLength: undefined | number = parentDomPointer.textLength;
 
   let insertedJsxCount = 0;
@@ -48,13 +48,13 @@ export async function handleChildrenHydrate({
       // add to prev
       if (typeof textLength === 'number') {
         textNode = parentDomPointer.parent.childNodes[
-          parentDomPointer.nodesCount - 1
+          parentDomPointer.nodeCount - 1
         ] as Text;
         textLength += childOrAtom.length;
         start = textLength;
       } else {
         textNode = parentDomPointer.parent.childNodes[
-          parentDomPointer.nodesCount
+          parentDomPointer.nodeCount
         ] as Text;
         nodesCount++;
         textLength = childOrAtom.length;
@@ -92,7 +92,7 @@ export async function handleChildrenHydrate({
       parentSegmentEnt,
       domPointer: {
         parent: parentDomPointer.parent,
-        nodesCount,
+        nodeCount: nodesCount,
         textLength,
       },
       parentHNode,
@@ -107,7 +107,7 @@ export async function handleChildrenHydrate({
       insertedDomPromise.promise
     );
 
-    nodesCount += insertedCount.nodesCount;
+    nodesCount += insertedCount.nodeCount;
 
     if (
       typeof insertedCount.textLength === 'number' &&
@@ -122,7 +122,7 @@ export async function handleChildrenHydrate({
   }
 
   parentInsertedDomNodesPromise.promiseControls.resolve({
-    nodesCount: nodesCount - parentDomPointer.nodesCount,
+    nodeCount: nodesCount - parentDomPointer.nodeCount,
     textLength,
   });
 

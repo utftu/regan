@@ -21,7 +21,7 @@ export async function hydrateElement(
   });
 
   const element = props.domPointer.parent.childNodes[
-    props.domPointer.nodesCount
+    props.domPointer.nodeCount
   ] as HTMLElement;
 
   const {dynamicProps, staticProps} = splitProps(
@@ -56,7 +56,7 @@ export async function hydrateElement(
     children: this.children,
     parentDomPointer: {
       parent: element,
-      nodesCount: 0,
+      nodeCount: 0,
     },
     parentHNode: hNode,
     globalCtx: props.globalCtx,

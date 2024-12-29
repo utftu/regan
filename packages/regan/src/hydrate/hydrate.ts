@@ -21,7 +21,6 @@ export async function hydrateRaw({
   data?: Record<any, any>;
   domPointer: DomPointerWithText;
 }) {
-  const changedAtoms = new Set<Atom>();
   const globalCtx =
     parentHNode?.globalCtx ??
     new GlobalCtx({
@@ -65,7 +64,7 @@ export const hydrate = (
   return hydrateRaw({
     domPointer: {
       parent: element,
-      nodesCount: 0,
+      nodeCount: 0,
     },
     // getElementPointer() {
     //   return {

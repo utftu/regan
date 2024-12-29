@@ -1,6 +1,6 @@
 import {destroyAtom} from '../atoms/atoms.ts';
 import {Ctx} from '../ctx/ctx.ts';
-import {HNodeBase} from './h-node.ts';
+import {HNode, HNodeBase} from './h-node.ts';
 
 export const createSmartMount = (ctx: Ctx) => (hNode: HNodeBase) => {
   const unmounts = ctx.state.mounts.map((mount) => mount());
@@ -35,4 +35,12 @@ export const unmountHNodes = (hNode: HNodeBase) => {
 export const unmountSystemHNodes = (hNode: HNodeBase) => {
   hNode.systemUnmounts.forEach((fn) => fn());
   hNode.children.forEach((hNode) => unmountHNodes(hNode));
+};
+
+export const detachChildren = (hNode: HNodeBase) => {
+  hNode.children.forEach((hNodeChild) => {
+    unmountHNodes(hNodeChild);
+    hNodeChild.parent = undefined;
+  });
+  hNode.children.length = 0;
 };
