@@ -2,30 +2,16 @@ import {HNode} from '../h-node/h-node.ts';
 import {DomPointer} from '../types.ts';
 import {convertElementNewToOld, convertTextNewToOld} from './convert.ts';
 import {handleEdgeTextCases} from './edge.ts';
-import {
-  createElement,
-  createText,
-  deleteFunc,
-  // getNodeFromVOld,
-  handle,
-} from './handle.ts';
+import {createElement, createText, deleteFunc, handle} from './handle.ts';
 import {insertChild} from './insert.ts';
 import {handleKey, KeyStoreNew, KeyStoreOld} from './key.ts';
 import {checkSkip, deleteSkip} from './skip.ts';
-import {
-  VNewElement,
-  VOldElement,
-  VNewText,
-  VNew,
-  VOld,
-  VOldText,
-} from './types.ts';
+import {VOldElement, VNew, VOld} from './types.ts';
 
 export const virtualApplyExternal = ({
   vNews,
   vOlds,
   hNode,
-  // parent,
   domPointer,
   window,
   keyStoreNew = {},
@@ -34,7 +20,6 @@ export const virtualApplyExternal = ({
   vNews: VNew[];
   vOlds: VOld[];
   hNode?: HNode;
-  // parent: ParentNode;
   domPointer: DomPointer;
   window: Window;
   keyStoreOld?: KeyStoreOld;
@@ -51,7 +36,6 @@ export const virtualApplyExternal = ({
     vOlds,
     window,
     domPointer,
-    // parent,
     keyStoreNew,
     keyStoreOld,
   });
@@ -60,13 +44,11 @@ export const virtualApplyExternal = ({
 export const virtualApplyInternalSimple = ({
   vNew,
   vOld,
-  // parent,
   window,
   domPointer,
 }: {
   vNew?: VNew;
   vOld?: VOld;
-  // parent: ParentNode;
   domPointer: DomPointer;
   window: Window;
 }) => {
@@ -81,7 +63,6 @@ export const virtualApplyInternalSimple = ({
   virtualApplyInternal({
     vNews: vNewIsElement ? vNew.children : [],
     vOlds: vOldIsElement ? vOld.children : [],
-    // parent: newParent,
     domPointer: realDomPointer,
     window,
     keyStoreNew: keyStoreNewMy,
@@ -96,7 +77,6 @@ export const virtualApplyInternal = ({
   vNews,
   vOlds,
   window,
-  // parent,
   keyStoreNew,
   keyStoreOld,
   domPointer,
@@ -104,7 +84,6 @@ export const virtualApplyInternal = ({
   vNews: VNew[];
   vOlds: VOld[];
   window: Window;
-  // parent: ParentNode;
   domPointer: DomPointer;
   keyStoreOld: KeyStoreOld;
   keyStoreNew: KeyStoreNew;
@@ -113,8 +92,6 @@ export const virtualApplyInternal = ({
     const prevVNew = vNews[i - 1] as VOld | undefined;
     const vNew = vNews[i] as VNew | undefined;
     const vOld = vOlds[i] as VOld | undefined;
-
-    console.log('-----', 'vNew', vNew);
 
     if (vNew && !checkSkip(vNew)) {
       handleKey({domPointer, vNew, window, keyStoreNew, keyStoreOld});
@@ -127,7 +104,6 @@ export const virtualApplyInternal = ({
     }
 
     if (checkSkip(vOld)) {
-      console.log('-----', 'here');
       deleteSkip(vOld);
       if (!vNew) {
         continue;
@@ -170,7 +146,6 @@ export const virtualApplyInternal = ({
       vOld: vOlds[i],
       window,
       domPointer,
-      // parent: parent,
       prevVNew,
     });
 
@@ -179,7 +154,6 @@ export const virtualApplyInternal = ({
         vNew,
         vOld,
         domPointer,
-        // parent,
         window,
       });
     }

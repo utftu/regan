@@ -135,7 +135,7 @@ describe('v/v', () => {
     expect(parent.childNodes.length).toBe(1);
     expect(parent.childNodes[0].textContent).toBe('1');
   });
-  it.only('replace', () => {
+  it('replace', () => {
     const {leftHText, middleHNode} = createHNodes();
     const domPointer = createDomPointer(window);
     const {parent} = domPointer;
@@ -156,11 +156,7 @@ describe('v/v', () => {
       window,
     });
 
-    console.log('-----', '1', (domPointer.parent as Element).innerHTML);
-
     const vOlds = vNews1 as VOld[];
-
-    console.log('-----', 'second', '-----');
 
     virtualApplyExternal({
       vNews: vNews2,
@@ -172,8 +168,6 @@ describe('v/v', () => {
       },
       window,
     });
-
-    console.log('-----', '2', (domPointer.parent as Element).innerHTML);
 
     expect(parent.childNodes.length).toBe(3);
     expect(parent.childNodes[0].textContent).toBe('1');

@@ -24,7 +24,7 @@ export const handleKey = ({
   if (vNew.type !== 'element' || !('key' in vNew)) {
     return;
   }
-  // console.log('-----', 'here2', vNew);
+
   const key = vNew.key!;
 
   keyStoreNew[key] = vNew;

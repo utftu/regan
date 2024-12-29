@@ -13,7 +13,6 @@ export class Root {
 
   // not check prev
   handleTx(tx: Tx) {
-    // console.log('-----', 'handle', tx.status, this.checkOmmit(tx));
     if (tx.status === 'running') {
       return;
     }
@@ -42,7 +41,6 @@ export class Root {
   }
 
   addTx(changes: Changes) {
-    // console.log('-----', 'tx', changes);
     const tx = new Tx(changes, this);
 
     // doubtfull but ok
