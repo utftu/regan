@@ -1,4 +1,5 @@
-import {HNode, HNodeBase} from '../h-node.ts';
+import {HNodeElement} from '../../element.ts';
+import {HNode, HNodeBase} from '../../h-node.ts';
 
 type CheckerAnswer = HNode | 'stop' | void;
 
@@ -57,15 +58,6 @@ const findNextDown = (hNode: HNode, checker: Checker): CheckerAnswer => {
 
 // check hNode
 const findPrevUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
-  const answer = checker(hNode);
-  if (answer instanceof HNodeBase) {
-    return hNode;
-  }
-
-  if (answer === 'stop') {
-    return 'stop';
-  }
-
   const parent = hNode.parent;
 
   if (!parent) {
@@ -97,19 +89,14 @@ const findPrevUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
     }
   }
 
+  if (parent instanceof HNodeElement) {
+    return;
+  }
+
   return findPrevUp(parent, checker);
 };
 
 const findNextUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
-  const answer = checker(hNode);
-  if (answer instanceof HNodeBase) {
-    return hNode;
-  }
-
-  if (answer === 'stop') {
-    return 'stop';
-  }
-
   const parent = hNode.parent;
 
   if (!parent) {
@@ -139,6 +126,10 @@ const findNextUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
     if (downAnswer === 'stop') {
       return;
     }
+  }
+
+  if (parent instanceof HNodeElement) {
+    return;
   }
 
   return findPrevUp(parent, checker);

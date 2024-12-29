@@ -2,7 +2,7 @@ import {HNode} from '../h-node/h-node.ts';
 import {
   findNextTextHNodes,
   findPrevTextHNode,
-} from '../h-node/helpers/find-text.ts';
+} from '../h-node/utils/find/text/text.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {setSkip} from './skip.ts';
 import {VNew, VNewText, VOld, VOldText} from './types.ts';

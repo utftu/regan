@@ -1,7 +1,7 @@
-import {HNodeElement} from '../../h-node/element.ts';
-import {HNode} from '../../h-node/h-node.ts';
-import {HNodeText} from '../../h-node/text.ts';
-import {findNextHNode, findPrevHNode} from './find.ts';
+import {HNodeElement} from '../../../element.ts';
+import {HNode} from '../../../h-node.ts';
+import {HNodeText} from '../../../text.ts';
+import {findNextHNode, findPrevHNode} from '../find.ts';
 
 export const findPrevTextHNode = (hNode: HNode) => {
   return findPrevHNode(hNode, (hNode) => {
@@ -25,4 +25,14 @@ export const findNextTextHNode = (hNode: HNode) => {
       return hNode;
     }
   });
+};
+
+export const findNextTextHNodes = (hNode: HNode) => {
+  const nodes = [];
+  let nextNode = findNextTextHNode(hNode);
+  while (nextNode) {
+    nodes.push(nextNode);
+    nextNode = findNextTextHNode(nextNode);
+  }
+  return nodes;
 };
