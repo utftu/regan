@@ -114,8 +114,10 @@ export const virtualApplyInternal = ({
     const vNew = vNews[i] as VNew | undefined;
     const vOld = vOlds[i] as VOld | undefined;
 
+    console.log('-----', 'vNew', vNew);
+
     if (vNew && !checkSkip(vNew)) {
-      handleKey({vNew, window, keyStoreNew, keyStoreOld});
+      handleKey({domPointer, vNew, window, keyStoreNew, keyStoreOld});
     }
 
     if (checkSkip(vOld) && checkSkip(vNew)) {
@@ -125,6 +127,7 @@ export const virtualApplyInternal = ({
     }
 
     if (checkSkip(vOld)) {
+      console.log('-----', 'here');
       deleteSkip(vOld);
       if (!vNew) {
         continue;

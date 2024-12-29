@@ -3,14 +3,10 @@ import {getNodeFromVOld} from './handle.ts';
 import {VOld} from './types.ts';
 
 export const insertChild = ({
-  // parent,
   prevVNew,
   node,
   domPointer,
-}: // vOld,
-{
-  // parent: ParentNode;
-
+}: {
   prevVNew: VOld | void;
   node: Node;
   // vOld: VOld | void;
@@ -26,15 +22,8 @@ export const insertChild = ({
 
   if (prevNode) {
     prevNode.after(node);
+    return;
   }
 
   domPointer.parent.prepend(node);
-
-  // if (vOld) {
-  //   const vOldDomNode = getDomNode(vOld);
-  //   vOldDomNode.after(node);
-  //   return;
-  // }
-
-  // parent.appendChild(node);
 };

@@ -1,3 +1,4 @@
+import {DomPointer} from '../types.ts';
 import {convertElementNewToOld} from './convert.ts';
 import {patchElement} from './handle.ts';
 import {checkSkip, setSkip} from './skip.ts';
@@ -12,11 +13,13 @@ export const handleKey = ({
   keyStoreOld,
   keyStoreNew,
   window,
+  domPointer,
 }: {
   vNew: VNew;
   keyStoreOld: KeyStoreOld;
   keyStoreNew: KeyStoreNew;
   window: Window;
+  domPointer: DomPointer;
 }) => {
   if (vNew.type !== 'element' || !('key' in vNew)) {
     return;
@@ -45,7 +48,8 @@ export const handleKey = ({
     vNews: vNew.children,
     vOlds: vOld.children,
     window,
-    parent: vOld.element,
+    domPointer,
+    // parent: vOld.element,
     keyStoreNew: vNew.keyStore,
     keyStoreOld: vOld.keyStore,
   });

@@ -4,11 +4,11 @@ import {HNodeText} from '../h-node/text.ts';
 import {VNew, VNewElement, VOld, VOldElement} from './types.ts';
 import {JSDOM} from 'jsdom';
 import {virtualApplyExternal} from './v.ts';
-import {createParent} from './test-helpers.ts';
+import {createDomPointer, createParent} from './test-helpers.ts';
+import {DomPointer} from '../types.ts';
 
 const jsdom = new JSDOM();
 const window = jsdom.window as any as Window;
-const document = window.document;
 
 const createHNodes = () => {
   const rootHNode = new HNodeComponent({} as any);
@@ -76,7 +76,13 @@ const createVNews2 = (): VNew[] => {
 describe('v/v', () => {
   it('create', () => {
     const {leftHText, middleHNode} = createHNodes();
+    // const domPointer = createDomPointer(window);
+    // const {parent} = domPointer;
     const parent = createParent(window);
+    const domPointer: DomPointer = {
+      parent,
+      nodeCount: 0,
+    };
     parent.appendChild(leftHText.textNode);
 
     const vNews1 = createVNews1();
@@ -85,7 +91,7 @@ describe('v/v', () => {
       vNews: vNews1,
       vOlds: [],
       hNode: middleHNode,
-      parent,
+      domPointer,
       window,
     });
 
@@ -101,7 +107,8 @@ describe('v/v', () => {
   });
   it('remove', () => {
     const {leftHText, middleHNode} = createHNodes();
-    const parent = createParent(window);
+    const domPointer = createDomPointer(window);
+    const {parent} = domPointer;
     parent.appendChild(leftHText.textNode);
 
     const vNews1 = createVNews1();
@@ -111,7 +118,7 @@ describe('v/v', () => {
       vNews: vNews1,
       vOlds: [],
       hNode: middleHNode,
-      parent,
+      domPointer,
       window,
     });
 
@@ -121,16 +128,17 @@ describe('v/v', () => {
       vNews: [],
       vOlds,
       hNode: middleHNode,
-      parent,
+      domPointer,
       window,
     });
 
     expect(parent.childNodes.length).toBe(1);
     expect(parent.childNodes[0].textContent).toBe('1');
   });
-  it('replace', () => {
+  it.only('replace', () => {
     const {leftHText, middleHNode} = createHNodes();
-    const parent = createParent(window);
+    const domPointer = createDomPointer(window);
+    const {parent} = domPointer;
     parent.appendChild(leftHText.textNode);
 
     const vNews1 = createVNews1();
@@ -141,19 +149,31 @@ describe('v/v', () => {
       vNews: vNews1,
       vOlds: [],
       hNode: middleHNode,
-      parent,
+      domPointer: {
+        parent: domPointer.parent,
+        nodeCount: 1,
+      },
       window,
     });
 
+    console.log('-----', '1', (domPointer.parent as Element).innerHTML);
+
     const vOlds = vNews1 as VOld[];
+
+    console.log('-----', 'second', '-----');
 
     virtualApplyExternal({
       vNews: vNews2,
       vOlds,
       hNode: middleHNode,
-      parent,
+      domPointer: {
+        parent: domPointer.parent,
+        nodeCount: 1,
+      },
       window,
     });
+
+    console.log('-----', '2', (domPointer.parent as Element).innerHTML);
 
     expect(parent.childNodes.length).toBe(3);
     expect(parent.childNodes[0].textContent).toBe('1');
@@ -167,7 +187,8 @@ describe('v/v', () => {
     expect(element.childNodes.length).toBe(2);
   });
   it('key', () => {
-    const parent = createParent(window);
+    const domPointer = createDomPointer(window);
+    const {parent} = domPointer;
 
     const vNews1 = createVNews1();
     (vNews1[1] as VNewElement).key = 'hello';
@@ -183,7 +204,7 @@ describe('v/v', () => {
       vNews: vNews1,
       vOlds: [],
       hNode: parentHNode,
-      parent,
+      domPointer,
       window,
       keyStoreNew: firstRunStore,
     });
@@ -193,7 +214,7 @@ describe('v/v', () => {
       vNews: vNews2,
       vOlds: vNews1 as VOld[],
       hNode: parentHNode,
-      parent,
+      domPointer,
       window,
     });
 

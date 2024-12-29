@@ -1,83 +1,28 @@
 import {HNodeElement} from '../../h-node/element.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {HNodeText} from '../../h-node/text.ts';
+import {findNextHNode, findPrevHNode} from './find.ts';
 
-const findTextNodeDown = (hNode: HNode): HNodeText | void => {
-  if (hNode instanceof HNodeText) {
-    return hNode;
-  }
-
-  if (hNode instanceof HNodeElement) {
-    return;
-  }
-
-  for (const child of hNode.children) {
-    const result = findTextNodeDown(child);
-
-    if (result) {
-      return result;
+export const findPrevTextHNode = (hNode: HNode) => {
+  return findPrevHNode(hNode, (hNode) => {
+    if (hNode instanceof HNodeElement) {
+      return 'stop';
     }
-  }
-};
 
-const findTextNodeUp = (hNode: HNode) => {
-  const parent = hNode.parent;
-
-  if (!parent) {
-    return;
-  }
-
-  const childPosition = parent.children.indexOf(hNode);
-
-  for (let i = childPosition + 1; i < parent.children.length; i++) {
-    const child = parent.children[i];
-
-    const possibleTextNode = findTextNodeDown(child);
-
-    if (possibleTextNode) {
-      return possibleTextNode;
+    if (hNode instanceof HNodeText) {
+      return hNode;
     }
-  }
-
-  return findTextNodeUp(parent);
+  });
 };
 
 export const findNextTextHNode = (hNode: HNode) => {
-  return findTextNodeUp(hNode);
-};
-
-const findTextNodeUpReverse = (hNode: HNode) => {
-  const parent = hNode.parent;
-
-  if (!parent) {
-    return;
-  }
-
-  const childPosition = parent.children.indexOf(hNode);
-
-  for (let i = childPosition - 1; i >= 0; i--) {
-    const child = parent.children[i];
-
-    const possibleTextNode = findTextNodeDown(child);
-
-    if (possibleTextNode) {
-      return possibleTextNode;
+  return findNextHNode(hNode, (hNode) => {
+    if (hNode instanceof HNodeElement) {
+      return 'stop';
     }
-  }
 
-  return findTextNodeUpReverse(parent);
-};
-
-export const findPrevTextHNode = (hNode: HNode) => {
-  return findTextNodeUpReverse(hNode);
-};
-
-export const findNextTextHNodes = (hNode: HNode) => {
-  const nodes = [];
-  let nextNode = findNextTextHNode(hNode);
-  while (nextNode) {
-    nodes.push(nextNode);
-    nextNode = findNextTextHNode(nextNode);
-  }
-  return nodes;
+    if (hNode instanceof HNodeText) {
+      return hNode;
+    }
+  });
 };
