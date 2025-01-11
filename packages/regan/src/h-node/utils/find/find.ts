@@ -3,10 +3,18 @@ import {HNode, HNodeBase} from '../../h-node.ts';
 
 type CheckerAnswer = HNode | 'stop' | void;
 
-type Checker = (hNode: HNode) => HNode | 'stop' | void;
+type Checker = (hNode: HNode) => CheckerAnswer;
 
-export const findPrevHNode = (hNode: HNode, checker: Checker) => {
-  const result = findPrevUp(hNode, checker);
+export type ReturnConfig = {
+  lastParentHNode?: HNode;
+};
+
+export const findPrevHNode = (
+  hNode: HNode,
+  checker: Checker,
+  config: ReturnConfig = {}
+) => {
+  const result = findPrevUp(hNode, checker, config);
 
   if (result instanceof HNodeBase) {
     return result;
@@ -20,8 +28,6 @@ export const findNextHNode = (hNode: HNode, checker: Checker) => {
     return result;
   }
 };
-
-export const findNextNoes = () => {};
 
 // not check hNode
 const findPrevDown = (hNode: HNode, checker: Checker): CheckerAnswer => {
@@ -57,12 +63,18 @@ const findNextDown = (hNode: HNode, checker: Checker): CheckerAnswer => {
 };
 
 // check hNode
-const findPrevUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
+const findPrevUp = (
+  hNode: HNode,
+  checker: Checker,
+  config: ReturnConfig
+): CheckerAnswer => {
   const parent = hNode.parent;
 
   if (!parent) {
     return;
   }
+
+  config.lastParentHNode = parent;
 
   const childPosition = parent.children.indexOf(hNode);
 
@@ -93,7 +105,7 @@ const findPrevUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
     return;
   }
 
-  return findPrevUp(parent, checker);
+  return findPrevUp(parent, checker, config);
 };
 
 const findNextUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
@@ -132,5 +144,5 @@ const findNextUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
     return;
   }
 
-  return findPrevUp(parent, checker);
+  return findNextUp(parent, checker);
 };

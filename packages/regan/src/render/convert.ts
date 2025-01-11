@@ -1,8 +1,5 @@
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNodeElement} from '../h-node/element.ts';
-import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
-import {HNodeText} from '../h-node/text.ts';
-import {VNew, VNewElement, VNewText} from '../v/old-v.ts';
+import {HNode} from '../h-node/h-node.ts';
+import {VNew, VNewElement, VNewText} from '../v/types.ts';
 import {
   RenderTemplate,
   RenderTemplateElementExtended,
@@ -20,14 +17,15 @@ export const createVirtualFromRenderTemplate = (
         ...renderTemplate.vNew,
       };
     }
-    const start = store.vNew.text.length;
+    const vNew = store.vNew!;
+    const start = vNew.data.text.length;
 
-    const vNew = store.vNew;
-    store.vNew.text += renderTemplate.vNew.text;
+    // const vNew = store.vNew;
+    vNew.data.text += renderTemplate.vNew.text;
 
-    const oldInit = store.vNew.init;
-    store.vNew.init = (text, vOld) => {
-      oldInit?.call(vNew, text, vOld);
+    const oldInit = vNew.init;
+    vNew.init = (vOld) => {
+      oldInit?.call(vNew, vOld);
       const renderTemplateExtended =
         renderTemplate as RenderTemplateTextExtended;
       renderTemplateExtended.vOld = vOld;
@@ -50,8 +48,8 @@ export const createVirtualFromRenderTemplate = (
     };
 
     const oldInit = vNewResult.init;
-    vNewResult.init = (elementVirtual, vOld) => {
-      oldInit?.call(vNewResult, elementVirtual, vOld);
+    vNewResult.init = (vOld) => {
+      oldInit?.call(vNewResult, vOld);
       const renderTemplateExtended =
         renderTemplate as RenderTemplateElementExtended;
       renderTemplateExtended.vOld = vOld;

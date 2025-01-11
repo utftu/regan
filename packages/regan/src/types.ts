@@ -42,11 +42,16 @@ export type SystemProps = {
 
 export type HtmlChild = HTMLElement | string;
 
-export type DomPointerWithText = InsertedInfo & {
-  parent: ParentNode;
-};
-
 export type DomPointer = {
   parent: ParentNode;
   nodeCount: number;
+};
+
+export type DomPointerWithText = DomPointer & {
+  textLength?: number;
+};
+
+export type DomPointerPrev = {
+  parent: ParentNode;
+  prevNode?: ChildNode;
 };

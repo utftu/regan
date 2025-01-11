@@ -16,7 +16,7 @@ export const prepareListenerForError = ({
       listener(...args);
     } catch (error) {
       const errorConfig = getContextValue(errorContext, contextEnt);
-      errorConfig.error({error: error as Error, segmentEnt});
+      errorConfig.error({error: error as Error, jsxNode: segmentEnt.jsxNode});
     }
   };
 };

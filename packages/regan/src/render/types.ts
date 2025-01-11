@@ -7,6 +7,7 @@ import {SegmentEnt} from '../segments/ent/ent.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 import {ContextEnt} from '../context/context.tsx';
+import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
 
 type ConnectHNode = (props: {children: HNode[]; hNode: HNode}) => void;
 
@@ -30,7 +31,7 @@ export type RenderTemplateElement = {
   children: RenderTemplate[];
 
   vNew: VNewElement;
-  createHNode: ({vOld}: {vOld: VOldElement}) => HNodeElement;
+  createHNode: (vOld: VOldElement) => HNodeElement;
   connectHNode: ConnectHNode;
 };
 
@@ -67,7 +68,7 @@ export type RenderTemplateExtended =
   | RenderTemplateTextExtended;
 
 export type RenderCtx = {
-  changedAtoms: Set<Atom>;
+  treeAtomsSnapshot: TreeAtomsSnapshot;
 };
 
 export type RenderProps = {
@@ -76,7 +77,6 @@ export type RenderProps = {
   renderCtx: RenderCtx;
   jsxSegmentName: string;
   parentSegmentEnt?: SegmentEnt;
-  // parentSegmentComponent?: SegmentComponent;
   parentContextEnt: ContextEnt;
 };
 

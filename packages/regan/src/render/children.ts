@@ -79,7 +79,6 @@ export async function handleChildrenRender({
       renderCtx,
       jsxSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,
-      // parentSegmentComponent,
       parentContextEnt,
     });
     rawResults.push(renderResult);

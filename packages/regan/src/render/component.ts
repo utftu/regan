@@ -10,11 +10,7 @@ import {
   RenderTemplateComponent,
 } from './types.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
-import {
-  ContextEnt,
-  ContextProvider,
-  getContextValue,
-} from '../context/context.tsx';
+import {ContextProvider, getContextValue} from '../context/context.tsx';
 import {errorContext} from '../errors/errors.tsx';
 import {HNodeComponent} from '../h-node/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
@@ -46,7 +42,7 @@ export async function renderComponent(
     segmentEnt: hNode.segmentEnt,
   });
 
-  const renderTemplate = {
+  const renderTemplate: RenderTemplateComponent = {
     type: 'component',
     children: [] as RenderTemplate[],
     createHNode: () => {
@@ -58,7 +54,7 @@ export async function renderComponent(
         child.parent = hNode;
       });
     },
-  } satisfies RenderTemplateComponent;
+  };
 
   let rawChidlren;
   try {
@@ -79,7 +75,8 @@ export async function renderComponent(
 
   if (this.type === ContextProvider) {
     hNode.contextEnt = {
-      context: this.systemProps.context!,
+      value: componentCtx.props.value,
+      context: componentCtx.props.value,
       parent: props.parentContextEnt,
     };
   } else {

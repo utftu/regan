@@ -1,21 +1,18 @@
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenRender} from './children.ts';
-import {
-  RenderProps,
-  RenderResult,
-  RenderTemplate,
-  RenderTemplateElement,
-} from './types.ts';
-import {initDynamicSubsribes, subscribeAtom} from '../utils/props/props.ts';
+import {RenderProps, RenderResult, RenderTemplateElement} from './types.ts';
 import {splitProps} from '../v/convert/convert.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {HNodeElement} from '../h-node/element.ts';
+import {VOldElement} from '../v/types.ts';
+import {initDynamicSubsribes} from '../utils/props/dynamic.ts';
+import {subscribeAtom} from '../utils/props/atom.ts';
 
 export async function renderElement(
   this: JsxNodeElement,
   props: RenderProps
 ): RenderResult {
-  // const jsxNode = this;
+  // init new part of name segment
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
     parentSystemEnt: props.parentSegmentEnt,
@@ -23,9 +20,14 @@ export async function renderElement(
     jsxNode: this,
   });
 
-  const {dynamicProps, joinedProps} = splitProps(this.props);
+  // split props to dynamic and joined
+  const {dynamicProps, joinedProps} = splitProps(
+    this.props,
+    props.renderCtx.treeAtomsSnapshot
+  );
 
-  const renderTemplate = {
+  // create render template
+  const renderTemplate: RenderTemplateElement = {
     type: 'element',
     vNew: {
       type: 'element',
@@ -33,7 +35,8 @@ export async function renderElement(
       props: joinedProps,
       children: [],
     },
-    createHNode: ({vOld}) => {
+    createHNode: (vOld: VOldElement) => {
+      const element = vOld.element;
       const hNode = new HNodeElement(
         {
           segmentEnt,
@@ -42,23 +45,22 @@ export async function renderElement(
           contextEnt: props.parentContextEnt,
         },
         {
-          element: vOld.node,
+          element,
         }
       );
 
       initDynamicSubsribes({
         hNode,
         dynamicProps,
-        changedAtoms: props.renderCtx.changedAtoms,
       });
 
       for (const name in dynamicProps) {
         const atom = dynamicProps[name];
 
         subscribeAtom({
-          tempExec: () => props.renderCtx.changedAtoms.add(atom),
+          tempExec: () => {},
           exec: () => {
-            vOld.props[name] = atom.get();
+            vOld.data.props[name] = atom.get();
           },
           atom,
           hNode,
@@ -71,8 +73,8 @@ export async function renderElement(
       children.forEach((child) => (child.parent = hNode));
       hNode.children = children;
     },
-    children: [] as RenderTemplate[],
-  } satisfies RenderTemplateElement;
+    children: [],
+  };
 
   const {renderTemplates} = await handleChildrenRender({
     children: this.children,

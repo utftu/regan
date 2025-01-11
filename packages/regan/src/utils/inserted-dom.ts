@@ -6,9 +6,7 @@ import {JsxNode} from '../node/node.ts';
 import {FCStaticParams} from '../types.ts';
 
 export type InsertedInfo = {
-  // prevType?: 'element' | 'text';
   nodeCount: number;
-  // elemsCount: number;
   textLength?: number;
 };
 

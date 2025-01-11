@@ -31,7 +31,6 @@ export type VNewText = {
   data: {
     text: string;
   };
-  // text: string;
   init?: (vOld: VOldText) => void;
 } & MetaExtend;
 

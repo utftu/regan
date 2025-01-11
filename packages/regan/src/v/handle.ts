@@ -125,7 +125,6 @@ export const handle = ({
   vNew,
   vOld,
   window,
-  // parent,
   domPointer,
   prevVNew,
 }: {
@@ -133,7 +132,6 @@ export const handle = ({
   vOld?: VOld;
   window: Window;
   domPointer: DomPointer;
-  // parent: ParentNode;
   prevVNew?: VOld;
 }) => {
   if (!vNew) {

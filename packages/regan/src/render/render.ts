@@ -6,14 +6,14 @@ import {
   convertFromVirtualToHNodes,
   createVirtualFromRenderTemplate,
 } from './convert.ts';
-import {insertNodesAtPosition} from '../utils/dom.ts';
 import {RenderTemplateExtended} from './types.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {ContextEnt, defaultContextEnt} from '../context/context.tsx';
 import {VOld} from '../v/types.ts';
 import {virtualApplyExternal} from '../v/v.ts';
-import {DomPointer, DomPointerWithText} from '../types.ts';
+import {DomPointer} from '../types.ts';
+import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
 
 export const rednerVirtual = async ({
   node,
@@ -27,7 +27,7 @@ export const rednerVirtual = async ({
   vOlds = [],
 }: {
   node: JsxNode;
-  domPointer: DomPointerWithText;
+  domPointer: DomPointer;
   window?: Window;
   data?: Record<any, any>;
   parentHNode?: HNode;
@@ -44,7 +44,7 @@ export const rednerVirtual = async ({
       root: new Root(),
     });
 
-  const hNodeCtx =
+  const globalClientCtx =
     parentHNode?.glocalClientCtx ??
     new GlobalClientCtx({
       window: localWindow,
@@ -56,17 +56,15 @@ export const rednerVirtual = async ({
   const {renderTemplate} = await node.render({
     parentSegmentEnt,
     globalCtx,
-    globalClientCtx: hNodeCtx,
+    globalClientCtx,
     jsxSegmentName,
     parentContextEnt: contextEnt,
     renderCtx: {
-      changedAtoms: new Set(),
+      treeAtomsSnapshot: new TreeAtomsSnapshot(),
     },
   });
 
   const vNews = createVirtualFromRenderTemplate(renderTemplate);
-
-  const tmpTemplate = localWindow.document.createElement('template');
 
   virtualApplyExternal({
     vNews,
@@ -74,44 +72,50 @@ export const rednerVirtual = async ({
     window: localWindow,
     hNode: parentHNode,
     domPointer,
-    // parent: domPointer
-    // parentElement: tmpTemplate,
   });
-
-  const children = Array.from(tmpTemplate.content.childNodes);
-
-  insertNodesAtPosition(domPointer.parent, domPointer.position, children);
 
   const hNode = convertFromVirtualToHNodes({
     renderTemplate: renderTemplate as RenderTemplateExtended,
-    // parentHNode,
-    // globalCtx,
-    // hNodeCtx,
   });
 
+  if (parentHNode) {
+    parentHNode.children.push(hNode);
+    hNode.parent = parentHNode;
+
+    // not nessasery detach
+    // parentSegmentEnt and parentContextEnt
+  }
+
+  mountHNodes(hNode);
+
   return {
+    vOlds: vNews,
     hNode,
-    mountHNodes: () => {
-      if (parentHNode) {
-        parentHNode.children.push(hNode);
-        hNode.parent = parentHNode;
-
-        // not nessasery detach
-        // parentSegmentEnt and parentContextEnt
-      }
-      mountHNodes(hNode);
-
-      return () => {
-        hNode.unmount();
-        if (parentHNode) {
-          hNode.parent = undefined;
-          parentHNode.children = parentHNode.children.filter(
-            (child) => child !== hNode
-          );
-        }
-      };
-    },
   };
+
+  // return {
+  //   hNode,
+  //   mountHNodes: () => {
+  //     if (parentHNode) {
+  //       parentHNode.children.push(hNode);
+  //       hNode.parent = parentHNode;
+
+  //       // not nessasery detach
+  //       // parentSegmentEnt and parentContextEnt
+  //     }
+  //     mountHNodes(hNode);
+
+  //     return () => {
+  //       hNode.unmount();
+  //       if (parentHNode) {
+  //         hNode.parent = undefined;
+  //         parentHNode.children = parentHNode.children.filter(
+  //           (child) => child !== hNode
+  //         );
+  //       }
+  //     };
+  //   },
+  // };
 };
 
 export const render = async (
@@ -123,7 +127,7 @@ export const render = async (
     node,
     domPointer: {
       parent: element,
-      position: 0,
+      nodeCount: 0,
     },
     window: options.window,
   });

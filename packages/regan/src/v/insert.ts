@@ -9,7 +9,6 @@ export const insertChild = ({
 }: {
   prevVNew: VOld | void;
   node: Node;
-  // vOld: VOld | void;
   domPointer: DomPointer;
 }) => {
   if (prevVNew) {

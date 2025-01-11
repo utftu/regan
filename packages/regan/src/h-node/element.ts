@@ -7,11 +7,17 @@ type HNodeElProps = {
 };
 
 export class HNodeElement extends HNodeBase {
-  jsxNode: JsxNodeElement;
+  // jsxNode: JsxNodeElement;
   element: Element;
-  constructor(props: PropsHNode, {jsxNode, element}: HNodeElProps) {
+  constructor(
+    props: PropsHNode,
+    {
+      // jsxNode,
+      element,
+    }: HNodeElProps
+  ) {
     super(props);
-    this.jsxNode = jsxNode;
+    // this.jsxNode = jsxNode;
     this.element = element;
   }
 }

@@ -1,17 +1,53 @@
 import {Atom} from 'strangelove';
-import {FC, FCStaticParams} from '../../types.ts';
+import {DomPointer, FC, FCStaticParams} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {rednerVirtual} from '../../render/render.ts';
 import {checkNamedAtom} from '../../atoms/atoms.ts';
 import {NEED_AWAIT} from '../../consts.ts';
 import {detachChildren, unmountHNodes} from '../../h-node/helpers.ts';
 import {subscribeAtom} from '../../utils/props/props.ts';
+import {HNode} from '../../h-node/h-node.ts';
+import {
+  findPrevDomNodeHNode,
+  getNearestHNodeElement,
+} from '../../h-node/utils/find/node/node.ts';
+import {HNodeElement} from '../../h-node/element.ts';
 
 type Props = {
   atom: Atom;
 };
 
-const getInsertDomPointer = () => {};
+const getInsertDomPointer = (hNode: HNode): DomPointer => {
+  const {prevNode, lastParentHNode} = findPrevDomNodeHNode(hNode);
+
+  if (prevNode && prevNode.parentNode) {
+    return {
+      parent: prevNode.parentNode,
+      nodeCount: Array.prototype.indexOf.call(
+        prevNode.parentNode.childNodes,
+        prevNode
+      ),
+    };
+  } else if (lastParentHNode instanceof HNodeElement) {
+    return {
+      parent: lastParentHNode.element,
+      nodeCount: 0,
+    };
+  } else {
+    const findedNearestHNodeElement = getNearestHNodeElement(lastParentHNode);
+    if (findedNearestHNodeElement) {
+      return {
+        parent: findedNearestHNodeElement.element,
+        nodeCount: 0,
+      };
+    } else {
+      return {
+        parent: hNode.glocalClientCtx.initDomPointer.parent,
+        nodeCount: hNode.glocalClientCtx.initDomPointer.nodeCount,
+      };
+    }
+  }
+};
 
 const parseAtom = (atom: Atom, renderMode: boolean = false) => {
   let additionalPart = '?a=';
@@ -79,7 +115,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
       const {hNode, mountHNodes} = await rednerVirtual({
         node: <Fragment>{value}</Fragment>,
         window: clientHNode.glocalClientCtx.window,
-        domPointer: clientHNode.paretDomPointer,
+        domPointer: getInsertDomPointer(clientHNode),
         parentHNode: clientHNode,
       });
 
