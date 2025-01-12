@@ -5,13 +5,14 @@ import {rednerVirtual} from '../../render/render.ts';
 import {checkNamedAtom} from '../../atoms/atoms.ts';
 import {NEED_AWAIT} from '../../consts.ts';
 import {detachChildren, unmountHNodes} from '../../h-node/helpers.ts';
-import {subscribeAtom} from '../../utils/props/props.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {
   findPrevDomNodeHNode,
   getNearestHNodeElement,
 } from '../../h-node/utils/find/node/node.ts';
 import {HNodeElement} from '../../h-node/element.ts';
+import {subscribeAtom} from '../../utils/props/atom.ts';
+import {VOld} from '../../v/types.ts';
 
 type Props = {
   atom: Atom;
@@ -71,17 +72,7 @@ const parseAtom = (atom: Atom, renderMode: boolean = false) => {
 
 const AtomWrapper: FC<Props> & FCStaticParams = (
   {atom},
-  {
-    hNode,
-    globalCtx,
-    mount,
-    unmount,
-    stage,
-    ctx,
-    client,
-    segmentEnt,
-    // propsToDescendants,
-  }
+  {hNode, globalCtx, mount, unmount, stage, ctx, client, segmentEnt}
 ) => {
   const {jsxSegment} = segmentEnt;
 
@@ -96,6 +87,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   const clientHNode = hNode!;
 
   let changedBeforeMount = false;
+  let vOldsStore: VOld[] | undefined = [];
   subscribeAtom({
     tempExec: () => {
       changedBeforeMount = true;
@@ -112,66 +104,18 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
       const {value, additionalPart} = parseAtom(atom, false);
       jsxSegment.name = additionalPart;
 
-      const {hNode, mountHNodes} = await rednerVirtual({
+      const {vOlds} = await rednerVirtual({
         node: <Fragment>{value}</Fragment>,
         window: clientHNode.glocalClientCtx.window,
         domPointer: getInsertDomPointer(clientHNode),
         parentHNode: clientHNode,
+        vOlds: vOldsStore,
       });
 
-      mountHNodes();
+      vOldsStore = vOlds;
     },
     hNode: clientHNode,
     atom,
-  });
-
-  // let changedBeforeMount = false;
-  const tempExec = () => {
-    changedBeforeMount = true;
-    globalCtx.root.links.removeExec(atom, tempExec);
-  };
-  globalCtx.root.links.addExec(atom, tempExec);
-
-  mount(() => {});
-
-  const exec = async () => {
-    if (clientHNode.unmounted === true) {
-      return;
-    }
-
-    clientHNode.children.forEach((hNodeChild) => {
-      unmountHNodes(hNodeChild);
-      hNodeChild.parent = undefined;
-    });
-    clientHNode.children.length = 0;
-
-    const {value, additionalPart} = parseAtom(atom, false);
-
-    jsxSegment.clearCache();
-    jsxSegment.name = (jsxSegment.parent?.position || '') + additionalPart;
-
-    const {hNode, mountHNodes} = await rednerVirtual({
-      node: <Fragment>{value}</Fragment>,
-      window: clientHNode.glocalClientCtx.window,
-      domPointer: client!.parentDomPointer,
-      parentCtx: ctx.parentCtx,
-      parentHNode: hNode,
-    });
-
-    childMount();
-  };
-
-  mount(() => {
-    globalCtx.root.links.replaceExec(atom, tempExec, exec);
-
-    if (changedBeforeMount === true) {
-      exec();
-    }
-
-    const a = convertHydatedToVirtualSingle(hNode!);
-  });
-  unmount(() => {
-    globalCtx.root.links.removeExec(atom, exec);
   });
 
   const {value, additionalPart} = parseAtom(atom, stage === 'render');

@@ -89,7 +89,7 @@ export const rednerVirtual = async ({
   mountHNodes(hNode);
 
   return {
-    vOlds: vNews,
+    vOlds: vNews as VOld[],
     hNode,
   };
 
