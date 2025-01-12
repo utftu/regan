@@ -17,9 +17,9 @@ export class Root {
       return;
     }
 
-    if (tx.status === 'omitted') {
-      return;
-    }
+    // if (tx.status === 'omitted') {
+    //   return;
+    // }
 
     if (tx.status === 'closed') {
       return;
