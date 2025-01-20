@@ -58,7 +58,6 @@ export async function renderElement(
         const atom = dynamicProps[name];
 
         subscribeAtom({
-          tempExec: () => {},
           exec: () => {
             vOld.data.props[name] = atom.get();
           },

@@ -13,22 +13,6 @@ export class Root {
 
   // not check prev
   handleTx(tx: Tx) {
-    if (tx.status === 'running') {
-      return;
-    }
-
-    // if (tx.status === 'omitted') {
-    //   return;
-    // }
-
-    if (tx.status === 'closed') {
-      return;
-    }
-
-    if (tx.status === 'finished') {
-      return;
-    }
-
     if (tx.status === 'init' && this.checkOmmit(tx)) {
       this.omit(tx);
       return;
@@ -38,10 +22,12 @@ export class Root {
       this.exec(tx);
       return;
     }
+
+    // do nothing
   }
 
   addTx(changes: Changes) {
-    const tx = new Tx(changes, this);
+    const tx = new Tx({changes, root: this});
 
     // doubtfull but ok
     queueMicrotask(() => {
@@ -51,7 +37,15 @@ export class Root {
     return tx.promise;
   }
 
+  // Если превышен лимит пропусков то не пропускаем
+  // Если хотя бы в одном месте последний - не пропускаем
+  // Если везде последний пропускаем
+  // Если особый флаг - не пропускаем (используется для atom wrapper, чтобы остановиться обновления дочерних atom-wrapper)
   checkOmmit(tx: Tx) {
+    if (tx.omitResist === true) {
+      return false;
+    }
+
     for (const shard of tx.shards) {
       const linkConfig = this.links.get(shard.atom)!;
       if (linkConfig.omittedShards.length > OMITTED_LIMIT) {
@@ -66,6 +60,8 @@ export class Root {
     return true;
   }
 
+  // Удаляем элемент
+  // Если элемент был не последним, запустить обработку следующего
   omit(tx: Tx) {
     tx.status = 'omitted';
     const positions = [];
@@ -143,7 +139,6 @@ export class Root {
       const linkConfig = this.links.get(shard.atom)!;
       linkConfig.omittedShards.forEach((shard) => {
         this.finishOmitted(shard.tx);
-        // shard.tx.finishOmitted();
       });
 
       const shards = linkConfig.shards;
@@ -151,6 +146,8 @@ export class Root {
       if (shards.length > 0) {
         this.handleTx(shards[0].tx);
       }
+
+      linkConfig.omittedShards = [];
     });
 
     tx.status = 'closed';
@@ -159,14 +156,5 @@ export class Root {
   finishOmitted(tx: Tx) {
     tx.status = 'closed';
     tx.finish();
-
-    tx.shards.forEach((shard) => {
-      const linkConfig = this.links.get(shard.atom)!;
-      const omittedShards = linkConfig.omittedShards;
-
-      const position = omittedShards.indexOf(shard);
-
-      omittedShards.splice(position, 1);
-    });
   }
 }

@@ -16,7 +16,6 @@ export const initDynamicSubsribes = ({
     const atom = dynamicProps[name];
 
     subscribeAtom({
-      tempExec: () => {},
       exec: createExec({
         element: hNode.element,
         name,

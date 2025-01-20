@@ -13,6 +13,8 @@ import {
 import {HNodeElement} from '../../h-node/element.ts';
 import {subscribeAtom} from '../../utils/props/atom.ts';
 import {VOld} from '../../v/types.ts';
+import {HNodeAtomWrapper} from '../../h-node/component.ts';
+import {Tx} from '../../root/tx/tx.ts';
 
 type Props = {
   atom: Atom;
@@ -70,11 +72,30 @@ const parseAtom = (atom: Atom, renderMode: boolean = false) => {
   return {value, additionalPart};
 };
 
+const init = (hNode: HNode) => {
+  const atoms = collectAtoms(hNode, []);
+
+  const tx = new Tx();
+};
+
+const collectAtoms = (hNode: HNode, atoms: Atom[]) => {
+  if (hNode instanceof HNodeAtomWrapper) {
+    atoms.push(hNode.atom);
+  }
+
+  hNode.children.forEach((child) => {
+    collectAtoms(child, atoms);
+  });
+
+  return atoms;
+};
+
 const AtomWrapper: FC<Props> & FCStaticParams = (
   {atom},
   {hNode, globalCtx, mount, unmount, stage, ctx, client, segmentEnt}
 ) => {
   const {jsxSegment} = segmentEnt;
+  const initJsxSegmentName = jsxSegment.name;
 
   // toString()
   if (globalCtx.mode === 'server') {
@@ -86,13 +107,12 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
 
   const clientHNode = hNode!;
 
-  let changedBeforeMount = false;
   let vOldsStore: VOld[] | undefined = [];
   subscribeAtom({
-    tempExec: () => {
-      changedBeforeMount = true;
-    },
     exec: async () => {
+      //
+
+      //
       if (clientHNode.unmounted === true) {
         return;
       }
@@ -102,7 +122,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
       jsxSegment.clearCache();
 
       const {value, additionalPart} = parseAtom(atom, false);
-      jsxSegment.name = additionalPart;
+      jsxSegment.name = initJsxSegmentName + additionalPart;
 
       const {vOlds} = await rednerVirtual({
         node: <Fragment>{value}</Fragment>,

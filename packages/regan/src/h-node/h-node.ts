@@ -2,7 +2,7 @@ import {ContextEnt} from '../context/context.tsx';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {DomPointer, DomPointerWithText} from '../types.ts';
-import {HNodeComponent} from './component.ts';
+import {HNodeAtomWrapper, HNodeComponent} from './component.ts';
 import {HNodeElement} from './element.ts';
 import {HNodeText} from './text.ts';
 
@@ -40,6 +40,10 @@ export class HNodeBase {
   contextEnt?: ContextEnt;
 
   data: Record<string, any> = {};
+
+  //
+  unmountsNow = false;
+  //
 
   constructor({
     parent,
@@ -96,4 +100,8 @@ export class GlobalClientCtx {
   }
 }
 
-export type HNode = HNodeComponent | HNodeElement | HNodeText;
+export type HNode =
+  | HNodeComponent
+  | HNodeElement
+  | HNodeText
+  | HNodeAtomWrapper;

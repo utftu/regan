@@ -13,13 +13,23 @@ export class Tx {
   changes: Changes;
   promise: Promise<any>;
   promiseControls: PromiseControls<any>;
+  omitResist: boolean;
 
-  constructor(changes: Changes, root: Root) {
+  constructor({
+    changes,
+    root,
+    omitResist = false,
+  }: {
+    changes: Changes;
+    root: Root;
+    omitResist?: boolean;
+  }) {
     this.changes = changes;
     this.root = root;
     const [promise, promiseControls] = createControlledPromise<any>();
     this.promise = promise;
     this.promiseControls = promiseControls;
+    this.omitResist = omitResist;
 
     for (const atom of changes.keys()) {
       const shard = new TxShard(this, atom);
