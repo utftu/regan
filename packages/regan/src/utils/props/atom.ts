@@ -1,29 +1,42 @@
 import {Atom} from 'strangelove';
 import {HNode} from '../../h-node/h-node.ts';
-import {AynFunc} from '../../types.ts';
+import {AnyFunc} from '../../types.ts';
+import {HNodeAtomWrapper} from '../../h-node/component.ts';
+
+export const subscribeAtomWrapper = ({
+  hNode,
+  exec,
+}: {
+  exec: AnyFunc;
+  hNode: HNodeAtomWrapper;
+}) => {
+  const atom = hNode.atom;
+  const links = hNode.globalCtx.root.links;
+  hNode.mounts.push(() => {
+    links.addExec(atom, exec);
+    const linkHandler = links.get(hNode.atom)!;
+    linkHandler.atomWrappers.push(hNode);
+
+    hNode.unmounts.push(() => {
+      links.removeExec(atom, exec);
+      linkHandler.atomWrappers = linkHandler.atomWrappers.filter(
+        (atomWrapper) => atomWrapper !== hNode
+      );
+    });
+  });
+};
 
 export const subscribeAtom = ({
-  // tempExec,
   exec,
   hNode,
   atom,
 }: {
-  // tempExec: AynFunc;
-  exec: AynFunc;
+  exec: AnyFunc;
   hNode: HNode;
   atom: Atom;
 }) => {
-  // hNode.globalCtx.root.links.addExec(atom, tempExec);
-  // const tempUmount = () => {
-  //   hNode.globalCtx.root.links.removeExec(atom, tempExec);
-  // };
-  // hNode.segmentEnt.unmounts.push(tempUmount);
-
   hNode.mounts.push((hNode) => {
-    // hNode.segmentEnt.unmounts = hNode.segmentEnt.unmounts.filter(
-    //   (item) => item !== tempUmount
-    // );
-    // hNode.globalCtx.root.links.replaceExec(atom, tempExec, exec);
+    hNode.globalCtx.root.links.addExec(atom, exec);
 
     hNode.unmounts.push(() => {
       hNode.globalCtx.root.links.removeExec(atom, exec);

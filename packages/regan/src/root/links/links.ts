@@ -1,15 +1,15 @@
 import {Atom} from 'strangelove';
 import {Root} from '../root.ts';
-import {LinkConfig} from './link-config.ts';
+import {LinkHandler} from './link-hanlder.ts';
 
 export type Exec = (value: any) => Promise<any> | any;
 
 export class Links {
-  links: Map<Atom, LinkConfig> = new Map();
+  links: Map<Atom, LinkHandler> = new Map();
   root: Root;
 
   private create(atom: Atom) {
-    this.links.set(atom, new LinkConfig(atom, this.root));
+    this.links.set(atom, new LinkHandler(atom, this.root));
   }
 
   private delete(atom: Atom) {

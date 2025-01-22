@@ -11,7 +11,7 @@ import {
   getNearestHNodeElement,
 } from '../../h-node/utils/find/node/node.ts';
 import {HNodeElement} from '../../h-node/element.ts';
-import {subscribeAtom} from '../../utils/props/atom.ts';
+import {subscribeAtom, subscribeAtomWrapper} from '../../utils/props/atom.ts';
 import {VOld} from '../../v/types.ts';
 import {HNodeAtomWrapper} from '../../h-node/component.ts';
 import {Tx} from '../../root/tx/tx.ts';
@@ -72,19 +72,31 @@ const parseAtom = (atom: Atom, renderMode: boolean = false) => {
   return {value, additionalPart};
 };
 
-const init = (hNode: HNode) => {
-  const atoms = collectAtoms(hNode, []);
+// const init = (hNode: HNode) => {
+//   const atoms = collectAtoms(hNode, []);
 
-  const tx = new Tx();
+//   // const tx = new Tx({});
+// };
+
+export const collectAtoms = (hNodes: HNodeAtomWrapper[], atoms: Atom[]) => {
+  hNodes.forEach((hNode) => {
+    hNode.children.forEach((child) => {
+      collectAtomsAndMark(child, atoms);
+    });
+  });
 };
 
-const collectAtoms = (hNode: HNode, atoms: Atom[]) => {
+const collectAtomsAndMark = (hNode: HNode, atoms: Atom[]): Atom[] => {
   if (hNode instanceof HNodeAtomWrapper) {
     atoms.push(hNode.atom);
+
+    if (hNode.rendering === true) {
+      return [];
+    }
   }
 
   hNode.children.forEach((child) => {
-    collectAtoms(child, atoms);
+    collectAtomsAndMark(child, atoms);
   });
 
   return atoms;
@@ -105,17 +117,19 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     return <Fragment>{value}</Fragment>;
   }
 
-  const clientHNode = hNode!;
+  const clientHNode = hNode! as HNodeAtomWrapper;
 
   let vOldsStore: VOld[] | undefined = [];
-  subscribeAtom({
-    exec: async () => {
-      //
 
+  subscribeAtomWrapper({
+    hNode: clientHNode,
+    exec: async () => {
       //
       if (clientHNode.unmounted === true) {
         return;
       }
+
+      clientHNode.rendering = true;
 
       detachChildren(clientHNode);
 
@@ -133,10 +147,39 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
       });
 
       vOldsStore = vOlds;
+
+      clientHNode.rendering = false;
     },
-    hNode: clientHNode,
-    atom,
   });
+  // subscribeAtom({
+  //   exec: async () => {
+  //     //
+
+  //     //
+  //     if (clientHNode.unmounted === true) {
+  //       return;
+  //     }
+
+  //     detachChildren(clientHNode);
+
+  //     jsxSegment.clearCache();
+
+  //     const {value, additionalPart} = parseAtom(atom, false);
+  //     jsxSegment.name = initJsxSegmentName + additionalPart;
+
+  //     const {vOlds} = await rednerVirtual({
+  //       node: <Fragment>{value}</Fragment>,
+  //       window: clientHNode.glocalClientCtx.window,
+  //       domPointer: getInsertDomPointer(clientHNode),
+  //       parentHNode: clientHNode,
+  //       vOlds: vOldsStore,
+  //     });
+
+  //     vOldsStore = vOlds;
+  //   },
+  //   hNode: clientHNode,
+  //   atom,
+  // });
 
   const {value, additionalPart} = parseAtom(atom, stage === 'render');
 

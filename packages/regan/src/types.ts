@@ -4,7 +4,7 @@ import {Atom} from 'strangelove';
 import {DOM_NODES_INFO, NEED_AWAIT} from './consts.ts';
 import {InsertedInfo} from './utils/inserted-dom.ts';
 
-export type AynFunc = (...args: any[]) => any;
+export type AnyFunc = (...args: any[]) => any;
 export type AnyProps = Record<any, any>;
 
 export type Child =

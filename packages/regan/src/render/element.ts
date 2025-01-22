@@ -5,7 +5,7 @@ import {splitProps} from '../v/convert/convert.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {VOldElement} from '../v/types.ts';
-import {initDynamicSubsribes} from '../utils/props/dynamic.ts';
+import {initDynamicSubsribes as initDynamicSubscribes} from '../utils/props/dynamic.ts';
 import {subscribeAtom} from '../utils/props/atom.ts';
 
 export async function renderElement(
@@ -49,7 +49,7 @@ export async function renderElement(
         }
       );
 
-      initDynamicSubsribes({
+      initDynamicSubscribes({
         hNode,
         dynamicProps,
       });

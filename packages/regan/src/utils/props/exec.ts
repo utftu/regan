@@ -2,7 +2,7 @@ import {Atom} from 'strangelove';
 import {prepareListenerForError} from '../../errors/utils.ts';
 import {SegmentEnt} from '../../segments/ent/ent.ts';
 import {ContextEnt} from '../../context/context.tsx';
-import {AynFunc} from '../../types.ts';
+import {AnyFunc} from '../../types.ts';
 
 export const createExec = ({
   name,
@@ -17,7 +17,7 @@ export const createExec = ({
   contextEnt?: ContextEnt;
   atom: Atom;
 }) => {
-  const item: {listener?: AynFunc} = {};
+  const item: {listener?: AnyFunc} = {};
   if (typeof atom.get() === 'function') {
     item.listener = atom.get();
   }
