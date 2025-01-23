@@ -4,7 +4,34 @@ import {TxShard} from '../tx/shard.ts';
 import {destroyAtom} from '../../atoms/atoms.ts';
 import {Exec} from './links.ts';
 import {HNodeAtomWrapper} from '../../h-node/component.ts';
-import {collectAtoms} from '../../components/atom-wrapper/atom-wrapper.tsx';
+import {HNode} from '../../h-node/h-node.ts';
+import {markAndDetachChild} from '../../components/atom-wrapper/helpers.ts';
+
+const collectAtoms = (hNodes: HNodeAtomWrapper[], atoms: Atom[]) => {
+  hNodes.forEach((hNode) => {
+    hNode.children.forEach((child) => {
+      collectAtomsAndMark(child, atoms);
+    });
+  });
+};
+
+const collectAtomsAndMark = (hNode: HNode, atoms: Atom[]): Atom[] => {
+  if (hNode instanceof HNodeAtomWrapper) {
+    atoms.push(hNode.atom);
+
+    markAndDetachChild(hNode);
+
+    if (hNode.rendering === true) {
+      return [];
+    }
+  }
+
+  hNode.children.forEach((child) => {
+    collectAtomsAndMark(child, atoms);
+  });
+
+  return atoms;
+};
 
 export class LinkHandler {
   root: Root;
@@ -13,10 +40,8 @@ export class LinkHandler {
   subsribeAtom: Atom;
   shards: TxShard[] = [];
   omittedShards: TxShard[] = [];
-
-  //
+  // need to atomWrappers
   atomWrappers: HNodeAtomWrapper[] = [];
-  // atomWrappersCount = 0;
 
   constructor(atom: Atom, root: Root) {
     this.atom = atom;
@@ -34,9 +59,7 @@ export class LinkHandler {
         if (self.atomWrappers.length > 0) {
           const innerAtomsFromWrappers: Atom[] = [];
 
-          self.atomWrappers.forEach((atomWrapper) => {
-            collectAtoms(atomWrapper, innerAtomsFromWrappers);
-          });
+          collectAtoms(self.atomWrappers, innerAtomsFromWrappers);
 
           const localChanges = innerAtomsFromWrappers.reduce((map, atom) => {
             if (map.has(atom)) {

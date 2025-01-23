@@ -41,10 +41,6 @@ export class HNodeBase {
 
   data: Record<string, any> = {};
 
-  //
-  unmountsNow = false;
-  //
-
   constructor({
     parent,
     mounts = [],

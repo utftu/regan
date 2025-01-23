@@ -17,12 +17,25 @@ export const subscribeAtomWrapper = ({
     const linkHandler = links.get(hNode.atom)!;
     linkHandler.atomWrappers.push(hNode);
 
-    hNode.unmounts.push(() => {
+    const unsubscribe = () => {
       links.removeExec(atom, exec);
+
       linkHandler.atomWrappers = linkHandler.atomWrappers.filter(
         (atomWrapper) => atomWrapper !== hNode
       );
-    });
+    };
+
+    hNode.unsibscribeWrapper = () => {
+      unsubscribe();
+
+      hNode.unmounts = hNode.unmounts.filter(
+        (unsubscribeLocal) => unsubscribeLocal !== unsubscribe
+      );
+
+      hNode.unsibscribeWrapper = undefined;
+    };
+
+    hNode.unmounts.push(unsubscribe);
   });
 };
 
