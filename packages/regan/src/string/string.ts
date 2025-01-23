@@ -1,4 +1,3 @@
-import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
@@ -20,10 +19,6 @@ async function convertStreamToString(stream: ReadableStream) {
 
   return result;
 }
-
-type GetStringConfig = {
-  jsxPath?: string;
-};
 
 export const getStringStream = async (node: JsxNode) => {
   const stream = await node.getStringStream({

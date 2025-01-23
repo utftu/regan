@@ -31,8 +31,11 @@ export async function renderElement(
     type: 'element',
     vNew: {
       type: 'element',
-      tag: this.type,
-      props: joinedProps,
+      data: {
+        tag: this.type,
+        props: joinedProps,
+      },
+      keyStore: {},
       children: [],
     },
     createHNode: (vOld: VOldElement) => {

@@ -2,7 +2,6 @@ import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
 import {Child} from '../types.ts';
-import {JsxSegment} from '../jsx-path/jsx-path.ts';
 import {StringContext} from '../node/string/string.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {formatJsxValue} from '../utils/jsx.ts';
@@ -25,18 +24,18 @@ export async function handleChildrenString({
   children,
   streams,
   globalCtx,
-  parentJsxSegment,
+  // parentJsxSegment,
   stringContext,
   parentCtx,
-  parentJsxNode,
-}: {
+}: // parentJsxNode,
+{
   children: Child[];
   streams: StringStream;
   globalCtx: GlobalCtx;
-  parentJsxSegment: JsxSegment;
+  // parentJsxSegment: JsxSegment;
   stringContext: StringContext;
   parentCtx?: Ctx;
-  parentJsxNode: JsxNode;
+  // parentJsxNode: JsxNode;
 }) {
   // run iteration twice
   // first - to start stream process in children
@@ -83,7 +82,7 @@ export async function handleChildrenString({
         },
         stringContext: stringContext,
         parentCtx,
-        parentJsxNode,
+        // parentJsxNode,
       });
       jsxNodeCount++;
       results.push(result);

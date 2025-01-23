@@ -2,10 +2,11 @@ import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {defaultInsertedInfo} from '../consts.ts';
-import {initDynamicSubsribes, initStaticProps} from '../utils/props/props.ts';
 import {splitProps} from '../v/convert/convert.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
+import {initStaticProps} from '../utils/props/static.ts';
+import {initDynamicSubsribes} from '../utils/props/dynamic.ts';
 
 export async function hydrateElement(
   this: JsxNodeElement,
@@ -39,7 +40,6 @@ export async function hydrateElement(
     },
     {
       element,
-      // jsxNode: this,
     }
   );
 
@@ -48,7 +48,6 @@ export async function hydrateElement(
   initDynamicSubsribes({
     hNode,
     dynamicProps,
-    // changedAtoms: props.hydrateCtx.changedAtoms,
   });
 
   const {hNodes} = await handleChildrenHydrate({

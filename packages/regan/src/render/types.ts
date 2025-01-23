@@ -1,13 +1,12 @@
-import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
-import {VNewElement, VNewText, VOldElement, VOldText} from '../v/old-v.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 import {ContextEnt} from '../context/context.tsx';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
+import {VNewElement, VNewText, VOldElement, VOldText} from '../v/types.ts';
 
 type ConnectHNode = (props: {children: HNode[]; hNode: HNode}) => void;
 

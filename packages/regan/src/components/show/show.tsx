@@ -8,8 +8,7 @@ type Props = {
   when: Atom<boolean>;
 };
 
-const Show: FC<Props> & FCStaticParams = ({when}, {children, systemProps}) => {
-  systemProps.needAwait = true;
+const Show: FC<Props> & FCStaticParams = ({when}, {children}) => {
   return (
     <AtomWrapper
       atom={selectNamedRegan((get) => {

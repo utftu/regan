@@ -46,8 +46,9 @@ export async function handleChildrenRender({
 
           vNew: {
             type: 'text',
-            text: childOrAtom,
-            init: noop,
+            data: {
+              text: childOrAtom,
+            },
           },
 
           createHNode({domNode, start}) {

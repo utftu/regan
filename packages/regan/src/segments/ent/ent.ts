@@ -1,6 +1,6 @@
 import {JsxNode} from '../../node/node.ts';
 import {Unmount} from '../../types.ts';
-import {JsxSegment} from '../jsx-path/jsx-path.ts';
+import {JsxSegment} from './jsx-path/jsx-path.ts';
 
 export class SegmentEnt {
   jsxSegment: JsxSegment;

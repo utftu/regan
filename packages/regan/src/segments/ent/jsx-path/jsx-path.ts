@@ -43,8 +43,8 @@ export class JsxSegment {
 export function getJsxPath(jsxSegment: JsxSegment, childJsxPath: string = '') {
   let jsxPath = joinPath(jsxSegment.name, childJsxPath);
 
-  if (jsxSegment.systemEnt) {
-    return getJsxPath(jsxSegment.systemEnt.jsxSegment, jsxPath);
+  if (jsxSegment.systemEnt.parentSystemEnt) {
+    return getJsxPath(jsxSegment.systemEnt.parentSystemEnt.jsxSegment, jsxPath);
   }
   return jsxPath;
 }

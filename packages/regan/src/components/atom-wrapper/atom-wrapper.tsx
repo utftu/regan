@@ -16,7 +16,7 @@ type Props = {
 
 const AtomWrapper: FC<Props> & FCStaticParams = (
   {atom},
-  {hNode, globalCtx, mount, unmount, stage, ctx, client, segmentEnt}
+  {globalCtx, stage, client, segmentEnt}
 ) => {
   const {jsxSegment} = segmentEnt;
   const initJsxSegmentName = jsxSegment.name;
@@ -29,7 +29,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     return <Fragment>{value}</Fragment>;
   }
 
-  const clientHNode = hNode! as HNodeAtomWrapper;
+  const clientHNode = client!.hNode as HNodeAtomWrapper;
 
   let vOldsStore: VOld[] | undefined = [];
 

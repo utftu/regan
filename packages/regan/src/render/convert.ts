@@ -20,8 +20,7 @@ export const createVirtualFromRenderTemplate = (
     const vNew = store.vNew!;
     const start = vNew.data.text.length;
 
-    // const vNew = store.vNew;
-    vNew.data.text += renderTemplate.vNew.text;
+    vNew.data.text += renderTemplate.vNew.data.text;
 
     const oldInit = vNew.init;
     vNew.init = (vOld) => {
@@ -74,13 +73,11 @@ export const convertFromVirtualToHNodes = ({
   if (renderTemplate.type === 'text') {
     const hNode = renderTemplate.createHNode({
       start: renderTemplate.start,
-      domNode: renderTemplate.vOld.node,
+      domNode: renderTemplate.vOld.textNode,
     });
     return hNode;
   } else if (renderTemplate.type === 'element') {
-    const hNode = renderTemplate.createHNode({
-      vOld: renderTemplate.vOld,
-    });
+    const hNode = renderTemplate.createHNode(renderTemplate.vOld);
 
     hNode.children = renderTemplate.children.map((child) => {
       const childHNode = convertFromVirtualToHNodes({

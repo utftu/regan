@@ -59,11 +59,11 @@ export async function getStringStreamComponent(
     await handleChildrenString({
       children,
       streams,
-      parentJsxSegment: jsxSegment,
+      // parentJsxSegment: jsxSegment,
       globalCtx: ctx.globalCtx,
       stringContext: ctx.stringContext,
       parentCtx: funcCtx,
-      parentJsxNode: this,
+      // parentJsxNode: this,
     });
     await streams.writable.close();
   });

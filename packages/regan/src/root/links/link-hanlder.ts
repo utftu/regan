@@ -40,6 +40,7 @@ export class LinkHandler {
   subsribeAtom: Atom;
   shards: TxShard[] = [];
   omittedShards: TxShard[] = [];
+
   // need to atomWrappers
   atomWrappers: HNodeAtomWrapper[] = [];
 

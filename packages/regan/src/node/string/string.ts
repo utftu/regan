@@ -1,6 +1,6 @@
 import {Ctx} from '../../ctx/ctx.ts';
 import {GlobalCtx} from '../../global-ctx/global-ctx.ts';
-import {ParentJsxSegment} from '../../jsx-path/jsx-path.ts';
+// import {ParentJsxSegment} from '../../jsx-path/jsx-path.ts';
 import {TreeAtomsSnapshot} from '../../tree-atoms-snapshot/tree-atoms-snapshot.ts';
 import {JsxNode} from '../node.ts';
 
@@ -11,7 +11,7 @@ export type StringContext = {
 export type GetStringStreamProps = {
   globalCtx: GlobalCtx;
   jsxSegmentStr: string;
-  parentJsxSegment?: ParentJsxSegment;
+  // parentJsxSegment?: ParentJsxSegment;
   parentCtx?: Ctx;
   parentJsxNode?: JsxNode;
   stringContext: StringContext;

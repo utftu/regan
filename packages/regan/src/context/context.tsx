@@ -1,4 +1,3 @@
-import {Value} from 'strangelove/dist/types/value/value.js';
 import {Ctx} from '../ctx/ctx.ts';
 import {FC} from '../types.ts';
 
@@ -7,11 +6,6 @@ export type Context<TValue = any> = {
   defaultValue: TValue;
   Provider: FC<{value: TValue}>;
 };
-
-// export type ContextValue<TValue = any> = {
-//   context: Context<TValue>;
-//   value: TValue;
-// };
 
 export type ContextEnt<TValue = any> = {
   context: Context<TValue>;

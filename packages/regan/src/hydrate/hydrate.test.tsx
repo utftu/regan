@@ -8,25 +8,6 @@ import {atom} from 'strangelove';
 import {waitTime} from 'utftu';
 import {insertAndHydrate} from '../utils/tests.ts';
 
-// async function insertAndHydrate(
-//   body: HTMLElement,
-//   jsxNode: JSXNode,
-//   jsdom: JSDOM
-// ) {
-//   const root = document.createElement('div');
-//   root.setAttribute('id', 'root');
-//   body.appendChild(root);
-
-//   const str = await getString(jsxNode);
-//   root.innerHTML = str;
-
-//   await hydrate(root, jsxNode, {
-//     window: jsdom.window as any,
-//   });
-
-//   return root;
-// }
-
 describe('hydrate', () => {
   describe('child', () => {
     it('child element', async () => {

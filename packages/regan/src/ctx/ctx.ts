@@ -1,13 +1,7 @@
 import {Atom, selectBase} from 'strangelove';
-import {
-  Child,
-  DomPointerElement,
-  Mount,
-  SystemProps,
-  Unmount,
-} from '../types.ts';
+import {Child, DomPointer, Mount, SystemProps, Unmount} from '../types.ts';
 import {getRoot} from '../atoms/atoms.ts';
-import {HNode, HNodeBase} from '../h-node/h-node.ts';
+import {HNode} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
@@ -21,11 +15,9 @@ type State = {
 
 export type Stage = 'render' | 'hydrate' | 'string';
 
-type AnyProps = Record<any, any>;
-
 type Client = {
-  hNode: HNodeBase;
-  parentDomPointer: DomPointerElement;
+  hNode: HNode;
+  parentDomPointer: DomPointer;
 };
 
 type PropsCtx<TProps> = {
@@ -40,7 +32,6 @@ type PropsCtx<TProps> = {
   jsxNodeComponent: JsxNodeComponent;
   client?: Client;
   parentContext?: ContextEnt;
-  // propsFromAncestors?: AnyProps;
 };
 
 // args to run FC
@@ -61,8 +52,6 @@ export class Ctx<
   ctx: Ctx;
   client?: Client;
   parentContext?: ContextEnt;
-  // propsToDescendants: AnyProps = {};
-  // propsFromAncestors: AnyProps;
 
   constructor({
     props,
@@ -74,22 +63,18 @@ export class Ctx<
     systemProps,
     jsxNodeComponent,
     client,
-    // propsFromAncestors = {},
     segmentEnt,
     parentContext,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
     this.children = children;
-    // this.jsxSegment = jsxSegment;
     this.hNode = hNode as THNode;
     this.globalCtx = globalCtx;
     this.stage = stage;
-    // this.parentCtx = parentCtx;
     this.systemProps = systemProps;
     this.jsxNodeComponent = jsxNodeComponent;
     this.client = client;
-    // this.propsFromAncestors = propsFromAncestors;
     this.segmentEnt = segmentEnt;
     this.parentContext = parentContext;
 

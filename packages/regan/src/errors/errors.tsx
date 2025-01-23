@@ -3,12 +3,10 @@ import {h} from '../jsx/jsx.ts';
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {JsxNode} from '../node/node.ts';
 import {FC} from '../types.ts';
-// import {SegmentEnt} from '../segments/ent/ent.ts';
 import {tryDetectInsertedInfoComponentImmediately} from '../utils/inserted-dom.ts';
 
 type Props = {
   error: Error;
-  // segmentEnt: SegmentEnt;
   jsxNode: JsxNode;
 };
 

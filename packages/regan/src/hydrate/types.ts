@@ -9,7 +9,6 @@ import {DomPointerWithText} from '../types.ts';
 import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
 
 export type HydrateCtx = {
-  // changedAtoms: Set<Atom>;
   treeAtomsSnapshot: TreeAtomsSnapshot;
 };
 

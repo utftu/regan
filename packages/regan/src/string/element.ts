@@ -53,7 +53,7 @@ export async function getStringStreamElement(
       globalCtx: ctx.globalCtx,
       stringContext: ctx.stringContext,
       parentCtx: ctx.parentCtx,
-      parentJsxNode: this,
+      // parentJsxNode: this,
     });
 
     const writer2 = streams.writable.getWriter();

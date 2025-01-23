@@ -70,7 +70,7 @@ describe('hydrate errors', () => {
           errorJsx={({error, jsxNode}) => {
             savedJsxError = error;
 
-            return defaultErrorJsx({error, segmentEnt: null as any});
+            return defaultErrorJsx({error, jsxNode});
           }}
         >
           <div id='parent' click={parentChild}>

@@ -9,8 +9,6 @@ export interface Window {
 export declare namespace JSX {
   export type ElementType = string | FC<any>;
   export type Element = JsxNode<any, any>;
-  // type ElementType = any;
-  // type Element = any;
   export type IntrinsicElements = {
     div: Div;
     a: A;
