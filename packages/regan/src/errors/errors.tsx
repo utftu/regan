@@ -1,9 +1,14 @@
-import {createContext} from '../context/context.tsx';
+import {
+  ContextEnt,
+  createContext,
+  getContextValue,
+} from '../context/context.tsx';
 import {h} from '../jsx/jsx.ts';
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {JsxNode} from '../node/node.ts';
 import {FC} from '../types.ts';
 import {tryDetectInsertedInfoComponentImmediately} from '../utils/inserted-dom.ts';
+import {JsxNodeComponent} from '../node/variants/component/component.ts';
 
 type Props = {
   error: Error;
@@ -52,6 +57,24 @@ export const errorContext = createContext<{
   error: ErrorHandler;
   errorJsx: ErrorJsx;
 }>('system error', defaultErrorConfig);
+
+export const createErrorJsxNodeComponent = (
+  jsxNode: JsxNode,
+  error: unknown,
+  parentContextEnt?: ContextEnt
+) => {
+  const errorHandlerConfig = getContextValue(errorContext, parentContextEnt);
+
+  return new JsxNodeComponent({
+    type: errorHandlerConfig.errorJsx,
+    props: {
+      error,
+      jsxNode,
+    },
+    systemProps: {},
+    children: [],
+  });
+};
 
 export const ErrorGuard: FC<{error?: ErrorHandler; errorJsx?: FC}> = (
   {error, errorJsx},

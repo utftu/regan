@@ -18,7 +18,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   {atom},
   {globalCtx, stage, client, segmentEnt}
 ) => {
-  const {jsxSegment} = segmentEnt;
+  const {pathSegment: jsxSegment} = segmentEnt;
   const initJsxSegmentName = jsxSegment.name;
 
   // toString()

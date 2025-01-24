@@ -1,11 +1,6 @@
 import {SegmentEnt} from '../ent.ts';
 
-export type JsxSegmentWrapper = {
-  parent?: JsxSegment;
-  name: string;
-};
-
-export class JsxSegment {
+export class PathSegment {
   systemEnt: SegmentEnt;
   name: string;
   constructor({name, systemEnt}: {name: string; systemEnt: SegmentEnt}) {
@@ -40,11 +35,14 @@ export class JsxSegment {
   }
 }
 
-export function getJsxPath(jsxSegment: JsxSegment, childJsxPath: string = '') {
+export function getJsxPath(jsxSegment: PathSegment, childJsxPath: string = '') {
   let jsxPath = joinPath(jsxSegment.name, childJsxPath);
 
   if (jsxSegment.systemEnt.parentSystemEnt) {
-    return getJsxPath(jsxSegment.systemEnt.parentSystemEnt.jsxSegment, jsxPath);
+    return getJsxPath(
+      jsxSegment.systemEnt.parentSystemEnt.pathSegment,
+      jsxPath
+    );
   }
   return jsxPath;
 }

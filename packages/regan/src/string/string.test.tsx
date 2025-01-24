@@ -4,8 +4,8 @@ import {createAtomRegan} from '../atoms/atoms.ts';
 import {FC} from '../types.ts';
 import {atom} from 'strangelove';
 import {getString} from './string.ts';
-import {getHashFromString} from '../jsx-path/jsx-path.ts';
 import {waitTime} from 'utftu';
+import {getHashFromString} from '../segments/ent/jsx-path/jsx-path.ts';
 
 describe('node', () => {
   it('getString()', async () => {

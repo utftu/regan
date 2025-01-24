@@ -34,8 +34,6 @@ export type FC<TProps extends Record<any, any> = any> = (
 
 export type SystemProps = {
   key?: string;
-  // needAwait?: boolean;
-  // insertedInfo?: InsertedInfo;
   ref?: Atom<HTMLElement | void>;
   rawHtml?: string;
 };

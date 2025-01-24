@@ -2,19 +2,21 @@ import {normalizeChildren} from '../jsx/jsx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenString} from './children.ts';
-import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {GetStringStreamProps} from '../node/string/string.ts';
-import {getContextValue} from '../context/context.tsx';
-import {errorContext} from '../errors/errors.tsx';
+import {selectContextEnt} from '../context/context.tsx';
+import {createErrorJsxNodeComponent} from '../errors/errors.tsx';
 import {StringResult} from '../node/node.ts';
+import {GetStringStreamProps} from './types.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
 
 export async function getStringStreamComponent(
   this: JsxNodeComponent,
-  ctx: GetStringStreamProps
+  props: GetStringStreamProps
 ): StringResult {
-  const jsxSegment = new JsxSegment({
-    name: ctx.jsxSegmentStr,
-    parent: ctx.parentJsxSegment,
+  const segmentEnt = new SegmentEnt({
+    jsxSegmentName: props.pathSegmentName,
+    parentSystemEnt: props.parentSegmentEnt,
+    unmounts: [],
+    jsxNode: this,
   });
   const streams = new TransformStream<string, string>();
 
@@ -25,45 +27,41 @@ export async function getStringStreamComponent(
   };
 
   const funcCtx = new Ctx({
-    globalCtx: ctx.globalCtx,
-    jsxSegment: jsxSegment,
+    globalCtx: props.globalCtx,
     props: this.props,
     systemProps: this.systemProps,
     state,
     children: this.children,
-    parentCtx: ctx.parentCtx,
     stage: 'string',
     jsxNodeComponent: this,
+    segmentEnt,
   });
 
   let rawChidlren;
   try {
     rawChidlren = await this.type(this.props, funcCtx);
   } catch (error) {
-    const errorHandlerConfig = getContextValue(errorContext, ctx.parentCtx);
+    const errorJsxNodeComponent = createErrorJsxNodeComponent(
+      this,
+      error,
+      props.parentContextEnt
+    );
 
-    return new JsxNodeComponent({
-      type: errorHandlerConfig.errorJsx,
-      props: {
-        error,
-        jsxNode: this,
-      },
-      systemProps: {},
-      children: [],
-    }).getStringStream(ctx);
+    return errorJsxNodeComponent.getStringStream(props);
   }
 
   const children = normalizeChildren(rawChidlren);
+
+  const parentContextEnt = selectContextEnt(this, props.parentContextEnt);
 
   Promise.resolve().then(async () => {
     await handleChildrenString({
       children,
       streams,
-      // parentJsxSegment: jsxSegment,
-      globalCtx: ctx.globalCtx,
-      stringContext: ctx.stringContext,
-      parentCtx: funcCtx,
-      // parentJsxNode: this,
+      globalCtx: props.globalCtx,
+      stringContext: props.stringContext,
+      parentContextEnt,
+      parentSegmentEnt: segmentEnt,
     });
     await streams.writable.close();
   });

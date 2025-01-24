@@ -5,7 +5,6 @@ import {HNode} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
-import {ContextEnt} from '../context/context.tsx';
 
 type State = {
   mounts: Mount[];
@@ -25,58 +24,46 @@ type PropsCtx<TProps> = {
   systemProps: SystemProps;
   state: State;
   children: Child[];
-  hNode?: HNode;
   globalCtx: GlobalCtx;
   stage: Stage;
   segmentEnt: SegmentEnt;
   jsxNodeComponent: JsxNodeComponent;
   client?: Client;
-  parentContext?: ContextEnt;
 };
 
 // args to run FC
-export class Ctx<
-  TProps extends Record<any, any> = Record<any, any>,
-  THNode extends HNode | undefined = HNode | undefined
-> {
+export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   state: State;
   props: TProps;
   systemProps: SystemProps;
   children: Child[];
   segmentEnt: SegmentEnt;
-  hNode: THNode;
   globalCtx: GlobalCtx;
   stage: Stage;
-  parentCtx?: Ctx;
   jsxNodeComponent: JsxNodeComponent;
   ctx: Ctx;
   client?: Client;
-  parentContext?: ContextEnt;
 
   constructor({
     props,
     state,
     children,
-    hNode,
     globalCtx,
     stage,
     systemProps,
     jsxNodeComponent,
     client,
     segmentEnt,
-    parentContext,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
     this.children = children;
-    this.hNode = hNode as THNode;
     this.globalCtx = globalCtx;
     this.stage = stage;
     this.systemProps = systemProps;
     this.jsxNodeComponent = jsxNodeComponent;
     this.client = client;
     this.segmentEnt = segmentEnt;
-    this.parentContext = parentContext;
 
     this.ctx = this;
   }
@@ -116,10 +103,10 @@ export class Ctx<
   };
 
   getJsxPath = () => {
-    return this.segmentEnt.jsxSegment.getJsxPath();
+    return this.segmentEnt.pathSegment.getJsxPath();
   };
 
   getId = () => {
-    return this.segmentEnt.jsxSegment.getId();
+    return this.segmentEnt.pathSegment.getId();
   };
 }

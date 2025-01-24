@@ -1,17 +1,14 @@
-import {Atom} from 'strangelove';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
 import {Child} from '../types.ts';
-import {StringContext} from '../node/string/string.ts';
-import {Ctx} from '../ctx/ctx.ts';
-import {formatJsxValue} from '../utils/jsx.ts';
-import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
-import {JsxNodeComponent} from '../node/variants/component/component.ts';
-import {Fragment} from '../components/fragment/fragment.ts';
+import {formatJsxValue, wrapChildIfNeed} from '../utils/jsx.ts';
+import {ContextEnt} from '../context/context.tsx';
+import {SegmentEnt} from '../segments/ent/ent.ts';
+import {StringContext} from './types.ts';
 
 type StringStream = TransformStream<string, string>;
 
-const checkPrimitive = (value: any) => {
+const checkPrimitive = (value: any): value is string | number => {
   const type = typeof value;
   if (type === 'string' || type === 'number') {
     return true;
@@ -24,18 +21,16 @@ export async function handleChildrenString({
   children,
   streams,
   globalCtx,
-  // parentJsxSegment,
   stringContext,
-  parentCtx,
-}: // parentJsxNode,
-{
+  parentContextEnt,
+  parentSegmentEnt,
+}: {
   children: Child[];
   streams: StringStream;
   globalCtx: GlobalCtx;
-  // parentJsxSegment: JsxSegment;
   stringContext: StringContext;
-  parentCtx?: Ctx;
-  // parentJsxNode: JsxNode;
+  parentContextEnt: ContextEnt | undefined;
+  parentSegmentEnt: SegmentEnt | undefined;
 }) {
   // run iteration twice
   // first - to start stream process in children
@@ -51,38 +46,15 @@ export async function handleChildrenString({
       continue;
     }
 
-    let child: JsxNode;
-    if (childOrAtom instanceof Atom) {
-      child = new JsxNodeComponent({
-        type: AtomWrapper,
-        children: [],
-        props: {
-          atom: childOrAtom,
-        },
-        systemProps: {},
-      });
-    } else if (Array.isArray(childOrAtom)) {
-      child = new JsxNodeComponent({
-        type: Fragment,
-        children: childOrAtom,
-        props: {},
-        systemProps: {},
-      });
-    } else {
-      child = childOrAtom;
-    }
+    const child = wrapChildIfNeed(childOrAtom);
 
     if (child instanceof JsxNode) {
       const result = child.getStringStream({
         globalCtx,
-        jsxSegmentStr: jsxNodeCount.toString(),
-        parentJsxSegment: {
-          jsxSegment: parentJsxSegment,
-          position: jsxNodeCount,
-        },
-        stringContext: stringContext,
-        parentCtx,
-        // parentJsxNode,
+        pathSegmentName: jsxNodeCount.toString(),
+        parentSegmentEnt,
+        parentContextEnt,
+        stringContext,
       });
       jsxNodeCount++;
       results.push(result);
@@ -94,9 +66,9 @@ export async function handleChildrenString({
   }
 
   for (const childStream of results) {
-    if (typeof childStream === 'string' || typeof childStream === 'number') {
+    if (checkPrimitive(childStream)) {
       const writer = streams.writable.getWriter();
-      await writer.write(childStream);
+      await writer.write(childStream as string);
       writer.releaseLock();
       continue;
     }

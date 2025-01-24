@@ -2,38 +2,45 @@ import {Atom} from 'strangelove';
 import {JsxNodeElement} from '../node/variants/element/element.ts';
 import {createElementString} from './flat.ts';
 import {handleChildrenString} from './children.ts';
-import {JsxSegment} from '../jsx-path/jsx-path.ts';
-import {GetStringStreamProps} from '../node/string/string.ts';
+import {GetStringStreamProps} from './types.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
+import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
+
+const prepareProps = (
+  props: Record<string, any>,
+  atomsSnapshot: TreeAtomsSnapshot
+) => {
+  return Object.entries(props).reduce((store, [key, value]) => {
+    if (typeof value === 'function') {
+      return store;
+    }
+
+    if (value instanceof Atom) {
+      atomsSnapshot.parse(value);
+      store[key] = atomsSnapshot.getValue(value);
+      return store;
+    }
+
+    store[key] = value;
+
+    return store;
+  }, {} as Record<string, any>);
+};
 
 export async function getStringStreamElement(
   this: JsxNodeElement,
-  ctx: GetStringStreamProps
+  props: GetStringStreamProps
 ) {
-  const jsxSegment = new JsxSegment({
-    name: ctx.jsxSegmentStr,
-    parent: ctx.parentJsxSegment,
+  const segmentEnt = new SegmentEnt({
+    jsxSegmentName: props.pathSegmentName,
+    parentSystemEnt: props.parentSegmentEnt,
+    unmounts: [],
+    jsxNode: this,
   });
+
   const streams = new TransformStream<string, string>();
 
-  const preparedProps = Object.entries(this.props).reduce(
-    (store, [key, value]) => {
-      if (typeof value === 'function') {
-        return store;
-      }
-
-      let realValue;
-
-      if (value instanceof Atom) {
-        realValue = ctx.stringContext.snapshot.parse(value);
-      } else {
-        realValue = value;
-      }
-
-      store[key] = realValue;
-      return store;
-    },
-    {} as Record<string, any>
-  );
+  const preparedProps = prepareProps(this.props, props.stringContext.snapshot);
 
   const elementString = createElementString({
     type: this.type,
@@ -49,11 +56,10 @@ export async function getStringStreamElement(
     await handleChildrenString({
       children: this.children,
       streams,
-      parentJsxSegment: jsxSegment,
-      globalCtx: ctx.globalCtx,
-      stringContext: ctx.stringContext,
-      parentCtx: ctx.parentCtx,
-      // parentJsxNode: this,
+      parentContextEnt: props.parentContextEnt,
+      parentSegmentEnt: segmentEnt,
+      globalCtx: props.globalCtx,
+      stringContext: props.stringContext,
     });
 
     const writer2 = streams.writable.getWriter();
