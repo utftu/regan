@@ -22,11 +22,15 @@ export const createContext = <TValue extends any = any>(
     name,
     defaultValue,
   } as Context<TValue>;
-  context.Provider = (({value}, {children}) => (
-    <ContextProvider value={value} context={context}>
-      {children}
-    </ContextProvider>
-  )) satisfies FC<{value: TValue}>;
+  context.Provider = (({value}, {children}) => {
+    return (
+      <ContextProvider value={value} context={context}>
+        {children}
+      </ContextProvider>
+    );
+  }) satisfies FC<{value: TValue}>;
+
+  context.Provider.hello = 'myprovider';
 
   return context;
 };
@@ -54,8 +58,6 @@ export const ContextProvider = <TValue extends any = any>(
   _props: {value: TValue; context: Context},
   {children, systemProps}: Ctx
 ) => {
-  systemProps.context = context;
-
   return children;
 };
 

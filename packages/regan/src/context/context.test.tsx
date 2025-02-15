@@ -16,10 +16,8 @@ describe('context', () => {
 
     const context = createContext('test1', 'default');
     const contextEnt: ContextEnt = {
-      context: {
-        context: context,
-        value: null,
-      },
+      context: context,
+      value: null,
     };
     const Elem3: FC = (_, {stage, ctx}) => {
       const value = getContextValue(context, contextEnt) as Stage;
@@ -37,8 +35,8 @@ describe('context', () => {
       );
     };
 
-    const Elem1: FC = (_, {ctx, stage}) => {
-      const value = getContextValue(context, ctx);
+    const Elem1: FC = (_, {parentContextEnt, stage}) => {
+      const value = getContextValue(context, parentContextEnt);
       values[stage].push(value);
 
       return (

@@ -65,6 +65,12 @@ export const createErrorJsxNodeComponent = (
 ) => {
   const errorHandlerConfig = getContextValue(errorContext, parentContextEnt);
 
+  console.log(
+    '-----',
+    'createErrorJsxNodeComponent',
+    errorHandlerConfig.errorJsx.hello
+  );
+
   return new JsxNodeComponent({
     type: errorHandlerConfig.errorJsx,
     props: {
@@ -80,6 +86,7 @@ export const ErrorGuard: FC<{error?: ErrorHandler; errorJsx?: FC}> = (
   {error, errorJsx},
   {children}
 ) => {
+  console.log('-----', 'ErrorGuard', errorJsx.hello);
   return h(
     errorContext.Provider,
     {

@@ -2,7 +2,7 @@ import {normalizeChildren} from '../jsx/jsx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenString} from './children.ts';
-import {selectContextEnt} from '../context/context.tsx';
+import {ContextProvider, selectContextEnt} from '../context/context.tsx';
 import {createErrorJsxNodeComponent} from '../errors/errors.tsx';
 import {StringResult} from '../node/node.ts';
 import {GetStringStreamProps} from './types.ts';
@@ -35,6 +35,7 @@ export async function getStringStreamComponent(
     stage: 'string',
     jsxNodeComponent: this,
     segmentEnt,
+    parentContextEnt: props.parentContextEnt,
   });
 
   let rawChidlren;
@@ -52,6 +53,14 @@ export async function getStringStreamComponent(
 
   const children = normalizeChildren(rawChidlren);
 
+  // console.log(
+  //   '-----',
+  //   'this.type === ContextProvider',
+  //   this.type === ContextProvider,
+  //   this.type
+  // );
+  // console.log('-----', 'rawChildren', rawChidlren);
+  // console.log('-----', 'children', children);
   const parentContextEnt = selectContextEnt(this, props.parentContextEnt);
 
   Promise.resolve().then(async () => {

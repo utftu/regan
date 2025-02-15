@@ -5,6 +5,7 @@ import {HNode} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
+import {ContextEnt} from '../context/context.tsx';
 
 type State = {
   mounts: Mount[];
@@ -29,6 +30,7 @@ type PropsCtx<TProps> = {
   segmentEnt: SegmentEnt;
   jsxNodeComponent: JsxNodeComponent;
   client?: Client;
+  parentContextEnt: ContextEnt | undefined;
 };
 
 // args to run FC
@@ -43,6 +45,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   jsxNodeComponent: JsxNodeComponent;
   ctx: Ctx;
   client?: Client;
+  parentContextEnt?: ContextEnt;
 
   constructor({
     props,
@@ -54,6 +57,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
     jsxNodeComponent,
     client,
     segmentEnt,
+    parentContextEnt,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -64,6 +68,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
     this.jsxNodeComponent = jsxNodeComponent;
     this.client = client;
     this.segmentEnt = segmentEnt;
+    this.parentContextEnt = parentContextEnt;
 
     this.ctx = this;
   }

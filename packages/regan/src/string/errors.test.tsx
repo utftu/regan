@@ -15,14 +15,17 @@ describe('string errors', () => {
     expect(str).toBe(defaultAnswer);
   });
 
-  it('error handler', async () => {
+  it.only('error handler', async () => {
     const Child = () => {
       throw new Error('my error');
     };
 
+    const errorJsx = () => 'error';
+    errorJsx.hello = 'world';
+
     const Parent = () => {
       return (
-        <ErrorGuard errorJsx={() => 'error'}>
+        <ErrorGuard errorJsx={errorJsx}>
           <Fragment>
             <Child />
           </Fragment>
