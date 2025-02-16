@@ -36,10 +36,10 @@ export async function renderComponent(
     systemProps: this.systemProps,
     state: new ComponentState(),
     children: this.children,
-    hNode,
     jsxNodeComponent: this,
     stage: 'render',
     segmentEnt: hNode.segmentEnt,
+    parentContextEnt: props.parentContextEnt,
   });
 
   const renderTemplate: RenderTemplateComponent = {
@@ -76,7 +76,7 @@ export async function renderComponent(
   if (this.type === ContextProvider) {
     hNode.contextEnt = {
       value: componentCtx.props.value,
-      context: componentCtx.props.value,
+      context: componentCtx.props.context,
       parent: props.parentContextEnt,
     };
   } else {

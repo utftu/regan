@@ -44,9 +44,9 @@ export async function hydrateComponent(
     state: new ComponentState(),
     children: this.children,
     segmentEnt: hNode.segmentEnt,
-    hNode,
     jsxNodeComponent: this,
     stage: 'hydrate',
+    parentContextEnt: props.parentContextEnt,
   });
 
   let rawChidlren;
@@ -69,7 +69,7 @@ export async function hydrateComponent(
   if (this.type === ContextProvider) {
     hNode.contextEnt = {
       value: componentCtx.props.value,
-      context: componentCtx.props.value,
+      context: componentCtx.props.context,
       parent: props.parentContextEnt,
     };
   } else {

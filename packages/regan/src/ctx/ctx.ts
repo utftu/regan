@@ -5,7 +5,7 @@ import {HNode} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
-import {ContextEnt} from '../context/context.tsx';
+import {Context, ContextEnt, getContextValue} from '../context/context.tsx';
 
 type State = {
   mounts: Mount[];
@@ -113,5 +113,9 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
 
   getId = () => {
     return this.segmentEnt.pathSegment.getId();
+  };
+
+  getContext = (context: Context) => {
+    return getContextValue(context, this.parentContextEnt);
   };
 }

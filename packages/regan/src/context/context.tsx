@@ -30,7 +30,7 @@ export const createContext = <TValue extends any = any>(
     );
   }) satisfies FC<{value: TValue}>;
 
-  context.Provider.hello = 'myprovider';
+  // context.Provider.hello = 'myprovider';
 
   return context;
 };
