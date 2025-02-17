@@ -7,8 +7,6 @@ const a = <div>2323</div>;
 // const bb = (<div>123</div>) as JSX.Element;
 // const dd: JsxNode<any, any> = bb;
 
-// console.log('-----', 'dd', dd);
-
 const App: FC = (_, {createAtom, select}) => {
   // const state = createAtom('hello');
   // const savedValue = createAtom('');
@@ -27,9 +25,6 @@ const App: FC = (_, {createAtom, select}) => {
   setTimeout(() => {
     name.set('Ivan');
   }, 1000);
-  // select((get) => {
-  //   console.log('-----', 'get(savedValue)', get(savedValue));
-  // });
 
   return (
     <div>
