@@ -86,7 +86,7 @@ export const ErrorGuard: FC<{error?: ErrorHandler; errorJsx?: FC}> = (
   {error, errorJsx},
   {children}
 ) => {
-  console.log('-----', 'ErrorGuard', errorJsx.hello);
+  // console.log('-----', 'ErrorGuard', errorJsx.hello);
   return h(
     errorContext.Provider,
     {

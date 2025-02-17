@@ -45,12 +45,6 @@ describe('atom-wrapper', () => {
 
   //   await insertAndHydrate({jsdom, jsxNode: <Component />});
 
-  //   // console.log(
-  //   //   '-----',
-  //   //   'document.getElementById(',
-  //   //   document.getElementById('div')?.childNodes.length
-  //   // );
-
   //   // expect(document.getElementById('div')?.children[1].innerHTML).toBe('hello');
   // });
   // it('2', async () => {
@@ -63,12 +57,6 @@ describe('atom-wrapper', () => {
   //   const document = jsdom.window.document;
 
   //   await render(document.body, <Component />, {window: jsdom.window});
-
-  //   console.log(
-  //     '-----',
-  //     'document.getElementById(',
-  //     document.getElementById('div')?.childNodes.length
-  //   );
 
   //   // expect(document.getElementById('div')?.children[1].innerHTML).toBe('hello');
   // });

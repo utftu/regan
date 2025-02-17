@@ -53,14 +53,6 @@ export async function getStringStreamComponent(
 
   const children = normalizeChildren(rawChidlren);
 
-  // console.log(
-  //   '-----',
-  //   'this.type === ContextProvider',
-  //   this.type === ContextProvider,
-  //   this.type
-  // );
-  // console.log('-----', 'rawChildren', rawChidlren);
-  // console.log('-----', 'children', children);
   const parentContextEnt = selectContextEnt(this, props.parentContextEnt);
 
   Promise.resolve().then(async () => {

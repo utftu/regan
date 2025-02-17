@@ -33,3 +33,20 @@ export const wrapChildIfNeed = (child: JsxNode | Atom) => {
     return child;
   }
 };
+
+export const checkAllowedPrivitive = (value: any): value is string | number => {
+  const typeValue = typeof value;
+
+  if (typeValue === 'string' || typeValue === 'number') {
+    return true;
+  }
+
+  return false;
+};
+
+export const checkPassPrimitive = (value: any) => {
+  if (value === null || value === undefined || typeof value === 'boolean') {
+    return true;
+  }
+  return false;
+};

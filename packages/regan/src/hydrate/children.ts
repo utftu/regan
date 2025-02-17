@@ -2,7 +2,12 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../node/node.ts';
 import {Child, DomPointerWithText} from '../types.ts';
 import {HNode, HNodeBase, GlobalClientCtx} from '../h-node/h-node.ts';
-import {formatJsxValue, wrapChildIfNeed} from '../utils/jsx.ts';
+import {
+  checkAllowedPrivitive,
+  checkPassPrimitive,
+  formatJsxValue,
+  wrapChildIfNeed,
+} from '../utils/jsx.ts';
 import {
   createInsertedDomNodePromise,
   getInsertedInfo,
@@ -11,6 +16,7 @@ import {SegmentEnt} from '../segments/ent/ent.ts';
 import {ContextEnt} from '../context/context.tsx';
 import {HydrateCtx, ParentWait} from './types.ts';
 import {HNodeText} from '../h-node/text.ts';
+import {Atom} from 'strangelove';
 
 export async function handleChildrenHydrate({
   children,
@@ -42,22 +48,28 @@ export async function handleChildrenHydrate({
   for (let i = 0; i < children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
 
-    if (typeof childOrAtom === 'string') {
+    if (checkPassPrimitive(childOrAtom)) {
+      continue;
+    }
+
+    if (checkAllowedPrivitive(childOrAtom)) {
+      const text = childOrAtom.toString();
       let start: number;
       let textNode: Text;
+
       // add to prev
       if (typeof textLength === 'number') {
         textNode = parentDomPointer.parent.childNodes[
           parentDomPointer.nodeCount - 1
         ] as Text;
-        textLength += childOrAtom.length;
+        textLength += text.length;
         start = textLength;
       } else {
         textNode = parentDomPointer.parent.childNodes[
           parentDomPointer.nodeCount
         ] as Text;
         nodesCount++;
-        textLength = childOrAtom.length;
+        textLength = text.length;
         start = 0;
       }
 
@@ -72,7 +84,7 @@ export async function handleChildrenHydrate({
         {
           textNode,
           start,
-          text: childOrAtom,
+          text: text,
         }
       );
 
