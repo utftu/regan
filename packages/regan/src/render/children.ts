@@ -3,7 +3,12 @@ import {GlobalClientCtx, HNode} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {RenderCtx, RenderTemplateText} from './types.ts';
 import {Child} from '../types.ts';
-import {formatJsxValue, wrapChildIfNeed} from '../utils/jsx.ts';
+import {
+  checkAllowedPrivitive,
+  checkPassPrimitive,
+  formatJsxValue,
+  wrapChildIfNeed,
+} from '../utils/jsx.ts';
 import {noop} from '../consts.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
@@ -35,11 +40,12 @@ export async function handleChildrenRender({
   for (let i = 0; i <= children.length; i++) {
     const childOrAtom = await formatJsxValue(children[i]);
 
-    if (!childOrAtom) {
+    if (checkPassPrimitive(childOrAtom)) {
       continue;
     }
 
-    if (typeof childOrAtom === 'string') {
+    if (checkAllowedPrivitive(childOrAtom)) {
+      const text = childOrAtom.toString();
       rawResults.push({
         renderTemplate: {
           type: 'text',
@@ -47,7 +53,7 @@ export async function handleChildrenRender({
           vNew: {
             type: 'text',
             data: {
-              text: childOrAtom,
+              text,
             },
           },
 
@@ -61,7 +67,7 @@ export async function handleChildrenRender({
               },
               {
                 textNode: domNode,
-                text: childOrAtom,
+                text,
                 start,
               }
             );
