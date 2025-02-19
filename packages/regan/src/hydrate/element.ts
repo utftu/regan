@@ -7,6 +7,7 @@ import {SegmentEnt} from '../segments/ent/ent.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
 import {initStaticProps} from '../utils/props/static.ts';
 import {initDynamicSubsribes} from '../utils/props/dynamic.ts';
+import {LisneterManager} from '../utils/props/funcs.ts';
 
 export async function hydrateElement(
   this: JsxNodeElement,
@@ -16,9 +17,9 @@ export async function hydrateElement(
 
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
-    parentSystemEnt: props.parentSegmentEnt,
-    unmounts: [],
+    parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
+    parentContextEnt: props.parentContextEnt,
   });
 
   const element = props.domPointer.parent.childNodes[
@@ -36,18 +37,20 @@ export async function hydrateElement(
       parent: props.parentHNode,
       globalCtx: props.globalCtx,
       segmentEnt,
-      contextEnt: props.parentContextEnt,
     },
     {
       element,
     }
   );
 
-  initStaticProps(element, staticProps);
+  const listenerManager = new LisneterManager(segmentEnt);
+
+  initStaticProps(element, staticProps, listenerManager);
 
   initDynamicSubsribes({
     hNode,
     dynamicProps,
+    listenerManager,
   });
 
   const {hNodes} = await handleChildrenHydrate({

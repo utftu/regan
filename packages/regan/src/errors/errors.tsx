@@ -11,7 +11,7 @@ import {tryDetectInsertedInfoComponentImmediately} from '../utils/inserted-dom.t
 import {JsxNodeComponent} from '../node/variants/component/component.ts';
 
 type Props = {
-  error: Error;
+  error: Error | unknown;
   jsxNode: JsxNode;
 };
 
@@ -53,26 +53,30 @@ const defaultErrorConfig = {
   error: defaultErrorHandler,
   errorJsx: defaultErrorJsx,
 };
-export const errorContext = createContext<{
-  error: ErrorHandler;
-  errorJsx: ErrorJsx;
-}>('system error', defaultErrorConfig);
+
+export const errorContextHandler = createContext<ErrorHandler>(
+  'error_handler',
+  defaultErrorHandler
+);
+export const errorContextJsx = createContext<ErrorJsx>(
+  'error_jsx',
+  defaultErrorJsx
+);
+
+// export const errorContext = createContext<{
+//   error: ErrorHandler;
+//   errorJsx: ErrorJsx;
+// }>('system error', defaultErrorConfig);
 
 export const createErrorJsxNodeComponent = (
   jsxNode: JsxNode,
   error: unknown,
   parentContextEnt?: ContextEnt
 ) => {
-  const errorHandlerConfig = getContextValue(errorContext, parentContextEnt);
-
-  console.log(
-    '-----',
-    'createErrorJsxNodeComponent',
-    errorHandlerConfig.errorJsx.hello
-  );
+  const errorJsx = getContextValue(errorContextJsx, parentContextEnt);
 
   return new JsxNodeComponent({
-    type: errorHandlerConfig.errorJsx,
+    type: errorJsx,
     props: {
       error,
       jsxNode,
@@ -82,19 +86,32 @@ export const createErrorJsxNodeComponent = (
   });
 };
 
-export const ErrorGuard: FC<{error?: ErrorHandler; errorJsx?: FC}> = (
-  {error, errorJsx},
+export const ErrorGuardHandler: FC<{errorHandler: ErrorHandler}> = (
+  {errorHandler},
   {children}
 ) => {
-  // console.log('-----', 'ErrorGuard', errorJsx.hello);
-  return h(
-    errorContext.Provider,
-    {
-      value: {
-        error: error ?? defaultErrorHandler,
-        errorJsx: errorJsx ?? defaultErrorJsx,
-      },
-    },
-    children
-  );
+  return h(errorContextHandler.Provider, {value: errorHandler}, children);
 };
+
+export const ErrorGuardJsx: FC<{errorJsx: ErrorJsx}> = (
+  {errorJsx},
+  {children}
+) => {
+  return h(errorContextJsx.Provider, {value: errorJsx}, children);
+};
+
+// export const ErrorGuard: FC<{error?: ErrorHandler; errorJsx?: FC}> = (
+//   {error, errorJsx},
+//   {children}
+// ) => {
+//   return h(
+//     errorContext.Provider,
+//     {
+//       value: {
+//         error: error ?? defaultErrorHandler,
+//         errorJsx: errorJsx ?? defaultErrorJsx,
+//       },
+//     },
+//     children
+//   );
+// };

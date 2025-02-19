@@ -1,3 +1,4 @@
+import {LisneterManager} from '../utils/props/funcs.ts';
 import {KeyStoreNew, KeyStoreOld} from './key.ts';
 
 type MetaExtend = {
@@ -15,6 +16,7 @@ export type VNewElement = {
   key?: string;
   init?: (vOld: VOldElement) => void;
   keyStore: KeyStoreNew;
+  listenerManager: LisneterManager;
 
   children: VNew[];
 } & MetaExtend;

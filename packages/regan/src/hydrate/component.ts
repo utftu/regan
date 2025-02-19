@@ -4,12 +4,17 @@ import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {ComponentState} from '../h-node/h-node.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
-import {errorContext} from '../errors/errors.tsx';
-import {ContextProvider, getContextValue} from '../context/context.tsx';
+// import {errorContext} from '../errors/errors.tsx';
+import {
+  ContextEnt,
+  ContextProvider,
+  getContextValue,
+} from '../context/context.tsx';
 import {HNodeComponent} from '../h-node/component.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {tryDetectInsertedInfoComponentImmediately} from '../utils/inserted-dom.ts';
+import {errorContextJsx} from '../errors/errors.tsx';
 
 export async function hydrateComponent(
   this: JsxNodeComponent,
@@ -20,17 +25,19 @@ export async function hydrateComponent(
     props.parentWait.promiseControls.resolve(insertedInfo);
   }
 
+  const segmentEnt = new SegmentEnt({
+    jsxSegmentName: props.jsxSegmentName,
+    parentSegmentEnt: props.parentSegmentEnt,
+    jsxNode: this,
+    parentContextEnt: props.parentContextEnt,
+  });
+
   const hNode = new HNodeComponent({
     globalClientCtx: props.globalClientCtx,
     parent: props.parentHNode,
     globalCtx: props.globalCtx,
-    segmentEnt: new SegmentEnt({
-      jsxSegmentName: props.jsxSegmentName,
-      parentSystemEnt: props.parentSegmentEnt,
-      unmounts: [],
-      jsxNode: this,
-    }),
-    contextEnt: null as any,
+    segmentEnt,
+    // contextEnt: null as any,
   });
 
   const componentCtx = new Ctx({
@@ -53,10 +60,10 @@ export async function hydrateComponent(
   try {
     rawChidlren = await this.type(this.props, componentCtx);
   } catch (error) {
-    const errorHandlers = getContextValue(errorContext, props.parentContextEnt);
+    const errorJsx = getContextValue(errorContextJsx, props.parentContextEnt);
 
     return new JsxNodeComponent({
-      type: errorHandlers.errorJsx,
+      type: errorJsx,
       props: {
         error,
         jsxNode: this,
@@ -66,14 +73,15 @@ export async function hydrateComponent(
     }).hydrate(props);
   }
 
+  let contextEnt: ContextEnt | undefined = undefined;
   if (this.type === ContextProvider) {
-    hNode.contextEnt = {
+    contextEnt = {
       value: componentCtx.props.value,
       context: componentCtx.props.context,
       parent: props.parentContextEnt,
     };
   } else {
-    hNode.contextEnt = props.parentContextEnt;
+    contextEnt = props.parentContextEnt;
   }
 
   const smartMount = createSmartMount(componentCtx);
@@ -90,8 +98,8 @@ export async function hydrateComponent(
     globalCtx: props.globalCtx,
     globalClientCtx: props.globalClientCtx,
     hydrateCtx: props.hydrateCtx,
-    parentContextEnt: hNode.contextEnt,
-    parentSegmentEnt: hNode.segmentEnt,
+    parentContextEnt: contextEnt,
+    parentSegmentEnt: segmentEnt,
   });
 
   hNode.addChildren(hNodes);

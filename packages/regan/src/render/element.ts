@@ -7,6 +7,7 @@ import {HNodeElement} from '../h-node/element.ts';
 import {VOldElement} from '../v/types.ts';
 import {initDynamicSubsribes as initDynamicSubscribes} from '../utils/props/dynamic.ts';
 import {subscribeAtom} from '../utils/props/atom.ts';
+import {LisneterManager} from '../utils/props/funcs.ts';
 
 export async function renderElement(
   this: JsxNodeElement,
@@ -15,9 +16,9 @@ export async function renderElement(
   // init new part of name segment
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
-    parentSystemEnt: props.parentSegmentEnt,
-    unmounts: [],
+    parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
+    parentContextEnt: props.parentContextEnt,
   });
 
   // split props to dynamic and joined
@@ -25,6 +26,8 @@ export async function renderElement(
     this.props,
     props.renderCtx.treeAtomsSnapshot
   );
+
+  const listenerManager = new LisneterManager(segmentEnt);
 
   // create render template
   const renderTemplate: RenderTemplateElement = {
@@ -37,6 +40,7 @@ export async function renderElement(
       },
       keyStore: {},
       children: [],
+      listenerManager,
     },
     createHNode: (vOld: VOldElement) => {
       const element = vOld.element;
@@ -55,6 +59,7 @@ export async function renderElement(
       initDynamicSubscribes({
         hNode,
         dynamicProps,
+        listenerManager,
       });
 
       for (const name in dynamicProps) {

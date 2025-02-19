@@ -14,9 +14,9 @@ export async function getStringStreamComponent(
 ): StringResult {
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.pathSegmentName,
-    parentSystemEnt: props.parentSegmentEnt,
-    unmounts: [],
+    parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
+    parentContextEnt: props.parentContextEnt,
   });
   const streams = new TransformStream<string, string>();
 

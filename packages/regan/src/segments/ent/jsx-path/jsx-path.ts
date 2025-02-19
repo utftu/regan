@@ -38,9 +38,9 @@ export class PathSegment {
 export function getJsxPath(jsxSegment: PathSegment, childJsxPath: string = '') {
   let jsxPath = joinPath(jsxSegment.name, childJsxPath);
 
-  if (jsxSegment.systemEnt.parentSystemEnt) {
+  if (jsxSegment.systemEnt.parentSegmentEnt) {
     return getJsxPath(
-      jsxSegment.systemEnt.parentSystemEnt.pathSegment,
+      jsxSegment.systemEnt.parentSegmentEnt.pathSegment,
       jsxPath
     );
   }

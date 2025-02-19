@@ -1,7 +1,11 @@
 import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../utils/tests.ts';
-import {ErrorGuard, defaultErrorJsx} from '../errors/errors.tsx';
+import {
+  ErrorGuardHandler,
+  ErrorGuardJsx,
+  defaultErrorJsx,
+} from '../errors/errors.tsx';
 
 describe('hydrate errors', () => {
   it('default', async () => {
@@ -42,6 +46,7 @@ describe('hydrate errors', () => {
     const errorHandler = new Error('handler error');
     let savedJsxError;
     let savedHandlerError;
+
     const ChildJsxError = () => {
       throw errorJsx;
     };
@@ -60,22 +65,25 @@ describe('hydrate errors', () => {
 
     const Parent = () => {
       return (
-        <ErrorGuard
-          error={({error}) => {
-            savedHandlerError = error;
-          }}
+        <ErrorGuardJsx
           errorJsx={({error, jsxNode}) => {
             savedJsxError = error;
 
             return defaultErrorJsx({error, jsxNode});
           }}
         >
-          <div id='parent' click={parentChild}>
-            parent
-            <ChildJsxError />
-            <ChildHandlerError />
-          </div>
-        </ErrorGuard>
+          <ErrorGuardHandler
+            errorHandler={({error}) => {
+              savedHandlerError = error;
+            }}
+          >
+            <div id='parent' click={parentChild}>
+              parent
+              <ChildJsxError />
+              <ChildHandlerError />
+            </div>
+          </ErrorGuardHandler>
+        </ErrorGuardJsx>
       );
     };
 

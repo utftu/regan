@@ -25,7 +25,7 @@ export type PropsHNode = {
   globalCtx: GlobalCtx;
   globalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
-  contextEnt?: ContextEnt;
+  // contextEnt?: ContextEnt;
 };
 
 export class HNodeBase {
@@ -37,7 +37,7 @@ export class HNodeBase {
   glocalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
   systemUnmounts: Unmount[] = [];
-  contextEnt?: ContextEnt;
+  // contextEnt?: ContextEnt;
 
   data: Record<string, any> = {};
 
@@ -49,8 +49,8 @@ export class HNodeBase {
     globalCtx,
     globalClientCtx,
     segmentEnt,
-    contextEnt,
-  }: PropsHNode) {
+  }: // contextEnt,
+  PropsHNode) {
     this.mounts = mounts;
     this.unmounts = unmounts;
     this.parent = parent;
@@ -58,7 +58,7 @@ export class HNodeBase {
     this.glocalClientCtx = globalClientCtx;
     this.children = children;
     this.segmentEnt = segmentEnt;
-    this.contextEnt = contextEnt;
+    // this.contextEnt = contextEnt;
   }
 
   unmounted = false;

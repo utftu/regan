@@ -100,7 +100,8 @@ export const patchElement = (vNew: VNewElement, vOld: VOldElement) => {
     const value = oldProps[key];
 
     if (typeof value === 'function') {
-      element.removeEventListener(key, value);
+      vNew.listenerManager.remove(element, key);
+      // element.removeEventListener(key, value);
     } else {
       element.removeAttribute(key);
     }
@@ -109,11 +110,7 @@ export const patchElement = (vNew: VNewElement, vOld: VOldElement) => {
     const newValue = newProps[key];
 
     if (typeof newValue === 'function') {
-      const oldValue = vOld.data.props[key];
-      if (typeof oldValue === 'function') {
-        element.removeEventListener(key, oldValue);
-      }
-      element.addEventListener(key, newValue);
+      vNew.listenerManager.add(element, key, newValue);
     } else {
       element.setAttribute(key, newValue);
     }

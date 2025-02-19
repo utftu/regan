@@ -33,7 +33,7 @@ export async function getStringStreamElement(
 ) {
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.pathSegmentName,
-    parentSystemEnt: props.parentSegmentEnt,
+    parentSegmentEnt: props.parentSegmentEnt,
     unmounts: [],
     jsxNode: this,
   });

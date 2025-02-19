@@ -1,26 +1,27 @@
+import {ContextEnt} from '../../context/context.tsx';
 import {JsxNode} from '../../node/node.ts';
-import {Unmount} from '../../types.ts';
 import {PathSegment as PathSegment} from './jsx-path/jsx-path.ts';
 
 export class SegmentEnt {
   pathSegment: PathSegment;
   jsxNode: JsxNode;
-  parentSystemEnt?: SegmentEnt;
-  unmounts: Unmount[];
+  parentSegmentEnt: SegmentEnt | undefined;
+  parentContextEnt: ContextEnt | undefined;
+
   constructor({
     jsxSegmentName,
-    parentSystemEnt,
-    unmounts = [],
+    parentSegmentEnt,
     jsxNode,
+    parentContextEnt,
   }: {
     jsxSegmentName: string;
-    parentSystemEnt?: SegmentEnt;
-    unmounts: Unmount[];
+    parentSegmentEnt: SegmentEnt | undefined;
     jsxNode: JsxNode;
+    parentContextEnt: ContextEnt | undefined;
   }) {
     this.pathSegment = new PathSegment({name: jsxSegmentName, systemEnt: this});
-    this.parentSystemEnt = parentSystemEnt;
-    this.unmounts = unmounts;
+    this.parentSegmentEnt = parentSegmentEnt;
     this.jsxNode = jsxNode;
+    this.parentContextEnt = parentContextEnt;
   }
 }

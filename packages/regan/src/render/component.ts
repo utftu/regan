@@ -11,9 +11,9 @@ import {
 } from './types.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
 import {ContextProvider, getContextValue} from '../context/context.tsx';
-import {errorContext} from '../errors/errors.tsx';
 import {HNodeComponent} from '../h-node/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
+import {errorContextJsx} from '../errors/errors.tsx';
 
 export async function renderComponent(
   this: JsxNodeComponent,
@@ -22,9 +22,9 @@ export async function renderComponent(
   const hNode = new HNodeComponent({
     segmentEnt: new SegmentEnt({
       jsxSegmentName: props.jsxSegmentName,
-      parentSystemEnt: props.parentSegmentEnt,
-      unmounts: [],
+      parentSegmentEnt: props.parentSegmentEnt,
       jsxNode: this,
+      parentContextEnt: props.parentContextEnt,
     }),
     globalCtx: props.globalCtx,
     globalClientCtx: props.globalClientCtx,
@@ -60,10 +60,10 @@ export async function renderComponent(
   try {
     rawChidlren = await this.type(this.props, componentCtx);
   } catch (error) {
-    const errorHandlers = getContextValue(errorContext, props.parentContextEnt);
+    const errorJsx = getContextValue(errorContextJsx, props.parentContextEnt);
 
     return new JsxNodeComponent({
-      type: errorHandlers.errorJsx,
+      type: errorJsx,
       props: {
         error,
         jsxNode: this,

@@ -16,7 +16,6 @@ import {SegmentEnt} from '../segments/ent/ent.ts';
 import {ContextEnt} from '../context/context.tsx';
 import {HydrateCtx, ParentWait} from './types.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {Atom} from 'strangelove';
 
 export async function handleChildrenHydrate({
   children,
@@ -79,7 +78,7 @@ export async function handleChildrenHydrate({
           globalCtx,
           globalClientCtx,
           segmentEnt: parentSegmentEnt,
-          contextEnt: parentContextEnt,
+          // contextEnt: parentContextEnt,
         },
         {
           textNode,
