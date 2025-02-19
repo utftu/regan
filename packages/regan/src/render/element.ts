@@ -75,10 +75,6 @@ export async function renderElement(
 
       return hNode;
     },
-    connectHNode({children, hNode}) {
-      children.forEach((child) => (child.parent = hNode));
-      hNode.children = children;
-    },
     children: [],
   };
 

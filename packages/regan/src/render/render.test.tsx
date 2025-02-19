@@ -115,7 +115,7 @@ describe('render', () => {
 
     expect(parentDiv.getAttribute('data-name')).toBe('0');
   });
-  it('jsxPath', async () => {
+  it.only('jsxPath', async () => {
     let level3JsxPath!: string;
     const Level3: FC = (_, ctx) => {
       level3JsxPath = ctx.getJsxPath();
@@ -154,6 +154,8 @@ describe('render', () => {
     await render(jsdom.window.document.body, <Level0 />, {
       window: jsdom.window as any as Window,
     });
+
+    console.log('-----', 'level3JsxPath', level3JsxPath);
     expect(/0\.1\.0\.0\.2\?a=\d+\.0\.0\.0/.test(level3JsxPath)).toBe(true);
   });
 });

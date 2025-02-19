@@ -108,6 +108,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   };
 
   getJsxPath = () => {
+    console.log('-----', 'getJsxPath ctx');
     return this.segmentEnt.pathSegment.getJsxPath();
   };
 

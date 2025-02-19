@@ -11,6 +11,7 @@ export class PathSegment {
   private jsxPathCached: null | string = null;
   getJsxPath() {
     if (this.jsxPathCached !== null) {
+      console.log('-----', 'this.jsxPathCached', this.jsxPathCached);
       return this.jsxPathCached;
     }
     const jsxPath = getJsxPath(this);

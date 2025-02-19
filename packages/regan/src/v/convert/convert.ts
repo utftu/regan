@@ -17,6 +17,7 @@ export const splitProps = (
       dynamicProps[key] = value;
     } else {
       staticProps[key] = props[key];
+      joinedProps[key] = props[key];
     }
   }
 
