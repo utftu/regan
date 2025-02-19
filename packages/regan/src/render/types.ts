@@ -15,7 +15,6 @@ export type RenderTemplateComponent = {
   children: RenderTemplate[];
 
   createHNode: () => HNodeComponent;
-  connectHNode: ConnectHNode;
 };
 
 export type RenderTemplateComponentExtended = Omit<
@@ -30,8 +29,8 @@ export type RenderTemplateElement = {
   children: RenderTemplate[];
 
   vNew: VNewElement;
+
   createHNode: (vOld: VOldElement) => HNodeElement;
-  connectHNode: ConnectHNode;
 };
 
 export type RenderTemplateElementExtended = Omit<

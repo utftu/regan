@@ -179,7 +179,7 @@ describe('hydrate', () => {
       expect(mounts[2]).toBe('child2');
     });
   });
-  it.only('child atoms', async () => {
+  it('child atoms', async () => {
     const onClickElement = vi.fn();
     const onClickChild = vi.fn();
     const Child = () => {
@@ -214,7 +214,7 @@ describe('hydrate', () => {
     parentElem.click();
     expect(onClickElement.mock.calls.length).toBe(1);
   });
-  it('jsxPath', async () => {
+  it.only('jsxPath', async () => {
     let level3JsxPath!: string;
     const Level3: FC = (_, ctx) => {
       level3JsxPath = ctx.getJsxPath();

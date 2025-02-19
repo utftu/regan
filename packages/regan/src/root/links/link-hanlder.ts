@@ -50,7 +50,6 @@ export class LinkHandler {
 
     const self = this;
 
-    console.log('-----', 'atom', atom);
     const subsribeAtom = new Atom({
       root: atom.root,
       exec: async () => {

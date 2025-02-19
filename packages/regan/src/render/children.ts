@@ -46,7 +46,6 @@ export async function handleChildrenRender({
 
     if (checkAllowedPrivitive(childOrAtom)) {
       const text = childOrAtom.toString();
-      console.log('-----', 'text', text);
 
       rawResults.push({
         renderTemplate: {

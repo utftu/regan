@@ -53,12 +53,6 @@ export async function renderComponent(
     createHNode: () => {
       return hNode;
     },
-    connectHNode({children}) {
-      hNode.children = children;
-      children.forEach((child) => {
-        child.parent = hNode;
-      });
-    },
   };
 
   let rawChidlren;

@@ -39,8 +39,6 @@ describe('hydrate errors', () => {
       window: jsdom.window as any as Window,
     });
 
-    console.log('-----', 'js', jsdom.window.document.body.innerHTML);
-
     jsdom.window.document.getElementById('parent')!.click();
 
     expect(parentChild.mock.calls.length).toBe(1);
