@@ -49,7 +49,6 @@ export async function renderElement(
           segmentEnt,
           globalCtx: props.globalCtx,
           globalClientCtx: props.globalClientCtx,
-          contextEnt: props.parentContextEnt,
         },
         {
           element,

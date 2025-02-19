@@ -10,7 +10,11 @@ import {
   RenderTemplateComponent,
 } from './types.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
-import {ContextProvider, getContextValue} from '../context/context.tsx';
+import {
+  ContextEnt,
+  ContextProvider,
+  getContextValue,
+} from '../context/context.tsx';
 import {HNodeComponent} from '../h-node/component.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {errorContextJsx} from '../errors/errors.tsx';
@@ -19,16 +23,17 @@ export async function renderComponent(
   this: JsxNodeComponent,
   props: RenderProps
 ): RenderResult {
+  const segmentEnt = new SegmentEnt({
+    jsxSegmentName: props.jsxSegmentName,
+    parentSegmentEnt: props.parentSegmentEnt,
+    jsxNode: this,
+    parentContextEnt: props.parentContextEnt,
+  });
+
   const hNode = new HNodeComponent({
-    segmentEnt: new SegmentEnt({
-      jsxSegmentName: props.jsxSegmentName,
-      parentSegmentEnt: props.parentSegmentEnt,
-      jsxNode: this,
-      parentContextEnt: props.parentContextEnt,
-    }),
+    segmentEnt,
     globalCtx: props.globalCtx,
     globalClientCtx: props.globalClientCtx,
-    contextEnt: null as any,
   });
   const componentCtx = new Ctx({
     globalCtx: props.globalCtx,
@@ -73,14 +78,15 @@ export async function renderComponent(
     }).render(props);
   }
 
+  let contextEnt: ContextEnt | undefined;
   if (this.type === ContextProvider) {
-    hNode.contextEnt = {
+    contextEnt = {
       value: componentCtx.props.value,
       context: componentCtx.props.context,
       parent: props.parentContextEnt,
     };
   } else {
-    hNode.contextEnt = props.parentContextEnt;
+    contextEnt = props.parentContextEnt;
   }
 
   const children = normalizeChildren(rawChidlren);
@@ -95,8 +101,8 @@ export async function renderComponent(
     globalClientCtx: props.globalClientCtx,
     globalCtx: props.globalCtx,
     renderCtx: props.renderCtx,
-    parentSegmentEnt: hNode.segmentEnt,
-    parentContextEnt: hNode.contextEnt,
+    parentSegmentEnt: segmentEnt,
+    parentContextEnt: contextEnt,
   });
 
   renderTemplate.children = renderTemplates;
