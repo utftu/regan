@@ -46,6 +46,8 @@ export async function handleChildrenRender({
 
     if (checkAllowedPrivitive(childOrAtom)) {
       const text = childOrAtom.toString();
+      console.log('-----', 'text', text);
+
       rawResults.push({
         renderTemplate: {
           type: 'text',
@@ -63,7 +65,6 @@ export async function handleChildrenRender({
                 globalCtx,
                 globalClientCtx,
                 segmentEnt: parentSegmentEnt,
-                contextEnt: parentContextEnt,
               },
               {
                 textNode: domNode,

@@ -179,7 +179,7 @@ describe('hydrate', () => {
       expect(mounts[2]).toBe('child2');
     });
   });
-  it('child atoms', async () => {
+  it.only('child atoms', async () => {
     const onClickElement = vi.fn();
     const onClickChild = vi.fn();
     const Child = () => {

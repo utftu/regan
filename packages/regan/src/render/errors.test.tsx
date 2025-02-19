@@ -8,7 +8,7 @@ import {
 import {render} from './render.ts';
 
 describe('hydrate errors', () => {
-  it('default', async () => {
+  it.only('default', async () => {
     const parentChild = vi.fn();
     const ChildJsx = () => {
       throw new Error('child');
@@ -38,6 +38,8 @@ describe('hydrate errors', () => {
     await render(jsdom.window.document.body, <Parent />, {
       window: jsdom.window as any as Window,
     });
+
+    console.log('-----', 'js', jsdom.window.document.body.innerHTML);
 
     jsdom.window.document.getElementById('parent')!.click();
 

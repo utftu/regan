@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {getString} from './string.ts';
-import {ErrorGuard} from '../errors/errors.tsx';
 import {Fragment} from '../components/fragment/fragment.ts';
+import {ErrorGuardJsx} from '../errors/errors.tsx';
 
 const defaultAnswer = '<fragment></fragment>';
 
@@ -15,7 +15,7 @@ describe('string errors', () => {
     expect(str).toBe(defaultAnswer);
   });
 
-  it.only('error handler', async () => {
+  it('error handler', async () => {
     const Child = () => {
       throw new Error('my error');
     };
@@ -25,11 +25,11 @@ describe('string errors', () => {
 
     const Parent = () => {
       return (
-        <ErrorGuard errorJsx={errorJsx}>
+        <ErrorGuardJsx errorJsx={errorJsx}>
           <Fragment>
             <Child />
           </Fragment>
-        </ErrorGuard>
+        </ErrorGuardJsx>
       );
     };
 
