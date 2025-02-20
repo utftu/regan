@@ -155,7 +155,6 @@ describe('render', () => {
       window: jsdom.window as any as Window,
     });
 
-    console.log('-----', 'level3JsxPath', level3JsxPath);
     expect(/0\.1\.0\.0\.2\?a=\d+\.0\.0\.0/.test(level3JsxPath)).toBe(true);
   });
 });

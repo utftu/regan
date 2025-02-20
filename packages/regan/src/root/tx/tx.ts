@@ -2,6 +2,7 @@ import {PromiseControls, createControlledPromise} from 'utftu';
 import {Action, Root} from '../root.ts';
 import {TxShard} from './shard.ts';
 import {Atom} from 'strangelove';
+import {e} from 'vite-node/dist/index-O2IrwHKf.js';
 
 const OMITTED_LIMIT = 10;
 
@@ -34,7 +35,9 @@ export class Tx {
     for (const atom of changes.keys()) {
       const shard = new TxShard(this, atom);
       this.shards.push(shard);
-      this.root.atomsStore.get(atom)!.shards.push(shard);
+      const execConfig = this.root.atomsStore.get(atom)!;
+
+      execConfig.shards.push(shard);
     }
   }
 

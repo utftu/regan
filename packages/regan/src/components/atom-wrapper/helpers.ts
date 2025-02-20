@@ -7,7 +7,7 @@ import {
   getNearestHNodeElement,
 } from '../../h-node/utils/find/node/node.ts';
 import {HNodeElement} from '../../h-node/element.ts';
-import {HNodeAtomWrapper} from '../../h-node/component.ts';
+import {AtomWrapperData} from '../../h-node/component.ts';
 
 export const getInsertDomPointer = (hNode: HNode): DomPointer => {
   const {prevNode, lastParentHNode} = findPrevDomNodeHNode(hNode);
@@ -62,7 +62,7 @@ export const parseAtom = (atom: Atom, renderMode: boolean = false) => {
 };
 
 export const markAndDetachChild = (hNode: HNode) => {
-  if (hNode instanceof HNodeAtomWrapper) {
+  if (hNode instanceof AtomWrapperData) {
     hNode.willUnmount = true;
 
     hNode.unsibscribeWrapper?.();
@@ -71,7 +71,7 @@ export const markAndDetachChild = (hNode: HNode) => {
 
 export const markAsWillUnmount = (hNodes: HNode[]) => {
   hNodes.forEach((hNode) => {
-    if (hNode instanceof HNodeAtomWrapper) {
+    if (hNode instanceof AtomWrapperData) {
       markAndDetachChild(hNode);
     }
     hNode.children.forEach((child) => {

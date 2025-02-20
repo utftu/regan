@@ -1,12 +1,6 @@
 import {Atom} from 'strangelove';
 import {Tx} from './tx.ts';
 
-// export class ExecConfig {
-//   shards: TxShard[] = [];
-//   // omittedShards: TxShard[] = [];
-//   omittedCount = 0;
-// }
-
 export class TxShard {
   tx: Tx;
   atom: Atom;

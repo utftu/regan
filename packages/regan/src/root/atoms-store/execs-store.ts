@@ -3,7 +3,7 @@ import {Root} from '../root.ts';
 import {TxShard} from '../tx/shard.ts';
 import {destroyAtom} from '../../atoms/atoms.ts';
 import {Exec} from './atoms-store.ts';
-import {HNodeAtomWrapper} from '../../h-node/component.ts';
+import {AtomWrapperData} from '../../h-node/component.ts';
 import {execsStoreHandler} from '../../components/atom-wrapper/execs-store-handler.ts';
 
 export class ExecsStore {
@@ -15,7 +15,7 @@ export class ExecsStore {
   omittedShards: TxShard[] = [];
 
   // need to atomWrappers
-  atomWrappers: HNodeAtomWrapper[] = [];
+  atomWrappers: AtomWrapperData[] = [];
 
   constructor(atom: Atom, root: Root) {
     this.atom = atom;
@@ -41,6 +41,7 @@ export class ExecsStore {
         const promise = this.root.addTx(changes);
 
         await promise;
+
         return true;
       },
     });

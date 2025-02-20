@@ -4,17 +4,17 @@ import {AnyFunc} from '../types.ts';
 
 export class HNodeComponent extends HNodeBase {}
 
-export class HNodeAtomWrapper extends HNodeComponent {
+export class AtomWrapperData {
   atom: Atom;
+  hNode: HNodeComponent;
 
   rendering = false;
   willUnmount = false;
-  atomSubsriber: AnyFunc | undefined;
   // param for unsubscribe before unmount, to not react on changes when parent is going to render
   unsibscribeWrapper: AnyFunc | undefined;
 
-  constructor(props: PropsHNode, {atom}: {atom: Atom}) {
-    super(props);
+  constructor({atom, hNode}: {atom: Atom; hNode: HNodeComponent}) {
     this.atom = atom;
+    this.hNode = hNode;
   }
 }

@@ -37,7 +37,6 @@ export async function hydrateComponent(
     parent: props.parentHNode,
     globalCtx: props.globalCtx,
     segmentEnt,
-    // contextEnt: null as any,
   });
 
   const componentCtx = new Ctx({

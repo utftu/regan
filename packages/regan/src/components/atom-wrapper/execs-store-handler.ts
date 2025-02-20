@@ -1,24 +1,31 @@
 import {Atom} from 'strangelove';
-import {HNodeAtomWrapper} from '../../h-node/component.ts';
+import {AtomWrapperData} from '../../h-node/component.ts';
 import {ExecsStore} from '../../root/atoms-store/execs-store.ts';
 import {HNode} from '../../h-node/h-node.ts';
-import {markAndDetachChild} from './helpers.ts';
 
-const collectAtoms = (hNodes: HNodeAtomWrapper[], atoms: Atom[]) => {
-  hNodes.forEach((hNode) => {
-    hNode.children.forEach((child) => {
+const collectAtoms = (atomWrappersData: AtomWrapperData[], atoms: Atom[]) => {
+  atomWrappersData.forEach((atomWrapperData) => {
+    atoms.push(atomWrapperData.atom);
+    atomWrapperData.hNode.children.forEach((child) => {
       collectAtomsAndMark(child, atoms);
     });
+    // collectAtomsAndMark(atomWrapperData.hNode, atoms);
   });
 };
 
+export const markAndDetachChild = (atomWrapperData: AtomWrapperData) => {
+  atomWrapperData.willUnmount = true;
+
+  atomWrapperData.unsibscribeWrapper?.();
+};
+
 const collectAtomsAndMark = (hNode: HNode, atoms: Atom[]): Atom[] => {
-  if (hNode instanceof HNodeAtomWrapper) {
-    atoms.push(hNode.atom);
+  if ('atomWrapperData' in hNode.data) {
+    atoms.push(hNode.data.atomWrapperData.atom);
 
-    markAndDetachChild(hNode);
+    markAndDetachChild(hNode.data.atomWrapperData);
 
-    if (hNode.rendering === true) {
+    if (hNode.data.atomWrapperData.rendering === true) {
       return [];
     }
   }

@@ -4,11 +4,10 @@ import {Fragment} from '../fragment/fragment.ts';
 import {rednerVirtual} from '../../render/render.ts';
 import {NEED_AWAIT} from '../../consts.ts';
 import {detachChildren} from '../../h-node/helpers.ts';
-import {subscribeAtomWrapper} from '../../utils/props/atom.ts';
 import {VOld} from '../../v/types.ts';
-import {HNodeAtomWrapper} from '../../h-node/component.ts';
+import {AtomWrapperData, HNodeComponent} from '../../h-node/component.ts';
 import {getInsertDomPointer, markAsWillUnmount, parseAtom} from './helpers.ts';
-import {HNode} from '../../h-node/h-node.ts';
+import {subscribeAtomWrapper} from './subsribe.ts';
 
 type Props = {
   atom: Atom;
@@ -29,22 +28,25 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     return <Fragment>{value}</Fragment>;
   }
 
-  const clientHNode = client!.hNode as HNodeAtomWrapper;
+  const clientHNode = client!.hNode as HNodeComponent;
+  const atomWrapperData = new AtomWrapperData({atom, hNode: clientHNode});
+
+  clientHNode.data.atomWrapperData = atomWrapperData;
 
   let vOldsStore: VOld[] | undefined = [];
 
   subscribeAtomWrapper({
-    hNode: clientHNode,
+    atomWrapperData,
     exec: async () => {
       if (clientHNode.unmounted === true) {
         return;
       }
 
-      if (clientHNode.willUnmount === true) {
+      if (atomWrapperData.willUnmount === true) {
         return;
       }
 
-      clientHNode.rendering = true;
+      atomWrapperData.rendering = true;
 
       detachChildren(clientHNode);
 
@@ -63,7 +65,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
 
       vOldsStore = vOlds;
 
-      clientHNode.rendering = false;
+      atomWrapperData.rendering = false;
 
       // @ts-ignore
       if (clientHNode.willUnmount === true) {
@@ -81,4 +83,4 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
 };
 AtomWrapper[NEED_AWAIT] = true;
 
-export {AtomWrapper};
+export {AtomWrapper as AtomWrapper};

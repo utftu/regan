@@ -2,7 +2,7 @@ import {ContextEnt} from '../context/context.tsx';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
 import {DomPointer, DomPointerWithText} from '../types.ts';
-import {HNodeAtomWrapper, HNodeComponent} from './component.ts';
+import {AtomWrapperData, HNodeComponent} from './component.ts';
 import {HNodeElement} from './element.ts';
 import {HNodeText} from './text.ts';
 
@@ -37,7 +37,6 @@ export class HNodeBase {
   glocalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
   systemUnmounts: Unmount[] = [];
-  // contextEnt?: ContextEnt;
 
   data: Record<string, any> = {};
 
@@ -49,8 +48,7 @@ export class HNodeBase {
     globalCtx,
     globalClientCtx,
     segmentEnt,
-  }: // contextEnt,
-  PropsHNode) {
+  }: PropsHNode) {
     this.mounts = mounts;
     this.unmounts = unmounts;
     this.parent = parent;
@@ -58,7 +56,6 @@ export class HNodeBase {
     this.glocalClientCtx = globalClientCtx;
     this.children = children;
     this.segmentEnt = segmentEnt;
-    // this.contextEnt = contextEnt;
   }
 
   unmounted = false;
@@ -96,8 +93,4 @@ export class GlobalClientCtx {
   }
 }
 
-export type HNode =
-  | HNodeComponent
-  | HNodeElement
-  | HNodeText
-  | HNodeAtomWrapper;
+export type HNode = HNodeComponent | HNodeElement | HNodeText;
