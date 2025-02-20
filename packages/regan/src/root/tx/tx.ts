@@ -34,7 +34,7 @@ export class Tx {
     for (const atom of changes.keys()) {
       const shard = new TxShard(this, atom);
       this.shards.push(shard);
-      this.root.links.get(atom)!.shards.push(shard);
+      this.root.atomsStore.get(atom)!.shards.push(shard);
     }
   }
 

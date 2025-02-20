@@ -1,20 +1,20 @@
 import {Atom} from 'strangelove';
 import {Root} from '../root.ts';
-import {LinkHandler} from './link-hanlder.ts';
+import {ExecsStore} from './execs-store.ts';
 
 export type Exec = (value: any) => Promise<any> | any;
 
-export class Links {
-  links: Map<Atom, LinkHandler> = new Map();
+export class AtomsStore {
+  atoms: Map<Atom, ExecsStore> = new Map();
   root: Root;
 
   private create(atom: Atom) {
-    this.links.set(atom, new LinkHandler(atom, this.root));
+    this.atoms.set(atom, new ExecsStore(atom, this.root));
   }
 
   private delete(atom: Atom) {
-    this.links.get(atom)!.clean();
-    this.links.delete(atom);
+    this.atoms.get(atom)!.clean();
+    this.atoms.delete(atom);
   }
 
   constructor(root: Root) {
@@ -22,23 +22,23 @@ export class Links {
   }
 
   get(atom: Atom) {
-    return this.links.get(atom);
+    return this.atoms.get(atom);
   }
 
   check(atom: Atom) {
-    return this.links.has(atom);
+    return this.atoms.has(atom);
   }
 
   addExec(atom: Atom, exec: Exec) {
-    if (!this.links.has(atom)) {
+    if (!this.atoms.has(atom)) {
       this.create(atom);
     }
 
-    this.links.get(atom)!.execs.push(exec);
+    this.atoms.get(atom)!.execs.push(exec);
   }
 
   removeExec(atom: Atom, exec: Exec) {
-    const linkConfig = this.links.get(atom)!;
+    const linkConfig = this.atoms.get(atom)!;
     const newExecs = linkConfig.execs.filter((execLocal) => exec !== execLocal);
 
     if (newExecs.length === 0) {
@@ -53,7 +53,7 @@ export class Links {
       return;
     }
 
-    const execs = this.links.get(atom)!.execs;
+    const execs = this.atoms.get(atom)!.execs;
     const i = execs.indexOf(exec);
     if (i === -1) {
       return;

@@ -11,7 +11,7 @@ export const subscribeAtomWrapper = ({
   hNode: HNodeAtomWrapper;
 }) => {
   const atom = hNode.atom;
-  const links = hNode.globalCtx.root.links;
+  const links = hNode.globalCtx.root.atomsStore;
   hNode.mounts.push(() => {
     links.addExec(atom, exec);
     const linkHandler = links.get(hNode.atom)!;
@@ -49,10 +49,10 @@ export const subscribeAtom = ({
   atom: Atom;
 }) => {
   hNode.mounts.push((hNode) => {
-    hNode.globalCtx.root.links.addExec(atom, exec);
+    hNode.globalCtx.root.atomsStore.addExec(atom, exec);
 
     hNode.unmounts.push(() => {
-      hNode.globalCtx.root.links.removeExec(atom, exec);
+      hNode.globalCtx.root.atomsStore.removeExec(atom, exec);
     });
   });
 };

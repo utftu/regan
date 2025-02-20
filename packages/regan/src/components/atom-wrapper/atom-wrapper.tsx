@@ -36,7 +36,6 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
   subscribeAtomWrapper({
     hNode: clientHNode,
     exec: async () => {
-      //
       if (clientHNode.unmounted === true) {
         return;
       }

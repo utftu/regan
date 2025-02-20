@@ -1,6 +1,6 @@
 import {PromiseControls, createControlledPromise} from 'utftu';
 import {Action} from '../root.ts';
-import {Exec as Atom} from '../links/links.ts';
+import {Exec as Atom} from '../atoms-store/atoms-store.ts';
 
 // UNUSED
 export class Planner {

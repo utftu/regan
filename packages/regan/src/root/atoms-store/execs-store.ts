@@ -2,38 +2,11 @@ import {Atom, connectAtoms} from 'strangelove';
 import {Root} from '../root.ts';
 import {TxShard} from '../tx/shard.ts';
 import {destroyAtom} from '../../atoms/atoms.ts';
-import {Exec} from './links.ts';
+import {Exec} from './atoms-store.ts';
 import {HNodeAtomWrapper} from '../../h-node/component.ts';
-import {HNode} from '../../h-node/h-node.ts';
-import {markAndDetachChild} from '../../components/atom-wrapper/helpers.ts';
+import {execsStoreHandler} from '../../components/atom-wrapper/execs-store-handler.ts';
 
-const collectAtoms = (hNodes: HNodeAtomWrapper[], atoms: Atom[]) => {
-  hNodes.forEach((hNode) => {
-    hNode.children.forEach((child) => {
-      collectAtomsAndMark(child, atoms);
-    });
-  });
-};
-
-const collectAtomsAndMark = (hNode: HNode, atoms: Atom[]): Atom[] => {
-  if (hNode instanceof HNodeAtomWrapper) {
-    atoms.push(hNode.atom);
-
-    markAndDetachChild(hNode);
-
-    if (hNode.rendering === true) {
-      return [];
-    }
-  }
-
-  hNode.children.forEach((child) => {
-    collectAtomsAndMark(child, atoms);
-  });
-
-  return atoms;
-};
-
-export class LinkHandler {
+export class ExecsStore {
   root: Root;
   atom: Atom;
   execs: Exec[] = [];
@@ -58,17 +31,7 @@ export class LinkHandler {
         let changes: Map<Atom, any>;
 
         if (self.atomWrappers.length > 0) {
-          const innerAtomsFromWrappers: Atom[] = [];
-
-          collectAtoms(self.atomWrappers, innerAtomsFromWrappers);
-
-          const localChanges = innerAtomsFromWrappers.reduce((map, atom) => {
-            if (map.has(atom)) {
-              return map;
-            }
-            map.set(atom, atom.get());
-            return map;
-          }, new Map());
+          const localChanges = execsStoreHandler(self);
 
           changes = localChanges;
         } else {
@@ -81,6 +44,7 @@ export class LinkHandler {
         return true;
       },
     });
+
     connectAtoms(atom, subsribeAtom);
 
     this.subsribeAtom = subsribeAtom;

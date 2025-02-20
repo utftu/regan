@@ -1,14 +1,14 @@
-import {Links} from './links/links.ts';
+import {AtomsStore} from './atoms-store/atoms-store.ts';
 import {Changes, Tx} from './tx/tx.ts';
 
 const OMITTED_LIMIT = 10;
 export type Action = () => void;
 
 export class Root {
-  links: Links;
+  atomsStore: AtomsStore;
 
   constructor() {
-    this.links = new Links(this);
+    this.atomsStore = new AtomsStore(this);
   }
 
   // not check prev
@@ -47,7 +47,7 @@ export class Root {
     }
 
     for (const shard of tx.shards) {
-      const linkConfig = this.links.get(shard.atom)!;
+      const linkConfig = this.atomsStore.get(shard.atom)!;
       if (linkConfig.omittedShards.length > OMITTED_LIMIT) {
         return false;
       }
@@ -66,7 +66,7 @@ export class Root {
     tx.status = 'omitted';
     const positions = [];
     for (const shard of tx.shards) {
-      const linkConfig = this.links.get(shard.atom)!;
+      const linkConfig = this.atomsStore.get(shard.atom)!;
       const atomConfigShards = linkConfig.shards;
 
       const position = atomConfigShards.indexOf(shard);
@@ -78,7 +78,7 @@ export class Root {
 
     for (let i = 0; i < tx.shards.length; i++) {
       const shard = tx.shards[i];
-      const linkConfig = this.links.get(shard.atom)!;
+      const linkConfig = this.atomsStore.get(shard.atom)!;
 
       const atomConfigShards = linkConfig.shards;
       const nextShard = atomConfigShards[positions[i]];
@@ -91,7 +91,7 @@ export class Root {
 
   checkExec(tx: Tx) {
     for (const shard of tx.shards) {
-      const linkConfig = this.links.get(shard.atom)!;
+      const linkConfig = this.atomsStore.get(shard.atom)!;
       const atomConfigShards = linkConfig.shards;
 
       if (atomConfigShards[0] !== shard) {
@@ -110,11 +110,11 @@ export class Root {
     for (const change of tx.changes) {
       const [atom, value] = change;
 
-      if (!this.links.check(atom)) {
+      if (!this.atomsStore.check(atom)) {
         continue;
       }
 
-      const execsForAtom = this.links.get(atom)!;
+      const execsForAtom = this.atomsStore.get(atom)!;
 
       execsForAtom.execs.forEach((exec) => {
         execResults.push(exec(value));
@@ -129,14 +129,14 @@ export class Root {
   finish(tx: Tx) {
     tx.status = 'finished';
     tx.shards.forEach((shard) => {
-      const linkConfig = this.links.get(shard.atom)!;
+      const linkConfig = this.atomsStore.get(shard.atom)!;
       linkConfig.shards.splice(0, 1);
     });
 
     tx.finish();
 
     tx.shards.forEach((shard) => {
-      const linkConfig = this.links.get(shard.atom)!;
+      const linkConfig = this.atomsStore.get(shard.atom)!;
       linkConfig.omittedShards.forEach((shard) => {
         this.finishOmitted(shard.tx);
       });

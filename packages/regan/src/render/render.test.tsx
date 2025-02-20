@@ -115,7 +115,7 @@ describe('render', () => {
 
     expect(parentDiv.getAttribute('data-name')).toBe('0');
   });
-  it.only('jsxPath', async () => {
+  it('jsxPath', async () => {
     let level3JsxPath!: string;
     const Level3: FC = (_, ctx) => {
       level3JsxPath = ctx.getJsxPath();

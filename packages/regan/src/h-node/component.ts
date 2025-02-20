@@ -10,6 +10,7 @@ export class HNodeAtomWrapper extends HNodeComponent {
   rendering = false;
   willUnmount = false;
   atomSubsriber: AnyFunc | undefined;
+  // param for unsubscribe before unmount, to not react on changes when parent is going to render
   unsibscribeWrapper: AnyFunc | undefined;
 
   constructor(props: PropsHNode, {atom}: {atom: Atom}) {
