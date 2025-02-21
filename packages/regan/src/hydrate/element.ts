@@ -31,6 +31,8 @@ export async function hydrateElement(
     props.hydrateCtx.treeAtomsSnapshot
   );
 
+  const listenerManager = new LisneterManager(segmentEnt);
+
   const hNode = new HNodeElement(
     {
       globalClientCtx: props.globalClientCtx,
@@ -40,10 +42,9 @@ export async function hydrateElement(
     },
     {
       element,
+      listenerManager,
     }
   );
-
-  const listenerManager = new LisneterManager(segmentEnt);
 
   initStaticProps(element, staticProps, listenerManager);
 

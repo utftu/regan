@@ -8,6 +8,7 @@ import {VOld} from '../../v/types.ts';
 import {AtomWrapperData, HNodeComponent} from '../../h-node/component.ts';
 import {getInsertDomPointer, markAsWillUnmount, parseAtom} from './helpers.ts';
 import {subscribeAtomWrapper} from './subsribe.ts';
+import {convertHNodesToVOls} from './hnode-to-vold.ts';
 
 type Props = {
   atom: Atom;
@@ -33,7 +34,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
 
   clientHNode.data.atomWrapperData = atomWrapperData;
 
-  let vOldsStore: VOld[] | undefined = [];
+  let vOldsStore: VOld[] | undefined;
 
   subscribeAtomWrapper({
     atomWrapperData,
@@ -44,6 +45,11 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
 
       if (atomWrapperData.willUnmount === true) {
         return;
+      }
+
+      if (!vOldsStore) {
+        const vOlds = convertHNodesToVOls(clientHNode, {});
+        vOldsStore = vOlds;
       }
 
       atomWrapperData.rendering = true;

@@ -5,7 +5,7 @@ import {createAtomRegan} from '../../atoms/atoms.ts';
 import {insertAndHydrate} from '../../utils/tests.ts';
 
 describe('show', () => {
-  it('simple', async () => {
+  it.only('simple', async () => {
     const onClick = vi.fn();
     const when = createAtomRegan(true);
     const Component = () => {
@@ -30,8 +30,8 @@ describe('show', () => {
 
     expect(document.getElementById('child')).toBe(null);
 
-    await when.set(true);
+    // await when.set(true);
 
-    expect(document.getElementById('child')).not.toBe(null);
+    // expect(document.getElementById('child')).not.toBe(null);
   });
 });

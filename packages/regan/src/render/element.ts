@@ -52,6 +52,7 @@ export async function renderElement(
         },
         {
           element,
+          listenerManager,
         }
       );
 

@@ -25,7 +25,7 @@ export type VOldElement = Omit<VNewElement, 'keyStore'> & {
   element: Element;
   keyStore: KeyStoreOld;
 
-  children: VOldElement[];
+  children: VOld[];
 };
 
 export type VNewText = {
