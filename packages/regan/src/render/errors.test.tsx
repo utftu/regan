@@ -8,7 +8,7 @@ import {
 import {render} from './render.ts';
 
 describe('hydrate errors', () => {
-  it.only('default', async () => {
+  it('default', async () => {
     const parentChild = vi.fn();
     const ChildJsx = () => {
       throw new Error('child');

@@ -2,10 +2,6 @@ import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
 import {JsxNode} from '../node/node.ts';
 import {Root} from '../root/root.ts';
-// import {
-//   convertFromVirtualToHNodes,
-//   createVirtualFromRenderTemplate,
-// } from './convert/convert.ts';
 import {RenderTemplateExtended} from './types.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
 import {SegmentEnt} from '../segments/ent/ent.ts';
@@ -25,7 +21,7 @@ export const rednerVirtual = async ({
   parentSegmentEnt,
   parentContextEnt,
   domPointer,
-  jsxSegmentName = 'root',
+  jsxSegmentName = '',
   vOlds = [],
 }: {
   node: JsxNode;

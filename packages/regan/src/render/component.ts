@@ -38,7 +38,10 @@ export async function renderComponent(
   const componentCtx = new Ctx({
     globalCtx: props.globalCtx,
     props: this.props,
-    systemProps: this.systemProps,
+    systemProps: {
+      ...this.systemProps,
+      rawHNode: hNode,
+    },
     state: new ComponentState(),
     children: this.children,
     jsxNodeComponent: this,

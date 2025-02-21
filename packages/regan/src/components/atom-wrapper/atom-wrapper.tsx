@@ -16,20 +16,20 @@ type Props = {
 
 const AtomWrapper: FC<Props> & FCStaticParams = (
   {atom},
-  {globalCtx, stage, client, segmentEnt}
+  {globalCtx, segmentEnt, systemProps}
 ) => {
   const {pathSegment: jsxSegment} = segmentEnt;
   const initJsxSegmentName = jsxSegment.name;
 
   // toString()
   if (globalCtx.mode === 'server') {
-    const {additionalPart, value} = parseAtom(atom, false);
+    const {additionalPart, value} = parseAtom(atom, true);
 
     jsxSegment.name += additionalPart;
     return <Fragment>{value}</Fragment>;
   }
 
-  const clientHNode = client!.hNode as HNodeComponent;
+  const clientHNode = systemProps!.rawHNode as HNodeComponent;
   const atomWrapperData = new AtomWrapperData({atom, hNode: clientHNode});
 
   clientHNode.data.atomWrapperData = atomWrapperData;
@@ -81,7 +81,7 @@ const AtomWrapper: FC<Props> & FCStaticParams = (
     },
   });
 
-  const {value, additionalPart} = parseAtom(atom, stage === 'render');
+  const {value, additionalPart} = parseAtom(atom, true);
 
   jsxSegment.name += additionalPart;
 

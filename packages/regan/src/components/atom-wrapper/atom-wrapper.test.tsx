@@ -5,7 +5,7 @@ import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
 
 describe('atom-wrapper', () => {
-  it.only('simple', async () => {
+  it('simple', async () => {
     const onClick = vi.fn();
     const positiveAtomValue = <div id='child'>child</div>;
     const negativeAtomValue = null;

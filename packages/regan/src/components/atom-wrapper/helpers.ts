@@ -41,7 +41,7 @@ export const getInsertDomPointer = (hNode: HNode): DomPointer => {
   }
 };
 
-export const parseAtom = (atom: Atom, renderMode: boolean = false) => {
+export const parseAtom = (atom: Atom, initRun: boolean) => {
   let additionalPart = '?a=';
   let value;
   if (checkNamedAtom(atom)) {
@@ -51,10 +51,10 @@ export const parseAtom = (atom: Atom, renderMode: boolean = false) => {
   } else {
     value = atom.get();
 
-    if (renderMode) {
-      additionalPart += Date.now();
-    } else {
+    if (initRun) {
       additionalPart += '0';
+    } else {
+      additionalPart += Date.now();
     }
   }
 

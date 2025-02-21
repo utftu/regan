@@ -155,6 +155,7 @@ describe('render', () => {
       window: jsdom.window as any as Window,
     });
 
-    expect(/0\.1\.0\.0\.2\?a=\d+\.0\.0\.0/.test(level3JsxPath)).toBe(true);
+    expect(level3JsxPath).toBe('0.1.0.0.2?a=0.0.0.0');
+    // expect(/0\.1\.0\.0\.2\?a=\d+\.0\.0\.0/.test(level3JsxPath)).toBe(true);
   });
 });

@@ -20,9 +20,13 @@ type Client = {
   parentDomPointer: DomPointer;
 };
 
+type SystemPropsCtx = SystemProps & {
+  rawHNode?: HNode;
+};
+
 type PropsCtx<TProps> = {
   props: TProps;
-  systemProps: SystemProps;
+  systemProps: SystemPropsCtx;
   state: State;
   children: Child[];
   globalCtx: GlobalCtx;
@@ -37,7 +41,7 @@ type PropsCtx<TProps> = {
 export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   state: State;
   props: TProps;
-  systemProps: SystemProps;
+  systemProps: SystemPropsCtx;
   children: Child[];
   segmentEnt: SegmentEnt;
   globalCtx: GlobalCtx;

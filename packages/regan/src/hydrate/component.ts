@@ -46,7 +46,7 @@ export async function hydrateComponent(
     },
     globalCtx: props.globalCtx,
     props: this.props,
-    systemProps: this.systemProps,
+    systemProps: {...this.systemProps, rawHNode: hNode},
     state: new ComponentState(),
     children: this.children,
     segmentEnt: hNode.segmentEnt,

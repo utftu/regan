@@ -214,7 +214,7 @@ describe('hydrate', () => {
     parentElem.click();
     expect(onClickElement.mock.calls.length).toBe(1);
   });
-  it.only('jsxPath', async () => {
+  it('jsxPath', async () => {
     let level3JsxPath!: string;
     const Level3: FC = (_, ctx) => {
       level3JsxPath = ctx.getJsxPath();
