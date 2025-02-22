@@ -15,8 +15,8 @@ export const findPrevTextHNode = (hNode: HNode) => {
   });
 };
 
-export const findNextTextHNode = (hNode: HNode) => {
-  return findNextHNode(hNode, (hNode) => {
+export const findNextTextHNode = (hNode: HNode): HNodeText | undefined => {
+  const nextHNode = findNextHNode(hNode, (hNode) => {
     if (hNode instanceof HNodeElement) {
       return 'stop';
     }
@@ -25,9 +25,11 @@ export const findNextTextHNode = (hNode: HNode) => {
       return hNode;
     }
   });
+
+  return nextHNode as HNodeText | undefined;
 };
 
-export const findNextTextHNodes = (hNode: HNode) => {
+export const findNextTextHNodes = (hNode: HNode): HNodeText[] => {
   const nodes = [];
   let nextNode = findNextTextHNode(hNode);
   while (nextNode) {

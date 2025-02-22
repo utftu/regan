@@ -4,6 +4,7 @@ import {HNodeComponent} from '../h-node/component.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {JSDOM} from 'jsdom';
 import {handleEdgeTextCases} from './edge.ts';
+import {LisneterManager} from '../utils/props/funcs.ts';
 
 const jsdom = new JSDOM();
 
@@ -15,6 +16,7 @@ const div: VNewElement = {
   },
   children: [],
   keyStore: {},
+  listenerManager: new LisneterManager({} as any),
 };
 
 const getOldDiv = (): VOldElement => {

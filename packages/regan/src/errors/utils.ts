@@ -1,6 +1,6 @@
 import {ContextEnt, getContextValue} from '../context/context.tsx';
-import {errorContext} from './errors.tsx';
 import {SegmentEnt} from '../segments/ent/ent.ts';
+import {errorContextHandler} from './errors.tsx';
 
 export const prepareListenerForError = ({
   listener,
@@ -15,8 +15,8 @@ export const prepareListenerForError = ({
     try {
       listener(...args);
     } catch (error) {
-      const errorConfig = getContextValue(errorContext, contextEnt);
-      errorConfig.error({error: error as Error, jsxNode: segmentEnt.jsxNode});
+      const errorhandler = getContextValue(errorContextHandler, contextEnt);
+      errorhandler({error: error as Error, jsxNode: segmentEnt.jsxNode});
     }
   };
 };

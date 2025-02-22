@@ -1,4 +1,4 @@
-export {render, rednerRaw} from './render/render.ts';
+export {render, rednerVirtual} from './render/render.ts';
 export {hydrate, hydrateRaw} from './hydrate/hydrate.ts';
 export {getStringStream, getString} from './string/string.ts';
 export {Fragment} from './components/fragment/fragment.ts';

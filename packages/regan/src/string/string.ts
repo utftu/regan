@@ -22,7 +22,7 @@ async function convertStreamToString(stream: ReadableStream) {
 
 export const getStringStream = async (node: JsxNode) => {
   const stream = await node.getStringStream({
-    jsxSegmentStr: '',
+    pathSegmentName: '',
     globalCtx: new GlobalCtx({
       mode: 'server',
       data: {},
