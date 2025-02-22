@@ -30,8 +30,8 @@ describe('show', () => {
 
     expect(document.getElementById('child')).toBe(null);
 
-    // await when.set(true);
+    await when.set(true);
 
-    // expect(document.getElementById('child')).not.toBe(null);
+    expect(document.getElementById('child')).not.toBe(null);
   });
 });

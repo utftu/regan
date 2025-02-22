@@ -37,7 +37,7 @@ export const createElement = (vNew: VNewElement, window: Window) => {
   for (const key in vNew.data.props) {
     const value = vNew.data.props[key];
     if (typeof value === 'function') {
-      element.addEventListener(key, value);
+      vNew.listenerManager.add(element, key, value);
     } else {
       element.setAttribute(key, value);
     }
