@@ -97,8 +97,6 @@ const createVNews2 = (): VNew[] => {
 describe('v/v', () => {
   it('create', () => {
     const {leftHText, middleHNode} = createHNodes();
-    // const domPointer = createDomPointer(window);
-    // const {parent} = domPointer;
     const parent = createParent(window);
     const domPointer: DomPointer = {
       parent,
