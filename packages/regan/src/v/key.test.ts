@@ -3,10 +3,17 @@ import {VNewElement, VNewText, VOldElement} from './types.ts';
 import {createParent} from './test-helpers.ts';
 import {JSDOM} from 'jsdom';
 import {handleKey} from './key.ts';
+import {LisneterManager} from '../utils/props/funcs.ts';
 
 const jsdom = new JSDOM();
 const window = jsdom.window as any as Window;
 const document = window.document;
+
+const createListenerManager = () => {
+  const dumpSegmentEnt = vi.fn();
+
+  return new LisneterManager(dumpSegmentEnt as any);
+};
 
 const createVNewElement = (): VNewElement => {
   const vNewElement: VNewElement = {
@@ -20,6 +27,7 @@ const createVNewElement = (): VNewElement => {
     },
     keyStore: {},
     children: [],
+    listenerManager: createListenerManager(),
   };
   return vNewElement;
 };
@@ -40,6 +48,7 @@ const creatVOldElement = (): VOldElement => {
     keyStore: {},
     children: [],
     element,
+    listenerManager: createListenerManager(),
   };
 
   return vOldElement;
@@ -59,6 +68,7 @@ describe('v/key', () => {
       keyStoreNew: {},
       keyStoreOld: {},
       window,
+      parentDomPointer: {parent: document.body, nodeCount: 0},
     });
   });
   it('not element in keyStoreOld', () => {
@@ -70,6 +80,7 @@ describe('v/key', () => {
       keyStoreNew: {},
       keyStoreOld: {},
       window,
+      parentDomPointer: {parent: document.body, nodeCount: 0},
     });
 
     expect((vNewElement as VOldElement).element).toBe(undefined);
@@ -92,6 +103,7 @@ describe('v/key', () => {
         hello: vOldElement,
       },
       window,
+      parentDomPointer: {parent, nodeCount: 0},
     });
 
     const element = parent.childNodes[0] as Element;

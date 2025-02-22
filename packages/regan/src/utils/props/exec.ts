@@ -1,8 +1,3 @@
-import {Atom} from 'strangelove';
-import {prepareListenerForError} from '../../errors/utils.ts';
-import {SegmentEnt} from '../../segments/ent/ent.ts';
-import {ContextEnt} from '../../context/context.tsx';
-import {AnyFunc} from '../../types.ts';
 import {LisneterManager} from './funcs.ts';
 
 export const createExec = ({

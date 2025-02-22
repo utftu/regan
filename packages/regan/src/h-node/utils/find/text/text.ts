@@ -4,7 +4,7 @@ import {HNodeText} from '../../../text.ts';
 import {findNextHNode, findPrevHNode} from '../find.ts';
 
 export const findPrevTextHNode = (hNode: HNode) => {
-  return findPrevHNode(hNode, (hNode) => {
+  const nextTextHNode = findPrevHNode(hNode, (hNode) => {
     if (hNode instanceof HNodeElement) {
       return 'stop';
     }
@@ -13,6 +13,8 @@ export const findPrevTextHNode = (hNode: HNode) => {
       return hNode;
     }
   });
+
+  return nextTextHNode as HNodeText | undefined;
 };
 
 export const findNextTextHNode = (hNode: HNode): HNodeText | undefined => {

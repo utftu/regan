@@ -94,7 +94,13 @@ export const virtualApplyInternal = ({
     const vOld = vOlds[i] as VOld | undefined;
 
     if (vNew && !checkSkip(vNew)) {
-      handleKey({domPointer, vNew, window, keyStoreNew, keyStoreOld});
+      handleKey({
+        parentDomPointer: domPointer,
+        vNew,
+        window,
+        keyStoreNew,
+        keyStoreOld,
+      });
     }
 
     if (checkSkip(vOld) && checkSkip(vNew)) {

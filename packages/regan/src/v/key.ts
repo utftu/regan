@@ -13,13 +13,13 @@ export const handleKey = ({
   keyStoreOld,
   keyStoreNew,
   window,
-  domPointer,
+  parentDomPointer: parentDomPointer,
 }: {
   vNew: VNew;
   keyStoreOld: KeyStoreOld;
   keyStoreNew: KeyStoreNew;
   window: Window;
-  domPointer: DomPointer;
+  parentDomPointer: DomPointer;
 }) => {
   if (vNew.type !== 'element' || !('key' in vNew)) {
     return;
@@ -48,8 +48,7 @@ export const handleKey = ({
     vNews: vNew.children,
     vOlds: vOld.children,
     window,
-    domPointer,
-    // parent: vOld.element,
+    domPointer: parentDomPointer,
     keyStoreNew: vNew.keyStore,
     keyStoreOld: vOld.keyStore,
   });

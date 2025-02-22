@@ -2,11 +2,18 @@ import {describe, expect, it, Mock, vi} from 'vitest';
 import {VNewElement, VNewText, VOldElement, VOldText} from './types.ts';
 import {JSDOM} from 'jsdom';
 import {handle} from './handle.ts';
-import {createDomPointer, createParent} from './test-helpers.ts';
+import {createDomPointer} from './test-helpers.ts';
+import {LisneterManager} from '../utils/props/funcs.ts';
 
 const jsdom = new JSDOM();
 const window = jsdom.window as any as Window;
 const document = jsdom.window.document;
+
+const createListenerManager = () => {
+  const dumpSegmentEnt = vi.fn();
+
+  return new LisneterManager(dumpSegmentEnt as any);
+};
 
 const vNewElement: VNewElement = {
   type: 'element',
@@ -19,6 +26,7 @@ const vNewElement: VNewElement = {
   },
   children: [],
   keyStore: {},
+  listenerManager: createListenerManager(),
 };
 
 const getVOldElement = (): VOldElement => {
@@ -38,6 +46,7 @@ const getVOldElement = (): VOldElement => {
     element,
     children: [],
     keyStore: {},
+    listenerManager: new LisneterManager(null as any),
   };
 };
 
@@ -147,6 +156,7 @@ describe('v/handle', () => {
       element: elementSpan,
       children: [],
       keyStore: {},
+      listenerManager: createListenerManager(),
     };
     parent.appendChild(vOldElement.element);
 

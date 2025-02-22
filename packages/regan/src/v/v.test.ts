@@ -6,6 +6,8 @@ import {JSDOM} from 'jsdom';
 import {virtualApplyExternal} from './v.ts';
 import {createDomPointer, createParent} from './test-helpers.ts';
 import {DomPointer} from '../types.ts';
+import {SegmentEnt} from '../segments/ent/ent.ts';
+import {LisneterManager} from '../utils/props/funcs.ts';
 
 const jsdom = new JSDOM();
 const window = jsdom.window as any as Window;
@@ -31,12 +33,28 @@ const createHNodes = () => {
   };
 };
 
+const createSegmentEnt = () => {
+  return new SegmentEnt({
+    jsxSegmentName: '',
+    jsxNode: {} as any,
+    parentContextEnt: undefined,
+    parentSegmentEnt: undefined,
+  });
+};
+
 const createVNews1 = (): VNew[] => {
+  // const segmentEnt = new SegmentEnt({
+  //   jsxSegmentName: '',
+  //   jsxNode: {} as any,
+  //   parentContextEnt: undefined,
+  //   parentSegmentEnt: undefined,
+  // })
   const vNews1: VNew[] = [
     {type: 'text', data: {text: 'hello'}},
     {
       type: 'element',
       data: {tag: 'div', props: {a: 'aa', b: 'bb'}},
+      listenerManager: new LisneterManager(createSegmentEnt()),
       keyStore: {},
       children: [
         {type: 'text', data: {text: 'helloInner'}},
@@ -45,6 +63,7 @@ const createVNews1 = (): VNew[] => {
           data: {tag: 'div', props: {a: 'aInner', b: 'bInner'}},
           children: [],
           keyStore: {},
+          listenerManager: new LisneterManager(createSegmentEnt()),
         },
       ],
     },
@@ -58,12 +77,14 @@ const createVNews2 = (): VNew[] => {
       type: 'element',
       data: {tag: 'div', props: {a: 'aa2', b: 'bb2'}},
       keyStore: {},
+      listenerManager: new LisneterManager(createSegmentEnt()),
       children: [
         {
           type: 'element',
           data: {tag: 'div', props: {a: 'aInner2', b: 'bInner2'}},
           children: [],
           keyStore: {},
+          listenerManager: new LisneterManager(createSegmentEnt()),
         },
         {type: 'text', data: {text: 'worldInner'}},
       ],
