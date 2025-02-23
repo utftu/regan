@@ -19,7 +19,9 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "types": "tsc --project tsconfig.json",
-    "build": "vite build && tsc --project tsconfig.gen.json"
+    "build": "vite build && tsc --project tsconfig.gen.json",
+    "build2": "rm -rf dist && vite build",
+    "build1": "npx vite-node build.ts"
   },
   "files": [
     "dist/**/*"
