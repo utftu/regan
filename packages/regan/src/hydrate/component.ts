@@ -4,7 +4,6 @@ import {Ctx} from '../ctx/ctx.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {ComponentState} from '../h-node/h-node.ts';
 import {createSmartMount} from '../h-node/helpers.ts';
-// import {errorContext} from '../errors/errors.tsx';
 import {
   ContextEnt,
   ContextProvider,

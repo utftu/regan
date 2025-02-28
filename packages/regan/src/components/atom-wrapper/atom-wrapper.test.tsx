@@ -34,30 +34,26 @@ describe('atom-wrapper', () => {
 
     expect(document.getElementById('child')).not.toBe(null);
   });
-  // it('1', async () => {
-  //   const Component: FC = (_, {createAtom}) => {
-  //     const atom = createAtom('hello');
-  //     return <div id='div'>value is {atom}</div>;
-  //   };
+  it.only('name change', async () => {
+    const start = '<div id="name">My name is ';
+    const end = '</div>';
+    const atomName = createAtomRegan('Aleksey');
 
-  //   const jsdom = new JSDOM();
-  //   const document = jsdom.window.document;
+    const Component = () => <div id='name'>My name is {atomName}</div>;
 
-  //   await insertAndHydrate({jsdom, jsxNode: <Component />});
+    const jsdom = new JSDOM();
+    const document = jsdom.window.document;
 
-  //   // expect(document.getElementById('div')?.children[1].innerHTML).toBe('hello');
-  // });
-  // it('2', async () => {
-  //   const Component: FC = (_, {createAtom}) => {
-  //     const atom = createAtom('hello');
-  //     return <div id='div'>value is {atom}</div>;
-  //   };
+    await insertAndHydrate({jsdom, jsxNode: <Component />});
 
-  //   const jsdom = new JSDOM();
-  //   const document = jsdom.window.document;
+    expect(document.getElementById('name')?.outerHTML).toBe(
+      `${start}Aleksey${end}`
+    );
 
-  //   await render(document.body, <Component />, {window: jsdom.window});
+    await atomName.set('Ivan');
 
-  //   // expect(document.getElementById('div')?.children[1].innerHTML).toBe('hello');
-  // });
+    expect(document.getElementById('name')?.outerHTML).toBe(
+      `${start}Ivan${end}`
+    );
+  });
 });

@@ -68,9 +68,6 @@ export const virtualApplyInternalSimple = ({
     keyStoreNew: keyStoreNewMy,
     keyStoreOld: keyStoreOldMy,
   });
-
-  if (vNew?.type !== 'element') {
-  }
 };
 
 export const virtualApplyInternal = ({

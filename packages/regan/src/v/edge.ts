@@ -35,6 +35,7 @@ const split = ({
   nextTextHNodes: HNodeText[];
   window: Window;
 }) => {
+  console.log('-----', 'split');
   const nextTextHNode = nextTextHNodes[0];
 
   if (nextTextHNode) {
@@ -76,8 +77,11 @@ const join = ({
       nextTextHNode.textNode = prevTextHNode.textNode;
       nextTextHNode.start = leftPartFinishPosition + nextTextHNode.start;
     });
+
+    return prevTextHNode.textNode;
   } else if (prevTextHNode) {
     prevTextHNode.textNode.textContent += text;
+    return prevTextHNode.textNode;
   } else if (nextTextHNode) {
     nextTextHNode.textNode.textContent =
       text + nextTextHNode.textNode.textContent;
@@ -86,6 +90,7 @@ const join = ({
       nextTextHNode.textNode,
       text.length
     );
+    return nextTextHNode.textNode;
   }
 };
 
@@ -133,12 +138,14 @@ export const handleEdgeTextCases = (
 
   // split and delete text
   if (needSplitAndDeleteFull) {
+    console.log('-----', 'delete');
     const vOld = vOlds[0] as VOldText;
 
     actions.push(() => {
       split({nextTextHNodes, window});
 
       if (prevTextHNode && vOld.data.text !== '') {
+        console.log('-----', 'shrink');
         shrinkMiddleTextAfterSplit({prevTextHNode});
       }
     });
@@ -194,11 +201,12 @@ export const handleEdgeTextCases = (
     const vNew = vNews[0] as VNewText;
 
     actions.push(() => {
-      join({
+      const textNode = join({
         nextTextHNodes,
         prevTextHNode,
         text: vNew.data.text,
       });
+      convertTextNewInOld(vNew, textNode!);
     });
 
     if (prevTextHNode || nextTextHNode) {

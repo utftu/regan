@@ -27,10 +27,11 @@ export default defineConfig({
     jsxFragment: 'Fragment',
     jsxFactory: 'createElement',
   },
+  logLevel: 'info',
   build: {
     outDir: './dist',
     minify: false,
-    terserOptions: {compress: false, mangle: false},
+    // terserOptions: {compress: false, mangle: false},
     lib: {
       entry: ['./src/regan.ts'],
       formats: ['es'],
