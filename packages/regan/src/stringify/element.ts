@@ -31,7 +31,7 @@ const prepareProps = (props: Record<string, any>) => {
   return newProps;
 };
 
-export function getStringStreamElement(
+export function stringifyElement(
   this: JsxNodeElement,
   props: StringifyProps
 ): StringifyResult {
