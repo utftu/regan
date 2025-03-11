@@ -1,4 +1,5 @@
 import {LisneterManager} from '../utils/listeners.ts';
+import {VOldElement} from '../v/types.ts';
 import {HNode, PropsHNode} from './h-node.ts';
 
 type HNodeElProps = {
@@ -14,4 +15,6 @@ export class HNodeElement extends HNode {
     this.element = element;
     this.listenerManager = listenerManager;
   }
+
+  vOldElement?: VOldElement;
 }

@@ -1,9 +1,9 @@
 import {Atom} from 'strangelove';
-import {Props} from '../types.ts';
+import {AnyFunc, Props} from '../types.ts';
 import {LisneterManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {subsribeAtom} from './atom.ts';
 import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
+import {subsribeAtom} from './atom.ts';
 
 export const splitProps = (props: Props) => {
   const joinedProps: Props = {};
@@ -54,32 +54,73 @@ export const setStaticProps = (
   }
 };
 
-export const planSubsribeDynamic = ({
+export const createInitTrackDynamicProps = ({
   dynamicProps,
-  hNode,
-  listenerManager,
   atomsTracker,
 }: {
   dynamicProps: Props;
-  hNode: HNodeElement;
-  listenerManager: LisneterManager;
   atomsTracker: AtomsTracker;
 }) => {
+  const subsribers: Record<string, {subscriber: AnyFunc; atom: Atom}> = {};
   for (const name in dynamicProps) {
     const atom = dynamicProps[name];
 
-    subsribeAtom({
-      hNode,
+    const subscriber = subsribeAtom({
       atom,
-      callback: () => {
+      atomsTracker,
+    });
+
+    subsribers[name] = {subscriber, atom};
+  }
+
+  return function planTrackDynamicProps(
+    hNode: HNodeElement,
+    listenerManager: LisneterManager
+  ) {
+    for (const name in subsribers) {
+      const {subscriber: subsriber, atom} = subsribers[name];
+      subsriber(hNode, () => {
         setProperty({
           name,
           value: atom.get(),
           element: hNode.element,
           listenerManager,
         });
-      },
-      atomsTracker,
-    });
-  }
+
+        if (hNode.vOldElement) {
+          hNode.vOldElement.data.props[name] = atom.get();
+        }
+      });
+    }
+  };
 };
+
+// export const planSubsribeDynamic = ({
+//   dynamicProps,
+//   hNode,
+//   listenerManager,
+//   atomsTracker,
+// }: {
+//   dynamicProps: Props;
+//   hNode: HNodeElement;
+//   listenerManager: LisneterManager;
+//   atomsTracker: AtomsTracker;
+// }) => {
+//   for (const name in dynamicProps) {
+//     const atom = dynamicProps[name];
+
+//     subsribeAtom({
+//       hNode,
+//       atom,
+//       callback: () => {
+//         setProperty({
+//           name,
+//           value: atom.get(),
+//           element: hNode.element,
+//           listenerManager,
+//         });
+//       },
+//       atomsTracker,
+//     });
+//   }
+// };

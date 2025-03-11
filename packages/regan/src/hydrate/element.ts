@@ -4,7 +4,7 @@ import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {LisneterManager} from '../utils/listeners.ts';
 import {
-  planSubsribeDynamic,
+  createInitTrackDynamicProps,
   setStaticProps,
   splitProps,
 } from '../utils/props.ts';
@@ -50,12 +50,11 @@ export function hydrateElement(
     setStaticProps(element, staticProps, listenerManager);
   });
 
-  planSubsribeDynamic({
-    hNode,
+  const planSubsribeDynamic = createInitTrackDynamicProps({
     dynamicProps,
-    listenerManager,
     atomsTracker: props.hydrateCtx.atomTracker,
   });
+  planSubsribeDynamic(hNode, listenerManager);
 
   let handlerChildrenResult: HandleChildrenHydrateResult;
 

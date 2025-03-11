@@ -12,11 +12,11 @@ import {RenderCtx} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {RenderTemplate, RenderTemplateText} from './template.types.ts';
 
-export type HandleChildrenRenderResult = {
+export type HandleChildrenResult = {
   renderTemplates: RenderTemplate[];
 };
 
-export function handleChildrenRender({
+export function handleChildren({
   children,
   globalCtx,
   renderCtx,

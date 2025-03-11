@@ -1,3 +1,5 @@
+import {LisneterManager} from '../utils/listeners.ts';
+
 export type VNewElement = {
   type: 'element';
 
@@ -5,13 +7,14 @@ export type VNewElement = {
     tag: string;
     props: Record<string, any>;
   };
+  listenerManager: LisneterManager;
 
   children: VNew[];
 };
 
-export type VOldElement = Omit<VNewElement, 'keyStore'> & {
-  // element: Element;
-  domNode: Element;
+export type VOldElement = Omit<VNewElement, 'children'> & {
+  element: Element;
+  // domNode: Element;
 
   children: VOld[];
 };
@@ -24,8 +27,8 @@ export type VNewText = {
 };
 
 export type VOldText = VNewText & {
-  domNode: Text;
-  // textNode: Text;
+  // domNode: Text;
+  textNode: Text;
 };
 
 export type VNew = VNewElement | VNewText;

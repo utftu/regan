@@ -5,7 +5,7 @@ import {HNodeComponent} from '../h-node/component.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {handleChildrenRender} from './children.ts';
+import {handleChildren, HandleChildrenResult} from './children.ts';
 import {RenderTemplate, RenderTemplateComponent} from './template.types.ts';
 import {RenderProps, RenderResult} from './types.ts';
 
@@ -13,11 +13,13 @@ export function renderComponent(
   this: JsxNodeComponent,
   props: RenderProps
 ): RenderResult {
+  const contextEnt = selectContextEnt(this, props.parentSegmentEnt?.contextEnt);
+
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
-    contextEnt: props.parentContextEnt,
+    contextEnt,
   });
 
   const hNode = new HNodeComponent({
@@ -35,8 +37,8 @@ export function renderComponent(
     state: new ComponentState(),
     children: this.children,
     stage: 'render',
-    segmentEnt: hNode.segmentEnt,
-    contextEnt: props.parentContextEnt,
+    segmentEnt,
+    contextEnt,
   });
 
   const renderTemplate: RenderTemplateComponent = {
@@ -54,23 +56,21 @@ export function renderComponent(
     const jsxNodeComponent = createErrorJsxNodeComponent(
       this,
       error,
-      props.parentContextEnt
+      contextEnt
     );
 
     return jsxNodeComponent.render(props);
   }
-
-  const contextEnt = selectContextEnt(this, props.parentContextEnt);
 
   hNode.mounts = componentCtx.state.mounts;
   hNode.unmounts = componentCtx.state.unmounts;
 
   const children = normalizeChildren(rawChidlren);
 
-  let handleChildrenResult: HandleChildrenRenderResult;
+  let handleChildrenResult: HandleChildrenResult;
 
   try {
-    handleChildrenResult = handleChildrenRender({
+    handleChildrenResult = handleChildren({
       children,
       globalClientCtx: props.globalClientCtx,
       globalCtx: props.globalCtx,
@@ -81,7 +81,7 @@ export function renderComponent(
     const jsxNodeComponent = createErrorJsxNodeComponent(
       this,
       error,
-      props.parentContextEnt
+      contextEnt
     );
 
     return jsxNodeComponent.render(props);
