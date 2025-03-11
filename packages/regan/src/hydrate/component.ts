@@ -1,29 +1,19 @@
-import {normalizeChildren} from '../jsx/jsx.ts';
-import {JsxNodeComponent} from '../node/variants/component/component.ts';
+import {selectContextEnt} from '../context/context.tsx';
 import {Ctx} from '../ctx/ctx.ts';
-import {handleChildrenHydrate} from './children.ts';
-import {ComponentState} from '../h-node/h-node.ts';
-import {createSmartMount} from '../h-node/helpers.ts';
-import {
-  ContextEnt,
-  ContextProvider,
-  getContextValue,
-} from '../context/context.tsx';
+import {createErrorJsxNodeComponent} from '../errors/errors.tsx';
 import {HNodeComponent} from '../h-node/component.ts';
+import {ComponentState} from '../h-node/h-node.ts';
+import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
+import {normalizeChildren} from '../jsx/jsx.ts';
+import {SegmentEnt} from '../segment/segment.ts';
+import {Props} from '../types.ts';
+import {handleChildrenHydrate} from './children.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
-import {SegmentEnt} from '../segments/ent/ent.ts';
-import {tryDetectInsertedInfoComponentImmediately} from '../utils/inserted-dom.ts';
-import {errorContextJsx} from '../errors/errors.tsx';
 
-export async function hydrateComponent(
-  this: JsxNodeComponent,
+export function hydrateComponent<TProps extends Props>(
+  this: JsxNodeComponent<TProps>,
   props: HydrateProps
 ): HydrateResult {
-  const insertedInfo = tryDetectInsertedInfoComponentImmediately(this);
-  if (insertedInfo) {
-    props.parentWait.promiseControls.resolve(insertedInfo);
-  }
-
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
@@ -49,47 +39,31 @@ export async function hydrateComponent(
     state: new ComponentState(),
     children: this.children,
     segmentEnt: hNode.segmentEnt,
-    jsxNodeComponent: this,
     stage: 'hydrate',
     parentContextEnt: props.parentContextEnt,
   });
 
   let rawChidlren;
   try {
-    rawChidlren = await this.type(this.props, componentCtx);
+    rawChidlren = this.component(this.props, componentCtx);
   } catch (error) {
-    const errorJsx = getContextValue(errorContextJsx, props.parentContextEnt);
+    const jsxNodeComponent = createErrorJsxNodeComponent(
+      this,
+      error,
+      props.parentContextEnt
+    );
 
-    return new JsxNodeComponent({
-      type: errorJsx,
-      props: {
-        error,
-        jsxNode: this,
-      },
-      systemProps: {},
-      children: [],
-    }).hydrate(props);
+    jsxNodeComponent.hydrate(props);
   }
 
-  let contextEnt: ContextEnt | undefined = undefined;
-  if (this.type === ContextProvider) {
-    contextEnt = {
-      value: componentCtx.props.value,
-      context: componentCtx.props.context,
-      parent: props.parentContextEnt,
-    };
-  } else {
-    contextEnt = props.parentContextEnt;
-  }
+  const contextEnt = selectContextEnt(this, props.parentContextEnt);
 
-  const smartMount = createSmartMount(componentCtx);
+  hNode.mounts = componentCtx.state.mounts;
   hNode.unmounts = componentCtx.state.unmounts;
-  hNode.mounts.push(smartMount);
 
   const children = normalizeChildren(rawChidlren);
 
-  const {hNodes} = await handleChildrenHydrate({
-    parentInsertedDomNodesPromise: props.parentWait,
+  const {hNodes, elementsCount} = handleChildrenHydrate({
     parentHNode: hNode,
     children,
     parentDomPointer: props.domPointer,
@@ -104,5 +78,6 @@ export async function hydrateComponent(
 
   return {
     hNode,
+    elementsCount,
   };
 }

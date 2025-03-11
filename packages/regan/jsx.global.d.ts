@@ -1,4 +1,4 @@
-import {JSX as JSXOrig} from './src/jsx/types.ts';
+import {JSX as JSXOrig} from './src2/jsx/types.ts';
 
 declare global {
   export interface Window {

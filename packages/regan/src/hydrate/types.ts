@@ -1,35 +1,25 @@
-import {PromiseControls} from 'utftu';
-import {JsxNode} from '../node/node.ts';
-import {GlobalClientCtx, HNode} from '../h-node/h-node.ts';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {SegmentEnt} from '../segments/ent/ent.ts';
 import {ContextEnt} from '../context/context.tsx';
-import {InsertedInfo} from '../utils/inserted-dom.ts';
-import {DomPointerWithText} from '../types.ts';
-import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
+import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {HNode} from '../h-node/h-node.ts';
+import {JsxNode} from '../jsx-node/jsx-node.ts';
+import {SegmentEnt} from '../segment/segment.ts';
+import {DomPointer} from '../types.ts';
 
-export type HydrateCtx = {
-  treeAtomsSnapshot: TreeAtomsSnapshot;
-};
-
-export type ParentWait = {
-  promise: Promise<InsertedInfo>;
-  promiseControls: PromiseControls<InsertedInfo>;
-};
+export type HydrateCtx = {};
 
 export type HydrateProps = {
   parent?: JsxNode;
-  domPointer: DomPointerWithText;
+  domPointer: DomPointer;
   parentHNode?: HNode;
   globalCtx: GlobalCtx;
   jsxSegmentName: string;
   hydrateCtx: HydrateCtx;
   globalClientCtx: GlobalClientCtx;
-  parentWait: ParentWait;
   parentSegmentEnt?: SegmentEnt;
   parentContextEnt?: ContextEnt;
 };
 
-export type HydrateResult = Promise<{
+export type HydrateResult = {
   hNode: HNode;
-}>;
+  elementsCount: number;
+};

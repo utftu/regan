@@ -12,25 +12,21 @@ const App: FC = (_, {createAtom, select}) => {
   // const savedValue = createAtom('');
 
   const name = createAtom('Aleksey');
-  const family = createAtom('Malyuta');
+  // const family = createAtom('Malyuta');
 
-  const MyHello = async () => {
-    // await fetch('234');
-    return 'sdsdssdsdsdsdsds';
-  };
+  // const MyHello = async () => {
+  //   // await fetch('234');
+  //   return 'sdsdssdsdsdsdsds';
+  // };
 
   // MyHello.returnLength = 'sdsdssdsdsdsdsds';
-  const atom = createAtom(MyHello);
+  // const atom = createAtom(MyHello);
 
   setTimeout(() => {
     name.set('Ivan');
   }, 1000);
 
-  return (
-    <div>
-      My name is {name} {family} {atom} <MyHello />
-    </div>
-  );
+  return <div>My name is {name}</div>;
 
   // return (
   //   <div>

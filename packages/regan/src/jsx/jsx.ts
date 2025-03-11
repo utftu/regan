@@ -1,7 +1,7 @@
-import {JsxNodeComponent} from '../node/variants/component/component.ts';
-import {JsxNodeElement} from '../node/variants/element/element.ts';
+import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
+import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {Child, FC, Props} from '../types.ts';
-import {separateProps} from './props/props.ts';
+import {separateProps} from './props.ts';
 
 type RawChildren = Child | Child[];
 type ElementType = string | FC<any>;
@@ -15,14 +15,16 @@ type PropsPrepareRaw = {
 const prepare = ({type, props, children}: PropsPrepareRaw) => {
   const {userProps, systemProps} = separateProps(props);
   if (typeof type === 'string') {
-    return new JsxNodeElement({
-      type,
-      props: userProps,
-      systemProps,
-      children,
-    });
+    return new JsxNodeElement(
+      {
+        props: userProps,
+        systemProps,
+        children,
+      },
+      {tagName: type}
+    );
   }
-  return new JsxNodeComponent({type, props, children});
+  return new JsxNodeComponent({props, children}, {component: type});
 };
 
 export const normalizeChildren = (rawChildren: RawChildren) => {

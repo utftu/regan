@@ -1,5 +1,6 @@
 import type {Ctx} from '../ctx/ctx.ts';
-import type {JsxNode} from '../node/node.ts';
+import type {JsxNode} from '../jsx-node/jsx-node.ts';
+import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import type {FC} from '../types.ts';
 
 export type Context<TValue = any> = {
@@ -52,23 +53,21 @@ export const getContextValue = <TValue extends any = any>(
   return getContextValue(context, contextEnt.parent);
 };
 
-export const ContextProvider = <TValue extends any = any>(
+export const ContextProvider: FC = <TValue extends any = any>(
   _props: {value: TValue; context: Context},
-  {children, systemProps}: Ctx
+  {children}: Ctx
 ) => {
   return children;
-};
-
-export const defaultContextEnt: ContextEnt = {
-  context: createContext('default', null),
-  value: null,
 };
 
 export const selectContextEnt = (
   jsxNode: JsxNode,
   parentContextEnt?: ContextEnt
 ): ContextEnt | undefined => {
-  if (jsxNode.type === ContextProvider) {
+  if (
+    jsxNode instanceof JsxNodeComponent &&
+    jsxNode.component === ContextProvider
+  ) {
     return {
       value: jsxNode.props.value,
       context: jsxNode.props.context,

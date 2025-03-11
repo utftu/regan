@@ -1,12 +1,12 @@
-import {LisneterManager} from '../utils/props/funcs.ts';
-import {HNodeBase, PropsHNode} from './h-node.ts';
+import {LisneterManager} from '../utils/listeners.ts';
+import {HNode, PropsHNode} from './h-node.ts';
 
 type HNodeElProps = {
   element: Element;
   listenerManager: LisneterManager;
 };
 
-export class HNodeElement extends HNodeBase {
+export class HNodeElement extends HNode {
   element: Element;
   listenerManager: LisneterManager;
   constructor(props: PropsHNode, {element, listenerManager}: HNodeElProps) {

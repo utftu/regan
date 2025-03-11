@@ -1,20 +1,19 @@
-import {JsxNodeElement} from '../node/variants/element/element.ts';
-import {handleChildrenHydrate} from './children.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {defaultInsertedInfo} from '../consts.ts';
-import {splitProps} from '../v/convert/convert.ts';
-import {SegmentEnt} from '../segments/ent/ent.ts';
+import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
+import {SegmentEnt} from '../segment/segment.ts';
+import {LisneterManager} from '../utils/listeners.ts';
+import {
+  initDynamicSubsribes,
+  initStaticProps,
+  splitProps,
+} from '../utils/props.ts';
+import {handleChildrenHydrate} from './children.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
-import {initStaticProps} from '../utils/props/static.ts';
-import {initDynamicSubsribes} from '../utils/props/dynamic.ts';
-import {LisneterManager} from '../utils/props/funcs.ts';
 
-export async function hydrateElement(
+export function hydrateElement(
   this: JsxNodeElement,
   props: HydrateProps
 ): HydrateResult {
-  props.parentWait.promiseControls.resolve(defaultInsertedInfo);
-
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
@@ -23,13 +22,10 @@ export async function hydrateElement(
   });
 
   const element = props.domPointer.parent.childNodes[
-    props.domPointer.nodeCount
+    props.domPointer.elementsCount
   ] as HTMLElement;
 
-  const {dynamicProps, staticProps} = splitProps(
-    this.props,
-    props.hydrateCtx.treeAtomsSnapshot
-  );
+  const {dynamicProps, staticProps} = splitProps(this.props);
 
   const listenerManager = new LisneterManager(segmentEnt);
 
@@ -54,12 +50,11 @@ export async function hydrateElement(
     listenerManager,
   });
 
-  const {hNodes} = await handleChildrenHydrate({
-    parentInsertedDomNodesPromise: props.parentWait,
+  const {hNodes} = handleChildrenHydrate({
     children: this.children,
     parentDomPointer: {
       parent: element,
-      nodeCount: 0,
+      elementsCount: 0,
     },
     parentHNode: hNode,
     globalCtx: props.globalCtx,
@@ -73,5 +68,6 @@ export async function hydrateElement(
 
   return {
     hNode,
+    elementsCount: 1,
   };
 }

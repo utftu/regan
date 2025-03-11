@@ -1,10 +1,3 @@
-import {LisneterManager} from '../utils/props/funcs.ts';
-import {KeyStoreNew, KeyStoreOld} from './key.ts';
-
-type MetaExtend = {
-  skip?: true;
-};
-
 export type VNewElement = {
   type: 'element';
 
@@ -13,17 +6,12 @@ export type VNewElement = {
     props: Record<string, any>;
   };
 
-  key?: string;
-  init?: (vOld: VOldElement) => void;
-  keyStore: KeyStoreNew;
-  listenerManager: LisneterManager;
-
   children: VNew[];
-} & MetaExtend;
+};
 
 export type VOldElement = Omit<VNewElement, 'keyStore'> & {
-  element: Element;
-  keyStore: KeyStoreOld;
+  // element: Element;
+  domNode: Element;
 
   children: VOld[];
 };
@@ -33,11 +21,11 @@ export type VNewText = {
   data: {
     text: string;
   };
-  init?: (vOld: VOldText) => void;
-} & MetaExtend;
+};
 
 export type VOldText = VNewText & {
-  textNode: Text;
+  domNode: Text;
+  // textNode: Text;
 };
 
 export type VNew = VNewElement | VNewText;

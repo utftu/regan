@@ -1,21 +1,15 @@
-import {ContextEnt} from '../context/context.tsx';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {SegmentEnt} from '../segments/ent/ent.ts';
-import {DomPointer, DomPointerWithText} from '../types.ts';
-import {AtomWrapperData, HNodeComponent} from './component.ts';
-import {HNodeElement} from './element.ts';
-import {HNodeText} from './text.ts';
+import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {SegmentEnt} from '../segment/segment.ts';
 
-type Unmount = () => any;
-export type Mount = () => Unmount;
+export type Unmount = () => any;
+export type Mount<THNode extends HNode = HNode> = (hNode: THNode) => any;
 
 export class ComponentState {
   mounts = [];
   unmounts = [];
-  atoms = [];
 }
 
-export type MountUnmounFunc = (hNode: HNodeBase) => void;
+export type MountUnmounFunc = (hNode: HNode) => void;
 
 export type PropsHNode = {
   mounts?: MountUnmounFunc[];
@@ -25,10 +19,9 @@ export type PropsHNode = {
   globalCtx: GlobalCtx;
   globalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
-  // contextEnt?: ContextEnt;
 };
 
-export class HNodeBase {
+export class HNode {
   children: HNode[];
   mounts: MountUnmounFunc[];
   unmounts: MountUnmounFunc[];
@@ -76,21 +69,3 @@ export class HNodeBase {
     });
   }
 }
-
-export class GlobalClientCtx {
-  initDomPointer: DomPointer;
-  window: Window;
-
-  constructor({
-    window: localWindow,
-    initDomPointer,
-  }: {
-    initDomPointer: DomPointerWithText;
-    window: Window;
-  }) {
-    this.initDomPointer = initDomPointer;
-    this.window = localWindow;
-  }
-}
-
-export type HNode = HNodeComponent | HNodeElement | HNodeText;

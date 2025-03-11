@@ -1,25 +1,22 @@
-import {Atom} from 'strangelove';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNodeBase, GlobalClientCtx} from '../h-node/h-node.ts';
-import {JsxNode} from '../node/node.ts';
+import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Root} from '../root/root.ts';
-import {createInsertedDomNodePromise} from '../utils/inserted-dom.ts';
-import {DomPointerWithText} from '../types.ts';
+import {DomPointer} from '../types.ts';
+import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
-import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
+import {HNode} from '../h-node/h-node.ts';
 
-export async function hydrateRaw({
+export function hydrateRaw({
   node,
   parentHNode,
   window: windowLocal = window,
   data = {},
   domPointer,
 }: {
-  parentHNode?: HNodeBase;
+  parentHNode?: HNode;
   node: JsxNode;
   window?: Window;
   data?: Record<any, any>;
-  domPointer: DomPointerWithText;
+  domPointer: DomPointer;
 }) {
   const globalCtx =
     parentHNode?.globalCtx ??
@@ -29,30 +26,20 @@ export async function hydrateRaw({
       root: new Root(),
     });
 
-  const {hNode} = await node.hydrate({
+  const {hNode} = node.hydrate({
     jsxSegmentName: '',
     domPointer,
     parentHNode,
     globalCtx,
-    parentWait: createInsertedDomNodePromise(),
     globalClientCtx:
       parentHNode?.glocalClientCtx ??
       new GlobalClientCtx({
         window: windowLocal,
         initDomPointer: domPointer,
       }),
-    hydrateCtx: {
-      // changedAtoms,
-      treeAtomsSnapshot: new TreeAtomsSnapshot(),
-    },
+    hydrateCtx: {},
   });
 
-  // globalCtx.root.addTx(
-  //   changedAtoms.reduce((store, atom) => {
-  //     store.set(atom, atom.get());
-  //     return store;
-  //   }, new Map())
-  // );
   mountHNodes(hNode);
 }
 
@@ -64,13 +51,9 @@ export const hydrate = (
   return hydrateRaw({
     domPointer: {
       parent: element,
-      nodeCount: 0,
+      elementsCount: 0,
     },
-    // getElementPointer() {
-    //   return {
-    //     parent: element,
-    //   };
-    // },
+
     window: options.window,
     node,
   });
