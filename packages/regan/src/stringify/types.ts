@@ -2,7 +2,7 @@ import {ContextEnt} from '../context/context.tsx';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 
-type StringifyContext = {};
+export type StringifyContext = {};
 
 export type StringifyProps = {
   globalCtx: GlobalCtx;
@@ -10,4 +10,8 @@ export type StringifyProps = {
   parentSegmentEnt?: SegmentEnt;
   parentContextEnt?: ContextEnt;
   stringifyContext: StringifyContext;
+};
+
+export type StringifyResult = {
+  text: string;
 };

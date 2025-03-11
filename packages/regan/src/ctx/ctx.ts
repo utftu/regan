@@ -5,10 +5,10 @@ import {Context, ContextEnt, getContextValue} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 
-type State = {
-  mounts: Mount[];
-  unmounts: Unmount[];
-};
+export class ComponentState {
+  mounts: Mount[] = [];
+  unmounts: Unmount[] = [];
+}
 
 export type Stage = 'render' | 'hydrate' | 'string';
 
@@ -24,7 +24,7 @@ type SystemPropsCtx = SystemProps & {
 type PropsCtx<TProps> = {
   props: TProps;
   systemProps: SystemPropsCtx;
-  state: State;
+  state: ComponentState;
   children: Child[];
   globalCtx: GlobalCtx;
   stage: Stage;
@@ -35,7 +35,7 @@ type PropsCtx<TProps> = {
 
 // args to run FC
 export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
-  state: State;
+  state: ComponentState;
   props: TProps;
   systemProps: SystemPropsCtx;
   children: Child[];

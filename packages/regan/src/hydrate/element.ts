@@ -1,3 +1,4 @@
+import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -7,7 +8,10 @@ import {
   initStaticProps,
   splitProps,
 } from '../utils/props.ts';
-import {handleChildrenHydrate} from './children.ts';
+import {
+  handleChildrenHydrate,
+  HandleChildrenHydrateResult,
+} from './children.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
 
 export function hydrateElement(
@@ -42,29 +46,45 @@ export function hydrateElement(
     }
   );
 
-  initStaticProps(element, staticProps, listenerManager);
-
-  initDynamicSubsribes({
-    hNode,
-    dynamicProps,
-    listenerManager,
+  hNode.mounts.push(() => {
+    initStaticProps(element, staticProps, listenerManager);
   });
 
-  const {hNodes} = handleChildrenHydrate({
-    children: this.children,
-    parentDomPointer: {
-      parent: element,
-      elementsCount: 0,
-    },
-    parentHNode: hNode,
-    globalCtx: props.globalCtx,
-    hydrateCtx: props.hydrateCtx,
-    globalClientCtx: props.globalClientCtx,
-    parentSegmentEnt: segmentEnt,
-    parentContextEnt: props.parentContextEnt,
+  hNode.mounts.push(() => {
+    initDynamicSubsribes({
+      hNode,
+      dynamicProps,
+      listenerManager,
+    });
   });
 
-  hNode.addChildren(hNodes);
+  let handlerChildrenResult: HandleChildrenHydrateResult;
+
+  try {
+    handlerChildrenResult = handleChildrenHydrate({
+      children: this.children,
+      parentDomPointer: {
+        parent: element,
+        elementsCount: 0,
+      },
+      parentHNode: hNode,
+      globalCtx: props.globalCtx,
+      hydrateCtx: props.hydrateCtx,
+      globalClientCtx: props.globalClientCtx,
+      parentSegmentEnt: segmentEnt,
+      parentContextEnt: props.parentContextEnt,
+    });
+  } catch (error) {
+    const jsxNodeComponent = createErrorJsxNodeComponent(
+      this,
+      error,
+      props.parentContextEnt
+    );
+
+    return jsxNodeComponent.hydrate(props);
+  }
+
+  hNode.addChildren(handlerChildrenResult.hNodes);
 
   return {
     hNode,

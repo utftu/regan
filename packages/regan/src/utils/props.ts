@@ -53,6 +53,29 @@ export const initStaticProps = (
   }
 };
 
+export const initDynamicSubsribes2 = ({
+  dynamicProps,
+  hNode,
+  listenerManager,
+}: {
+  dynamicProps: Props;
+  hNode: HNodeElement;
+  listenerManager: LisneterManager;
+}) => {
+  for (const name in dynamicProps) {
+    const atom = dynamicProps[name];
+
+    subsribeAtom(hNode, atom, () => {
+      setProperty({
+        name,
+        value: atom.get(),
+        element: hNode.element,
+        listenerManager,
+      });
+    });
+  }
+};
+
 export const initDynamicSubsribes = ({
   dynamicProps,
   hNode,

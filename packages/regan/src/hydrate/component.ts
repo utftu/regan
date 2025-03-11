@@ -1,8 +1,7 @@
 import {selectContextEnt} from '../context/context.tsx';
-import {Ctx} from '../ctx/ctx.ts';
-import {createErrorJsxNodeComponent} from '../errors/errors.tsx';
+import {ComponentState, Ctx} from '../ctx/ctx.ts';
+import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
 import {HNodeComponent} from '../h-node/component.ts';
-import {ComponentState} from '../h-node/h-node.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -53,7 +52,7 @@ export function hydrateComponent<TProps extends Props>(
       props.parentContextEnt
     );
 
-    jsxNodeComponent.hydrate(props);
+    return jsxNodeComponent.hydrate(props);
   }
 
   const contextEnt = selectContextEnt(this, props.parentContextEnt);
@@ -63,21 +62,33 @@ export function hydrateComponent<TProps extends Props>(
 
   const children = normalizeChildren(rawChidlren);
 
-  const {hNodes, elementsCount} = handleChildrenHydrate({
-    parentHNode: hNode,
-    children,
-    parentDomPointer: props.domPointer,
-    globalCtx: props.globalCtx,
-    globalClientCtx: props.globalClientCtx,
-    hydrateCtx: props.hydrateCtx,
-    parentContextEnt: contextEnt,
-    parentSegmentEnt: segmentEnt,
-  });
+  let resultHandlerChildren;
 
-  hNode.addChildren(hNodes);
+  try {
+    resultHandlerChildren = handleChildrenHydrate({
+      children,
+      parentHNode: hNode,
+      globalCtx: props.globalCtx,
+      hydrateCtx: props.hydrateCtx,
+      parentDomPointer: props.domPointer,
+      parentSegmentEnt: segmentEnt,
+      parentContextEnt: contextEnt,
+      globalClientCtx: props.globalClientCtx,
+    });
+  } catch (error) {
+    const jsxNodeComponent = createErrorJsxNodeComponent(
+      this,
+      error,
+      props.parentContextEnt
+    );
+
+    return jsxNodeComponent.hydrate(props);
+  }
+
+  hNode.addChildren(resultHandlerChildren.hNodes);
 
   return {
     hNode,
-    elementsCount,
+    elementsCount: resultHandlerChildren.elementsCount,
   };
 }

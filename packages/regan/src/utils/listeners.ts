@@ -1,5 +1,6 @@
 import {getContextValue} from '../context/context.tsx';
 import {errorContextHandler} from '../errors/errors.tsx';
+import {prepareListener} from '../errors/helpers.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc} from '../types.ts';
 
@@ -21,7 +22,7 @@ export class LisneterManager {
       this.remove(element, name);
     }
 
-    const preparedFunc = this.prepare(func);
+    const preparedFunc = prepareListener({listenerManager: this, func});
 
     element.addEventListener(name, preparedFunc);
 
@@ -35,20 +36,5 @@ export class LisneterManager {
   remove(element: Element, name: string) {
     element.removeEventListener(name, this.listeners[name]);
     delete this.listeners[name];
-  }
-
-  prepare(func: AnyFunc) {
-    const self = this;
-    return async (...args: any[]) => {
-      const errorHandler = getContextValue(
-        errorContextHandler,
-        self.segmentEnt.parentContextEnt
-      );
-      try {
-        await func(...args);
-      } catch (error) {
-        errorHandler({error, jsxNode: self.segmentEnt.jsxNode});
-      }
-    };
   }
 }

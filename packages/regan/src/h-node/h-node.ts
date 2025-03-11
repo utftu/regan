@@ -4,11 +4,6 @@ import {SegmentEnt} from '../segment/segment.ts';
 export type Unmount = () => any;
 export type Mount<THNode extends HNode = HNode> = (hNode: THNode) => any;
 
-export class ComponentState {
-  mounts = [];
-  unmounts = [];
-}
-
 export type MountUnmounFunc = (hNode: HNode) => void;
 
 export type PropsHNode = {

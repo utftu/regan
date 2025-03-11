@@ -3,11 +3,13 @@ import {
   createContext,
   getContextValue,
 } from '../context/context.tsx';
+import {HNode, Mount} from '../h-node/h-node.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {h} from '../jsx/jsx.ts';
-import {FC} from '../types.ts';
+import {AnyFunc, FC} from '../types.ts';
+import {LisneterManager} from '../utils/listeners.ts';
 
 type Props = {
   error: Error | unknown;
@@ -37,26 +39,6 @@ export const errorContextJsx = createContext<ErrorJsx>(
   'error_jsx',
   defaultErrorJsx
 );
-
-export const createErrorJsxNodeComponent = (
-  jsxNode: JsxNode,
-  error: unknown,
-  parentContextEnt?: ContextEnt
-) => {
-  const errorJsx = getContextValue(errorContextJsx, parentContextEnt);
-
-  return new JsxNodeComponent(
-    {
-      props: {
-        error,
-        jsxNode,
-      },
-      systemProps: {},
-      children: [],
-    },
-    {component: errorJsx}
-  );
-};
 
 export const ErrorGuardHandler: FC<{errorHandler: ErrorHandler}> = (
   {errorHandler},

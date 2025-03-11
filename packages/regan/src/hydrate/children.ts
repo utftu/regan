@@ -12,6 +12,11 @@ import {
 } from '../utils/jsx.ts';
 import {HydrateCtx} from './types.ts';
 
+export type HandleChildrenHydrateResult = {
+  hNodes: HNode[];
+  elementsCount: number;
+};
+
 export function handleChildrenHydrate({
   children,
   parentHNode,
@@ -30,7 +35,7 @@ export function handleChildrenHydrate({
   parentDomPointer: DomPointer;
   parentSegmentEnt: SegmentEnt;
   parentContextEnt?: ContextEnt;
-}) {
+}): HandleChildrenHydrateResult {
   const hNodes: HNode[] = [];
   let elementsCount = parentDomPointer.elementsCount;
 
