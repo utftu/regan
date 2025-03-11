@@ -6,22 +6,22 @@ export class SegmentEnt {
   pathSegment: PathSegment;
   jsxNode: JsxNode;
   parentSegmentEnt: SegmentEnt | undefined;
-  parentContextEnt: ContextEnt | undefined;
+  contextEnt: ContextEnt | undefined;
 
   constructor({
     jsxSegmentName,
     parentSegmentEnt,
     jsxNode,
-    parentContextEnt,
+    contextEnt: parentContextEnt,
   }: {
     jsxSegmentName: string;
     parentSegmentEnt: SegmentEnt | undefined;
     jsxNode: JsxNode;
-    parentContextEnt: ContextEnt | undefined;
+    contextEnt: ContextEnt | undefined;
   }) {
     this.pathSegment = new PathSegment({name: jsxSegmentName, systemEnt: this});
     this.parentSegmentEnt = parentSegmentEnt;
     this.jsxNode = jsxNode;
-    this.parentContextEnt = parentContextEnt;
+    this.contextEnt = parentContextEnt;
   }
 }

@@ -4,8 +4,8 @@ import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {LisneterManager} from '../utils/listeners.ts';
 import {
-  initDynamicSubsribes,
-  initStaticProps,
+  planSubsribeDynamic,
+  setStaticProps,
   splitProps,
 } from '../utils/props.ts';
 import {
@@ -22,12 +22,12 @@ export function hydrateElement(
     jsxSegmentName: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
-    parentContextEnt: props.parentContextEnt,
+    contextEnt: props.parentSegmentEnt?.contextEnt,
   });
 
-  const element = props.domPointer.parent.childNodes[
+  const element = props.domPointer.parent.children[
     props.domPointer.elementsCount
-  ] as HTMLElement;
+  ] as Element;
 
   const {dynamicProps, staticProps} = splitProps(this.props);
 
@@ -47,15 +47,14 @@ export function hydrateElement(
   );
 
   hNode.mounts.push(() => {
-    initStaticProps(element, staticProps, listenerManager);
+    setStaticProps(element, staticProps, listenerManager);
   });
 
-  hNode.mounts.push(() => {
-    initDynamicSubsribes({
-      hNode,
-      dynamicProps,
-      listenerManager,
-    });
+  planSubsribeDynamic({
+    hNode,
+    dynamicProps,
+    listenerManager,
+    atomsTracker: props.hydrateCtx.atomTracker,
   });
 
   let handlerChildrenResult: HandleChildrenHydrateResult;
@@ -72,13 +71,12 @@ export function hydrateElement(
       hydrateCtx: props.hydrateCtx,
       globalClientCtx: props.globalClientCtx,
       parentSegmentEnt: segmentEnt,
-      parentContextEnt: props.parentContextEnt,
     });
   } catch (error) {
     const jsxNodeComponent = createErrorJsxNodeComponent(
       this,
       error,
-      props.parentContextEnt
+      props.parentSegmentEnt?.contextEnt
     );
 
     return jsxNodeComponent.hydrate(props);

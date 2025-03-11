@@ -8,7 +8,6 @@ export type StringifyProps = {
   globalCtx: GlobalCtx;
   pathSegmentName: string;
   parentSegmentEnt?: SegmentEnt;
-  parentContextEnt?: ContextEnt;
   stringifyContext: StringifyContext;
 };
 

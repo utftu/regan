@@ -30,7 +30,7 @@ type PropsCtx<TProps> = {
   stage: Stage;
   segmentEnt: SegmentEnt;
   client?: Client;
-  parentContextEnt: ContextEnt | undefined;
+  contextEnt: ContextEnt | undefined;
 };
 
 // args to run FC
@@ -44,7 +44,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   stage: Stage;
   ctx: Ctx;
   client?: Client;
-  parentContextEnt?: ContextEnt;
+  contextEnt?: ContextEnt;
 
   constructor({
     props,
@@ -55,7 +55,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
     systemProps,
     client,
     segmentEnt,
-    parentContextEnt,
+    contextEnt,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -65,7 +65,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
     this.systemProps = systemProps;
     this.client = client;
     this.segmentEnt = segmentEnt;
-    this.parentContextEnt = parentContextEnt;
+    this.contextEnt = contextEnt;
 
     this.ctx = this;
   }
@@ -98,6 +98,6 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   };
 
   getContext = (context: Context) => {
-    return getContextValue(context, this.parentContextEnt);
+    return getContextValue(context, this.contextEnt);
   };
 }

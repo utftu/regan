@@ -18,13 +18,11 @@ export function handleChildrenString({
   children,
   globalCtx,
   stringifyContext,
-  parentContextEnt,
   parentSegmentEnt,
 }: {
   children: Child[];
   globalCtx: GlobalCtx;
   stringifyContext: StringifyContext;
-  parentContextEnt: ContextEnt | undefined;
   parentSegmentEnt: SegmentEnt | undefined;
 }): HandleChildrenStringifyResult {
   let insertedJsxCount = 0;
@@ -51,7 +49,6 @@ export function handleChildrenString({
       globalCtx,
       pathSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,
-      parentContextEnt,
       stringifyContext,
     });
 

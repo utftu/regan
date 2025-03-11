@@ -1,6 +1,7 @@
 import {Child, Props, SystemProps} from '../types.ts';
 import {HydrateProps, HydrateResult} from '../hydrate/types.ts';
 import {StringifyProps, StringifyResult} from '../stringify/types.ts';
+import {RenderProps, RenderResult} from '../render/types.ts';
 
 export type JsxNodeProps<TProps extends Props = Props> = {
   props: TProps;
@@ -20,5 +21,5 @@ export abstract class JsxNode<TProps extends Props = Props> {
   }
   abstract stingify(props: StringifyProps): StringifyResult;
   abstract hydrate(ctx: HydrateProps): HydrateResult;
-  // abstract render(ctx: RenderProps): RenderResult;
+  abstract render(ctx: RenderProps): RenderResult;
 }

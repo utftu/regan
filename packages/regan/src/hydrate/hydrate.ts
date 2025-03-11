@@ -4,6 +4,7 @@ import {DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
 import {HNode} from '../h-node/h-node.ts';
+import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 
 export function hydrateRaw({
   node,
@@ -18,27 +19,31 @@ export function hydrateRaw({
   data?: Record<any, any>;
   domPointer: DomPointer;
 }) {
-  const globalCtx =
-    parentHNode?.globalCtx ??
-    new GlobalCtx({
-      data,
-      mode: 'client',
-      root: new Root(),
-    });
+  const atomTracker = new AtomsTracker();
 
   const {hNode} = node.hydrate({
     jsxSegmentName: '',
     domPointer,
     parentHNode,
-    globalCtx,
+    globalCtx:
+      parentHNode?.globalCtx ??
+      new GlobalCtx({
+        data,
+        mode: 'client',
+        root: new Root(),
+      }),
     globalClientCtx:
       parentHNode?.glocalClientCtx ??
       new GlobalClientCtx({
         window: windowLocal,
         initDomPointer: domPointer,
       }),
-    hydrateCtx: {},
+    hydrateCtx: {
+      atomTracker,
+    },
   });
+
+  atomTracker.finish();
 
   mountHNodes(hNode);
 }

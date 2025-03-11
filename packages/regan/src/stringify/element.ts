@@ -39,7 +39,7 @@ export function getStringStreamElement(
     jsxSegmentName: props.pathSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
-    parentContextEnt: props.parentContextEnt,
+    contextEnt: props.parentSegmentEnt?.contextEnt,
   });
 
   const preparedProps = prepareProps(this.props);
@@ -53,7 +53,6 @@ export function getStringStreamElement(
   try {
     hadnlerChildrenResult = handleChildrenString({
       children: this.children,
-      parentContextEnt: props.parentContextEnt,
       parentSegmentEnt: segmentEnt,
       globalCtx: props.globalCtx,
       stringifyContext: props.stringifyContext,
@@ -62,7 +61,7 @@ export function getStringStreamElement(
     const jsxNodeComponent = createErrorJsxNodeComponent(
       this,
       error,
-      props.parentContextEnt
+      props.parentSegmentEnt?.contextEnt
     );
 
     return jsxNodeComponent.stingify(props);

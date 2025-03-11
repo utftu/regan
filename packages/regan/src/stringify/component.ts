@@ -14,11 +14,13 @@ export function strigifyComponent(
   this: JsxNodeComponent,
   props: StringifyProps
 ): StringifyResult {
+  const contextEnt = selectContextEnt(this, props.parentSegmentEnt?.contextEnt);
+
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.pathSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
-    parentContextEnt: props.parentContextEnt,
+    contextEnt,
   });
 
   const funcCtx = new Ctx({
@@ -29,7 +31,7 @@ export function strigifyComponent(
     children: this.children,
     stage: 'string',
     segmentEnt,
-    parentContextEnt: props.parentContextEnt,
+    contextEnt,
   });
 
   let rawChidlren;
@@ -39,15 +41,13 @@ export function strigifyComponent(
     const jsxNodeComponent = createErrorJsxNodeComponent(
       this,
       error,
-      props.parentContextEnt
+      contextEnt
     );
 
     return jsxNodeComponent.stingify(props);
   }
 
   const children = normalizeChildren(rawChidlren);
-
-  const parentContextEnt = selectContextEnt(this, props.parentContextEnt);
 
   let handleChildrenResult: HandleChildrenStringifyResult;
 
@@ -56,14 +56,13 @@ export function strigifyComponent(
       children,
       globalCtx: props.globalCtx,
       stringifyContext: props.stringifyContext,
-      parentContextEnt,
       parentSegmentEnt: segmentEnt,
     });
   } catch (error) {
     const jsxNodeComponent = createErrorJsxNodeComponent(
       this,
       error,
-      props.parentContextEnt
+      contextEnt
     );
 
     return jsxNodeComponent.stingify(props);

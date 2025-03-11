@@ -24,7 +24,6 @@ export function handleChildrenHydrate({
   hydrateCtx,
   parentDomPointer,
   parentSegmentEnt,
-  parentContextEnt,
   globalClientCtx,
 }: {
   children: Child[];
@@ -34,7 +33,6 @@ export function handleChildrenHydrate({
   hydrateCtx: HydrateCtx;
   parentDomPointer: DomPointer;
   parentSegmentEnt: SegmentEnt;
-  parentContextEnt?: ContextEnt;
 }): HandleChildrenHydrateResult {
   const hNodes: HNode[] = [];
   let elementsCount = parentDomPointer.elementsCount;
@@ -72,7 +70,6 @@ export function handleChildrenHydrate({
 
     const hydrateResult = jsxNode.hydrate({
       jsxSegmentName: `${insertedJsxCount}`,
-      parentContextEnt,
       parentSegmentEnt,
       domPointer: {
         parent: parentDomPointer.parent,

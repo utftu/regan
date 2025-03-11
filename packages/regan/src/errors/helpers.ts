@@ -39,7 +39,7 @@ export const prepareListener = ({
     } catch (error) {
       const errorHandler = getContextValue(
         errorContextHandler,
-        listenerManager.segmentEnt.parentContextEnt
+        listenerManager.segmentEnt.contextEnt
       );
       errorHandler({error, jsxNode: listenerManager.segmentEnt.jsxNode});
     }
@@ -52,7 +52,7 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
   } catch (error) {
     const errorHandler = getContextValue(
       errorContextHandler,
-      hNode.segmentEnt.parentContextEnt
+      hNode.segmentEnt.contextEnt
     );
     errorHandler({error, jsxNode: hNode.segmentEnt.jsxNode});
   }

@@ -3,6 +3,7 @@ import {Props} from '../types.ts';
 import {LisneterManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {subsribeAtom} from './atom.ts';
+import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 
 export const splitProps = (props: Props) => {
   const joinedProps: Props = {};
@@ -41,8 +42,8 @@ const setProperty = ({
   }
 };
 
-export const initStaticProps = (
-  element: HTMLElement,
+export const setStaticProps = (
+  element: Element,
   staticProps: Props,
   listenerManager: LisneterManager
 ) => {
@@ -53,48 +54,32 @@ export const initStaticProps = (
   }
 };
 
-export const initDynamicSubsribes2 = ({
+export const planSubsribeDynamic = ({
   dynamicProps,
   hNode,
   listenerManager,
+  atomsTracker,
 }: {
   dynamicProps: Props;
   hNode: HNodeElement;
   listenerManager: LisneterManager;
+  atomsTracker: AtomsTracker;
 }) => {
   for (const name in dynamicProps) {
     const atom = dynamicProps[name];
 
-    subsribeAtom(hNode, atom, () => {
-      setProperty({
-        name,
-        value: atom.get(),
-        element: hNode.element,
-        listenerManager,
-      });
-    });
-  }
-};
-
-export const initDynamicSubsribes = ({
-  dynamicProps,
-  hNode,
-  listenerManager,
-}: {
-  dynamicProps: Props;
-  hNode: HNodeElement;
-  listenerManager: LisneterManager;
-}) => {
-  for (const name in dynamicProps) {
-    const atom = dynamicProps[name];
-
-    subsribeAtom(hNode, atom, () => {
-      setProperty({
-        name,
-        value: atom.get(),
-        element: hNode.element,
-        listenerManager,
-      });
+    subsribeAtom({
+      hNode,
+      atom,
+      callback: () => {
+        setProperty({
+          name,
+          value: atom.get(),
+          element: hNode.element,
+          listenerManager,
+        });
+      },
+      atomsTracker,
     });
   }
 };
