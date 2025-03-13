@@ -11,7 +11,14 @@
 // } from './types.ts';
 
 import {DomPointer} from '../types.ts';
-import {VNew, VOld} from './types.ts';
+import {VNew, VNewElement, VNewText, VOld} from './types.ts';
+
+const getDomNode = (vOld: VOld) => {
+  if (vOld.type === 'text') {
+    return vOld.textNode;
+  }
+  return vOld.element;
+};
 
 // export const deleteFunc = (vOld: VOld) => {
 //   getNodeFromVOld(vOld).remove();
@@ -23,32 +30,32 @@ import {VNew, VOld} from './types.ts';
 //   return textNode;
 // };
 
-// export const createText = (vNew: VNewText, window: Window) => {
-//   return createTextSimple(vNew.data.text, window);
-// };
+export const createText = (vNew: VNewText, window: Window) => {
+  return window.document.createTextNode(vNew.data.text);
+};
 
-// export const createElement = (vNew: VNewElement, window: Window) => {
-//   const element = window.document.createElement(vNew.data.tag);
+export const createElement = (vNew: VNewElement, window: Window) => {
+  const element = window.document.createElement(vNew.data.tag);
 
-//   for (const key in vNew.data.props) {
-//     const value = vNew.data.props[key];
-//     if (typeof value === 'function') {
-//       vNew.listenerManager.add(element, key, value);
-//     } else {
-//       element.setAttribute(key, value);
-//     }
-//   }
+  for (const key in vNew.data.props) {
+    const value = vNew.data.props[key];
+    if (typeof value === 'function') {
+      vNew.listenerManager.add(element, key, value);
+    } else {
+      element.setAttribute(key, value);
+    }
+  }
 
-//   return element;
-// };
+  return element;
+};
 
-// const create = (vNew: VNew, window: Window) => {
-//   if (vNew.type === 'text') {
-//     return createText(vNew, window);
-//   }
+const create = (vNew: VNew, window: Window) => {
+  if (vNew.type === 'text') {
+    return createText(vNew, window);
+  }
 
-//   return createElement(vNew, window);
-// };
+  return createElement(vNew, window);
+};
 
 // const replaceFull = (vNew: VNew, vOld: VOld, window: Window) => {
 //   const newDomNode = create(vNew, window);
@@ -128,8 +135,7 @@ export const handle = ({
   prevVNew?: VOld;
 }) => {
   if (!vNew) {
-    vOld!.domNode.remove();
-    // deleteFunc(vOld!);
+    getDomNode(vOld!).remove();
     return;
   }
 
