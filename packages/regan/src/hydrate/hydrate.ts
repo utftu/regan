@@ -8,12 +8,10 @@ import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 
 export function hydrateRaw({
   node,
-  parentHNode,
   window: windowLocal = window,
   data = {},
   domPointer,
 }: {
-  parentHNode?: HNode;
   node: JsxNode;
   window?: Window;
   data?: Record<any, any>;
@@ -24,20 +22,15 @@ export function hydrateRaw({
   const {hNode} = node.hydrate({
     jsxSegmentName: '',
     domPointer,
-    parentHNode,
-    globalCtx:
-      parentHNode?.globalCtx ??
-      new GlobalCtx({
-        data,
-        mode: 'client',
-        root: new Root(),
-      }),
-    globalClientCtx:
-      parentHNode?.glocalClientCtx ??
-      new GlobalClientCtx({
-        window: windowLocal,
-        initDomPointer: domPointer,
-      }),
+    globalCtx: new GlobalCtx({
+      data,
+      mode: 'client',
+      root: new Root(),
+    }),
+    globalClientCtx: new GlobalClientCtx({
+      window: windowLocal,
+      initDomPointer: domPointer,
+    }),
     hydrateCtx: {
       atomTracker,
     },

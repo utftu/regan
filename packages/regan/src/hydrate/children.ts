@@ -35,7 +35,8 @@ export function handleChildrenHydrate({
   parentSegmentEnt: SegmentEnt;
 }): HandleChildrenHydrateResult {
   const hNodes: HNode[] = [];
-  let elementsCount = parentDomPointer.elementsCount;
+  const elementsCountInit = parentDomPointer.elementsCount;
+  let elementsCount = elementsCountInit;
 
   let insertedJsxCount = 0;
 
@@ -81,6 +82,7 @@ export function handleChildrenHydrate({
       hydrateCtx,
     });
     hNodes.push(hydrateResult.hNode);
+
     elementsCount += hydrateResult.elementsCount;
 
     insertedJsxCount++;
@@ -88,6 +90,6 @@ export function handleChildrenHydrate({
 
   return {
     hNodes,
-    elementsCount,
+    elementsCount: elementsCount - elementsCountInit,
   };
 }
