@@ -1,15 +1,8 @@
-import {
-  ContextEnt,
-  createContext,
-  getContextValue,
-} from '../context/context.tsx';
-import {HNode, Mount} from '../h-node/h-node.ts';
+import {createContext} from '../context/context.tsx';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
-import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {h} from '../jsx/jsx.ts';
-import {AnyFunc, FC} from '../types.ts';
-import {LisneterManager} from '../utils/listeners.ts';
+import {FC} from '../types.ts';
 
 type Props = {
   error: Error | unknown;
@@ -27,7 +20,7 @@ export const defaultErrorJsx = () => {
       systemProps: {},
       children: [],
     },
-    {tagName: 'div'}
+    {tagName: 'fragment'}
   );
 };
 

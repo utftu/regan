@@ -1,6 +1,6 @@
 import {Atom} from 'strangelove';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
-import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.ts';
+import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 

@@ -1,16 +1,13 @@
 import {describe, expect, it} from 'vitest';
 import {Fragment} from '../components/fragment/fragment.ts';
-import {createAtomRegan} from '../atoms/atoms.ts';
 import {FC} from '../types.ts';
 import {atom} from 'strangelove';
-import {getString} from './string.ts';
 import {waitTime} from 'utftu';
-import {getHashFromString} from '../segments/ent/jsx-path/jsx-path.ts';
-
-const a = <div>sas</div>;
+import {stringify} from './stringify.ts';
+import {getHashFromString} from '../segment/jsx-path/jsx-path.ts';
 
 describe('node', () => {
-  it('getString()', async () => {
+  it('strinfify()', () => {
     const Child = () => {
       return <div>child</div>;
     };
@@ -23,13 +20,13 @@ describe('node', () => {
         </div>
       );
     };
-    const str = await getString(<Parent a='b' />);
+    const str = stringify(<Parent a='b' />);
 
     expect(str).toBe(
       '<div hello="world" world="hello"><div>parent</div><div>child</div></div>'
     );
   });
-  it('fragment', async () => {
+  it('fragment', () => {
     const elem = (
       <Fragment>
         <div>hello</div>
@@ -39,30 +36,30 @@ describe('node', () => {
       </Fragment>
     );
 
-    const str = await getString(elem);
+    const str = stringify(elem);
 
     expect(str).toBe('<div>hello</div><div>world</div>');
   });
-  it('child atoms', async () => {
+  it('child atoms', () => {
     const Child = () => {
       return <div>child</div>;
     };
 
     const Parent = () => {
       return (
-        <div hello='world' world={createAtomRegan('hello')}>
-          <div>{createAtomRegan('parent')}</div>
-          {createAtomRegan(<Child />)}
+        <div hello='world' world={atom('hello')}>
+          <div>{atom('parent')}</div>
+          {atom(<Child />)}
         </div>
       );
     };
-    const str = await getString(<Parent a='b' />);
+    const str = stringify(<Parent a='b' />);
 
     expect(str).toBe(
       '<div hello="world" world="hello"><div>parent</div><div>child</div></div>'
     );
   });
-  it('jsxPath', async () => {
+  it('jsxPath', () => {
     let level3JsxPath!: string;
     let level3Id!: string;
     const Level3: FC = (_, ctx) => {
@@ -98,32 +95,16 @@ describe('node', () => {
       );
     };
 
-    await getString(<Level0 />);
+    stringify(<Level0 />);
     const jsxPath = '0.1.0.0.2?a=0.0.0.0';
     expect(level3JsxPath).toBe(jsxPath);
     expect(level3Id).toBe(getHashFromString(jsxPath));
   });
-  it('async', async () => {
-    const Child = async () => {
-      await waitTime(10);
+  it('atom changed', () => {
+    const atom1 = atom('hello');
+    const atom2 = atom('world');
 
-      return 'hello world';
-    };
-
-    const Parent = () => {
-      return <Child />;
-    };
-    const str = await getString(<Parent keyP='parent' />);
-
-    expect(str).toBe('hello world');
-  });
-  it('atom changed', async () => {
-    const atom1 = createAtomRegan('hello');
-    const atom2 = createAtomRegan('world');
-
-    const Child = async () => {
-      await waitTime(100);
-
+    const Child = () => {
       return (
         <div hello={atom1}>
           <div>{atom2}</div>
@@ -140,11 +121,11 @@ describe('node', () => {
       );
     };
 
-    const strPromise = getString(<Parent />);
+    const str = stringify(<Parent />);
     setTimeout(() => {
       atom1.set('hello1');
     }, 20);
-    const str = await strPromise;
+    // const str = await strPromise;
 
     expect(str).toBe(
       '<div hello="hello"><div>world</div><div hello="hello"><div>world</div></div></div>'

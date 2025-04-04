@@ -1,41 +1,50 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {JsxNode} from '../node/node.ts';
+import {JsxNode} from '../jsx-node/jsx-node.ts';
+
 import {Root} from '../root/root.ts';
 
-async function convertStreamToString(stream: ReadableStream) {
-  const reader = stream.getReader();
-  let result = '';
+// async function convertStreamToString(stream: ReadableStream) {
+//   const reader = stream.getReader();
+//   let result = '';
 
-  while (true) {
-    const {done, value} = await reader.read();
+//   while (true) {
+//     const {done, value} = await reader.read();
 
-    if (done) {
-      break;
-    }
+//     if (done) {
+//       break;
+//     }
 
-    result += value;
-  }
+//     result += value;
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
-export const getStringStream = async (node: JsxNode) => {
-  const stream = await node.getStringStream({
-    pathSegmentName: '',
+// export const getStringStream = async (node: JsxNode) => {
+//   const stream = await node.getStringStream({
+//     pathSegmentName: '',
+//     globalCtx: new GlobalCtx({
+//       mode: 'server',
+//       data: {},
+//       root: new Root(),
+//     }),
+//     stringContext: {
+//       snapshot: new TreeAtomsSnapshot(),
+//     },
+//   });
+//   return stream;
+// };
+
+export function stringify(node: JsxNode) {
+  const {text} = node.stingify({
     globalCtx: new GlobalCtx({
       mode: 'server',
       data: {},
       root: new Root(),
     }),
-    stringContext: {
-      snapshot: new TreeAtomsSnapshot(),
-    },
+    pathSegmentName: '',
+    stringifyContext: {},
   });
-  return stream;
-};
 
-export async function getString(node: JsxNode) {
-  const stream = await getStringStream(node);
-  const str = await convertStreamToString(stream);
-  return str;
+  return text;
 }
