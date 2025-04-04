@@ -35,7 +35,6 @@ const split = ({
   nextTextHNodes: HNodeText[];
   window: Window;
 }) => {
-  console.log('-----', 'split');
   const nextTextHNode = nextTextHNodes[0];
 
   if (nextTextHNode) {
@@ -138,14 +137,12 @@ export const handleEdgeTextCases = (
 
   // split and delete text
   if (needSplitAndDeleteFull) {
-    console.log('-----', 'delete');
     const vOld = vOlds[0] as VOldText;
 
     actions.push(() => {
       split({nextTextHNodes, window});
 
       if (prevTextHNode && vOld.data.text !== '') {
-        console.log('-----', 'shrink');
         shrinkMiddleTextAfterSplit({prevTextHNode});
       }
     });

@@ -1,4 +1,4 @@
-import {getContextValue, selectContextEnt} from '../context/context.tsx';
+import {selectContextEnt} from '../context/context.tsx';
 import {ComponentState, Ctx} from '../ctx/ctx.ts';
 import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
 import {HNodeComponent} from '../h-node/component.ts';

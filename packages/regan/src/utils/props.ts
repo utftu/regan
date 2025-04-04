@@ -42,7 +42,7 @@ const setProperty = ({
   }
 };
 
-export const setStaticProps = (
+export const initStaticProps = (
   element: Element,
   staticProps: Props,
   listenerManager: LisneterManager
@@ -54,7 +54,7 @@ export const setStaticProps = (
   }
 };
 
-export const createInitTrackDynamicProps = ({
+export const initDynamicPropsStage0 = ({
   dynamicProps,
   atomsTracker,
 }: {
@@ -73,7 +73,7 @@ export const createInitTrackDynamicProps = ({
     subsribers[name] = {subscriber, atom};
   }
 
-  return function planTrackDynamicProps(
+  return function initDynamicPropsStage1(
     hNode: HNodeElement,
     listenerManager: LisneterManager
   ) {
@@ -94,33 +94,3 @@ export const createInitTrackDynamicProps = ({
     }
   };
 };
-
-// export const planSubsribeDynamic = ({
-//   dynamicProps,
-//   hNode,
-//   listenerManager,
-//   atomsTracker,
-// }: {
-//   dynamicProps: Props;
-//   hNode: HNodeElement;
-//   listenerManager: LisneterManager;
-//   atomsTracker: AtomsTracker;
-// }) => {
-//   for (const name in dynamicProps) {
-//     const atom = dynamicProps[name];
-
-//     subsribeAtom({
-//       hNode,
-//       atom,
-//       callback: () => {
-//         setProperty({
-//           name,
-//           value: atom.get(),
-//           element: hNode.element,
-//           listenerManager,
-//         });
-//       },
-//       atomsTracker,
-//     });
-//   }
-// };

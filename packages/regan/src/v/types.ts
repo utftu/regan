@@ -7,14 +7,15 @@ export type VNewElement = {
     tag: string;
     props: Record<string, any>;
   };
+  rawHtml?: string;
   listenerManager: LisneterManager;
+  init: (vOld: VOldElement) => void;
 
   children: VNew[];
 };
 
 export type VOldElement = Omit<VNewElement, 'children'> & {
   element: Element;
-  // domNode: Element;
 
   children: VOld[];
 };

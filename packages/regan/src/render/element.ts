@@ -4,7 +4,7 @@ import {VOldElement} from '../v/types.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {RenderProps, RenderResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {createInitTrackDynamicProps, splitProps} from '../utils/props.ts';
+import {initDynamicPropsStage0, splitProps} from '../utils/props.ts';
 import {LisneterManager} from '../utils/listeners.ts';
 import {RenderTemplateElement} from './template.types.ts';
 import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
@@ -24,7 +24,7 @@ export function renderElement(
 
   const listenerManager = new LisneterManager(segmentEnt);
 
-  const planSubsribeDynamic = createInitTrackDynamicProps({
+  const initDynamicPropsStage1 = initDynamicPropsStage0({
     dynamicProps,
     atomsTracker: props.renderCtx.atomsTracker,
   });
@@ -55,7 +55,7 @@ export function renderElement(
         }
       );
 
-      planSubsribeDynamic(hNode, listenerManager);
+      initDynamicPropsStage1(hNode, listenerManager);
 
       return hNode;
     },

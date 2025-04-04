@@ -1,25 +1,23 @@
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {HNode, GlobalClientCtx} from '../h-node/h-node.ts';
-import {JsxNode} from '../node/node.ts';
+import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Root} from '../root/root.ts';
-import {RenderTemplateExtended} from './types.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
-import {SegmentEnt} from '../segments/ent/ent.ts';
-import {ContextEnt, defaultContextEnt} from '../context/context.tsx';
 import {VOld} from '../v/types.ts';
-import {virtualApplyExternal} from '../v/v.ts';
 import {DomPointer} from '../types.ts';
-import {TreeAtomsSnapshot} from '../tree-atoms-snapshot/tree-atoms-snapshot.ts';
-import {convertRendterTemplateToV} from './convert/from.ts';
-import {convertRenderTemplateToHNodes} from './convert/to.ts';
+import {JsxNode} from '../jsx-node/jsx-node.ts';
+import {HNode} from '../h-node/h-node.ts';
+import {SegmentEnt} from '../segment/segment.ts';
+import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
+import {convertFromRtToV} from './convert/from-rt-to-v.ts';
+import {convertFromRtToH} from './convert/from-rt-to-h.ts';
+import {RenderTemplateExtended} from './template.types.ts';
+import {virtualApplyExternal} from '../v/v.ts';
 
-export const rednerVirtual = async ({
+export const rednerVirtual = ({
   node,
   window: localWindow = window,
   parentHNode,
   data,
   parentSegmentEnt,
-  parentContextEnt,
   domPointer,
   jsxSegmentName = '',
   vOlds = [],
@@ -30,7 +28,6 @@ export const rednerVirtual = async ({
   data?: Record<any, any>;
   parentHNode?: HNode;
   parentSegmentEnt?: SegmentEnt;
-  parentContextEnt?: ContextEnt;
   jsxSegmentName?: string;
   vOlds?: VOld[];
 }) => {
@@ -49,32 +46,26 @@ export const rednerVirtual = async ({
       initDomPointer: domPointer,
     });
 
-  const contextEnt = parentContextEnt ?? defaultContextEnt;
-
-  const {renderTemplate} = await node.render({
+  const {renderTemplate} = node.render({
     parentSegmentEnt,
     globalCtx,
     globalClientCtx,
     jsxSegmentName,
-    parentContextEnt: contextEnt,
     renderCtx: {
-      treeAtomsSnapshot: new TreeAtomsSnapshot(),
+      atomsTracker: new AtomsTracker(),
     },
   });
 
-  const vNews = convertRendterTemplateToV(renderTemplate);
+  const vNews = convertFromRtToV(renderTemplate);
 
   virtualApplyExternal({
     vNews,
     vOlds,
     window: localWindow,
-    hNode: parentHNode,
     domPointer,
   });
 
-  const hNode = convertRenderTemplateToHNodes(
-    renderTemplate as RenderTemplateExtended
-  );
+  const hNode = convertFromRtToH(renderTemplate as RenderTemplateExtended);
 
   if (parentHNode) {
     parentHNode.children.push(hNode);
@@ -89,16 +80,16 @@ export const rednerVirtual = async ({
   };
 };
 
-export const render = async (
+export const render = (
   element: HTMLElement,
   node: JsxNode,
   options: {window: Window} = {window}
 ) => {
-  const hNode = await rednerVirtual({
+  const hNode = rednerVirtual({
     node,
     domPointer: {
       parent: element,
-      nodeCount: 0,
+      elementsCount: 0,
     },
     window: options.window,
   });

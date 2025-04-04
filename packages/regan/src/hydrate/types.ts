@@ -19,7 +19,6 @@ export type HydrateProps = {
   hydrateCtx: HydrateCtx;
   globalClientCtx: GlobalClientCtx;
   parentSegmentEnt?: SegmentEnt;
-  // parentContextEnt?: ContextEnt;
 };
 
 export type HydrateResult = {

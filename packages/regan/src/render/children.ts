@@ -7,7 +7,6 @@ import {
   wrapChildIfNeed,
 } from '../utils/jsx.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {ContextEnt} from '../context/context.tsx';
 import {RenderCtx} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {RenderTemplate, RenderTemplateText} from './template.types.ts';

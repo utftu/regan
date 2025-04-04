@@ -4,8 +4,8 @@ import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {LisneterManager} from '../utils/listeners.ts';
 import {
-  createInitTrackDynamicProps,
-  setStaticProps,
+  initDynamicPropsStage0,
+  initStaticProps,
   splitProps,
 } from '../utils/props.ts';
 import {
@@ -47,10 +47,10 @@ export function hydrateElement(
   );
 
   hNode.mounts.push(() => {
-    setStaticProps(element, staticProps, listenerManager);
+    initStaticProps(element, staticProps, listenerManager);
   });
 
-  const planSubsribeDynamic = createInitTrackDynamicProps({
+  const planSubsribeDynamic = initDynamicPropsStage0({
     dynamicProps,
     atomsTracker: props.hydrateCtx.atomTracker,
   });
