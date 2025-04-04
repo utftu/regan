@@ -9,7 +9,7 @@ export type VNewElement = {
   };
   rawHtml?: string;
   listenerManager: LisneterManager;
-  init: (vOld: VOldElement) => void;
+  init?: (vOld: VOldElement) => void;
 
   children: VNew[];
 };
@@ -25,7 +25,7 @@ export type VNewText = {
   data: {
     text: string;
   };
-  init: (vOld: VOldText) => void;
+  init?: (vOld: VOldText) => void;
 };
 
 export type VOldText = VNewText & {
