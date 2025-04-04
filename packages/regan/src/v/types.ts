@@ -25,6 +25,7 @@ export type VNewText = {
   data: {
     text: string;
   };
+  init: (vOld: VOldText) => void;
 };
 
 export type VOldText = VNewText & {

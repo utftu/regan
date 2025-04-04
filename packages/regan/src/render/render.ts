@@ -10,7 +10,7 @@ import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 import {convertFromRtToV} from './convert/from-rt-to-v.ts';
 import {convertFromRtToH} from './convert/from-rt-to-h.ts';
 import {RenderTemplateExtended} from './template.types.ts';
-import {virtualApplyExternal} from '../v/v.ts';
+import {virtualApply} from '../v/v.ts';
 
 export const rednerVirtual = ({
   node,
@@ -58,7 +58,7 @@ export const rednerVirtual = ({
 
   const vNews = convertFromRtToV(renderTemplate);
 
-  virtualApplyExternal({
+  virtualApply({
     vNews,
     vOlds,
     window: localWindow,

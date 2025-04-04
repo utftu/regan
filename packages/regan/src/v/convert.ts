@@ -4,7 +4,7 @@ export const convertTextNewToOld = (vNew: VNewText, textNode: Text) => {
   const vOld = vNew as VOldText;
 
   vOld.textNode = textNode;
-  // vOld.init?.(vOld);
+  vOld.init?.(vOld);
 };
 
 export const convertElementNewToOld = (vNew: VNewElement, element: Element) => {
