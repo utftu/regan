@@ -19,10 +19,11 @@ export type HydrateProps = {
   hydrateCtx: HydrateCtx;
   globalClientCtx: GlobalClientCtx;
   parentSegmentEnt?: SegmentEnt;
-  prevText: boolean;
+  lastText: boolean;
 };
 
 export type HydrateResult = {
   hNode: HNode;
   nodeCount: number;
+  lastText: boolean;
 };

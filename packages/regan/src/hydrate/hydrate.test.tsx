@@ -278,32 +278,24 @@ describe('hydrate', () => {
 
     expect(childClick.mock.calls.length).toBe(1);
   });
-  // it('atoms changed',  () => {
-  //   const childClick = vi.fn();
-  //   const atom1 = createAtomRegan()
-  //   const Child =  () => {
-  //      waitTime(30);
+  it('nodeCount', () => {
+    const childClick = vi.fn();
+    const Component = () => {
+      return (
+        <div>
+          <div>child1</div>
+          child2 child3
+          <div id='child4' click={childClick}>
+            child4
+          </div>
+        </div>
+      );
+    };
 
-  //     return (
-  //       <div id='child' click={childClick}>
-  //         child
-  //       </div>
-  //     );
-  //   };
-
-  //   const Parent = () => {
-  //     return (
-  //       <div>
-  //         <Child />
-  //       </div>
-  //     );
-  //   };
-
-  //   const jsdom = new JSDOM();
-
-  //    insertAndHydrate(jsdom.window.document.body, <Parent />);
-  //   jsdom.window.document.getElementById('child')!.click();
-
-  //   expect(childClick.mock.calls.length).toBe(1);
-  // });
+    const jsdom = new JSDOM();
+    insertAndHydrate({jsdom, jsxNode: <Component />});
+    const child4 = jsdom.window.document.getElementById('child4')!;
+    child4.click();
+    expect(childClick.mock.calls.length).toBe(1);
+  });
 });

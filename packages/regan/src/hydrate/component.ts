@@ -73,6 +73,7 @@ export function hydrateComponent<TProps extends Props>(
       parentDomPointer: props.domPointer,
       parentSegmentEnt: segmentEnt,
       globalClientCtx: props.globalClientCtx,
+      lastText: props.lastText,
     });
   } catch (error) {
     const jsxNodeComponent = createErrorJsxNodeComponent(
@@ -89,5 +90,6 @@ export function hydrateComponent<TProps extends Props>(
   return {
     hNode,
     nodeCount: resultHandlerChildren.nodeCount,
+    lastText: resultHandlerChildren.lastText,
   };
 }

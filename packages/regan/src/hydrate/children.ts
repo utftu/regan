@@ -15,6 +15,7 @@ import {HydrateCtx} from './types.ts';
 export type HandleChildrenHydrateResult = {
   hNodes: HNode[];
   nodeCount: number;
+  lastText: boolean;
 };
 
 export function handleChildrenHydrate({
@@ -25,6 +26,7 @@ export function handleChildrenHydrate({
   parentDomPointer,
   parentSegmentEnt,
   globalClientCtx,
+  lastText,
 }: {
   children: Child[];
   parentHNode?: HNode;
@@ -33,10 +35,13 @@ export function handleChildrenHydrate({
   hydrateCtx: HydrateCtx;
   parentDomPointer: DomPointer;
   parentSegmentEnt: SegmentEnt;
+  lastText: boolean;
 }): HandleChildrenHydrateResult {
   const hNodes: HNode[] = [];
   const nodeCountInit = parentDomPointer.nodeCount;
   let nodeCount = nodeCountInit;
+
+  const localLastText = lastText;
 
   let insertedJsxCount = 0;
 
@@ -50,7 +55,6 @@ export function handleChildrenHydrate({
     if (checkAllowedPrivitive(childOrAtom)) {
       const text = childOrAtom.toString();
 
-      // todo maybe count nodes??
       const textNode =
         nodeCount === 0
           ? parentDomPointer.parent.firstChild
@@ -71,7 +75,11 @@ export function handleChildrenHydrate({
 
       hNodes.push(textHNode);
 
-      nodeCount++;
+      if (lastText === false) {
+        nodeCount++;
+      }
+
+      lastText = true;
 
       continue;
     }
@@ -89,6 +97,7 @@ export function handleChildrenHydrate({
       globalCtx,
       globalClientCtx,
       hydrateCtx,
+      lastText: localLastText,
     });
     hNodes.push(hydrateResult.hNode);
 
@@ -100,5 +109,6 @@ export function handleChildrenHydrate({
   return {
     hNodes,
     nodeCount: nodeCount - nodeCountInit,
+    lastText: localLastText,
   };
 }
