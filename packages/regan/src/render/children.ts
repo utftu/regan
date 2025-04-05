@@ -62,7 +62,6 @@ export function handleChildren({
             {
               text,
               textNode: vOld.textNode,
-              vOld,
             }
           );
         },

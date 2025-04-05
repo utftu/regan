@@ -112,9 +112,9 @@ export const updateV = ({
     const firstVNewOld = newVOlds[0] as VOldText;
     prevTextHNode.textNode = firstVNewOld.textNode;
 
-    if (prevTextHNode.vOld) {
-      prevTextHNode.vOld.textNode = firstVNewOld.textNode;
-    }
+    // if (prevTextHNode.vOld) {
+    //   prevTextHNode.vOld.textNode = firstVNewOld.textNode;
+    // }
 
     if (firstVNew?.type === 'text') {
       firstVNewOld.data.text = savedTextFirstVNew!;
@@ -127,9 +127,9 @@ export const updateV = ({
     const lastVNewOld = newVOlds[newVOlds.length - 1] as VOldText;
     nextTextHNode.textNode = lastVNewOld.textNode;
 
-    if (nextTextHNode.vOld) {
-      nextTextHNode.vOld.textNode = lastVNewOld.textNode;
-    }
+    // if (nextTextHNode.vOld) {
+    //   nextTextHNode.vOld.textNode = lastVNewOld.textNode;
+    // }
 
     if (lastVOld?.type === 'text') {
       lastVNewOld.data.text = savedTextLastVNew!;
