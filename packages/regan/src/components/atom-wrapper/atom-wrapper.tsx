@@ -6,6 +6,8 @@ import {a} from 'vite-node/dist/index-O2IrwHKf.js';
 import {detachChildren} from '../../h-node/helpers.ts';
 import {rednerBasic, rednerVirtual} from '../../render/render.ts';
 import {VOld} from '../../v/types.ts';
+import {findPrevDomNodeHNode} from '../../h-node/find/dom-node/dom-node.ts';
+import {getDomPointer} from './dom-pointer.ts';
 
 // export const parseAtom = (atom: Atom, initRun: boolean) => {
 //   let additionalPart = '?a=';
@@ -34,34 +36,36 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
 
   let vOlds: VOld[] = [];
 
-  // ctx.mount((hNode) => {
-  //   atom.listeners.subscribe(() => {
-  //     // ctx.segmentEnt.pathSegment.name += getAdditionalPart(false);
+  ctx.mount((hNode) => {
+    atom.listeners.subscribe(() => {
+      // ctx.segmentEnt.pathSegment.name += getAdditionalPart(false);
 
-  //     detachChildren(hNode);
+      detachChildren(hNode);
 
-  //     ctx.segmentEnt.pathSegment.clearCache();
+      ctx.segmentEnt.pathSegment.clearCache();
 
-  //     ctx.segmentEnt.pathSegment.name =
-  //       initPathSegmentName + getAdditionalPart(false);
+      ctx.segmentEnt.pathSegment.name =
+        initPathSegmentName + getAdditionalPart(false);
 
-  //     const {} = rednerBasic({
-  //       node: <Fragment>{atom.get()}</Fragment>,
-  //       parentHNode: hNode,
-  //       window: hNode.globalClientCtx.window,
-  //       parentSegmentEnt: ctx.segmentEnt,
-  //       domPointer: getInsertDomPointer(hNode),
-  //     });
-  //   });
+      const domPointer = getDomPointer(hNode);
 
-  //   rednerVirtual({
-  //     node: <Fragment>{atom.get()}</Fragment>,
-  //     parentHNode: hNode,
-  //     window: hNode.globalClientCtx.window,
-  //     parentSegmentEnt: ctx.segmentEnt,
-  //     domPointer: getInsertDomPointer(hNode),
-  //   });
-  // });
+      const {renderTemplate} = rednerBasic({
+        node: <Fragment>{atom.get()}</Fragment>,
+        parentHNode: hNode,
+        window: hNode.globalClientCtx.window,
+        parentSegmentEnt: ctx.segmentEnt,
+        domPointer,
+      });
+    });
+
+    rednerVirtual({
+      node: <Fragment>{atom.get()}</Fragment>,
+      parentHNode: hNode,
+      window: hNode.globalClientCtx.window,
+      parentSegmentEnt: ctx.segmentEnt,
+      domPointer: getInsertDomPointer(hNode),
+    });
+  });
 
   return <Fragment>{atom.get()}</Fragment>;
 };

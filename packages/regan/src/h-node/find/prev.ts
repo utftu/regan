@@ -1,23 +1,33 @@
 import {HNodeElement} from '../element.ts';
 import {HNode} from '../h-node.ts';
-import {Checker, CheckerAnswer} from './find.ts';
+import {Checker, CheckerAnswer, Config} from './find.ts';
 
 // element boundary
 // sure not that HNode
-export const findPrevHNode = (hNode: HNode, checker: Checker) => {
-  const result = findPrevUp(hNode, checker);
+export const findPrevHNode = (
+  hNode: HNode,
+  checker: Checker,
+  config: Config = {}
+) => {
+  const result = findPrevUp(hNode, checker, config);
 
   if (result instanceof HNode) {
     return result;
   }
 };
 
-const findPrevUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
+const findPrevUp = (
+  hNode: HNode,
+  checker: Checker,
+  config: Config
+): CheckerAnswer => {
   const parent = hNode.parent;
 
   if (!parent) {
     return;
   }
+
+  config.lastParentHNode = parent;
 
   const childPosition = parent.children.indexOf(hNode);
 
@@ -48,7 +58,7 @@ const findPrevUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
     return;
   }
 
-  return findPrevUp(parent, checker);
+  return findPrevUp(parent, checker, config);
 };
 
 // not check hNode
