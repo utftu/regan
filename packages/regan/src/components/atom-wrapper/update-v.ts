@@ -37,9 +37,12 @@ export const updateV = ({
   const preparedVNews: VNew[] = vNews;
   const preparedVOlds: VOld[] = vOlds;
 
+  // console.log('-----', 'preparedVNews', preparedVNews);
+
   // connect neighbour text nodes temporarily to compare
 
   if (prevTextHNode) {
+    console.log('-----', 'prev', prevTextHNode.textNode.textContent);
     const textContent = prevTextHNode.textNode.textContent!;
     if (firstVNew?.type === 'text') {
       firstVNew.data.text = textContent + firstVNew.data.text;
@@ -55,7 +58,9 @@ export const updateV = ({
     }
 
     if (firstVOld?.type === 'text') {
-      firstVOld.data.text = textContent + firstVOld.data.text;
+      firstVOld.data.text = textContent;
+
+      // firstVOld.data.text = textContent + firstVOld.data.text;
     } else {
       const vOld: VOld = {
         type: 'text',
@@ -84,20 +89,23 @@ export const updateV = ({
       preparedVNews.push(vNew);
     }
 
-    if (lastVOld?.type === 'text') {
-      lastVOld.data.text += nextTextHNode.text;
-    } else {
-      const vOld: VOld = {
-        type: 'text',
-        data: {
-          text: nextTextHNode.text,
-        },
-        textNode: nextTextHNode.textNode,
-      };
+    // if (lastVOld?.type === 'text') {
+    //   lastVOld.data.text += nextTextHNode.text;
+    // } else {
+    //   const vOld: VOld = {
+    //     type: 'text',
+    //     data: {
+    //       text: nextTextHNode.text,
+    //     },
+    //     textNode: nextTextHNode.textNode,
+    //   };
 
-      preparedVOlds.push(vOld);
-    }
+    //   preparedVOlds.push(vOld);
+    // }
   }
+
+  console.log('-----', 'vNews', vNews);
+  console.log('-----', 'vOlds', vOlds);
 
   const newVOlds = virtualApply({
     vNews: preparedVNews,

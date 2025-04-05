@@ -7,7 +7,7 @@ import {SegmentEnt} from '../segment/segment.ts';
 import {DomPointer} from '../types.ts';
 
 export type HydrateCtx = {
-  atomTracker: AtomsTracker;
+  atomsTracker: AtomsTracker;
 };
 
 export type HydrateProps = {

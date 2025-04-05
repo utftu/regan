@@ -38,10 +38,10 @@ export const AtomWrapper: FC<Props> = ({atom, atomsTracker}, ctx) => {
       atomsTracker,
       ctx,
       cb: (hNode: HNode) => {
+        const vOlds = convertHToV(hNode);
         detachChildren(hNode);
 
         ctx.segmentEnt.pathSegment.clearCache();
-
         ctx.segmentEnt.pathSegment.name =
           initPathSegmentName + getAdditionalPart(false);
 
@@ -56,7 +56,6 @@ export const AtomWrapper: FC<Props> = ({atom, atomsTracker}, ctx) => {
         });
 
         const vNews = convertFromRtToV(renderTemplate);
-        const vOlds = convertHToV(hNode);
 
         updateV({
           vNews,
@@ -74,38 +73,6 @@ export const AtomWrapper: FC<Props> = ({atom, atomsTracker}, ctx) => {
       },
     });
   }
-
-  ctx.mount((hNode) => {
-    atom.listeners.subscribe(() => {
-      detachChildren(hNode);
-
-      ctx.segmentEnt.pathSegment.clearCache();
-
-      ctx.segmentEnt.pathSegment.name =
-        initPathSegmentName + getAdditionalPart(false);
-
-      const domPointer = getDomPointer(hNode);
-
-      const {renderTemplate} = rednerBasic({
-        node: <Fragment>{atom.get()}</Fragment>,
-        parentHNode: hNode,
-        window: hNode.globalClientCtx.window,
-        parentSegmentEnt: ctx.segmentEnt,
-        domPointer,
-      });
-
-      const vNews = convertFromRtToV(renderTemplate);
-      const vOlds = convertHToV(hNode);
-
-      updateV({
-        vNews,
-        vOlds,
-        hNode,
-        window: hNode.globalClientCtx.window,
-        domPointer,
-      });
-    });
-  });
 
   return <Fragment>{atom.get()}</Fragment>;
 };

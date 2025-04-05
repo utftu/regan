@@ -84,7 +84,7 @@ export function handleChildrenHydrate({
       continue;
     }
 
-    const jsxNode = wrapChildIfNeed(childOrAtom);
+    const jsxNode = wrapChildIfNeed(childOrAtom, hydrateCtx.atomsTracker);
 
     const hydrateResult = jsxNode.hydrate({
       jsxSegmentName: `${insertedJsxCount}`,

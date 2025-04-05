@@ -20,13 +20,13 @@ export const subsribeAtomWrapper = ({
     changed = true;
   });
 
-  const cbWapper = () => {
-    setTimeout(() => {
-      cb();
-    });
-  };
-
   ctx.mount((hNode) => {
+    const cbWapper = () => {
+      setTimeout(() => {
+        cb(hNode);
+      });
+    };
+
     atom.listeners.subscribe(cbWapper);
 
     if (changed === true) {

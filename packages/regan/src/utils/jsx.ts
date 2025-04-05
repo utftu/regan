@@ -3,6 +3,7 @@ import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
+import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 
 export const formatJsxValue = <TValue>(
   value: TValue
@@ -28,13 +29,17 @@ export const checkPassPrimitive = (value: any) => {
   return false;
 };
 
-export const wrapChildIfNeed = (child: JsxNode | Atom) => {
+export const wrapChildIfNeed = (
+  child: JsxNode | Atom,
+  atomsTracker?: AtomsTracker
+) => {
   if (child instanceof Atom) {
     return new JsxNodeComponent(
       {
         children: [],
         props: {
           atom: child,
+          atomsTracker,
         },
         systemProps: {},
       },

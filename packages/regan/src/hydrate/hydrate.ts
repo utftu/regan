@@ -31,7 +31,7 @@ export function hydrateRaw({
       initDomPointer: domPointer,
     }),
     hydrateCtx: {
-      atomTracker,
+      atomsTracker: atomTracker,
     },
   });
 

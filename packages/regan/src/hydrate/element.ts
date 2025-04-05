@@ -50,11 +50,11 @@ export function hydrateElement(
     initStaticProps(element, staticProps, listenerManager);
   });
 
-  const planSubsribeDynamic = initDynamicPropsStage0({
+  const initDynamicPropsStage1 = initDynamicPropsStage0({
     dynamicProps,
-    atomsTracker: props.hydrateCtx.atomTracker,
+    atomsTracker: props.hydrateCtx.atomsTracker,
   });
-  planSubsribeDynamic(hNode, listenerManager);
+  initDynamicPropsStage1(hNode, listenerManager);
 
   let handlerChildrenResult: HandleChildrenHydrateResult;
 
