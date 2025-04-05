@@ -85,6 +85,6 @@ export function hydrateElement(
 
   return {
     hNode,
-    elementsCount: 1,
+    nodeCount: 1,
   };
 }

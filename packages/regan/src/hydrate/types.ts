@@ -19,6 +19,7 @@ export type HydrateProps = {
   hydrateCtx: HydrateCtx;
   globalClientCtx: GlobalClientCtx;
   parentSegmentEnt?: SegmentEnt;
+  prevText: boolean;
 };
 
 export type HydrateResult = {
