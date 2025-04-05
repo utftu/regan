@@ -22,7 +22,7 @@ export class HNode {
   unmounts: MountUnmounFunc[];
   parent?: HNode;
   globalCtx: GlobalCtx;
-  glocalClientCtx: GlobalClientCtx;
+  globalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
   systemUnmounts: Unmount[] = [];
 
@@ -41,7 +41,7 @@ export class HNode {
     this.unmounts = unmounts;
     this.parent = parent;
     this.globalCtx = globalCtx;
-    this.glocalClientCtx = globalClientCtx;
+    this.globalClientCtx = globalClientCtx;
     this.children = children;
     this.segmentEnt = segmentEnt;
   }

@@ -1,6 +1,11 @@
 import {Atom} from 'strangelove';
 import {FC, Props} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
+import {subsribeAtom} from '../../utils/atom.ts';
+import {a} from 'vite-node/dist/index-O2IrwHKf.js';
+import {detachChildren} from '../../h-node/helpers.ts';
+import {rednerVirtual} from '../../render/render.ts';
+import {VOld} from '../../v/types.ts';
 
 // export const parseAtom = (atom: Atom, initRun: boolean) => {
 //   let additionalPart = '?a=';
@@ -24,7 +29,31 @@ const getAdditionalPart = (initRun: boolean) => {
 };
 
 export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
+  const initPathSegmentName = ctx.segmentEnt.pathSegment.name;
   ctx.segmentEnt.pathSegment.name += getAdditionalPart(true);
+
+  let vOlds: VOld[] = [];
+
+  ctx.mount((hNode) => {
+    atom.listeners.subscribe(() => {
+      // ctx.segmentEnt.pathSegment.name += getAdditionalPart(false);
+
+      detachChildren(hNode);
+
+      ctx.segmentEnt.pathSegment.clearCache();
+
+      ctx.segmentEnt.pathSegment.name =
+        initPathSegmentName + getAdditionalPart(false);
+    });
+
+    rednerVirtual({
+      node: <Fragment>{atom.get()}</Fragment>,
+      parentHNode: hNode,
+      window: hNode.globalClientCtx.window,
+      parentSegmentEnt: ctx.segmentEnt,
+      domPointer: getInsertDomPointer(hNode),
+    });
+  });
 
   return <Fragment>{atom.get()}</Fragment>;
 };

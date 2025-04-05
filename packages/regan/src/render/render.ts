@@ -31,6 +31,8 @@ export const rednerVirtual = ({
   jsxSegmentName?: string;
   vOlds?: VOld[];
 }) => {
+  const atomsTracker = new AtomsTracker();
+
   const globalCtx =
     parentHNode?.globalCtx ??
     new GlobalCtx({
@@ -40,7 +42,7 @@ export const rednerVirtual = ({
     });
 
   const globalClientCtx =
-    parentHNode?.glocalClientCtx ??
+    parentHNode?.globalClientCtx ??
     new GlobalClientCtx({
       window: localWindow,
       initDomPointer: domPointer,
@@ -52,7 +54,7 @@ export const rednerVirtual = ({
     globalClientCtx,
     jsxSegmentName,
     renderCtx: {
-      atomsTracker: new AtomsTracker(),
+      atomsTracker,
     },
   });
 
@@ -71,6 +73,8 @@ export const rednerVirtual = ({
     parentHNode.children.push(hNode);
     hNode.parent = parentHNode;
   }
+
+  atomsTracker.finish();
 
   mountHNodes(hNode);
 

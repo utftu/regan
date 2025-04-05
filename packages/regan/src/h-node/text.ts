@@ -6,6 +6,7 @@ export type HNodeTextProps = {
 
 export class HNodeText extends HNode {
   text: string;
+  textNode: Text;
   constructor(props: PropsHNode, {text}: HNodeTextProps) {
     super(props);
     this.text = text;
