@@ -34,34 +34,34 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
 
   let vOlds: VOld[] = [];
 
-  ctx.mount((hNode) => {
-    atom.listeners.subscribe(() => {
-      // ctx.segmentEnt.pathSegment.name += getAdditionalPart(false);
+  // ctx.mount((hNode) => {
+  //   atom.listeners.subscribe(() => {
+  //     // ctx.segmentEnt.pathSegment.name += getAdditionalPart(false);
 
-      detachChildren(hNode);
+  //     detachChildren(hNode);
 
-      ctx.segmentEnt.pathSegment.clearCache();
+  //     ctx.segmentEnt.pathSegment.clearCache();
 
-      ctx.segmentEnt.pathSegment.name =
-        initPathSegmentName + getAdditionalPart(false);
+  //     ctx.segmentEnt.pathSegment.name =
+  //       initPathSegmentName + getAdditionalPart(false);
 
-      const {} = rednerBasic({
-        node: <Fragment>{atom.get()}</Fragment>,
-        parentHNode: hNode,
-        window: hNode.globalClientCtx.window,
-        parentSegmentEnt: ctx.segmentEnt,
-        domPointer: getInsertDomPointer(hNode),
-      });
-    });
+  //     const {} = rednerBasic({
+  //       node: <Fragment>{atom.get()}</Fragment>,
+  //       parentHNode: hNode,
+  //       window: hNode.globalClientCtx.window,
+  //       parentSegmentEnt: ctx.segmentEnt,
+  //       domPointer: getInsertDomPointer(hNode),
+  //     });
+  //   });
 
-    rednerVirtual({
-      node: <Fragment>{atom.get()}</Fragment>,
-      parentHNode: hNode,
-      window: hNode.globalClientCtx.window,
-      parentSegmentEnt: ctx.segmentEnt,
-      domPointer: getInsertDomPointer(hNode),
-    });
-  });
+  //   rednerVirtual({
+  //     node: <Fragment>{atom.get()}</Fragment>,
+  //     parentHNode: hNode,
+  //     window: hNode.globalClientCtx.window,
+  //     parentSegmentEnt: ctx.segmentEnt,
+  //     domPointer: getInsertDomPointer(hNode),
+  //   });
+  // });
 
   return <Fragment>{atom.get()}</Fragment>;
 };
