@@ -29,7 +29,6 @@ export type VNewText = {
 };
 
 export type VOldText = VNewText & {
-  // domNode: Text;
   textNode: Text;
 };
 

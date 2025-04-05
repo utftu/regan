@@ -13,12 +13,14 @@ export const virtualApply = ({
   domPointer: DomPointer;
   window: Window;
 }) => {
-  return virtualApplyInternal({
+  virtualApplyInternal({
     vNews,
     vOlds,
     domPointer,
     window,
   });
+
+  return vNews as VOld[];
 };
 
 export const virtualApplyInternal = ({
