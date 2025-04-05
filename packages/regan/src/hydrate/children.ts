@@ -50,6 +50,12 @@ export function handleChildrenHydrate({
     if (checkAllowedPrivitive(childOrAtom)) {
       const text = childOrAtom.toString();
 
+      // todo maybe count nodes??
+      const textNode =
+        elementsCount === 0
+          ? parentDomPointer.parent.firstChild
+          : parentDomPointer.parent.children[elementsCount].nextSibling;
+
       const textHNode = new HNodeText(
         {
           parent: parentHNode,
@@ -59,6 +65,7 @@ export function handleChildrenHydrate({
         },
         {
           text: text,
+          textNode: textNode as Text,
         }
       );
 

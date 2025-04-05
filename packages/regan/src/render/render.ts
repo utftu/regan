@@ -12,6 +12,56 @@ import {convertFromRtToH} from './convert/from-rt-to-h.ts';
 import {RenderTemplateExtended} from './template.types.ts';
 import {virtualApply} from '../v/v.ts';
 
+export const rednerBasic = ({
+  node,
+  window: localWindow = window,
+  parentHNode,
+  data,
+  parentSegmentEnt,
+  domPointer,
+  jsxSegmentName = '',
+}: {
+  node: JsxNode;
+  domPointer: DomPointer;
+  window?: Window;
+  data?: Record<any, any>;
+  parentHNode?: HNode;
+  parentSegmentEnt?: SegmentEnt;
+  jsxSegmentName?: string;
+  vOlds?: VOld[];
+}) => {
+  const atomsTracker = new AtomsTracker();
+
+  const globalCtx =
+    parentHNode?.globalCtx ??
+    new GlobalCtx({
+      data,
+      mode: 'client',
+      root: new Root(),
+    });
+
+  const globalClientCtx =
+    parentHNode?.globalClientCtx ??
+    new GlobalClientCtx({
+      window: localWindow,
+      initDomPointer: domPointer,
+    });
+
+  const {renderTemplate} = node.render({
+    parentSegmentEnt,
+    globalCtx,
+    globalClientCtx,
+    jsxSegmentName,
+    renderCtx: {
+      atomsTracker,
+    },
+  });
+
+  atomsTracker.finish();
+
+  return {renderTemplate};
+};
+
 export const rednerVirtual = ({
   node,
   window: localWindow = window,

@@ -1,7 +1,13 @@
 import {HNodeComponent} from '../h-node/component.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {VNewElement, VNewText, VOldElement, VOldText} from '../v/types.ts';
+import {
+  VNewElement,
+  VNewText,
+  VOld,
+  VOldElement,
+  VOldText,
+} from '../v/types.ts';
 
 export type RenderTemplateComponent = {
   type: 'component';
@@ -40,7 +46,7 @@ export type RenderTemplateText = {
 
   vNew: VNewText;
 
-  createHNode: (props: {domNode: Text}) => HNodeText;
+  createHNode: (vOld: VOldText) => HNodeText;
 };
 
 export type RenderTemplateTextExtended = RenderTemplateText & {

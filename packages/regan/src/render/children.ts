@@ -52,7 +52,7 @@ export function handleChildren({
           },
         },
 
-        createHNode() {
+        createHNode(vOld) {
           return new HNodeText(
             {
               globalCtx,
@@ -61,6 +61,8 @@ export function handleChildren({
             },
             {
               text,
+              textNode: vOld.textNode,
+              vOld,
             }
           );
         },
