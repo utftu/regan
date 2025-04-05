@@ -8,6 +8,10 @@ import {rednerBasic, rednerVirtual} from '../../render/render.ts';
 import {VOld} from '../../v/types.ts';
 import {findPrevDomNodeHNode} from '../../h-node/find/dom-node/dom-node.ts';
 import {getDomPointer} from './dom-pointer.ts';
+import {convertFromRtToH} from '../../render/convert/from-rt-to-h.ts';
+import {convertFromRtToV} from '../../render/convert/from-rt-to-v.ts';
+import {updateV} from './update-v.ts';
+import {convertHToV} from './h-to-v.ts';
 
 // export const parseAtom = (atom: Atom, initRun: boolean) => {
 //   let additionalPart = '?a=';
@@ -34,12 +38,8 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
   const initPathSegmentName = ctx.segmentEnt.pathSegment.name;
   ctx.segmentEnt.pathSegment.name += getAdditionalPart(true);
 
-  let vOlds: VOld[] = [];
-
   ctx.mount((hNode) => {
     atom.listeners.subscribe(() => {
-      // ctx.segmentEnt.pathSegment.name += getAdditionalPart(false);
-
       detachChildren(hNode);
 
       ctx.segmentEnt.pathSegment.clearCache();
@@ -56,14 +56,17 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
         parentSegmentEnt: ctx.segmentEnt,
         domPointer,
       });
-    });
 
-    rednerVirtual({
-      node: <Fragment>{atom.get()}</Fragment>,
-      parentHNode: hNode,
-      window: hNode.globalClientCtx.window,
-      parentSegmentEnt: ctx.segmentEnt,
-      domPointer: getInsertDomPointer(hNode),
+      const vNews = convertFromRtToV(renderTemplate);
+      const vOlds = convertHToV(hNode);
+
+      updateV({
+        vNews,
+        vOlds,
+        hNode,
+        window: hNode.globalClientCtx.window,
+        domPointer,
+      });
     });
   });
 

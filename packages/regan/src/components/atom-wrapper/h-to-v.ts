@@ -5,7 +5,10 @@ import {HNodeText} from '../../h-node/text.ts';
 import {JsxNodeElement} from '../../jsx-node/variants/element/element.ts';
 import {VOld, VOldElement, VOldText} from '../../v/types.ts';
 
-const convertHNodeToV = (hNode: HNode, store: {text?: VOldText}): VOld[] => {
+export const convertHToV = (
+  hNode: HNode,
+  store: {text?: VOldText} = {}
+): VOld[] => {
   if (hNode instanceof HNodeText) {
     if (!store.text) {
       store.text = {
@@ -25,7 +28,7 @@ const convertHNodeToV = (hNode: HNode, store: {text?: VOldText}): VOld[] => {
   if (hNode instanceof HNodeElement) {
     store.text = undefined;
     const children = hNode.children
-      .map((hNode) => convertHNodeToV(hNode, store))
+      .map((hNode) => convertHToV(hNode, store))
       .flat();
     store.text = undefined;
 
@@ -47,7 +50,7 @@ const convertHNodeToV = (hNode: HNode, store: {text?: VOldText}): VOld[] => {
 
   if (hNode instanceof HNodeComponent) {
     const children = hNode.children
-      .map((hNode) => convertHNodeToV(hNode, store))
+      .map((hNode) => convertHToV(hNode, store))
       .flat();
 
     return children;
