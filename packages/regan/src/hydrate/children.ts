@@ -14,7 +14,7 @@ import {HydrateCtx} from './types.ts';
 
 export type HandleChildrenHydrateResult = {
   hNodes: HNode[];
-  elementsCount: number;
+  nodeCount: number;
 };
 
 export function handleChildrenHydrate({
@@ -35,8 +35,8 @@ export function handleChildrenHydrate({
   parentSegmentEnt: SegmentEnt;
 }): HandleChildrenHydrateResult {
   const hNodes: HNode[] = [];
-  const elementsCountInit = parentDomPointer.elementsCount;
-  let elementsCount = elementsCountInit;
+  const nodeCountInit = parentDomPointer.nodeCount;
+  let nodeCount = nodeCountInit;
 
   let insertedJsxCount = 0;
 
@@ -52,9 +52,9 @@ export function handleChildrenHydrate({
 
       // todo maybe count nodes??
       const textNode =
-        elementsCount === 0
+        nodeCount === 0
           ? parentDomPointer.parent.firstChild
-          : parentDomPointer.parent.children[elementsCount].nextSibling;
+          : parentDomPointer.parent.children[nodeCount].nextSibling;
 
       const textHNode = new HNodeText(
         {
@@ -71,6 +71,8 @@ export function handleChildrenHydrate({
 
       hNodes.push(textHNode);
 
+      nodeCount++;
+
       continue;
     }
 
@@ -81,7 +83,7 @@ export function handleChildrenHydrate({
       parentSegmentEnt,
       domPointer: {
         parent: parentDomPointer.parent,
-        elementsCount,
+        nodeCount,
       },
       parentHNode,
       globalCtx,
@@ -90,13 +92,13 @@ export function handleChildrenHydrate({
     });
     hNodes.push(hydrateResult.hNode);
 
-    elementsCount += hydrateResult.elementsCount;
+    nodeCount += hydrateResult.nodeCount;
 
     insertedJsxCount++;
   }
 
   return {
     hNodes,
-    elementsCount: elementsCount - elementsCountInit,
+    nodeCount: nodeCount - nodeCountInit,
   };
 }

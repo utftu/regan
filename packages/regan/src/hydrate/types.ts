@@ -23,5 +23,5 @@ export type HydrateProps = {
 
 export type HydrateResult = {
   hNode: HNode;
-  elementsCount: number;
+  nodeCount: number;
 };

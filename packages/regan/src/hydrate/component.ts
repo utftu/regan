@@ -88,6 +88,6 @@ export function hydrateComponent<TProps extends Props>(
 
   return {
     hNode,
-    elementsCount: resultHandlerChildren.elementsCount,
+    nodeCount: resultHandlerChildren.nodeCount,
   };
 }

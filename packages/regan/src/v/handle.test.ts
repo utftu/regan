@@ -9,7 +9,7 @@ export const createDomPointer = (window: Window): DomPointer => {
   const parent = window.document.createElement('div');
   return {
     parent,
-    elementsCount: 0,
+    nodeCount: 0,
   };
 };
 

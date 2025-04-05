@@ -3,7 +3,6 @@ import {Root} from '../root/root.ts';
 import {DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
-import {HNode} from '../h-node/h-node.ts';
 import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 
 export function hydrateRaw({
@@ -49,7 +48,7 @@ export const hydrate = (
   return hydrateRaw({
     domPointer: {
       parent: element,
-      elementsCount: 0,
+      nodeCount: 0,
     },
 
     window: options.window,

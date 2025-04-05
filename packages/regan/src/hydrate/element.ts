@@ -25,8 +25,8 @@ export function hydrateElement(
     contextEnt: props.parentSegmentEnt?.contextEnt,
   });
 
-  const element = props.domPointer.parent.children[
-    props.domPointer.elementsCount
+  const element = props.domPointer.parent.childNodes[
+    props.domPointer.nodeCount
   ] as Element;
 
   const {dynamicProps, staticProps} = splitProps(this.props);
@@ -63,7 +63,7 @@ export function hydrateElement(
       children: this.children,
       parentDomPointer: {
         parent: element,
-        elementsCount: 0,
+        nodeCount: 0,
       },
       parentHNode: hNode,
       globalCtx: props.globalCtx,

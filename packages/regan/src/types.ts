@@ -4,7 +4,7 @@ import {Ctx} from './ctx/ctx.ts';
 
 export type DomPointer = {
   parent: ParentNode;
-  elementsCount: number;
+  nodeCount: number;
 };
 
 export type AnyFunc = (...args: any[]) => any;
@@ -30,5 +30,5 @@ export type Props = Record<string, any>;
 export type SystemProps = {
   key?: string;
   ref?: Atom<HTMLElement | void>;
-  // rawHtml?: string;
+  rawHtml?: string;
 };

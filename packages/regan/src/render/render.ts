@@ -143,7 +143,7 @@ export const render = (
     node,
     domPointer: {
       parent: element,
-      elementsCount: 0,
+      nodeCount: 0,
     },
     window: options.window,
   });

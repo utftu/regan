@@ -78,7 +78,7 @@ export const insert = ({
   node: Node;
   domPointer: DomPointer;
 }) => {
-  const prevNode = domPointer.parent.childNodes[domPointer.elementsCount - 1];
+  const prevNode = domPointer.parent.childNodes[domPointer.nodeCount - 1];
 
   if (prevNode) {
     prevNode.after(node);
@@ -87,32 +87,6 @@ export const insert = ({
 
   domPointer.parent.prepend(node);
 };
-
-// old
-// export const insert = ({
-//   prevVNew,
-//   node,
-//   domPointer,
-// }: {
-//   prevVNew: VOld | void;
-//   node: Node;
-//   domPointer: DomPointer;
-// }) => {
-//   if (prevVNew) {
-//     const prevDomNode = getDomNode(prevVNew);
-//     prevDomNode.after(node);
-//     return;
-//   }
-
-//   const prevNode = domPointer.parent.childNodes[domPointer.elementsCount - 1];
-
-//   if (prevNode) {
-//     prevNode.after(node);
-//     return;
-//   }
-
-//   domPointer.parent.prepend(node);
-// };
 
 const replaceFull = (vNew: VNew, vOld: VOld, window: Window) => {
   const newDomNode = create(vNew, window);
