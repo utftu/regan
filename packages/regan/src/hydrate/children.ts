@@ -65,14 +65,6 @@ export function handleChildrenHydrate({
         textNode = parentDomPointer.parent.childNodes[nodeCount] as Text;
       }
 
-      // console.log(
-      //   '-----',
-      //   '',
-      //   [...parentDomPointer.parent.childNodes],
-      //   nodeCount,
-      //   textNode
-      // );
-
       const textHNode = new HNodeText(
         {
           parent: parentHNode,

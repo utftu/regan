@@ -44,8 +44,6 @@ export const updateV = ({
   if (prevTextHNode) {
     const textContent = prevTextHNode.textNode.textContent!;
     if (firstVNew?.type === 'text') {
-      console.log('-----', 'prev', sumPrevText(prevTextHNode));
-      debugger;
       firstVNew.data.text = sumPrevText(prevTextHNode) + firstVNew.data.text;
     } else {
       const vNew: VNew = {
@@ -77,8 +75,10 @@ export const updateV = ({
 
   if (nextTextHNode) {
     const textContent = nextTextHNode.textNode.textContent!;
+    const nextText = sumNextText(nextTextHNode);
+    debugger;
     if (lastVNew?.type === 'text') {
-      lastVNew.data.text = sumNextText(nextTextHNode) + lastVNew.data.text;
+      lastVNew.data.text = lastVNew.data.text + nextText;
     } else {
       const vNew: VNew = {
         type: 'text',
@@ -105,8 +105,8 @@ export const updateV = ({
     // }
   }
 
-  console.log('-----', 'preparedVNews', preparedVNews);
-  console.log('-----', 'preparedVOlds', preparedVOlds);
+  // console.log('-----', 'preparedVNews', preparedVNews);
+  // console.log('-----', 'preparedVOlds', preparedVOlds);
 
   const newVOlds = virtualApply({
     vNews: preparedVNews,

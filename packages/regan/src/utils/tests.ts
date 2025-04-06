@@ -1,3 +1,6 @@
+import {HNodeElement} from '../h-node/element.ts';
+import {HNode} from '../h-node/h-node.ts';
+import {HNodeText} from '../h-node/text.ts';
 import {hydrate} from '../hydrate/hydrate.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {stringify} from '../stringify/stringify.ts';
@@ -21,3 +24,15 @@ export function insertAndHydrate({
 
   return root;
 }
+
+export const createHNode = () => {
+  return new HNode({} as any);
+};
+
+export const createHNodeElement = () => {
+  return new HNodeElement({} as any, {} as any);
+};
+
+export const createHNodeText = (text: string = '') => {
+  return new HNodeText({} as any, {text} as any);
+};

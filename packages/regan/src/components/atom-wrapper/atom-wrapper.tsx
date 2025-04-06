@@ -9,7 +9,6 @@ import {convertFromRtToV} from '../../render/convert/from-rt-to-v.ts';
 import {updateV} from './update-v.ts';
 import {convertHToV} from './h-to-v.ts';
 import {AtomsTracker} from '../../atoms-tracker/atoms-tracker.ts';
-import {a} from 'vite-node/dist/index-O2IrwHKf.js';
 import {subsribeAtomWrapper} from './subsribe.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {convertFromRtToH} from '../../render/convert/from-rt-to-h.ts';
@@ -68,6 +67,8 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
         const hNodeChild = convertFromRtToH(
           renderTemplate as RenderTemplateExtended
         );
+
+        hNode.addChildren([hNodeChild]);
 
         mountHNodes(hNodeChild);
       },

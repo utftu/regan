@@ -55,29 +55,22 @@ export const sumPrevText = (hNode: HNodeText) => {
 export const findNextTextHNodes = (hNode: HNode): HNodeText[] => {
   const nodes = [];
   let nextNode = findNextTextHNode(hNode);
+
   while (nextNode) {
     nodes.push(nextNode);
     nextNode = findNextTextHNode(nextNode);
   }
+
   return nodes;
 };
 
 export const sumNextText = (hNode: HNodeText) => {
-  const prevTextHNodes = findNextTextHNodes(hNode);
+  const nextTextHNodes = findNextTextHNodes(hNode);
 
   let text = hNode.text;
-  prevTextHNodes.forEach((prevTextHNode) => {
-    text = prevTextHNode.text + text;
+
+  nextTextHNodes.forEach((nextTestHNode) => {
+    text = text + nextTestHNode.text;
   });
   return text;
 };
-
-// export const findNextTextHNodes = (hNode: HNode): HNodeText[] => {
-//   const nodes = [];
-//   let nextNode = findNextTextHNode(hNode);
-//   while (nextNode) {
-//     nodes.push(nextNode);
-//     nextNode = findNextTextHNode(nextNode);
-//   }
-//   return nodes;
-// };

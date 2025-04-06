@@ -64,7 +64,7 @@ describe('atom-wrapper', () => {
       `${start}Ivan${end}`
     );
   });
-  it.only('several dynamic zones', async () => {
+  it('several dynamic zones', async () => {
     const atom1 = atom('1');
     const atom2 = atom('2');
     const atom3 = atom('3');
@@ -90,5 +90,11 @@ describe('atom-wrapper', () => {
     await waitTime(0);
 
     expect(div.outerHTML).toBe(`<div id="div">1 2 3.1 4 5</div>`);
+
+    atom4.set('4.1');
+
+    await waitTime(0);
+
+    expect(div.outerHTML).toBe(`<div id="div">1 2 3.1 4.1 5</div>`);
   });
 });

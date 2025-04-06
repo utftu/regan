@@ -1,3 +1,4 @@
+import {HNodeElement} from '../element.ts';
 import {HNode} from '../h-node.ts';
 import {Checker, CheckerAnswer} from './find.ts';
 
@@ -10,26 +11,16 @@ export const findNextHNode = (hNode: HNode, checker: Checker) => {
 };
 
 const findNextUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
-  const parent = hNode.parent;
+  const checkingHNode = hNode.parent;
 
-  if (!parent) {
+  if (!checkingHNode) {
     return;
   }
 
-  const childPosition = parent.children.indexOf(hNode);
+  const childPosition = checkingHNode.children.indexOf(hNode);
 
-  for (let i = childPosition + 1; i < parent.children.length; i++) {
-    const child = parent.children[i];
-
-    const checkerAnswer = checker(child);
-
-    if (checkerAnswer instanceof HNode) {
-      return child;
-    }
-
-    if (checkerAnswer === 'stop') {
-      return 'stop';
-    }
+  for (let i = childPosition + 1; i < checkingHNode.children.length; i++) {
+    const child = checkingHNode.children[i];
 
     const downAnswer = findNextDown(child, checker);
 
@@ -42,14 +33,24 @@ const findNextUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
     }
   }
 
-  if (parent instanceof HNode) {
+  if (checkingHNode instanceof HNodeElement) {
     return;
   }
 
-  return findNextUp(parent, checker);
+  return findNextUp(checkingHNode, checker);
 };
 
 const findNextDown = (hNode: HNode, checker: Checker): CheckerAnswer => {
+  const checkerAnswer = checker(hNode);
+
+  if (checkerAnswer instanceof HNode) {
+    return hNode;
+  }
+
+  if (checkerAnswer === 'stop') {
+    return 'stop';
+  }
+
   for (let i = 0; i < hNode.children.length; i++) {
     const child = hNode.children[i];
 
