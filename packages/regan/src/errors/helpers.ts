@@ -4,14 +4,14 @@ import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {AnyFunc} from '../types.ts';
 import {LisneterManager} from '../utils/listeners.ts';
-import {errorContextHandler, errorContextJsx} from './errors.tsx';
+import {getErrorHandlerContext, getErrorJsxContext} from './errors.tsx';
 
 export const createErrorJsxNodeComponent = (
   jsxNode: JsxNode,
   error: unknown,
   parentContextEnt?: ContextEnt
 ) => {
-  const errorJsx = getContextValue(errorContextJsx, parentContextEnt);
+  const errorJsx = getContextValue(getErrorJsxContext(), parentContextEnt);
 
   return new JsxNodeComponent(
     {
@@ -38,7 +38,7 @@ export const prepareListener = ({
       await func(...args);
     } catch (error) {
       const errorHandler = getContextValue(
-        errorContextHandler,
+        getErrorHandlerContext(),
         listenerManager.segmentEnt.contextEnt
       );
       errorHandler({
@@ -55,7 +55,7 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
     await mount(hNode);
   } catch (error) {
     const errorHandler = getContextValue(
-      errorContextHandler,
+      getErrorHandlerContext(),
       hNode.segmentEnt.contextEnt
     );
     errorHandler({

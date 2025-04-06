@@ -21,12 +21,12 @@ export const checkAllowedPrivitive = (value: any): value is string | number => {
   return false;
 };
 
-export const checkPassPrimitive = (value: any) => {
+export function checkPassPrimitive(value: any) {
   if (value === null || value === undefined || typeof value === 'boolean') {
     return true;
   }
   return false;
-};
+}
 
 export const checkAllowedStructure = (value: any) => {
   if (

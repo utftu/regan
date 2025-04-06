@@ -3,7 +3,7 @@ import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {h} from '../jsx/jsx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {FC} from '../types.ts';
+import {AnyFunc, FC} from '../types.ts';
 
 type Props = {
   error: Error | unknown;
@@ -27,29 +27,39 @@ export const defaultErrorJsx = () => {
   );
 };
 
-export const errorContextHandler = createContext<ErrorHandler>(
-  'error_handler',
-  defaultErrorHandler
-);
-export const errorContextJsx = createContext<ErrorJsx>(
-  'error_jsx',
-  defaultErrorJsx
-);
-export const errorCommonContext = createContext<ErrorCommonHandler>(
-  'error_common',
-  () => {}
-);
+const makeLazy = (func: AnyFunc) => {
+  let value: ReturnType<typeof func>;
+  return () => {
+    if (!value) {
+      value = func();
+    }
+
+    return value;
+  };
+};
+
+export const getErrorHandlerContext = makeLazy(() => {
+  return createContext<ErrorHandler>('error_handler', defaultErrorHandler);
+});
+
+export const getErrorJsxContext = makeLazy(() => {
+  return createContext<ErrorJsx>('error_jsx', defaultErrorJsx);
+});
+
+export const getErrorCommonContext = makeLazy(() => {
+  return createContext<ErrorCommonHandler>('error_common', () => {});
+});
 
 export const ErrorGuardHandler: FC<{errorHandler: ErrorHandler}> = (
   {errorHandler},
   {children}
 ) => {
-  return h(errorContextHandler.Provider, {value: errorHandler}, children);
+  return h(getErrorHandlerContext().Provider, {value: errorHandler}, children);
 };
 
 export const ErrorGuardJsx: FC<{errorJsx: ErrorJsx}> = (
   {errorJsx},
   {children}
 ) => {
-  return h(errorContextJsx.Provider, {value: errorJsx}, children);
+  return h(getErrorJsxContext().Provider, {value: errorJsx}, children);
 };

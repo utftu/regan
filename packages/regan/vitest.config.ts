@@ -6,6 +6,7 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      setupFiles: ['./src/context/context.tsx'],
       coverage: {
         provider: 'istanbul', // or 'v8'
       },

@@ -1,8 +1,8 @@
+import {getContextValue} from '../context/context.tsx';
 import {errorCommonContext} from '../errors/errors.tsx';
 import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {getContextValue} from '../regan.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Child, DomPointer} from '../types.ts';
 import {
@@ -31,7 +31,7 @@ export function handleChildrenHydrate({
   lastText: propsLastText,
 }: {
   children: Child[];
-  parentHNode?: HNode;
+  parentHNode: HNode;
   globalCtx: GlobalCtx;
   globalClientCtx: GlobalClientCtx;
   hydrateCtx: HydrateCtx;
@@ -51,7 +51,7 @@ export function handleChildrenHydrate({
     const childOrAtom = formatJsxValue(children[i]);
 
     if (checkPassPrimitive(childOrAtom)) {
-      // getContextValue(errorCommonContext);
+      const a = getContextValue(errorCommonContext);
       continue;
     }
 
