@@ -7,12 +7,12 @@
   "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/regan.js",
-      "types": "./dist/types/regan.d.ts"
+      "types": "./dist/types/regan.d.ts",
+      "default": "./dist/regan.js"
     },
     "./jsx-runtime": {
-      "default": "./dist/regan.js",
-      "types": "./dist/types/regan.d.ts"
+      "types": "./dist/types/regan.d.ts",
+      "default": "./dist/regan.js"
     }
   },
   "scripts": {
