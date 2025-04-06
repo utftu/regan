@@ -2,6 +2,7 @@ import {createContext} from '../context/context.tsx';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {h} from '../jsx/jsx.ts';
+import {SegmentEnt} from '../segment/segment.ts';
 import {FC} from '../types.ts';
 
 type Props = {
@@ -9,7 +10,8 @@ type Props = {
   jsxNode: JsxNode;
 };
 
-type ErrorHandler = (props: Props) => void;
+type HadnlerProps = Props & {segmentEnt: SegmentEnt};
+type ErrorHandler = (props: HadnlerProps) => void;
 type ErrorJsx = FC<Props>;
 
 export const defaultErrorHandler = () => {};

@@ -36,6 +36,7 @@ export function convertFromNewToOld(
   vNew: VNewElement,
   domNode: Node
 ): VOldElement;
+export function convertFromNewToOld(vNew: VNew, domNode: Node): VOld;
 
 // @ts-expect-error
 export function convertFromNewToOld(vNew: VNew, domNode: Node): VOld {

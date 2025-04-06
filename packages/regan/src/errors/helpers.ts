@@ -41,7 +41,11 @@ export const prepareListener = ({
         errorContextHandler,
         listenerManager.segmentEnt.contextEnt
       );
-      errorHandler({error, jsxNode: listenerManager.segmentEnt.jsxNode});
+      errorHandler({
+        error,
+        jsxNode: listenerManager.segmentEnt.jsxNode,
+        segmentEnt: listenerManager.segmentEnt,
+      });
     }
   };
 };
@@ -54,6 +58,10 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
       errorContextHandler,
       hNode.segmentEnt.contextEnt
     );
-    errorHandler({error, jsxNode: hNode.segmentEnt.jsxNode});
+    errorHandler({
+      error,
+      jsxNode: hNode.segmentEnt.jsxNode,
+      segmentEnt: hNode.segmentEnt,
+    });
   }
 };

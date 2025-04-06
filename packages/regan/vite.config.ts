@@ -36,5 +36,8 @@ export default defineConfig({
       entry: ['./src/regan.ts'],
       formats: ['es'],
     },
+    rollupOptions: {
+      external: ['strangelove'],
+    },
   },
 });

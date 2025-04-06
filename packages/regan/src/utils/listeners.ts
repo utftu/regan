@@ -1,5 +1,3 @@
-import {getContextValue} from '../context/context.tsx';
-import {errorContextHandler} from '../errors/errors.tsx';
 import {prepareListener} from '../errors/helpers.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc} from '../types.ts';
@@ -22,7 +20,10 @@ export class LisneterManager {
       this.remove(element, name);
     }
 
-    const preparedFunc = prepareListener({listenerManager: this, func});
+    const preparedFuncForError = prepareListener({listenerManager: this, func});
+    const preparedFunc = (...args: any[]) => {
+      return preparedFuncForError(...args);
+    };
 
     element.addEventListener(name, preparedFunc);
 

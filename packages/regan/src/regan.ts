@@ -9,3 +9,4 @@ export {jsx, jsxs} from './jsx/jsx.ts';
 export type {JSX} from './jsx/types.ts';
 export {stringify} from './stringify/stringify.ts';
 export {JsxNode} from './jsx-node/jsx-node.ts';
+export {ErrorLogger} from './errors/logger.tsx';

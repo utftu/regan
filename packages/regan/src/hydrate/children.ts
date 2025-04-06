@@ -1,4 +1,3 @@
-import {ContextEnt} from '../context/context.tsx';
 import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
@@ -6,6 +5,7 @@ import {SegmentEnt} from '../segment/segment.ts';
 import {Child, DomPointer} from '../types.ts';
 import {
   checkAllowedPrivitive,
+  checkAllowedStructure,
   checkPassPrimitive,
   formatJsxValue,
   wrapChildIfNeed,
@@ -86,6 +86,10 @@ export function handleChildrenHydrate({
 
       lastText = true;
 
+      continue;
+    }
+
+    if (!checkAllowedStructure(childOrAtom)) {
       continue;
     }
 

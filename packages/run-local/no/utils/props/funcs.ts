@@ -21,7 +21,10 @@ export class LisneterManager {
       this.remove(element, name);
     }
 
-    const preparedFunc = this.prepare(func);
+    const preparedFuncForError = this.prepare(func);
+    const preparedFunc = (...args: any[]) => {
+      preparedFuncForError(...args, element);
+    };
 
     element.addEventListener(name, preparedFunc);
 

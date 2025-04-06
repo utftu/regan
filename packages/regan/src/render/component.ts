@@ -53,6 +53,7 @@ export function renderComponent(
   try {
     rawChidlren = this.component(this.props, componentCtx);
   } catch (error) {
+    console.log('-----', 'error!');
     const jsxNodeComponent = createErrorJsxNodeComponent(
       this,
       error,
