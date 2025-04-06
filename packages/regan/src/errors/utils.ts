@@ -1,5 +1,6 @@
 import {ContextEnt, getContextValue} from '../context/context.tsx';
-import {SegmentEnt} from '../segments/ent/ent.ts';
+import {SegmentEnt} from '../segment/segment.ts';
+
 import {errorContextHandler} from './errors.tsx';
 
 export const prepareListenerForError = ({
