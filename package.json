@@ -8,8 +8,8 @@
     "test": "vitest"
   },
   "exports": {
-    "default": "./dist/regan.js",
-    "jsx-runtime": "./dist/regan.js"
+    "jsx-runtime": "./dist/regan.js",
+    "default": "./dist/regan.js"
   },
   "keywords": [],
   "author": "",
