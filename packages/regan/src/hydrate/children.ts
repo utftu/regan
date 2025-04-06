@@ -1,5 +1,6 @@
 import {getContextValue} from '../context/context.tsx';
-import {errorCommonContext} from '../errors/errors.tsx';
+import {getErrorCommonContext} from '../errors/errors.tsx';
+import {handleCommonError} from '../errors/helpers.ts';
 import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
@@ -51,7 +52,6 @@ export function handleChildrenHydrate({
     const childOrAtom = formatJsxValue(children[i]);
 
     if (checkPassPrimitive(childOrAtom)) {
-      const a = getContextValue(errorCommonContext);
       continue;
     }
 
@@ -93,6 +93,7 @@ export function handleChildrenHydrate({
     }
 
     if (checkAllowedStructure(childOrAtom) === false) {
+      handleCommonError('Invalid structura', parentSegmentEnt);
       continue;
     }
 

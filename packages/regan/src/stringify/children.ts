@@ -1,9 +1,11 @@
 import {ContextEnt} from '../context/context.tsx';
+import {handleCommonError} from '../errors/helpers.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Child} from '../types.ts';
 import {
   checkAllowedPrivitive,
+  checkAllowedStructure,
   checkPassPrimitive,
   formatJsxValue,
   wrapChildIfNeed,
@@ -23,7 +25,7 @@ export function handleChildrenString({
   children: Child[];
   globalCtx: GlobalCtx;
   stringifyContext: StringifyContext;
-  parentSegmentEnt: SegmentEnt | undefined;
+  parentSegmentEnt: SegmentEnt;
 }): HandleChildrenStringifyResult {
   let insertedJsxCount = 0;
 
@@ -40,6 +42,11 @@ export function handleChildrenString({
 
       strings.push(text);
 
+      continue;
+    }
+
+    if (checkAllowedStructure(childOrAtom) === false) {
+      handleCommonError('Invalid structura', parentSegmentEnt);
       continue;
     }
 

@@ -2,6 +2,7 @@ import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Child} from '../types.ts';
 import {
   checkAllowedPrivitive,
+  checkAllowedStructure,
   checkPassPrimitive,
   formatJsxValue,
   wrapChildIfNeed,
@@ -10,6 +11,7 @@ import {HNodeText} from '../h-node/text.ts';
 import {RenderCtx} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {RenderTemplate, RenderTemplateText} from './template.types.ts';
+import {handleCommonError} from '../errors/helpers.ts';
 
 export type HandleChildrenResult = {
   renderTemplates: RenderTemplate[];
@@ -68,6 +70,11 @@ export function handleChildren({
       };
       renderTemplates.push(renderTemplateText);
 
+      continue;
+    }
+
+    if (checkAllowedStructure(childOrAtom) === false) {
+      handleCommonError('Invalid structura', parentSegmentEnt);
       continue;
     }
 

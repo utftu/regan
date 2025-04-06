@@ -27,7 +27,9 @@ export const defaultErrorJsx = () => {
   );
 };
 
-const makeLazy = (func: AnyFunc) => {
+export const makeLazy = <TFunc extends AnyFunc>(
+  func: TFunc
+): (() => ReturnType<TFunc>) => {
   let value: ReturnType<typeof func>;
   return () => {
     if (!value) {

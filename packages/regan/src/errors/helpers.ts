@@ -2,9 +2,14 @@ import {ContextEnt, getContextValue} from '../context/context.tsx';
 import {HNode, Mount} from '../h-node/h-node.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
+import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc} from '../types.ts';
 import {LisneterManager} from '../utils/listeners.ts';
-import {getErrorHandlerContext, getErrorJsxContext} from './errors.tsx';
+import {
+  getErrorCommonContext,
+  getErrorHandlerContext,
+  getErrorJsxContext,
+} from './errors.tsx';
 
 export const createErrorJsxNodeComponent = (
   jsxNode: JsxNode,
@@ -64,4 +69,15 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
       segmentEnt: hNode.segmentEnt,
     });
   }
+};
+
+export const handleCommonError = (message: string, segmentEnt: SegmentEnt) => {
+  const commonHandler = getContextValue(
+    getErrorCommonContext(),
+    segmentEnt.contextEnt
+  );
+  commonHandler({
+    error: new Error(message),
+    jsxNode: segmentEnt.jsxNode,
+  });
 };
