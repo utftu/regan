@@ -1,4 +1,5 @@
 import {FC, JsxNode, render} from 'regan';
+import {atom} from 'strangelove';
 // import {JsxNode as JsxNode2} from '../../regan/src/regan.ts';
 
 const a = <div>2323</div>;
@@ -7,11 +8,15 @@ const a = <div>2323</div>;
 // const bb = (<div>123</div>) as JSX.Element;
 // const dd: JsxNode<any, any> = bb;
 
-const App: FC = (_, {createAtom, select}) => {
+const App = () => {
+  return <Component />;
+};
+
+const Component: FC = (_) => {
   // const state = createAtom('hello');
   // const savedValue = createAtom('');
 
-  const name = createAtom('Aleksey');
+  const name = atom('Aleksey');
   // const family = createAtom('Malyuta');
 
   // const MyHello = async () => {
@@ -22,9 +27,9 @@ const App: FC = (_, {createAtom, select}) => {
   // MyHello.returnLength = 'sdsdssdsdsdsdsds';
   // const atom = createAtom(MyHello);
 
-  setTimeout(() => {
-    name.set('Ivan');
-  }, 1000);
+  // setTimeout(() => {
+  //   name.set('Ivan');
+  // }, 1000);
 
   return <div>My name is {name}</div>;
 

@@ -25,5 +25,6 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "packageManager": "npm@10.7.0"
 }

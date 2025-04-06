@@ -9,7 +9,8 @@
     "dev": "vite"
   },
   "dependencies": {
-    "regan": "*"
+    "regan": "*",
+    "strangelove": "^2.0.1"
   },
   "devDependencies": {
     "regan-vite": "*"
