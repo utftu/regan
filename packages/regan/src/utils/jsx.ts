@@ -30,9 +30,9 @@ export const checkPassPrimitive = (value: any) => {
 
 export const checkAllowedStructure = (value: any) => {
   if (
+    value instanceof JsxNode ||
     value instanceof Atom ||
-    Array.isArray(value) ||
-    typeof value === 'function'
+    Array.isArray(value)
   ) {
     return true;
   }

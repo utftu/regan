@@ -1,6 +1,8 @@
+import {errorCommonContext} from '../errors/errors.tsx';
 import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
+import {getContextValue} from '../regan.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Child, DomPointer} from '../types.ts';
 import {
@@ -49,6 +51,7 @@ export function handleChildrenHydrate({
     const childOrAtom = formatJsxValue(children[i]);
 
     if (checkPassPrimitive(childOrAtom)) {
+      // getContextValue(errorCommonContext);
       continue;
     }
 
@@ -89,9 +92,9 @@ export function handleChildrenHydrate({
       continue;
     }
 
-    // if (!checkAllowedStructure(childOrAtom)) {
-    //   continue;
-    // }
+    if (checkAllowedStructure(childOrAtom) === false) {
+      continue;
+    }
 
     const jsxNode = wrapChildIfNeed(childOrAtom);
 

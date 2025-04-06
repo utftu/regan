@@ -13,6 +13,7 @@ type Props = {
 type HadnlerProps = Props & {segmentEnt: SegmentEnt};
 type ErrorHandler = (props: HadnlerProps) => void;
 type ErrorJsx = FC<Props>;
+type ErrorCommonHandler = (props: Props) => void;
 
 export const defaultErrorHandler = () => {};
 export const defaultErrorJsx = () => {
@@ -33,6 +34,10 @@ export const errorContextHandler = createContext<ErrorHandler>(
 export const errorContextJsx = createContext<ErrorJsx>(
   'error_jsx',
   defaultErrorJsx
+);
+export const errorCommonContext = createContext<ErrorCommonHandler>(
+  'error_common',
+  () => {}
 );
 
 export const ErrorGuardHandler: FC<{errorHandler: ErrorHandler}> = (
