@@ -18,18 +18,25 @@ export function hydrateRaw({
 }) {
   const atomTracker = new AtomsTracker();
 
+  const globalCtx = new GlobalCtx({
+    data,
+    mode: 'client',
+    root: new Root(),
+  });
+
+  const globalClientCtx = new GlobalClientCtx({
+    window: windowLocal,
+    initDomPointer: domPointer,
+  });
+
+  globalCtx.globalClientCtx = globalClientCtx;
+  globalClientCtx.atomsTracker = atomTracker;
+
   const {hNode} = node.hydrate({
     jsxSegmentName: '',
     domPointer,
-    globalCtx: new GlobalCtx({
-      data,
-      mode: 'client',
-      root: new Root(),
-    }),
-    globalClientCtx: new GlobalClientCtx({
-      window: windowLocal,
-      initDomPointer: domPointer,
-    }),
+    globalCtx,
+    globalClientCtx,
     hydrateCtx: {
       atomsTracker: atomTracker,
     },

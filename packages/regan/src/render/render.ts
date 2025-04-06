@@ -98,6 +98,9 @@ export const rednerVirtual = ({
       initDomPointer: domPointer,
     });
 
+  globalCtx.globalClientCtx = globalClientCtx;
+  globalClientCtx.atomsTracker = atomsTracker;
+
   const {renderTemplate} = node.render({
     parentSegmentEnt,
     globalCtx,

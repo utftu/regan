@@ -28,14 +28,14 @@ const getAdditionalPart = (initRun: boolean) => {
   return `?a=${Date.now()}`;
 };
 
-export const AtomWrapper: FC<Props> = ({atom, atomsTracker}, ctx) => {
+export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
   const initPathSegmentName = ctx.segmentEnt.pathSegment.name;
   ctx.segmentEnt.pathSegment.name += getAdditionalPart(true);
 
-  if (atomsTracker) {
+  if (ctx.globalCtx.globalClientCtx?.atomsTracker) {
     subsribeAtomWrapper({
       atom,
-      atomsTracker,
+      atomsTracker: ctx.globalCtx.globalClientCtx?.atomsTracker,
       ctx,
       cb: (hNode: HNode) => {
         const vOlds = convertHToV(hNode);

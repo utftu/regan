@@ -71,7 +71,7 @@ export function handleChildren({
       continue;
     }
 
-    const jsxNode = wrapChildIfNeed(childOrAtom, renderCtx.atomsTracker);
+    const jsxNode = wrapChildIfNeed(childOrAtom);
 
     const {renderTemplate} = jsxNode.render({
       globalCtx,

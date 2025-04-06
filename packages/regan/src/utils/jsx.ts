@@ -29,17 +29,13 @@ export const checkPassPrimitive = (value: any) => {
   return false;
 };
 
-export const wrapChildIfNeed = (
-  child: JsxNode | Atom,
-  atomsTracker?: AtomsTracker
-) => {
+export const wrapChildIfNeed = (child: JsxNode | Atom) => {
   if (child instanceof Atom) {
     return new JsxNodeComponent(
       {
         children: [],
         props: {
           atom: child,
-          atomsTracker,
         },
         systemProps: {},
       },
