@@ -21,18 +21,18 @@ const findPrevUp = (
   checker: Checker,
   config: Config
 ): CheckerAnswer => {
-  const parent = hNode.parent;
+  const checkingHNode = hNode.parent;
 
-  if (!parent) {
+  if (!checkingHNode) {
     return;
   }
 
-  config.lastParentHNode = parent;
+  config.lastParentHNode = checkingHNode;
 
-  const childPosition = parent.children.indexOf(hNode);
+  const childPosition = checkingHNode.children.indexOf(hNode);
 
   for (let i = childPosition - 1; i >= 0; i--) {
-    const child = parent.children[i];
+    const child = checkingHNode.children[i];
 
     const checkerAnswer = checker(child);
 
@@ -54,11 +54,11 @@ const findPrevUp = (
     }
   }
 
-  if (parent instanceof HNodeElement) {
+  if (checkingHNode instanceof HNodeElement) {
     return;
   }
 
-  return findPrevUp(parent, checker, config);
+  return findPrevUp(checkingHNode, checker, config);
 };
 
 // not check hNode

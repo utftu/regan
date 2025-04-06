@@ -18,9 +18,7 @@ export const convertFromRtToH = (
   renderTemplate: RenderTemplateExtended
 ): HNode => {
   if (renderTemplate.type === 'text') {
-    const hNode = renderTemplate.createHNode({
-      domNode: renderTemplate.vOld.textNode,
-    });
+    const hNode = renderTemplate.createHNode(renderTemplate.vOld);
     return hNode;
   }
   if (renderTemplate.type === 'element') {

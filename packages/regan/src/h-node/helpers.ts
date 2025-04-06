@@ -10,6 +10,13 @@ export const unmountHNodes = (hNode: HNode) => {
   hNode.children.forEach((hNode) => unmountHNodes(hNode));
 };
 
+export const connectChildren = (parentHNode: HNode, children: HNode[]) => {
+  children.forEach((childHNode) => {
+    childHNode.parent = parentHNode;
+    parentHNode.children.push(childHNode);
+  });
+};
+
 export const detachChildren = (hNode: HNode) => {
   hNode.children.forEach((hNodeChild) => {
     unmountHNodes(hNodeChild);
