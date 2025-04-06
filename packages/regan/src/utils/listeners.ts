@@ -22,7 +22,7 @@ export class LisneterManager {
 
     const preparedFuncForError = prepareListener({listenerManager: this, func});
     const preparedFunc = (...args: any[]) => {
-      return preparedFuncForError(...args);
+      return preparedFuncForError(element, ...args);
     };
 
     element.addEventListener(name, preparedFunc);

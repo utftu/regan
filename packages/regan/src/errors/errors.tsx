@@ -65,3 +65,10 @@ export const ErrorGuardJsx: FC<{errorJsx: ErrorJsx}> = (
 ) => {
   return h(getErrorJsxContext().Provider, {value: errorJsx}, children);
 };
+
+export const ErrorCommanGuard: FC<{errorCommon: ErrorCommonHandler}> = (
+  {errorCommon},
+  {children}
+) => {
+  return h(getErrorCommonContext().Provider, {value: errorCommon}, children);
+};

@@ -11,5 +11,5 @@ export type A = BaseElement & {
 };
 
 export type Input = BaseElement & {
-  input?: (event: InputEvent) => void;
+  input?: (element: HTMLInputElement, event: InputEvent) => void;
 };

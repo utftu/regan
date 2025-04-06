@@ -2,9 +2,8 @@ import {describe, expect, it} from 'vitest';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {FC} from '../types.ts';
 import {atom} from 'strangelove';
-import {waitTime} from 'utftu';
 import {stringify} from './stringify.ts';
-import {getHashFromString} from '../segment/jsx-path/jsx-path.ts';
+import {djb2, getHashFromString} from '../segment/jsx-path/jsx-path.ts';
 
 describe('node', () => {
   it('strinfify()', () => {
@@ -98,7 +97,7 @@ describe('node', () => {
     stringify(<Level0 />);
     const jsxPath = '0.1.0.0.2?a=0.0.0.0';
     expect(level3JsxPath).toBe(jsxPath);
-    expect(level3Id).toBe(getHashFromString(jsxPath));
+    expect(level3Id).toBe(djb2(jsxPath));
   });
   it('atom changed', () => {
     const atom1 = atom('hello');

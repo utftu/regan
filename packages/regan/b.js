@@ -1,21 +1,10 @@
-// const b = () => {
-//   console.log(`regan: error
-//   a=b
-//   b=c`);
-// };
-
-// const bb = () => {
-//   let str = '';
-//   str += 'regan: error\n';
-//   str += '\ta=b\n';
-//   str += 'b=c';
-
-//   console.log(str);
-// };
-
-// b();
-// bb();
-
-import {createContext} from './dist/regan.js';
-
-createContext('nasas', {});
+console.log('This is the outer level');
+console.groupCollapsed();
+console.log('Level 2');
+console.group();
+console.log('Level 3');
+console.warn('More of level 3');
+console.groupEnd();
+console.log('Back to level 2');
+console.groupEnd();
+console.log('Back to the outer level');

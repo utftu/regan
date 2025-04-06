@@ -24,7 +24,7 @@ export class PathSegment {
       return this.idCached;
     }
 
-    const id = getHashFromString(this.getJsxPath());
+    const id = djb2(this.getJsxPath());
     this.idCached = id;
     return id;
   }
@@ -57,15 +57,23 @@ export function joinPath(oldPart: string = '', newPart: string = '') {
   return `${oldPart}.${newPart}`;
 }
 
-export function getHashFromString(str: string) {
-  let hash = 0,
-    i,
-    chr;
-  if (str.length === 0) return hash.toString();
-  for (i = 0; i < str.length; i++) {
-    chr = str.charCodeAt(i);
-    hash = (hash << 5) - hash + chr;
-    hash |= 0; // Convert to 32bit integer
+export function djb2(str: string) {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 33) ^ str.charCodeAt(i);
   }
-  return hash.toString();
+  return (hash >>> 0).toString(); // Убираем знак, возвращаем положительное число
 }
+
+// export function getHashFromString(str: string) {
+//   let hash = 0,
+//     i,
+//     chr;
+//   if (str.length === 0) return hash.toString();
+//   for (i = 0; i < str.length; i++) {
+//     chr = str.charCodeAt(i);
+//     hash = (hash << 5) - hash + chr;
+//     hash |= 0; // Convert to 32bit integer
+//   }
+//   return hash.toString();
+// }

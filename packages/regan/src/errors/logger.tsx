@@ -1,13 +1,29 @@
+import {JsxNode} from '../regan.ts';
 import {FC} from '../types.ts';
-import {ErrorGuardHandler, ErrorGuardJsx} from './errors.tsx';
+import {ErrorCommanGuard, ErrorGuardHandler, ErrorGuardJsx} from './errors.tsx';
 import {createErrorJsxNodeComponent} from './helpers.ts';
 
-const logError = (points: {name: string; value: any}[]) => {
-  let str = 'regan: Error';
+const logError = ({error, jsxNode}: {jsxNode: JsxNode; error: Error}) => {
+  console.groupCollapsed(`regan: error: ${error.message}`);
 
-  points.forEach(({name, value}) => {
-    str += `\n  ${name}: ${value}`;
-  });
+  console.groupCollapsed('Stack');
+  console.log(error);
+  console.groupEnd();
+
+  console.groupCollapsed('JsxNode');
+  console.dir(jsxNode);
+  console.groupEnd();
+
+  console.groupEnd();
+};
+
+const checkValidError = (error: unknown): error is Error => {
+  if (error instanceof Error) {
+    return true;
+  }
+
+  console.error('regan: regan: (invalid error) ', error);
+  return false;
 };
 
 export const ErrorLogger: FC<{enabled?: boolean}> = (
@@ -20,23 +36,32 @@ export const ErrorLogger: FC<{enabled?: boolean}> = (
   return (
     <ErrorGuardJsx
       errorJsx={({error, jsxNode}) => {
-        logError([
-          {name: 'error', value: error},
-          {name: 'jsxNode', value: jsxNode},
-        ]);
+        if (!checkValidError(error)) {
+          return createErrorJsxNodeComponent(jsxNode, error);
+        }
+        logError({error, jsxNode});
         return createErrorJsxNodeComponent(jsxNode, error);
       }}
     >
       <ErrorGuardHandler
         errorHandler={({error, jsxNode}) => {
-          logError([
-            {name: 'error', value: error},
-            {name: 'jsxNode', value: jsxNode},
-          ]);
-          console.error(`regan: ${error}`);
+          if (!checkValidError(error)) {
+            return;
+          }
+          logError({error, jsxNode});
         }}
       >
-        {children}
+        <ErrorCommanGuard
+          errorCommon={({error, jsxNode}) => {
+            if (!checkValidError(error)) {
+              return;
+            }
+
+            logError({error, jsxNode});
+          }}
+        >
+          {children}
+        </ErrorCommanGuard>
       </ErrorGuardHandler>
     </ErrorGuardJsx>
   );
