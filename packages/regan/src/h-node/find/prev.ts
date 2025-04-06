@@ -34,16 +34,6 @@ const findPrevUp = (
   for (let i = childPosition - 1; i >= 0; i--) {
     const child = checkingHNode.children[i];
 
-    const checkerAnswer = checker(child);
-
-    if (checkerAnswer instanceof HNode) {
-      return child;
-    }
-
-    if (checkerAnswer === 'stop') {
-      return 'stop';
-    }
-
     const downAnswer = findPrevDown(child, checker);
     if (downAnswer instanceof HNode) {
       return downAnswer;
@@ -61,9 +51,18 @@ const findPrevUp = (
   return findPrevUp(checkingHNode, checker, config);
 };
 
-// not check hNode
 const findPrevDown = (hNode: HNode, checker: Checker): CheckerAnswer => {
-  for (let i = hNode.children.length - 1; i > 0; i--) {
+  const checkerAnswer = checker(hNode);
+
+  if (checkerAnswer instanceof HNode) {
+    return hNode;
+  }
+
+  if (checkerAnswer === 'stop') {
+    return 'stop';
+  }
+
+  for (let i = hNode.children.length - 1; i >= 0; i--) {
     const child = hNode.children[i];
 
     const downAnswer = findPrevDown(child, checker);

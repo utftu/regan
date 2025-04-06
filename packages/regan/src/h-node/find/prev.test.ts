@@ -1,62 +1,77 @@
 import {describe, it, expect, vi} from 'vitest';
 import {HNode} from '../h-node.ts';
 import {findPrevHNode} from './prev.ts';
+import {HNodeElement} from '../element.ts';
+import {HNodeText} from '../text.ts';
+import {addChildren} from '../helpers.ts';
+import {Config} from './find.ts';
 
 const createHNode = () => {
   return new HNode({} as any);
 };
 
+const createHNodeElement = () => {
+  return new HNodeElement({} as any, {} as any);
+};
+
 describe('findPrevHNode', () => {
-  it.only('should return undefined when no previous node is found', () => {
-    const hNode = createHNode();
+  it('no prev node', () => {
+    const level1HNode = createHNode();
     const checker = vi.fn(() => false) as any;
-    const result = findPrevHNode(hNode, checker);
+    const result = findPrevHNode(level1HNode, checker);
     expect(result).toBeUndefined();
   });
 
-  it('should return HNode when found in previous sibling', () => {
-    const targetNode = new TestHNode();
-    const hNode = new TestHNode();
-    const parent = new TestHNode([targetNode, hNode]);
-    const checker = vi.fn((node) => (node === targetNode ? node : false));
-    const result = findPrevHNode(hNode, checker);
-    expect(result).toBe(targetNode);
+  it('prev sibling', () => {
+    const level1_1HNode = createHNode();
+    const level1_2HNode = createHNode();
+    const level0HNode = createHNode();
+    addChildren(level0HNode, [level1_1HNode, level1_2HNode]);
+    const checker = vi.fn((node) => (node === level1_1HNode ? node : false));
+    const result = findPrevHNode(level1_2HNode, checker);
+    expect(result).toBe(level1_1HNode);
   });
 
-  it('should return undefined when parent is HNodeElement', () => {
-    const hNode = new TestHNode();
-    new TestHNodeElement([hNode]); // parent is HNodeElement
-    const checker = vi.fn(() => false);
-    const result = findPrevHNode(hNode, checker);
+  it('parent HNodeElement', () => {
+    const level1HNode = createHNode();
+    const level0HNode = createHNodeElement();
+    addChildren(level0HNode, [level1HNode]);
+    const checker = vi.fn(() => false) as any;
+    const result = findPrevHNode(level1HNode, checker);
     expect(result).toBeUndefined();
   });
 
-  it('should respect stop condition from checker', () => {
-    const hNode = new TestHNode();
-    const prevNode = new TestHNode();
-    new TestHNode([prevNode, hNode]);
+  it('stop condition', () => {
+    const level1_1HNode = createHNode();
+    const level1_2HNode = createHNode();
+    const level0HNode = createHNode();
+    addChildren(level0HNode, [level1_1HNode, level1_2HNode]);
     const checker = vi.fn(() => 'stop');
-    const result = findPrevHNode(hNode, checker);
+    const result = findPrevHNode(level1_2HNode, checker as any);
     expect(result).toBeUndefined();
   });
 
-  it('should find node in deeper previous siblings', () => {
-    const targetNode = new TestHNode();
-    const deepNode = new TestHNode([targetNode]);
-    const prevNode = new TestHNode([deepNode]);
-    const hNode = new TestHNode();
-    new TestHNode([prevNode, hNode]);
-    const checker = vi.fn((node) => (node === targetNode ? node : false));
-    const result = findPrevHNode(hNode, checker);
-    expect(result).toBe(targetNode);
+  it('deeper prev siblings', () => {
+    const level3HNode = createHNode();
+    const level2HNode = createHNode();
+    const level1_1HNode = createHNode();
+    const level1_2HNode = createHNode();
+    addChildren(level2HNode, [level3HNode]);
+    addChildren(level1_1HNode, [level2HNode]);
+    const level0HNode = createHNode();
+    addChildren(level0HNode, [level1_1HNode, level1_2HNode]);
+    const checker = vi.fn((node) => (node === level3HNode ? node : undefined));
+    const result = findPrevHNode(level1_2HNode, checker);
+    expect(result).not.toBe(undefined);
   });
 
-  it('should update config.lastParentHNode', () => {
-    const hNode = new TestHNode();
-    const parent = new TestHNode([hNode]);
-    const checker = vi.fn(() => false);
-    const config = {};
-    findPrevHNode(hNode, checker, config);
-    expect(config.lastParentHNode).toBe(parent);
+  it('update config', () => {
+    const level1HNode = createHNode();
+    const level0HNode = createHNode();
+    addChildren(level0HNode, [level1HNode]);
+    const checker = vi.fn(() => false) as any;
+    const config: Config = {};
+    findPrevHNode(level1HNode, checker, config);
+    expect(config.lastParentHNode).toBe(level0HNode);
   });
 });
