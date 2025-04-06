@@ -64,4 +64,31 @@ describe('atom-wrapper', () => {
       `${start}Ivan${end}`
     );
   });
+  it.only('several dynamic zones', async () => {
+    const atom1 = atom('1');
+    const atom2 = atom('2');
+    const atom3 = atom('3');
+    const atom4 = atom('4');
+    const atom5 = atom('5');
+
+    const Component = () => (
+      <div id='div'>
+        {atom1} {atom2} {atom3} {atom4} {atom5}
+      </div>
+    );
+
+    const jsdom = new JSDOM();
+    const document = jsdom.window.document;
+
+    insertAndHydrate({jsdom, jsxNode: <Component />});
+    const div = document.getElementById('div')!;
+
+    expect(div.outerHTML).toBe(`<div id="div">1 2 3 4 5</div>`);
+
+    atom3.set('3.1');
+
+    await waitTime(0);
+
+    expect(div.outerHTML).toBe(`<div id="div">1 2 3.1 4 5</div>`);
+  });
 });

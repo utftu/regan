@@ -26,7 +26,7 @@ export function handleChildrenHydrate({
   parentDomPointer,
   parentSegmentEnt,
   globalClientCtx,
-  lastText,
+  lastText: propsLastText,
 }: {
   children: Child[];
   parentHNode?: HNode;
@@ -41,7 +41,7 @@ export function handleChildrenHydrate({
   const nodeCountInit = parentDomPointer.nodeCount;
   let nodeCount = nodeCountInit;
 
-  let localLastText = lastText;
+  let lastText = propsLastText;
 
   let insertedJsxCount = 0;
 
@@ -65,6 +65,14 @@ export function handleChildrenHydrate({
         textNode = parentDomPointer.parent.childNodes[nodeCount] as Text;
       }
 
+      // console.log(
+      //   '-----',
+      //   '',
+      //   [...parentDomPointer.parent.childNodes],
+      //   nodeCount,
+      //   textNode
+      // );
+
       const textHNode = new HNodeText(
         {
           parent: parentHNode,
@@ -84,7 +92,7 @@ export function handleChildrenHydrate({
         nodeCount++;
       }
 
-      localLastText = true;
+      lastText = true;
 
       continue;
     }
@@ -102,7 +110,7 @@ export function handleChildrenHydrate({
       globalCtx,
       globalClientCtx,
       hydrateCtx,
-      lastText: localLastText,
+      lastText: lastText,
     });
     hNodes.push(hydrateResult.hNode);
 
@@ -115,6 +123,6 @@ export function handleChildrenHydrate({
   return {
     hNodes,
     nodeCount: nodeCount - nodeCountInit,
-    lastText: localLastText,
+    lastText: lastText,
   };
 }

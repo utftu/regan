@@ -1,6 +1,7 @@
 import {
   findNextTextHNode,
   findPrevTextHNode,
+  sumNextText,
   sumPrevText,
 } from '../../h-node/find/text/text.ts';
 import {HNode} from '../../h-node/h-node.ts';
@@ -43,6 +44,8 @@ export const updateV = ({
   if (prevTextHNode) {
     const textContent = prevTextHNode.textNode.textContent!;
     if (firstVNew?.type === 'text') {
+      console.log('-----', 'prev', sumPrevText(prevTextHNode));
+      debugger;
       firstVNew.data.text = sumPrevText(prevTextHNode) + firstVNew.data.text;
     } else {
       const vNew: VNew = {
@@ -75,7 +78,7 @@ export const updateV = ({
   if (nextTextHNode) {
     const textContent = nextTextHNode.textNode.textContent!;
     if (lastVNew?.type === 'text') {
-      lastVNew.data.text += textContent;
+      lastVNew.data.text = sumNextText(nextTextHNode) + lastVNew.data.text;
     } else {
       const vNew: VNew = {
         type: 'text',
@@ -101,6 +104,9 @@ export const updateV = ({
     //   preparedVOlds.push(vOld);
     // }
   }
+
+  console.log('-----', 'preparedVNews', preparedVNews);
+  console.log('-----', 'preparedVOlds', preparedVOlds);
 
   const newVOlds = virtualApply({
     vNews: preparedVNews,

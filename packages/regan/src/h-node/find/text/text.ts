@@ -32,6 +32,16 @@ export const findNextTextHNode = (hNode: HNode): HNodeText | undefined => {
   return nextHNode as HNodeText | undefined;
 };
 
+export const findPrevTextHNodes = (hNode: HNode): HNodeText[] => {
+  const nodes = [];
+  let nextNode = findPrevTextHNode(hNode);
+  while (nextNode) {
+    nodes.push(nextNode);
+    nextNode = findPrevTextHNode(nextNode);
+  }
+  return nodes;
+};
+
 export const sumPrevText = (hNode: HNodeText) => {
   const prevTextHNodes = findPrevTextHNodes(hNode);
 
@@ -42,14 +52,24 @@ export const sumPrevText = (hNode: HNodeText) => {
   return text;
 };
 
-export const findPrevTextHNodes = (hNode: HNode): HNodeText[] => {
+export const findNextTextHNodes = (hNode: HNode): HNodeText[] => {
   const nodes = [];
-  let nextNode = findPrevTextHNode(hNode);
+  let nextNode = findNextTextHNode(hNode);
   while (nextNode) {
     nodes.push(nextNode);
-    nextNode = findPrevTextHNode(nextNode);
+    nextNode = findNextTextHNode(nextNode);
   }
   return nodes;
+};
+
+export const sumNextText = (hNode: HNodeText) => {
+  const prevTextHNodes = findNextTextHNodes(hNode);
+
+  let text = hNode.text;
+  prevTextHNodes.forEach((prevTextHNode) => {
+    text = prevTextHNode.text + text;
+  });
+  return text;
 };
 
 // export const findNextTextHNodes = (hNode: HNode): HNodeText[] => {
