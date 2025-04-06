@@ -73,7 +73,6 @@ export function renderElement(
       parentSegmentEnt: segmentEnt,
     });
   } catch (error) {
-    console.log('-----', 'error element', error);
     const jsxNodeComponent = createErrorJsxNodeComponent(
       this,
       error,

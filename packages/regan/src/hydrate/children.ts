@@ -89,9 +89,9 @@ export function handleChildrenHydrate({
       continue;
     }
 
-    if (!checkAllowedStructure(childOrAtom)) {
-      continue;
-    }
+    // if (!checkAllowedStructure(childOrAtom)) {
+    //   continue;
+    // }
 
     const jsxNode = wrapChildIfNeed(childOrAtom);
 

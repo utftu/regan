@@ -89,25 +89,7 @@ export const updateV = ({
 
       preparedVNews.push(vNew);
     }
-
-    // if (lastVOld?.type === 'text') {
-    //   lastVOld.data.text += nextTextHNode.text;
-    // } else {
-    //   const vOld: VOld = {
-    //     type: 'text',
-    //     data: {
-    //       text: nextTextHNode.text,
-    //     },
-    //     textNode: nextTextHNode.textNode,
-    //   };
-
-    //   preparedVOlds.push(vOld);
-    // }
   }
-
-  // console.log('-----', 'preparedVNews', preparedVNews);
-  // console.log('-----', 'preparedVOlds', preparedVOlds);
-
   const newVOlds = virtualApply({
     vNews: preparedVNews,
     vOlds: preparedVOlds,
@@ -121,10 +103,6 @@ export const updateV = ({
     const firstVNewOld = newVOlds[0] as VOldText;
     prevTextHNode.textNode = firstVNewOld.textNode;
 
-    // if (prevTextHNode.vOld) {
-    //   prevTextHNode.vOld.textNode = firstVNewOld.textNode;
-    // }
-
     if (firstVNew?.type === 'text') {
       firstVNewOld.data.text = savedTextFirstVNew!;
     } else {
@@ -135,10 +113,6 @@ export const updateV = ({
   if (nextTextHNode) {
     const lastVNewOld = newVOlds[newVOlds.length - 1] as VOldText;
     nextTextHNode.textNode = lastVNewOld.textNode;
-
-    // if (nextTextHNode.vOld) {
-    //   nextTextHNode.vOld.textNode = lastVNewOld.textNode;
-    // }
 
     if (lastVOld?.type === 'text') {
       lastVNewOld.data.text = savedTextLastVNew!;
