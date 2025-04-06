@@ -1,6 +1,6 @@
 import {describe, it, expect, vi} from 'vitest';
-import {findPrevHNode} from './your-file'; // adjust the import path
 import {HNode} from '../h-node.ts';
+import {findPrevHNode} from './prev.ts';
 
 const createHNode = () => {
   return new HNode({} as any);
@@ -9,7 +9,7 @@ const createHNode = () => {
 describe('findPrevHNode', () => {
   it.only('should return undefined when no previous node is found', () => {
     const hNode = createHNode();
-    const checker = vi.fn(() => false);
+    const checker = vi.fn(() => false) as any;
     const result = findPrevHNode(hNode, checker);
     expect(result).toBeUndefined();
   });
