@@ -40,7 +40,7 @@ describe('atom-wrapper', () => {
 
     expect(document.getElementById('child')).not.toBe(null);
   });
-  it.only('name change', async () => {
+  it('name change', async () => {
     const start = '<div id="name">My name is ';
     const end = '</div>';
     const atomName = atom('Aleksey');

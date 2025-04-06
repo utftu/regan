@@ -41,7 +41,7 @@ export function handleChildrenHydrate({
   const nodeCountInit = parentDomPointer.nodeCount;
   let nodeCount = nodeCountInit;
 
-  const localLastText = lastText;
+  let localLastText = lastText;
 
   let insertedJsxCount = 0;
 
@@ -55,10 +55,15 @@ export function handleChildrenHydrate({
     if (checkAllowedPrivitive(childOrAtom)) {
       const text = childOrAtom.toString();
 
-      const textNode =
-        nodeCount === 0
-          ? parentDomPointer.parent.firstChild
-          : parentDomPointer.parent.children[nodeCount].nextSibling;
+      let textNode: Text;
+
+      if (nodeCount === 0) {
+        textNode = parentDomPointer.parent.firstChild as Text;
+      } else if (lastText === true) {
+        textNode = parentDomPointer.parent.childNodes[nodeCount - 1] as Text;
+      } else {
+        textNode = parentDomPointer.parent.childNodes[nodeCount] as Text;
+      }
 
       const textHNode = new HNodeText(
         {
@@ -79,7 +84,7 @@ export function handleChildrenHydrate({
         nodeCount++;
       }
 
-      lastText = true;
+      localLastText = true;
 
       continue;
     }
@@ -101,6 +106,7 @@ export function handleChildrenHydrate({
     });
     hNodes.push(hydrateResult.hNode);
 
+    lastText = hydrateResult.lastText;
     nodeCount += hydrateResult.nodeCount;
 
     insertedJsxCount++;

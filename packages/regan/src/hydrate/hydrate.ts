@@ -33,6 +33,7 @@ export function hydrateRaw({
     hydrateCtx: {
       atomsTracker: atomTracker,
     },
+    lastText: false,
   });
 
   atomTracker.finish();

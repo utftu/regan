@@ -1,6 +1,7 @@
 import {
   findNextTextHNode,
   findPrevTextHNode,
+  sumPrevText,
 } from '../../h-node/find/text/text.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {DomPointer} from '../../types.ts';
@@ -37,15 +38,12 @@ export const updateV = ({
   const preparedVNews: VNew[] = vNews;
   const preparedVOlds: VOld[] = vOlds;
 
-  // console.log('-----', 'preparedVNews', preparedVNews);
-
   // connect neighbour text nodes temporarily to compare
 
   if (prevTextHNode) {
-    console.log('-----', 'prev', prevTextHNode.textNode.textContent);
     const textContent = prevTextHNode.textNode.textContent!;
     if (firstVNew?.type === 'text') {
-      firstVNew.data.text = textContent + firstVNew.data.text;
+      firstVNew.data.text = sumPrevText(prevTextHNode) + firstVNew.data.text;
     } else {
       const vNew: VNew = {
         type: 'text',
@@ -103,9 +101,6 @@ export const updateV = ({
     //   preparedVOlds.push(vOld);
     // }
   }
-
-  console.log('-----', 'vNews', vNews);
-  console.log('-----', 'vOlds', vOlds);
 
   const newVOlds = virtualApply({
     vNews: preparedVNews,
