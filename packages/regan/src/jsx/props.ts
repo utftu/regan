@@ -21,10 +21,15 @@ export const separateProps = (rawProps: Props) => {
   const userProps: Props = {};
   const systemProps: SystemProps = {};
   for (const key in rawProps) {
+    const value = rawProps[key];
     if (detectSystemProps(key)) {
-      systemProps[renameSystemProps(key)] = rawProps[key];
+      systemProps[renameSystemProps(key)] = value;
     } else {
-      userProps[key] = rawProps[key];
+      if (key === 'className') {
+        userProps.class = value;
+      } else {
+        userProps[key] = value;
+      }
     }
   }
 
