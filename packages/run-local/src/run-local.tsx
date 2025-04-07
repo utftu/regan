@@ -35,6 +35,7 @@ const Component: FC = (props, {mount, getId}) => {
         click={() => {
           count.set(count.get() + 1);
         }}
+        title='uuuuuupdate'
       >
         update
       </div>
@@ -42,8 +43,8 @@ const Component: FC = (props, {mount, getId}) => {
         Your name:{' '}
         <input
           value={atom}
-          input={({value}, event) => {
-            name.set(value);
+          input={(event) => {
+            name.set(event.target.value);
           }}
         />
         <AtomWrapper

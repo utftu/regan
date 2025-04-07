@@ -15,9 +15,6 @@ export const reganVite = () => {
           jsxFragment: 'Fragment',
           jsxFactory: 'createElement',
         },
-        // optimizeDeps: {
-        //   include: ['preact/jsx-runtime', 'preact/jsx-dev-runtime'],
-        // },
       };
     },
   } satisfies Plugin;
