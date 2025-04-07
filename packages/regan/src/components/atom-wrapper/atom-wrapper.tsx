@@ -19,17 +19,38 @@ type Props = {
   atomsTracker?: AtomsTracker;
 };
 
-const getAdditionalPart = (initRun: boolean) => {
-  if (initRun) {
-    return '?a=0';
+function incrementWithLimit(
+  value: number,
+  limit: number = Number.MAX_SAFE_INTEGER
+): number {
+  console.log('-----', 'here11');
+  // Проверяем, что value не NaN и не Infinity
+  if (!Number.isFinite(value)) {
+    return 0;
   }
 
-  return `?a=${Date.now()}`;
-};
+  // Если значение достигло или превысило лимит, обнуляем
+  if (value >= limit) {
+    return 0;
+  }
+
+  // Увеличиваем на 1
+  return value + 1;
+}
+
+// const getAdditionalPart = (initRun: boolean) => {
+//   if (initRun) {
+//     return '?a=0';
+//   }
+
+//   return `?a=${Date.now()}`;
+// };
 
 export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
   const initPathSegmentName = ctx.segmentEnt.pathSegment.name;
-  ctx.segmentEnt.pathSegment.name += getAdditionalPart(true);
+
+  let updateCount = 0;
+  ctx.segmentEnt.pathSegment.name += `?a=0`;
 
   if (ctx.globalCtx.globalClientCtx?.atomsTracker) {
     subsribeAtomWrapper({
@@ -41,8 +62,10 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
         detachChildren(hNode);
 
         ctx.segmentEnt.pathSegment.clearCache();
+
+        updateCount = incrementWithLimit(updateCount);
         ctx.segmentEnt.pathSegment.name =
-          initPathSegmentName + getAdditionalPart(false);
+          initPathSegmentName + `?a=${updateCount}`;
 
         const domPointer = getDomPointer(hNode);
 

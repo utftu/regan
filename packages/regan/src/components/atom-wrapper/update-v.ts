@@ -90,7 +90,8 @@ export const updateV = ({
       preparedVNews.push(vNew);
     }
   }
-  const newVOlds = virtualApply({
+
+  virtualApply({
     vNews: preparedVNews,
     vOlds: preparedVOlds,
     window,
@@ -99,27 +100,25 @@ export const updateV = ({
 
   // split neighbour text nodes and update neighbour
 
-  if (prevTextHNode) {
-    const firstVNewOld = newVOlds[0] as VOldText;
-    prevTextHNode.textNode = firstVNewOld.textNode;
+  // if (prevTextHNode) {
+  //   const firstVNewOld = newVOlds[0] as VOldText;
+  //   prevTextHNode.textNode = firstVNewOld.textNode;
 
-    if (firstVNew?.type === 'text') {
-      firstVNewOld.data.text = savedTextFirstVNew!;
-    } else {
-      newVOlds.shift();
-    }
-  }
+  //   if (firstVNew?.type === 'text') {
+  //     firstVNewOld.data.text = savedTextFirstVNew!;
+  //   } else {
+  //     newVOlds.shift();
+  //   }
+  // }
 
-  if (nextTextHNode) {
-    const lastVNewOld = newVOlds[newVOlds.length - 1] as VOldText;
-    nextTextHNode.textNode = lastVNewOld.textNode;
+  // if (nextTextHNode) {
+  //   const lastVNewOld = newVOlds[newVOlds.length - 1] as VOldText;
+  //   nextTextHNode.textNode = lastVNewOld.textNode;
 
-    if (lastVOld?.type === 'text') {
-      lastVNewOld.data.text = savedTextLastVNew!;
-    } else {
-      newVOlds.pop();
-    }
-  }
-
-  return newVOlds;
+  //   if (lastVOld?.type === 'text') {
+  //     lastVNewOld.data.text = savedTextLastVNew!;
+  //   } else {
+  //     newVOlds.pop();
+  //   }
+  // }
 };

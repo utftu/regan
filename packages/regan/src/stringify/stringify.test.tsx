@@ -3,7 +3,7 @@ import {Fragment} from '../components/fragment/fragment.ts';
 import {FC} from '../types.ts';
 import {atom} from 'strangelove';
 import {stringify} from './stringify.ts';
-import {djb2, getHashFromString} from '../segment/jsx-path/jsx-path.ts';
+import {djb2} from '../segment/jsx-path/jsx-path.ts';
 
 describe('node', () => {
   it('strinfify()', () => {
