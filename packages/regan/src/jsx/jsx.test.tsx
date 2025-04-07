@@ -2,6 +2,7 @@ import {describe, expect, it, vi} from 'vitest';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../utils/tests.ts';
+import {FC} from '../types.ts';
 
 describe('jsx', () => {
   it('string', () => {
@@ -15,7 +16,7 @@ describe('jsx', () => {
       return <Fragment>{elements}</Fragment>;
     };
 
-    const Parent = () => {
+    const Parent: FC = () => {
       return (
         <div>
           <div>not empty</div>

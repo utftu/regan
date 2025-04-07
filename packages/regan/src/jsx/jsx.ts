@@ -52,18 +52,38 @@ export const createElement = (
 export function jsx<TProps extends Props>(
   type: ElementType,
   rawProps: {children: RawChildren} & TProps,
-  key?: string
+  key?: string,
+  ...args: any[]
 ) {
+  console.log('-----', 'args', args);
   const {children: rawChildren, ...props} = rawProps;
+
+  const preparedProps: Props = {
+    ...props,
+  };
+
+  if (typeof key === 'string') {
+    preparedProps.key = key;
+  }
 
   return prepare({
     type,
-    props: {
-      ...props,
-      key,
-    },
+    props: preparedProps,
     children: normalizeChildren(rawChildren),
   });
+}
+
+export function jsxDEV<TProps extends Props>(
+  type: ElementType,
+  rawProps: {children: RawChildren} & TProps,
+  key?: string,
+  source?: {}
+) {
+  const jsxNode = jsx(type, rawProps, key);
+
+  console.log('-----', 'source', source);
+
+  return jsxNode;
 }
 
 export const jsxs = jsx;

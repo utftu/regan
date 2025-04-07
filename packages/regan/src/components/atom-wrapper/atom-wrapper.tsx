@@ -23,7 +23,6 @@ function incrementWithLimit(
   value: number,
   limit: number = Number.MAX_SAFE_INTEGER
 ): number {
-  console.log('-----', 'here11');
   // Проверяем, что value не NaN и не Infinity
   if (!Number.isFinite(value)) {
     return 0;
