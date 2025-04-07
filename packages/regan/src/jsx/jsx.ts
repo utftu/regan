@@ -52,10 +52,8 @@ export const createElement = (
 export function jsx<TProps extends Props>(
   type: ElementType,
   rawProps: {children: RawChildren} & TProps,
-  key?: string,
-  ...args: any[]
+  key?: string
 ) {
-  console.log('-----', 'args', args);
   const {children: rawChildren, ...props} = rawProps;
 
   const preparedProps: Props = {
@@ -77,11 +75,13 @@ export function jsxDEV<TProps extends Props>(
   type: ElementType,
   rawProps: {children: RawChildren} & TProps,
   key?: string,
-  source?: {}
+  ...devArgs: any[]
 ) {
   const jsxNode = jsx(type, rawProps, key);
 
-  console.log('-----', 'source', source);
+  if (devArgs[1]) {
+    (jsxNode as any).source = devArgs[1];
+  }
 
   return jsxNode;
 }

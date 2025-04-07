@@ -13,6 +13,10 @@
     "./jsx-runtime": {
       "types": "./dist/types/regan.d.ts",
       "default": "./dist/regan.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/types/regan.d.ts",
+      "default": "./dist/regan.js"
     }
   },
   "scripts": {

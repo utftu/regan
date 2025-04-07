@@ -23,6 +23,8 @@ export function strigifyComponent(
     contextEnt,
   });
 
+  this.segmentEnt = segmentEnt;
+
   const funcCtx = new Ctx({
     globalCtx: props.globalCtx,
     props: this.props,

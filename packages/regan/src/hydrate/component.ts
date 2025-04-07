@@ -21,6 +21,7 @@ export function hydrateComponent<TProps extends Props>(
     jsxNode: this,
     contextEnt,
   });
+  this.segmentEnt = segmentEnt;
 
   const hNode = new HNodeComponent({
     globalClientCtx: props.globalClientCtx,
@@ -28,6 +29,7 @@ export function hydrateComponent<TProps extends Props>(
     globalCtx: props.globalCtx,
     segmentEnt,
   });
+  segmentEnt.hNode = hNode;
 
   const componentCtx = new Ctx({
     client: {

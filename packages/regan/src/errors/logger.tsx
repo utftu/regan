@@ -4,7 +4,7 @@ import {ErrorCommanGuard, ErrorGuardHandler, ErrorGuardJsx} from './errors.tsx';
 import {createErrorJsxNodeComponent} from './helpers.ts';
 
 const logError = ({error, jsxNode}: {jsxNode: JsxNode; error: Error}) => {
-  console.groupCollapsed(`regan: error: ${error.message}`);
+  console.group(`regan: error: ${error.message}`);
 
   console.groupCollapsed('Stack');
   console.log(error);
@@ -13,6 +13,18 @@ const logError = ({error, jsxNode}: {jsxNode: JsxNode; error: Error}) => {
   console.groupCollapsed('JsxNode');
   console.dir(jsxNode);
   console.groupEnd();
+
+  if (jsxNode.segmentEnt) {
+    console.groupCollapsed('SegmentEnt');
+    console.dir(jsxNode.segmentEnt);
+    console.groupEnd();
+
+    if (jsxNode.segmentEnt.hNode) {
+      console.groupCollapsed('HNode');
+      console.dir(jsxNode.segmentEnt.hNode);
+      console.groupEnd();
+    }
+  }
 
   console.groupEnd();
 };

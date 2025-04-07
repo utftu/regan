@@ -1,4 +1,5 @@
 import {ContextEnt} from '../context/context.tsx';
+import {HNode} from '../h-node/h-node.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {PathSegment as PathSegment} from './jsx-path/jsx-path.ts';
 
@@ -7,6 +8,7 @@ export class SegmentEnt {
   jsxNode: JsxNode;
   parentSegmentEnt: SegmentEnt | undefined;
   contextEnt: ContextEnt | undefined;
+  hNode?: HNode;
 
   constructor({
     jsxSegmentName,

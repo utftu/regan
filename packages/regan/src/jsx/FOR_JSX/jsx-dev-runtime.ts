@@ -1,6 +1,5 @@
-import {jsx} from '../jsx.ts';
+import {jsxDEV as jsxDEVOriginal} from '../jsx.ts';
+import {Fragment as FragmentOrig} from '../../regan.ts';
 
-export const jsxDEV = jsx;
-export const jsxs = jsx;
-
-export {jsx};
+export const jsxDEV = jsxDEVOriginal;
+export const Fragment = FragmentOrig;

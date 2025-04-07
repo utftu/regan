@@ -19,6 +19,7 @@ export function renderElement(
     jsxNode: this,
     contextEnt: props.parentSegmentEnt?.contextEnt,
   });
+  this.segmentEnt = segmentEnt;
 
   const {dynamicProps, joinedProps} = splitProps(this.props);
 
@@ -54,6 +55,7 @@ export function renderElement(
           listenerManager,
         }
       );
+      segmentEnt.hNode = hNode;
 
       initDynamicPropsStage1(hNode, listenerManager);
 

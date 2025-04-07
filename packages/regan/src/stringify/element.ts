@@ -41,6 +41,7 @@ export function stringifyElement(
     jsxNode: this,
     contextEnt: props.parentSegmentEnt?.contextEnt,
   });
+  this.segmentEnt = segmentEnt;
 
   const preparedProps = prepareProps(this.props);
 

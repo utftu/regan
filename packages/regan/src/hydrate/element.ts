@@ -24,6 +24,7 @@ export function hydrateElement(
     jsxNode: this,
     contextEnt: props.parentSegmentEnt?.contextEnt,
   });
+  this.segmentEnt = segmentEnt;
 
   const element = props.domPointer.parent.childNodes[
     props.domPointer.nodeCount
@@ -45,6 +46,7 @@ export function hydrateElement(
       listenerManager,
     }
   );
+  segmentEnt.hNode = hNode;
 
   hNode.mounts.push(() => {
     initStaticProps(element, staticProps, listenerManager);

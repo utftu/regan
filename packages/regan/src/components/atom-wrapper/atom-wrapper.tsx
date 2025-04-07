@@ -1,7 +1,6 @@
 import {Atom} from 'strangelove';
 import {FC} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
-import {subsribeAtom} from '../../utils/atom.ts';
 import {detachChildren, mountHNodes} from '../../h-node/helpers.ts';
 import {rednerBasic} from '../../render/render.ts';
 import {getDomPointer} from './dom-pointer.ts';
@@ -36,14 +35,6 @@ function incrementWithLimit(
   // Увеличиваем на 1
   return value + 1;
 }
-
-// const getAdditionalPart = (initRun: boolean) => {
-//   if (initRun) {
-//     return '?a=0';
-//   }
-
-//   return `?a=${Date.now()}`;
-// };
 
 export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
   const initPathSegmentName = ctx.segmentEnt.pathSegment.name;

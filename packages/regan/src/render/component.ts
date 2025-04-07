@@ -21,12 +21,15 @@ export function renderComponent(
     jsxNode: this,
     contextEnt,
   });
+  this.segmentEnt = segmentEnt;
 
   const hNode = new HNodeComponent({
     segmentEnt,
     globalCtx: props.globalCtx,
     globalClientCtx: props.globalClientCtx,
   });
+  segmentEnt.hNode = hNode;
+
   const componentCtx = new Ctx({
     globalCtx: props.globalCtx,
     props: this.props,
