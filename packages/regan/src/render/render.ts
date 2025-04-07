@@ -71,14 +71,7 @@ export const render = (
     parent: element,
     nodeCount: 0,
   };
-  // const hNode = renderRawPlus({
-  //   node,
-  //   domPointer: {
-  //     parent: element,
-  //     nodeCount: 0,
-  //   },
-  //   window: options.window,
-  // });
+
   const {renderTemplate} = rednerRaw({
     node,
     window: localWindow,
