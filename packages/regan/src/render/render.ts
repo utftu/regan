@@ -12,7 +12,7 @@ import {convertFromRtToH} from './convert/from-rt-to-h.ts';
 import {RenderTemplateExtended} from './template.types.ts';
 import {virtualApply} from '../v/v.ts';
 
-export const rednerBasic = ({
+export const rednerRaw = ({
   node,
   window: localWindow = window,
   parentHNode,
@@ -62,94 +62,44 @@ export const rednerBasic = ({
   return {renderTemplate};
 };
 
-export const rednerVirtual = ({
-  node,
-  window: localWindow = window,
-  parentHNode,
-  data,
-  parentSegmentEnt,
-  domPointer,
-  jsxSegmentName = '',
-  vOlds = [],
-}: {
-  node: JsxNode;
-  domPointer: DomPointer;
-  window?: Window;
-  data?: Record<any, any>;
-  parentHNode?: HNode;
-  parentSegmentEnt?: SegmentEnt;
-  jsxSegmentName?: string;
-  vOlds?: VOld[];
-}) => {
-  const atomsTracker = new AtomsTracker();
-
-  const globalCtx =
-    parentHNode?.globalCtx ??
-    new GlobalCtx({
-      data,
-      mode: 'client',
-      root: new Root(),
-    });
-
-  const globalClientCtx =
-    parentHNode?.globalClientCtx ??
-    new GlobalClientCtx({
-      window: localWindow,
-      initDomPointer: domPointer,
-    });
-
-  globalCtx.globalClientCtx = globalClientCtx;
-  globalClientCtx.atomsTracker = atomsTracker;
-
-  const {renderTemplate} = node.render({
-    parentSegmentEnt,
-    globalCtx,
-    globalClientCtx,
-    jsxSegmentName,
-    renderCtx: {
-      atomsTracker,
-    },
+export const render = (
+  element: HTMLElement,
+  node: JsxNode,
+  {window: localWindow}: {window: Window} = {window}
+) => {
+  const domPointer = {
+    parent: element,
+    nodeCount: 0,
+  };
+  // const hNode = renderRawPlus({
+  //   node,
+  //   domPointer: {
+  //     parent: element,
+  //     nodeCount: 0,
+  //   },
+  //   window: options.window,
+  // });
+  const {renderTemplate} = rednerRaw({
+    node,
+    window: localWindow,
+    parentHNode: undefined,
+    data: {},
+    parentSegmentEnt: undefined,
+    domPointer,
   });
 
   const vNews = convertFromRtToV(renderTemplate);
 
   virtualApply({
     vNews,
-    vOlds,
+    vOlds: [],
     window: localWindow,
     domPointer,
   });
 
   const hNode = convertFromRtToH(renderTemplate as RenderTemplateExtended);
 
-  if (parentHNode) {
-    parentHNode.children.push(hNode);
-    hNode.parent = parentHNode;
-  }
-
-  atomsTracker.finish();
-
   mountHNodes(hNode);
-
-  return {
-    vOlds: vNews as VOld[],
-    hNode,
-  };
-};
-
-export const render = (
-  element: HTMLElement,
-  node: JsxNode,
-  options: {window: Window} = {window}
-) => {
-  const hNode = rednerVirtual({
-    node,
-    domPointer: {
-      parent: element,
-      nodeCount: 0,
-    },
-    window: options.window,
-  });
 
   return hNode;
 };

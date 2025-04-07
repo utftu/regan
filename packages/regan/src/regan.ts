@@ -1,6 +1,6 @@
 export {createContext, getContextValue} from './context/context.tsx';
-export {render, rednerVirtual} from './render/render.ts';
-export {hydrate, hydrateRaw} from './hydrate/hydrate.ts';
+export {render} from './render/render.ts';
+export {hydrate} from './hydrate/hydrate.ts';
 export {Fragment} from './components/fragment/fragment.ts';
 export {Show} from './components/show/show.tsx';
 export {AtomWrapper} from './components/atom-wrapper/atom-wrapper.tsx';

@@ -2,7 +2,7 @@ import {Atom} from 'strangelove';
 import {FC} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {detachChildren, mountHNodes} from '../../h-node/helpers.ts';
-import {rednerBasic} from '../../render/render.ts';
+import {rednerRaw} from '../../render/render.ts';
 import {getDomPointer} from './dom-pointer.ts';
 import {convertFromRtToV} from '../../render/convert/from-rt-to-v.ts';
 import {updateV} from './update-v.ts';
@@ -59,7 +59,7 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
 
         const domPointer = getDomPointer(hNode);
 
-        const {renderTemplate} = rednerBasic({
+        const {renderTemplate} = rednerRaw({
           node: <Fragment>{atom.get()}</Fragment>,
           parentHNode: hNode,
           window: hNode.globalClientCtx.window,
