@@ -1,3 +1,4 @@
 coverage
 dist
 .turbo
+.astro

@@ -46,6 +46,9 @@ export const rednerRaw = ({
       window: localWindow,
       initDomPointer: domPointer,
     });
+  globalCtx.globalClientCtx = globalClientCtx;
+
+  globalClientCtx.atomsTracker = atomsTracker;
 
   const {renderTemplate} = node.render({
     parentSegmentEnt,
@@ -94,5 +97,5 @@ export const render = (
 
   mountHNodes(hNode);
 
-  return hNode;
+  return {hNode};
 };

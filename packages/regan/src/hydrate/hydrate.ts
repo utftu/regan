@@ -46,6 +46,8 @@ export function hydrateRaw({
   atomTracker.finish();
 
   mountHNodes(hNode);
+
+  return {hNode};
 }
 
 export const hydrate = (
