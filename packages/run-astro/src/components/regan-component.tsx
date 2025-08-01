@@ -1,3 +1,5 @@
+/** @jsxImportSource regan */
+
 import {type FC} from 'regan';
 import {atom, select} from 'strangelove';
 
