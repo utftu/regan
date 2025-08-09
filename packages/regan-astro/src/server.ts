@@ -1,6 +1,8 @@
 import type {NamedSSRLoadedRendererValue} from 'astro';
 import {h, stringify} from 'regan';
 
+console.log('-----', 'server module');
+
 const renderer: NamedSSRLoadedRendererValue = {
   name: 'astro-regan',
   async check(Component) {
@@ -11,6 +13,7 @@ const renderer: NamedSSRLoadedRendererValue = {
     props,
     {default: children, ...slotted}: Record<string, any>
   ) {
+    console.log('-----', 'SERVER');
     const node = h(Component, props, []);
     const str = stringify(node);
 

@@ -6,7 +6,7 @@
   "types": "./dist/types/regan-vite.d.ts",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "types": "tsc --project tsconfig.gen.json",
     "build": "vite build"
   },
   "keywords": [],
