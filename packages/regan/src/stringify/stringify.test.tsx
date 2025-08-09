@@ -6,6 +6,9 @@ import {stringify} from './stringify.ts';
 import {djb2} from '../segment/jsx-path/jsx-path.ts';
 
 describe('node', () => {
+  it('body', () => {
+    <html></html>;
+  });
   it('strinfify()', () => {
     const Child = () => {
       return <div>child</div>;

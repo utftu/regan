@@ -22,8 +22,9 @@
   "scripts": {
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "types": "tsc --project tsconfig.json",
-    "build": "vite build && tsc --project tsconfig.gen.json",
+    "types": " tsc --project tsconfig.gen.json",
+    "types-check": "tsc --project tsconfig.json",
+    "build": "vite build",
     "watch": "vite build --watch && tsc --project tsconfig.gen.json"
   },
   "files": [
