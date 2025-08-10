@@ -6,8 +6,17 @@ import {stringify} from './stringify.ts';
 import {djb2} from '../segment/jsx-path/jsx-path.ts';
 
 describe('node', () => {
-  it('body', () => {
-    <html></html>;
+  it.only('body', () => {
+    const HtmlComponent = () => {
+      return (
+        <html>
+          <head></head>
+          <body></body>
+        </html>
+      );
+    };
+    const str = stringify(<HtmlComponent />);
+    console.log('-----', 'str', str);
   });
   it('strinfify()', () => {
     const Child = () => {

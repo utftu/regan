@@ -38,3 +38,9 @@ export type A = BaseElement & {
 export type Input = BaseElement & {
   input?: (event: InputEventRegan, element: HTMLInputElement) => void;
 };
+
+export type Html = {};
+
+export type Head = {};
+
+export type Body = {};
