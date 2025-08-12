@@ -1,7 +1,6 @@
 import {getAbsolutePath, Group, publishPackage, startIfMain, Task} from 'dapes';
 
 const currentDir = getAbsolutePath('.', import.meta);
-console.log('currentDir', currentDir);
 
 const types = new Task({
   name: 'types',

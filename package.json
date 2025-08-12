@@ -22,7 +22,7 @@
     "vite": "^7.1.2"
   },
   "dependencies": {
-    "strangelove": "^2.1.3",
+    "strangelove": "^2.1.4",
     "vite": "^7.1.2"
   },
   "workspaces": [
