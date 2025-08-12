@@ -6,14 +6,7 @@ const AtomInner: FC = (props, {getJsxPath}) => {
 };
 
 export const Complex: FC = (props, {mount, getId}) => {
-  const name = atom('Aleksey((sd((((122');
-
-  const id = getId() + '_wrapper';
-
-  mount(() => {
-    const div = document.getElementById(id)!;
-  });
-
+  const name = atom('Aleksey');
   const count = atom(0);
 
   setTimeout(() => {
@@ -21,13 +14,12 @@ export const Complex: FC = (props, {mount, getId}) => {
   }, 1000);
 
   return (
-    <div id={getId() + '_wrapper22223333'}>
-      <div>error is {{}}</div>
+    <div>
       <div
         click={() => {
           count.set(count.get() + 1);
         }}
-        title='uuuuuupdat11e'
+        title='update'
       >
         update
       </div>
