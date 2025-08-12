@@ -1,6 +1,4 @@
 import {describe, expect, it, vi} from 'vitest';
-
-import {AtomWrapper} from './atom-wrapper.tsx';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
 import {waitTime} from 'utftu';

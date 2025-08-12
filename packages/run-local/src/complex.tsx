@@ -1,13 +1,13 @@
 import {AtomWrapper, FC} from 'regan/jsx-runtime';
-import {atom, select} from 'strangelove';
+import {createAtom, select} from 'strangelove';
 
 const AtomInner: FC = (props, {getJsxPath}) => {
   console.log(getJsxPath());
 };
 
 export const Complex: FC = (props, {mount, getId}) => {
-  const name = atom('Aleksey');
-  const count = atom(0);
+  const name = createAtom('Aleksey');
+  const count = createAtom(0);
 
   setTimeout(() => {
     name.set('Ivan');

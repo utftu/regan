@@ -11,8 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "regan": "*",
-    "strangelove": "^2.0.1"
+    "regan": "*"
   },
   "devDependencies": {
     "regan-vite": "*"

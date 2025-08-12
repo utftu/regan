@@ -11,8 +11,6 @@ export default defineConfig({
   build: {
     emptyOutDir: false,
     outDir: './dist',
-    // minify: false,
-    // terserOptions: {compress: false, mangle: false},
     lib: {
       entry: ['./src/regan.ts'],
       formats: ['es'],
