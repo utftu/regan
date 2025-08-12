@@ -1,4 +1,4 @@
-import {Atom} from 'strangelove';
+import {Atom, checkAtom} from 'strangelove';
 import {AnyFunc, Props} from '../types.ts';
 import {LisneterManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
@@ -11,11 +11,17 @@ export const splitProps = (props: Props) => {
   const staticProps: Props = {};
 
   for (const key in props) {
+    if (key === 'value') {
+      console.log('VALUEE');
+    }
+
     const value = props[key];
-    if (value instanceof Atom) {
+    if (checkAtom(value)) {
+      console.log('ATOM');
       joinedProps[key] = value.get();
       dynamicProps[key] = value;
     } else {
+      console.log('NOT ATOM');
       staticProps[key] = props[key];
       joinedProps[key] = props[key];
     }

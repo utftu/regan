@@ -45,6 +45,7 @@ export const createText = (vNew: VNewText, window: Window) => {
 export const createElement = (vNew: VNewElement, window: Window) => {
   const element = window.document.createElement(vNew.data.tag);
 
+  // console.log('-----', 'vNew.data.props', vNew.data.props);
   for (const key in vNew.data.props) {
     const value = vNew.data.props[key];
     if (typeof value === 'function') {

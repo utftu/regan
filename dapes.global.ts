@@ -1,7 +1,6 @@
 import {Group, publishPackage, startIfMain, Task} from 'dapes';
 import {reganGroup} from './packages/regan/dapes.regan.ts';
 import {viteGroup} from 'regan-vite/dapes.vite.ts';
-import {astroRunGroup} from './packages/run-astro/dapes.astro.run.ts';
 
 const types = new Task({
   name: 'types',
@@ -33,7 +32,7 @@ const publish = new Task({
 const group = new Group({
   name: 'astro-run',
   tasks: [build, types, publish],
-  subgroups: [reganGroup, viteGroup, astroRunGroup],
+  subgroups: [reganGroup, viteGroup],
 });
 
 await startIfMain(group, import.meta);

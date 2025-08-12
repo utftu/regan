@@ -1,4 +1,4 @@
-import {Atom} from 'strangelove';
+import {Atom, checkAtom} from 'strangelove';
 import {
   handleChildrenString,
   HandleChildrenStringifyResult,
@@ -20,7 +20,7 @@ const prepareProps = (props: Record<string, any>) => {
       continue;
     }
 
-    if (value instanceof Atom) {
+    if (checkAtom(value)) {
       newProps[key] = value.get();
       continue;
     }

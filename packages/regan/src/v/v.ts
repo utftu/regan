@@ -35,8 +35,6 @@ export const virtualApplyInternal = ({
   window: Window;
 }) => {
   let nodeCount = domPointer.nodeCount;
-
-  // let elementsCount = domPointer.nodeCount;
   const maxLayer = Math.max(vNews.length, vOlds.length);
   for (let i = 0; i < maxLayer; i++) {
     const vNew = vNews[i];
@@ -48,7 +46,6 @@ export const virtualApplyInternal = ({
       domPointer: {parent: domPointer.parent, nodeCount},
     });
 
-    // if (vNew?.type === 'element') {
     if (vNew) {
       nodeCount++;
     }

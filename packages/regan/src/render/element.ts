@@ -22,6 +22,7 @@ export function renderElement(
   this.segmentEnt = segmentEnt;
 
   const {dynamicProps, joinedProps} = splitProps(this.props);
+  console.log('-----', 'joinedProps', joinedProps);
 
   const listenerManager = new LisneterManager(segmentEnt);
 
