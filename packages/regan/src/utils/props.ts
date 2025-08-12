@@ -11,17 +11,11 @@ export const splitProps = (props: Props) => {
   const staticProps: Props = {};
 
   for (const key in props) {
-    if (key === 'value') {
-      console.log('VALUEE');
-    }
-
     const value = props[key];
     if (checkAtom(value)) {
-      console.log('ATOM');
       joinedProps[key] = value.get();
       dynamicProps[key] = value;
     } else {
-      console.log('NOT ATOM');
       staticProps[key] = props[key];
       joinedProps[key] = props[key];
     }

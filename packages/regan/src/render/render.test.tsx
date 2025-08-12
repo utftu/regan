@@ -2,7 +2,7 @@ import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {FC} from '../types.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
-import {Atom, atom} from 'strangelove';
+import {Atom, createAtom} from 'strangelove';
 import {render} from './render.ts';
 
 describe('render', () => {
@@ -75,8 +75,8 @@ describe('render', () => {
     expect(parentClick.mock.calls.length).toBe(2);
   });
   it('subscribe', () => {
-    const parentAtom = atom(0);
-    const childAtom = atom(0);
+    const parentAtom = createAtom(0);
+    const childAtom = createAtom(0);
 
     const Child: FC<{childAtom: Atom<number>}> = (props) => {
       return (
@@ -125,7 +125,7 @@ describe('render', () => {
       // 0
       return <Level3 />;
     };
-    const level1Atom = atom(<Level2 />);
+    const level1Atom = createAtom(<Level2 />);
     const Level1 = () => {
       return (
         <div>

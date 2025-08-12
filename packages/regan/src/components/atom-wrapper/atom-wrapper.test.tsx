@@ -3,15 +3,15 @@ import {describe, expect, it, vi} from 'vitest';
 import {AtomWrapper} from './atom-wrapper.tsx';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
-import {atom} from 'strangelove';
 import {waitTime} from 'utftu';
+import {createAtom} from 'strangelove';
 
 describe('atom-wrapper', () => {
   it('simple', async () => {
     const onClick = vi.fn();
     const positiveAtomValue = <div id='child'>child</div>;
     const negativeAtomValue = null;
-    const createdAtom = atom<any>(positiveAtomValue);
+    const createdAtom = createAtom<any>(positiveAtomValue);
     const Component = () => {
       return (
         <div id='div' click={onClick}>
@@ -43,7 +43,7 @@ describe('atom-wrapper', () => {
   it('name change', async () => {
     const start = '<div id="name">My name is ';
     const end = '</div>';
-    const atomName = atom('Aleksey');
+    const atomName = createAtom('Aleksey');
 
     const Component = () => <div id='name'>My name is {atomName}</div>;
 
@@ -65,11 +65,11 @@ describe('atom-wrapper', () => {
     );
   });
   it('several dynamic zones', async () => {
-    const atom1 = atom('1');
-    const atom2 = atom('2');
-    const atom3 = atom('3');
-    const atom4 = atom('4');
-    const atom5 = atom('5');
+    const atom1 = createAtom('1');
+    const atom2 = createAtom('2');
+    const atom3 = createAtom('3');
+    const atom4 = createAtom('4');
+    const atom5 = createAtom('5');
 
     const Component = () => (
       <div id='div'>

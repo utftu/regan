@@ -2,9 +2,9 @@ import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {FC} from '../types.ts';
-import {atom} from 'strangelove';
 import {waitTime} from 'utftu';
 import {insertAndHydrate} from '../utils/tests.ts';
+import {createAtom} from 'strangelove';
 
 describe('hydrate', () => {
   describe('child', () => {
@@ -193,7 +193,7 @@ describe('hydrate', () => {
           <div id='parent' click={onClickElement}>
             parent
           </div>
-          {atom(<Child />)}
+          {createAtom(<Child />)}
         </div>
       );
     };
@@ -222,7 +222,7 @@ describe('hydrate', () => {
       // 0
       return <Level3 />;
     };
-    const level1Atom = atom(<Level2 />);
+    const level1Atom = createAtom(<Level2 />);
     const Level1 = () => {
       return (
         <div>

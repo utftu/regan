@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {FC} from '../types.ts';
-import {atom} from 'strangelove';
+import {createAtom} from 'strangelove';
 import {stringify} from './stringify.ts';
 import {djb2} from '../segment/jsx-path/jsx-path.ts';
 
@@ -58,9 +58,9 @@ describe('node', () => {
 
     const Parent = () => {
       return (
-        <div hello='world' world={atom('hello')}>
-          <div>{atom('parent')}</div>
-          {atom(<Child />)}
+        <div hello='world' world={createAtom('hello')}>
+          <div>{createAtom('parent')}</div>
+          {createAtom(<Child />)}
         </div>
       );
     };
@@ -82,7 +82,7 @@ describe('node', () => {
       // 0
       return <Level3 />;
     };
-    const level1Atom = atom(<Level2 />);
+    const level1Atom = createAtom(<Level2 />);
     const Level1 = () => {
       return (
         <div>
@@ -112,8 +112,8 @@ describe('node', () => {
     expect(level3Id).toBe(djb2(jsxPath));
   });
   it('atom changed', () => {
-    const atom1 = atom('hello');
-    const atom2 = atom('world');
+    const atom1 = createAtom('hello');
+    const atom2 = createAtom('world');
 
     const Child = () => {
       return (

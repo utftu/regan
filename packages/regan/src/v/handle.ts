@@ -1,15 +1,3 @@
-// import {DomPointer} from '../types.ts';
-// import {convertFromNewToOld} from './convert.ts';
-// import {insertChild} from './insert.ts';
-// import {
-//   VNewElement,
-//   VOldElement,
-//   VNewText,
-//   VOldText,
-//   VNew,
-//   VOld,
-// } from './types.ts';
-
 import {DomPointer} from '../types.ts';
 import {convertFromNewToOld} from './convert.ts';
 import {
@@ -28,16 +16,6 @@ const getDomNode = (vOld: VOld) => {
   return vOld.element;
 };
 
-// export const deleteFunc = (vOld: VOld) => {
-//   getNodeFromVOld(vOld).remove();
-// };
-
-// export const createTextSimple = (text: string, window: Window) => {
-//   const textNode = window.document.createTextNode(text);
-
-//   return textNode;
-// };
-
 export const createText = (vNew: VNewText, window: Window) => {
   return window.document.createTextNode(vNew.data.text);
 };
@@ -45,7 +23,6 @@ export const createText = (vNew: VNewText, window: Window) => {
 export const createElement = (vNew: VNewElement, window: Window) => {
   const element = window.document.createElement(vNew.data.tag);
 
-  // console.log('-----', 'vNew.data.props', vNew.data.props);
   for (const key in vNew.data.props) {
     const value = vNew.data.props[key];
     if (typeof value === 'function') {
