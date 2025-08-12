@@ -58,6 +58,14 @@ export function hydrateElement(
   });
   initDynamicPropsStage1(hNode, listenerManager);
 
+  if (this.props.rawHtml) {
+    return {
+      hNode,
+      nodeCount: 1,
+      lastText: false,
+    };
+  }
+
   let handlerChildrenResult: HandleChildrenHydrateResult;
 
   try {

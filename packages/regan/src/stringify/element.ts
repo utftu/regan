@@ -50,6 +50,12 @@ export function stringifyElement(
     props: preparedProps,
   });
 
+  if (this.props.rawHtml) {
+    return {
+      text: `${elementString.left}${this.props.rawHtml}${elementString.right}`,
+    };
+  }
+
   let hadnlerChildrenResult: HandleChildrenStringifyResult;
   try {
     hadnlerChildrenResult = handleChildrenString({

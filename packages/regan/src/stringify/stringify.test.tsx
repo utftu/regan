@@ -6,17 +6,17 @@ import {stringify} from './stringify.ts';
 import {djb2} from '../segment/jsx-path/jsx-path.ts';
 
 describe('node', () => {
-  it.only('body', () => {
+  it('body', () => {
     const HtmlComponent = () => {
       return (
         <html>
           <head></head>
-          <body></body>
+          <body>hello</body>
         </html>
       );
     };
     const str = stringify(<HtmlComponent />);
-    console.log('-----', 'str', str);
+    expect(str).toBe('<html><head></head><body>hello</body></html>');
   });
   it('strinfify()', () => {
     const Child = () => {
