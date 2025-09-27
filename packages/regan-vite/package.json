@@ -14,5 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "regan": ">=0.0.3"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
