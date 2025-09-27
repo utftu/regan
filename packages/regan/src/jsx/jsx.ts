@@ -88,7 +88,11 @@ export function jsxDEV<TProps extends Props>(
 
 export const jsxs = jsx;
 
-export function h(type: ElementType, props: Props, children: Child[]) {
+export function h(
+  type: ElementType,
+  props: Props = {},
+  children: Child[] = []
+) {
   return prepare({
     type,
     props,
