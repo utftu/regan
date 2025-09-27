@@ -1,6 +1,6 @@
 {
   "name": "regan-vite",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "./dist/regan-vite.js",
   "types": "./dist/types/regan-vite.d.ts",
