@@ -5,6 +5,7 @@ export const reganVite = () => {
     name: 'vite-plugin-regan',
     enforce: 'pre',
     config(_, {mode}) {
+      console.log('mode', mode);
       return {
         esbuild: {
           jsx: 'automatic',
