@@ -44,3 +44,8 @@ export type Html = {};
 export type Head = {};
 
 export type Body = {};
+
+export type Script = BaseElement & {
+  type?: string;
+  src: string;
+};
