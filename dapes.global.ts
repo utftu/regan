@@ -30,7 +30,7 @@ const publish = new Task({
 });
 
 const group = new Group({
-  name: 'astro-run',
+  name: '',
   tasks: [build, types, publish],
   subgroups: [reganGroup, viteGroup],
 });
