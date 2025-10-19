@@ -39,6 +39,8 @@ export type Input = BaseElement & {
   input?: (event: InputEventRegan, element: HTMLInputElement) => void;
 };
 
+export type Template = BaseElement;
+
 export type Html = {};
 
 export type Head = {};

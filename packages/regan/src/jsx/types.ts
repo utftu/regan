@@ -1,6 +1,6 @@
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {FC} from '../types.ts';
-import {A, Div, Head, Html, Input, Body, Script} from './elements.ts';
+import {A, Div, Head, Html, Input, Body, Script, Template} from './elements.ts';
 
 export declare namespace JSX {
   export type ElementType = string | FC<any>;
@@ -13,5 +13,6 @@ export declare namespace JSX {
     head: Head;
     body: Body;
     script: Script;
-  };
+    template: Template;
+  } & Record<string, any>;
 }
