@@ -1,11 +1,7 @@
 import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
-import {
-  defaultErrorJsx,
-  ErrorGuardHandler,
-  ErrorGuardJsx,
-} from '../errors/errors.tsx';
 import {render} from './render.ts';
+import {ErrorGurard} from '../components/error-guard.tsx';
 
 describe('hydrate errors', () => {
   it('default', () => {
@@ -47,8 +43,7 @@ describe('hydrate errors', () => {
     const parentChild = vi.fn();
     const errorJsx = new Error('jsx error');
     const errorHandler = new Error('handler error');
-    let savedJsxError;
-    let savedHandlerError;
+    const errors: any[] = [];
     const ChildJsxError = () => {
       throw errorJsx;
     };
@@ -67,25 +62,19 @@ describe('hydrate errors', () => {
 
     const Parent = () => {
       return (
-        <ErrorGuardJsx
-          errorJsx={({error}) => {
-            savedJsxError = error;
+        <ErrorGurard
+          handler={({error}) => {
+            errors.push(error);
 
-            return defaultErrorJsx();
+            return null;
           }}
         >
-          <ErrorGuardHandler
-            errorHandler={({error}) => {
-              savedHandlerError = error;
-            }}
-          >
-            <div id='parent' click={parentChild}>
-              parent
-              <ChildJsxError />
-              <ChildHandlerError />
-            </div>
-          </ErrorGuardHandler>
-        </ErrorGuardJsx>
+          <div id='parent' click={parentChild}>
+            parent
+            <ChildJsxError />
+            <ChildHandlerError />
+          </div>
+        </ErrorGurard>
       );
     };
 
@@ -101,7 +90,7 @@ describe('hydrate errors', () => {
 
     expect(parentChild.mock.calls.length).toBe(2);
 
-    expect(savedJsxError).toBe(errorJsx);
-    expect(savedHandlerError).toBe(errorHandler);
+    expect(errors[0]).toBe(errorJsx);
+    expect(errors[1]).toBe(errorHandler);
   });
 });

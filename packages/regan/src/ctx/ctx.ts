@@ -1,4 +1,4 @@
-import {Child, DomPointer, SystemProps} from '../types.ts';
+import {SingleChild, DomPointer, SystemProps} from '../types.ts';
 import {HNode, Mount, Unmount} from '../h-node/h-node.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Context, ContextEnt, getContextValue} from '../context/context.tsx';
@@ -26,7 +26,7 @@ type PropsCtx<TProps> = {
   props: TProps;
   systemProps: SystemPropsCtx;
   state: ComponentState;
-  children: Child[];
+  children: SingleChild[];
   globalCtx: GlobalCtx;
   stage: Stage;
   segmentEnt: SegmentEnt;
@@ -39,7 +39,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   state: ComponentState;
   props: TProps;
   systemProps: SystemPropsCtx;
-  children: Child[];
+  children: SingleChild[];
   segmentEnt: SegmentEnt;
   globalCtx: GlobalCtx;
   stage: Stage;

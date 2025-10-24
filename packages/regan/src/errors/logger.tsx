@@ -1,32 +1,41 @@
+import {ErrorGurard} from '../components/error-guard.tsx';
 import {JsxNode} from '../regan.ts';
+import {SegmentEnt} from '../segment/segment.ts';
 import {FC} from '../types.ts';
-import {ErrorCommanGuard, ErrorGuardHandler, ErrorGuardJsx} from './errors.tsx';
+// import {ErrorCommanGuard, ErrorGuardHandler, ErrorGuardJsx} from './errors.tsx';
 import {createErrorJsxNodeComponent} from './helpers.ts';
 
-const logError = ({error, jsxNode}: {jsxNode: JsxNode; error: Error}) => {
+const logError = ({
+  error,
+  // jsxNode,
+  segmentEnt,
+}: {
+  // jsxNode: JsxNode;
+  error: Error;
+  segmentEnt: SegmentEnt;
+}) => {
   console.group(`regan: error: ${error.message}`);
 
-  console.groupCollapsed('Stack');
-  console.log(error);
-  console.groupEnd();
+  // console.groupCollapsed('Stack');
+  // console.log(error);
+  // console.groupEnd();
 
-  console.groupCollapsed('JsxNode');
-  console.dir(jsxNode);
-  console.groupEnd();
+  // if (typeof segmentEnt.hNode?.globalClientCtx.window === 'undefined') {
+  //   console.groupEnd();
+  //   return;
+  // }
 
-  if (jsxNode.segmentEnt) {
-    console.groupCollapsed('SegmentEnt');
-    console.dir(jsxNode.segmentEnt);
-    console.groupEnd();
+  // console.groupCollapsed('SegmentEnt');
+  // console.dir(segmentEnt);
+  // console.groupEnd();
 
-    if (jsxNode.segmentEnt.hNode) {
-      console.groupCollapsed('HNode');
-      console.dir(jsxNode.segmentEnt.hNode);
-      console.groupEnd();
-    }
-  }
+  // if (segmentEnt.hNode) {
+  //   console.groupCollapsed('HNode');
+  //   console.dir(segmentEnt.hNode);
+  //   console.groupEnd();
+  // }
 
-  console.groupEnd();
+  // console.groupEnd();
 };
 
 const checkValidError = (error: unknown): error is Error => {
@@ -46,35 +55,48 @@ export const ErrorLogger: FC<{enabled?: boolean}> = (
     return children;
   }
   return (
-    <ErrorGuardJsx
-      errorJsx={({error, jsxNode}) => {
+    <ErrorGurard
+      handler={({error, segmentEnt}) => {
         if (!checkValidError(error)) {
-          return createErrorJsxNodeComponent(jsxNode, error);
+          return createErrorJsxNodeComponent(error);
         }
         logError({error, jsxNode});
         return createErrorJsxNodeComponent(jsxNode, error);
       }}
     >
-      <ErrorGuardHandler
-        errorHandler={({error, jsxNode}) => {
-          if (!checkValidError(error)) {
-            return;
-          }
-          logError({error, jsxNode});
-        }}
-      >
-        <ErrorCommanGuard
-          errorCommon={({error, jsxNode}) => {
-            if (!checkValidError(error)) {
-              return;
-            }
-
-            logError({error, jsxNode});
-          }}
-        >
-          {children}
-        </ErrorCommanGuard>
-      </ErrorGuardHandler>
-    </ErrorGuardJsx>
+      {children}
+    </ErrorGurard>
   );
+  // return (
+  //   <ErrorGuardJsx
+  //     errorJsx={({error, jsxNode}) => {
+  //       if (!checkValidError(error)) {
+  //         return createErrorJsxNodeComponent(jsxNode, error);
+  //       }
+  //       logError({error, jsxNode});
+  //       return createErrorJsxNodeComponent(jsxNode, error);
+  //     }}
+  //   >
+  //     <ErrorGuardHandler
+  //       errorHandler={({error, jsxNode}) => {
+  //         if (!checkValidError(error)) {
+  //           return;
+  //         }
+  //         logError({error, jsxNode});
+  //       }}
+  //     >
+  //       <ErrorCommanGuard
+  //         errorCommon={({error, jsxNode}) => {
+  //           if (!checkValidError(error)) {
+  //             return;
+  //           }
+
+  //           logError({error, jsxNode});
+  //         }}
+  //       >
+  //         {children}
+  //       </ErrorCommanGuard>
+  //     </ErrorGuardHandler>
+  //   </ErrorGuardJsx>
+  // );
 };

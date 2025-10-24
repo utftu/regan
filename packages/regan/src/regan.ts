@@ -4,7 +4,7 @@ export {hydrate} from './hydrate/hydrate.ts';
 export {Fragment} from './components/fragment/fragment.ts';
 export {Show} from './components/show/show.tsx';
 export {AtomWrapper} from './components/atom-wrapper/atom-wrapper.tsx';
-export type {FC, Child} from './types.ts';
+export type {FC, SingleChild as Child} from './types.ts';
 export {jsx, jsxs, jsxDEV, createElement, h} from './jsx/jsx.ts';
 export type {JSX} from './jsx/types.ts';
 export {stringify} from './stringify/stringify.ts';

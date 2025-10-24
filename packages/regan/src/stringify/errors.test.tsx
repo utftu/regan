@@ -1,9 +1,9 @@
 import {describe, expect, it} from 'vitest';
 import {Fragment} from '../components/fragment/fragment.ts';
-import {ErrorGuardJsx} from '../errors/errors.tsx';
 import {stringify} from './stringify.ts';
+import {ErrorGurard} from '../components/error-guard.tsx';
 
-const defaultAnswer = '<fragment></fragment>';
+const defaultAnswer = '';
 
 describe('string errors', () => {
   it('default error', () => {
@@ -11,8 +11,7 @@ describe('string errors', () => {
       throw new Error('my error');
     };
 
-    const str = stringify(<Component />);
-    expect(str).toBe(defaultAnswer);
+    expect(() => stringify(<Component />)).toThrowError('my error');
   });
 
   it('error handler', () => {
@@ -20,16 +19,13 @@ describe('string errors', () => {
       throw new Error('my error');
     };
 
-    const errorJsx = () => 'error';
-    errorJsx.hello = 'world';
-
     const Parent = () => {
       return (
-        <ErrorGuardJsx errorJsx={errorJsx}>
+        <ErrorGurard handler={() => 'error'}>
           <Fragment>
             <Child />
           </Fragment>
-        </ErrorGuardJsx>
+        </ErrorGurard>
       );
     };
 

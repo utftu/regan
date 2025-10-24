@@ -1,11 +1,11 @@
-import {getContextValue} from '../context/context.tsx';
-import {getErrorCommonContext} from '../errors/errors.tsx';
+// import {getContextValue} from '../context/context.tsx';
+// import {getErrorCommonContext} from '../errors/errors.tsx';
 import {handleCommonError} from '../errors/helpers.ts';
 import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {Child, DomPointer} from '../types.ts';
+import {SingleChild, DomPointer} from '../types.ts';
 import {
   checkAllowedPrivitive,
   checkAllowedStructure,
@@ -31,7 +31,7 @@ export function handleChildrenHydrate({
   globalClientCtx,
   lastText: propsLastText,
 }: {
-  children: Child[];
+  children: SingleChild[];
   parentHNode: HNode;
   globalCtx: GlobalCtx;
   globalClientCtx: GlobalClientCtx;

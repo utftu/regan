@@ -54,7 +54,7 @@ export function hydrateElement(
 
   const initDynamicPropsStage1 = initDynamicPropsStage0({
     dynamicProps,
-    atomsTracker: props.hydrateCtx.atomsTracker,
+    globalCtx: props.globalCtx,
   });
   initDynamicPropsStage1(hNode, listenerManager);
 

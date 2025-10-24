@@ -46,17 +46,21 @@ export function hydrateComponent<TProps extends Props>(
     contextEnt: contextEnt,
   });
 
+  const handleError = (error: unknown) => {
+    const jsxNodeComponent = createErrorJsxNodeComponent({
+      error,
+      parentContextEnt: contextEnt,
+      segmentEnt,
+    });
+
+    return jsxNodeComponent.hydrate(props);
+  };
+
   let rawChidlren;
   try {
     rawChidlren = this.component(this.props, componentCtx);
   } catch (error) {
-    const jsxNodeComponent = createErrorJsxNodeComponent(
-      this,
-      error,
-      contextEnt
-    );
-
-    return jsxNodeComponent.hydrate(props);
+    return handleError(error);
   }
 
   hNode.mounts = componentCtx.state.mounts;
@@ -78,13 +82,7 @@ export function hydrateComponent<TProps extends Props>(
       lastText: props.lastText,
     });
   } catch (error) {
-    const jsxNodeComponent = createErrorJsxNodeComponent(
-      this,
-      error,
-      contextEnt
-    );
-
-    return jsxNodeComponent.hydrate(props);
+    return handleError(error);
   }
 
   hNode.addChildren(resultHandlerChildren.hNodes);

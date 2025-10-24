@@ -1,15 +1,15 @@
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
-import {Child, FC, Props} from '../types.ts';
+import {SingleChild, FC, Props} from '../types.ts';
 import {separateProps} from './props.ts';
 
-type RawChildren = Child | Child[];
+type RawChildren = SingleChild | SingleChild[];
 type ElementType = string | FC<any>;
 
 type PropsPrepareRaw = {
   type: string | FC<any>;
   props: Props;
-  children: Child[];
+  children: SingleChild[];
 };
 
 const prepare = ({type, props, children}: PropsPrepareRaw) => {
@@ -40,7 +40,7 @@ export const normalizeChildren = (rawChildren: RawChildren) => {
 export const createElement = (
   type: ElementType,
   props: Props,
-  ...rawChildren: Child[]
+  ...rawChildren: SingleChild[]
 ) => {
   return prepare({
     type,
@@ -91,7 +91,7 @@ export const jsxs = jsx;
 export function h(
   type: ElementType,
   props: Props = {},
-  children: Child[] = []
+  children: SingleChild[] = []
 ) {
   return prepare({
     type,

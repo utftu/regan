@@ -6,7 +6,7 @@ import {
 } from '../../h-node/find/text/text.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {DomPointer} from '../../types.ts';
-import {VNew, VOld, VOldText} from '../../v/types.ts';
+import {VNew, VOld} from '../../v/types.ts';
 import {virtualApply} from '../../v/v.ts';
 
 // v can be compared only with neighbour text nodes

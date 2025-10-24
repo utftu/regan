@@ -52,17 +52,21 @@ export function renderComponent(
     },
   };
 
+  const handleError = (error: unknown) => {
+    const jsxNodeComponent = createErrorJsxNodeComponent({
+      error,
+      parentContextEnt: contextEnt,
+      segmentEnt,
+    });
+
+    return jsxNodeComponent.render(props);
+  };
+
   let rawChidlren;
   try {
     rawChidlren = this.component(this.props, componentCtx);
   } catch (error) {
-    const jsxNodeComponent = createErrorJsxNodeComponent(
-      this,
-      error,
-      contextEnt
-    );
-
-    return jsxNodeComponent.render(props);
+    return handleError(error);
   }
 
   hNode.mounts = componentCtx.state.mounts;
@@ -81,13 +85,7 @@ export function renderComponent(
       parentSegmentEnt: segmentEnt,
     });
   } catch (error) {
-    const jsxNodeComponent = createErrorJsxNodeComponent(
-      this,
-      error,
-      contextEnt
-    );
-
-    return jsxNodeComponent.render(props);
+    return handleError(error);
   }
 
   renderTemplate.children = handleChildrenResult.renderTemplates;

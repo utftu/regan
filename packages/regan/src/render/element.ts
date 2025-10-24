@@ -27,7 +27,7 @@ export function renderElement(
 
   const initDynamicPropsStage1 = initDynamicPropsStage0({
     dynamicProps,
-    atomsTracker: props.renderCtx.atomsTracker,
+    globalCtx: props.globalCtx,
   });
 
   // create render template

@@ -2,8 +2,8 @@ import {Atom, checkAtom} from 'strangelove';
 import {AnyFunc, Props} from '../types.ts';
 import {LisneterManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
-import {subsribeAtom} from './atom.ts';
+import {subsribeAtomStages} from './atom.ts';
+import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 
 export const splitProps = (props: Props) => {
   const joinedProps: Props = {};
@@ -56,18 +56,18 @@ export const initStaticProps = (
 
 export const initDynamicPropsStage0 = ({
   dynamicProps,
-  atomsTracker,
+  globalCtx,
 }: {
   dynamicProps: Props;
-  atomsTracker: AtomsTracker;
+  globalCtx: GlobalCtx;
 }) => {
   const subsribers: Record<string, {subscriber: AnyFunc; atom: Atom}> = {};
   for (const name in dynamicProps) {
     const atom = dynamicProps[name];
 
-    const subscriber = subsribeAtom({
+    const subscriber = subsribeAtomStages({
       atom,
-      atomsTracker,
+      globalCtx,
     });
 
     subsribers[name] = {subscriber, atom};

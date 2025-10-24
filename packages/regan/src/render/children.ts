@@ -1,5 +1,5 @@
 import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {Child} from '../types.ts';
+import {SingleChild} from '../types.ts';
 import {
   checkAllowedPrivitive,
   checkAllowedStructure,
@@ -24,7 +24,7 @@ export function handleChildren({
   globalClientCtx,
   parentSegmentEnt,
 }: {
-  children: Child[];
+  children: SingleChild[];
   globalCtx: GlobalCtx;
   globalClientCtx: GlobalClientCtx;
   parentSegmentEnt: SegmentEnt;

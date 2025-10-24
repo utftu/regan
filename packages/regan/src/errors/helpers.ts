@@ -1,35 +1,62 @@
 import {ContextEnt, getContextValue} from '../context/context.tsx';
 import {HNode, Mount} from '../h-node/h-node.ts';
-import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc} from '../types.ts';
 import {LisneterManager} from '../utils/listeners.ts';
-import {
-  getErrorCommonContext,
-  getErrorHandlerContext,
-  getErrorJsxContext,
-} from './errors.tsx';
+import {ErrorHandler, getErrorContext} from './errors.tsx';
+import {Fragment} from '../components/fragment/fragment.ts';
 
-export const createErrorJsxNodeComponent = (
-  jsxNode: JsxNode,
-  error: unknown,
-  parentContextEnt?: ContextEnt
-) => {
-  const errorJsx = getContextValue(getErrorJsxContext(), parentContextEnt);
+export const createErrorComponent = ({
+  error,
+  // parentContextEnt,
+  segmentEnt,
+  errorHandler,
+}: {
+  error: unknown;
+  // parentContextEnt?: ContextEnt;
+  segmentEnt: SegmentEnt;
+  errorHandler: ErrorHandler;
+}) => {
+  const errorJsx = errorHandler({error, segmentEnt});
 
-  return new JsxNodeComponent(
-    {
-      props: {
-        error,
-        jsxNode,
-      },
-      systemProps: {},
-      children: [],
-    },
-    {component: errorJsx}
+  const errorJsxComponent = new JsxNodeComponent(
+    {props: {}, children: [errorJsx]},
+    {component: Fragment}
   );
+
+  // const errorHandler = getContextValue(getErrorContext(), parentContextEnt);
+
+  // const errorJsx = errorHandler({error, segmentEnt});
+
+  // const errorJsxComponent = new JsxNodeComponent(
+  //   {props: {}, children: [errorJsx]},
+  //   {component: Fragment}
+  // );
+
+  return errorJsxComponent;
 };
+
+// export const createErrorJsxNodeComponent = ({
+//   error,
+//   parentContextEnt,
+//   segmentEnt,
+// }: {
+//   error: unknown;
+//   parentContextEnt?: ContextEnt;
+//   segmentEnt: SegmentEnt;
+// }) => {
+//   const errorHandler = getContextValue(getErrorContext(), parentContextEnt);
+
+//   const errorJsx = errorHandler({error, segmentEnt});
+
+//   const errorJsxComponent = new JsxNodeComponent(
+//     {props: {}, children: [errorJsx]},
+//     {component: Fragment}
+//   );
+
+//   return errorJsxComponent;
+// };
 
 export const prepareListener = ({
   listenerManager,
@@ -43,12 +70,12 @@ export const prepareListener = ({
       await func(...args);
     } catch (error) {
       const errorHandler = getContextValue(
-        getErrorHandlerContext(),
+        getErrorContext(),
         listenerManager.segmentEnt.contextEnt
       );
       errorHandler({
         error,
-        jsxNode: listenerManager.segmentEnt.jsxNode,
+        // jsxNode: listenerManager.segmentEnt.jsxNode,
         segmentEnt: listenerManager.segmentEnt,
       });
     }
@@ -60,12 +87,12 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
     await mount(hNode);
   } catch (error) {
     const errorHandler = getContextValue(
-      getErrorHandlerContext(),
+      getErrorContext(),
       hNode.segmentEnt.contextEnt
     );
     errorHandler({
       error,
-      jsxNode: hNode.segmentEnt.jsxNode,
+      // jsxNode: hNode.segmentEnt.jsxNode,
       segmentEnt: hNode.segmentEnt,
     });
   }
@@ -73,11 +100,11 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
 
 export const handleCommonError = (message: string, segmentEnt: SegmentEnt) => {
   const commonHandler = getContextValue(
-    getErrorCommonContext(),
+    getErrorContext(),
     segmentEnt.contextEnt
   );
   commonHandler({
+    segmentEnt,
     error: new Error(message),
-    jsxNode: segmentEnt.jsxNode,
   });
 };

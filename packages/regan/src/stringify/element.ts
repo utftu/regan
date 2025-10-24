@@ -8,7 +8,6 @@ import {StringifyProps, StringifyResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Props} from '../types.ts';
 import {createElementString} from './flat.ts';
-import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
 
 const prepareProps = (props: Record<string, any>) => {
   const newProps: Props = {};
@@ -56,23 +55,29 @@ export function stringifyElement(
     };
   }
 
-  let hadnlerChildrenResult: HandleChildrenStringifyResult;
-  try {
-    hadnlerChildrenResult = handleChildrenString({
+  let hadnlerChildrenResult: HandleChildrenStringifyResult =
+    handleChildrenString({
       children: this.children,
       parentSegmentEnt: segmentEnt,
       globalCtx: props.globalCtx,
       stringifyContext: props.stringifyContext,
     });
-  } catch (error) {
-    const jsxNodeComponent = createErrorJsxNodeComponent(
-      this,
-      error,
-      props.parentSegmentEnt?.contextEnt
-    );
+  // try {
+  //   hadnlerChildrenResult = handleChildrenString({
+  //     children: this.children,
+  //     parentSegmentEnt: segmentEnt,
+  //     globalCtx: props.globalCtx,
+  //     stringifyContext: props.stringifyContext,
+  //   });
+  // } catch (error) {
+  //   const jsxNodeComponent = createErrorJsxNodeComponent(
+  //     this,
+  //     error,
+  //     props.parentSegmentEnt?.contextEnt
+  //   );
 
-    return jsxNodeComponent.stingify(props);
-  }
+  //   return jsxNodeComponent.stingify(props);
+  // }
 
   return {
     text: `${elementString.left}${hadnlerChildrenResult.text}${elementString.right}`,

@@ -1,8 +1,7 @@
-import {ContextEnt} from '../context/context.tsx';
 import {handleCommonError} from '../errors/helpers.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {Child} from '../types.ts';
+import {SingleChild} from '../types.ts';
 import {
   checkAllowedPrivitive,
   checkAllowedStructure,
@@ -22,7 +21,7 @@ export function handleChildrenString({
   stringifyContext,
   parentSegmentEnt,
 }: {
-  children: Child[];
+  children: SingleChild[];
   globalCtx: GlobalCtx;
   stringifyContext: StringifyContext;
   parentSegmentEnt: SegmentEnt;

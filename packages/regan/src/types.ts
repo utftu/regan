@@ -9,7 +9,7 @@ export type DomPointer = {
 
 export type AnyFunc = (...args: any[]) => any;
 
-export type Child =
+export type SingleChild =
   | JsxNode
   | string
   | null
@@ -18,12 +18,12 @@ export type Child =
   | Atom
   | ((...args: any[]) => any);
 
-export type FCReturn = Child | Child[];
+export type Child = SingleChild | SingleChild[];
 
 export type FC<TProps extends Record<any, any> = any> = (
   props: TProps,
   ctx: Ctx<TProps>
-) => FCReturn;
+) => Child;
 
 export type Props = Record<string, any>;
 

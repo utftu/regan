@@ -1,5 +1,5 @@
 import {normalizeChildren} from '../jsx/jsx.ts';
-import {selectContextEnt} from '../context/context.tsx';
+import {getContextValue, selectContextEnt} from '../context/context.tsx';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {StringifyProps, StringifyResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -8,7 +8,9 @@ import {
   handleChildrenString,
   HandleChildrenStringifyResult,
 } from './children.ts';
-import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
+import {createErrorComponent} from '../errors/helpers.ts';
+import {ErrorHandler, getErrorContext} from '../errors/errors.tsx';
+import {ErrorGurard} from '../components/error-guard.tsx';
 
 export function strigifyComponent(
   this: JsxNodeComponent,
@@ -36,18 +38,7 @@ export function strigifyComponent(
     contextEnt,
   });
 
-  let rawChidlren;
-  try {
-    rawChidlren = this.component(this.props, funcCtx);
-  } catch (error) {
-    const jsxNodeComponent = createErrorJsxNodeComponent(
-      this,
-      error,
-      contextEnt
-    );
-
-    return jsxNodeComponent.stingify(props);
-  }
+  const rawChidlren = this.component(this.props, funcCtx);
 
   const children = normalizeChildren(rawChidlren);
 
@@ -61,13 +52,24 @@ export function strigifyComponent(
       parentSegmentEnt: segmentEnt,
     });
   } catch (error) {
-    const jsxNodeComponent = createErrorJsxNodeComponent(
-      this,
-      error,
-      contextEnt
-    );
+    if (this.component === ErrorGurard) {
+      const errorHandler = this.props.handler as ErrorHandler;
 
-    return jsxNodeComponent.stingify(props);
+      const errorComponent = createErrorComponent({
+        error,
+        segmentEnt,
+        errorHandler,
+      });
+
+      handleChildrenResult = handleChildrenString({
+        children: [errorComponent],
+        globalCtx: props.globalCtx,
+        stringifyContext: props.stringifyContext,
+        parentSegmentEnt: segmentEnt,
+      });
+    } else {
+      throw error;
+    }
   }
 
   return {
