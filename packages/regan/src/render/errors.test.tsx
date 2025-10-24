@@ -3,7 +3,7 @@ import {JSDOM} from 'jsdom';
 import {render} from './render.ts';
 import {ErrorGurard} from '../components/error-guard.tsx';
 
-describe('hydrate errors', () => {
+describe('render errors', () => {
   it('default', () => {
     const parentChild = vi.fn();
     const ChildJsx = () => {
@@ -31,13 +31,12 @@ describe('hydrate errors', () => {
     };
 
     const jsdom = new JSDOM();
-    render(jsdom.window.document.body, <Parent />, {
-      window: jsdom.window as any as Window,
-    });
 
-    jsdom.window.document.getElementById('parent')!.click();
-
-    expect(parentChild.mock.calls.length).toBe(1);
+    expect(() =>
+      render(jsdom.window.document.body, <Parent />, {
+        window: jsdom.window as any as Window,
+      })
+    ).toThrowError('child');
   });
   it('deep', () => {
     const parentChild = vi.fn();
@@ -71,8 +70,24 @@ describe('hydrate errors', () => {
         >
           <div id='parent' click={parentChild}>
             parent
-            <ChildJsxError />
-            <ChildHandlerError />
+            <ErrorGurard
+              handler={({error}) => {
+                errors.push(error);
+
+                return null;
+              }}
+            >
+              <ChildJsxError />
+            </ErrorGurard>
+            <ErrorGurard
+              handler={({error}) => {
+                errors.push(error);
+
+                return null;
+              }}
+            >
+              <ChildHandlerError />
+            </ErrorGurard>
           </div>
         </ErrorGurard>
       );

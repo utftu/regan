@@ -1,6 +1,8 @@
+import {ErrorGurard} from '../components/error-guard.tsx';
 import {selectContextEnt} from '../context/context.tsx';
 import {ComponentState, Ctx} from '../ctx/ctx.ts';
-import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
+import {ErrorHandler} from '../errors/errors.tsx';
+import {createErrorComponent} from '../errors/helpers.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
@@ -52,22 +54,7 @@ export function renderComponent(
     },
   };
 
-  const handleError = (error: unknown) => {
-    const jsxNodeComponent = createErrorJsxNodeComponent({
-      error,
-      parentContextEnt: contextEnt,
-      segmentEnt,
-    });
-
-    return jsxNodeComponent.render(props);
-  };
-
-  let rawChidlren;
-  try {
-    rawChidlren = this.component(this.props, componentCtx);
-  } catch (error) {
-    return handleError(error);
-  }
+  const rawChidlren = this.component(this.props, componentCtx);
 
   hNode.mounts = componentCtx.state.mounts;
   hNode.unmounts = componentCtx.state.unmounts;
@@ -85,7 +72,25 @@ export function renderComponent(
       parentSegmentEnt: segmentEnt,
     });
   } catch (error) {
-    return handleError(error);
+    if (this.component === ErrorGurard) {
+      const errorHandler = this.props.handler as ErrorHandler;
+
+      const errorComponent = createErrorComponent({
+        error,
+        segmentEnt,
+        errorHandler,
+      });
+
+      handleChildrenResult = handleChildren({
+        children: [errorComponent],
+        globalClientCtx: props.globalClientCtx,
+        globalCtx: props.globalCtx,
+        renderCtx: props.renderCtx,
+        parentSegmentEnt: segmentEnt,
+      });
+    } else {
+      throw error;
+    }
   }
 
   renderTemplate.children = handleChildrenResult.renderTemplates;

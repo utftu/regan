@@ -7,7 +7,6 @@ import {SegmentEnt} from '../segment/segment.ts';
 import {initDynamicPropsStage0, splitProps} from '../utils/props.ts';
 import {LisneterManager} from '../utils/listeners.ts';
 import {RenderTemplateElement} from './template.types.ts';
-import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
 
 export function renderElement(
   this: JsxNodeElement,
@@ -64,25 +63,13 @@ export function renderElement(
     children: [],
   };
 
-  let handleChildrenRenderResult: HandleChildrenResult;
-
-  try {
-    handleChildrenRenderResult = handleChildren({
-      children: this.children,
-      globalCtx: props.globalCtx,
-      renderCtx: props.renderCtx,
-      globalClientCtx: props.globalClientCtx,
-      parentSegmentEnt: segmentEnt,
-    });
-  } catch (error) {
-    const jsxNodeComponent = createErrorJsxNodeComponent(
-      this,
-      error,
-      props.parentSegmentEnt?.contextEnt
-    );
-
-    return jsxNodeComponent.render(props);
-  }
+  let handleChildrenRenderResult: HandleChildrenResult = handleChildren({
+    children: this.children,
+    globalCtx: props.globalCtx,
+    renderCtx: props.renderCtx,
+    globalClientCtx: props.globalClientCtx,
+    parentSegmentEnt: segmentEnt,
+  });
 
   renderTemplate.children = handleChildrenRenderResult.renderTemplates;
 

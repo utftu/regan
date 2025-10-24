@@ -2,14 +2,9 @@ import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../utils/tests.ts';
 import {ErrorGurard} from '../components/error-guard.tsx';
-// import {
-//   ErrorGuardHandler,
-//   ErrorGuardJsx,
-//   defaultErrorJsx,
-// } from '../errors/errors.tsx';
 
 describe('hydrate errors', () => {
-  it.only('default', async () => {
+  it('default', async () => {
     const parentChild = vi.fn();
     const ChildJsx = () => {
       throw new Error('child');
@@ -36,12 +31,12 @@ describe('hydrate errors', () => {
     };
 
     const jsdom = new JSDOM();
-    await insertAndHydrate({jsdom, jsxNode: <Parent />});
-    jsdom.window.document.getElementById('parent')!.click();
 
-    expect(parentChild.mock.calls.length).toBe(1);
+    expect(() => insertAndHydrate({jsdom, jsxNode: <Parent />})).toThrowError(
+      'child'
+    );
   });
-  it.only('deep', async () => {
+  it('deep', async () => {
     const parentChild = vi.fn();
     const errorJsx = new Error('jsx error');
     const errorHandler = new Error('handler error');
@@ -65,54 +60,39 @@ describe('hydrate errors', () => {
 
     const Parent = () => {
       return (
-        <ErrorGurard
-          handler={({error}) => {
-            errors.push(error);
-            // savedError = error;
-          }}
-        >
-          <div id='parent' click={parentChild}>
-            parent
+        <div id='parent' click={parentChild}>
+          parent
+          <ErrorGurard
+            handler={({error}) => {
+              errors.push(error);
+            }}
+          >
             <ChildJsxError />
+          </ErrorGurard>
+          <ErrorGurard
+            handler={({error}) => {
+              errors.push(error);
+            }}
+          >
             <ChildHandlerError />
-          </div>
-        </ErrorGurard>
+          </ErrorGurard>
+        </div>
       );
-      // return (
-      //   <ErrorGuardJsx
-      //     errorJsx={({error}) => {
-      //       savedJsxError = error;
-
-      //       return defaultErrorJsx();
-      //     }}
-      //   >
-      //     <ErrorGuardHandler
-      //       errorHandler={({error}) => {
-      //         savedHandlerError = error;
-      //       }}
-      //     >
-      //       <div id='parent' click={parentChild}>
-      //         parent
-      //         <ChildJsxError />
-      //         <ChildHandlerError />
-      //       </div>
-      //     </ErrorGuardHandler>
-      //   </ErrorGuardJsx>
-      // );
     };
 
     const jsdom = new JSDOM();
-    await insertAndHydrate({jsdom, jsxNode: <Parent />});
+    insertAndHydrate({jsdom, jsxNode: <Parent />});
 
     jsdom.window.document.getElementById('parent')!.click();
 
     expect(parentChild.mock.calls.length).toBe(1);
-
     jsdom.window.document.getElementById('child')!.click();
 
     expect(parentChild.mock.calls.length).toBe(2);
 
+    // str and hydraye = 2 jsx error
     expect(errors[0]).toBe(errorJsx);
-    expect(errors[1]).toBe(errorHandler);
+    expect(errors[1]).toBe(errorJsx);
+    expect(errors[2]).toBe(errorHandler);
   });
 });

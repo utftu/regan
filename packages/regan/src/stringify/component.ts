@@ -1,5 +1,5 @@
 import {normalizeChildren} from '../jsx/jsx.ts';
-import {getContextValue, selectContextEnt} from '../context/context.tsx';
+import {selectContextEnt} from '../context/context.tsx';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {StringifyProps, StringifyResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -9,7 +9,7 @@ import {
   HandleChildrenStringifyResult,
 } from './children.ts';
 import {createErrorComponent} from '../errors/helpers.ts';
-import {ErrorHandler, getErrorContext} from '../errors/errors.tsx';
+import {ErrorHandler} from '../errors/errors.tsx';
 import {ErrorGurard} from '../components/error-guard.tsx';
 
 export function strigifyComponent(

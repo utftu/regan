@@ -1,6 +1,8 @@
+import {ErrorGurard} from '../components/error-guard.tsx';
 import {selectContextEnt} from '../context/context.tsx';
 import {ComponentState, Ctx} from '../ctx/ctx.ts';
-import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
+import {ErrorHandler} from '../errors/errors.tsx';
+import {createErrorComponent} from '../errors/helpers.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
@@ -9,8 +11,8 @@ import {Props} from '../types.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
 
-export function hydrateComponent<TProps extends Props>(
-  this: JsxNodeComponent<TProps>,
+export function hydrateComponent(
+  this: JsxNodeComponent,
   props: HydrateProps
 ): HydrateResult {
   const contextEnt = selectContextEnt(this, props.parentSegmentEnt?.contextEnt);
@@ -46,22 +48,7 @@ export function hydrateComponent<TProps extends Props>(
     contextEnt: contextEnt,
   });
 
-  const handleError = (error: unknown) => {
-    const jsxNodeComponent = createErrorJsxNodeComponent({
-      error,
-      parentContextEnt: contextEnt,
-      segmentEnt,
-    });
-
-    return jsxNodeComponent.hydrate(props);
-  };
-
-  let rawChidlren;
-  try {
-    rawChidlren = this.component(this.props, componentCtx);
-  } catch (error) {
-    return handleError(error);
-  }
+  const rawChidlren = this.component(this.props, componentCtx);
 
   hNode.mounts = componentCtx.state.mounts;
   hNode.unmounts = componentCtx.state.unmounts;
@@ -82,7 +69,28 @@ export function hydrateComponent<TProps extends Props>(
       lastText: props.lastText,
     });
   } catch (error) {
-    return handleError(error);
+    if (this.component === ErrorGurard) {
+      const errorHandler = this.props.handler as ErrorHandler;
+
+      const errorComponent = createErrorComponent({
+        error,
+        segmentEnt,
+        errorHandler,
+      });
+
+      resultHandlerChildren = handleChildrenHydrate({
+        children: [errorComponent],
+        parentHNode: hNode,
+        globalCtx: props.globalCtx,
+        hydrateCtx: props.hydrateCtx,
+        parentDomPointer: props.domPointer,
+        parentSegmentEnt: segmentEnt,
+        globalClientCtx: props.globalClientCtx,
+        lastText: props.lastText,
+      });
+    } else {
+      throw error;
+    }
   }
 
   hNode.addChildren(resultHandlerChildren.hNodes);

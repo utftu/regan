@@ -1,4 +1,3 @@
-import {createErrorJsxNodeComponent} from '../errors/helpers.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -66,10 +65,8 @@ export function hydrateElement(
     };
   }
 
-  let handlerChildrenResult: HandleChildrenHydrateResult;
-
-  try {
-    handlerChildrenResult = handleChildrenHydrate({
+  const handlerChildrenResult: HandleChildrenHydrateResult =
+    handleChildrenHydrate({
       children: this.children,
       parentDomPointer: {
         parent: element,
@@ -82,15 +79,6 @@ export function hydrateElement(
       parentSegmentEnt: segmentEnt,
       lastText: false,
     });
-  } catch (error) {
-    const jsxNodeComponent = createErrorJsxNodeComponent(
-      this,
-      error,
-      props.parentSegmentEnt?.contextEnt
-    );
-
-    return jsxNodeComponent.hydrate(props);
-  }
 
   hNode.addChildren(handlerChildrenResult.hNodes);
 
