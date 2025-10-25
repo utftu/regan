@@ -1,6 +1,6 @@
 import {SingleChild, DomPointer, SystemProps} from '../types.ts';
 import {HNode, Mount, Unmount} from '../h-node/h-node.ts';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Context, ContextEnt, getContextValue} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';
 import {HNodeComponent} from '../h-node/component.ts';
@@ -28,6 +28,7 @@ type PropsCtx<TProps> = {
   state: ComponentState;
   children: SingleChild[];
   globalCtx: GlobalCtx;
+  areaCtx: AreaCtx;
   stage: Stage;
   segmentEnt: SegmentEnt;
   client?: Client;

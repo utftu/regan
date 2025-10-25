@@ -3,7 +3,6 @@ import {JsxNode} from '../regan.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {FC} from '../types.ts';
 // import {ErrorCommanGuard, ErrorGuardHandler, ErrorGuardJsx} from './errors.tsx';
-import {createErrorJsxNodeComponent} from './helpers.ts';
 
 const logError = ({
   error,
@@ -16,26 +15,26 @@ const logError = ({
 }) => {
   console.group(`regan: error: ${error.message}`);
 
-  // console.groupCollapsed('Stack');
-  // console.log(error);
-  // console.groupEnd();
+  console.groupCollapsed('Stack');
+  console.log(error);
+  console.groupEnd();
 
-  // if (typeof segmentEnt.hNode?.globalClientCtx.window === 'undefined') {
-  //   console.groupEnd();
-  //   return;
-  // }
+  if (typeof segmentEnt.hNode?.globalClientCtx.window === 'undefined') {
+    console.groupEnd();
+    return;
+  }
 
-  // console.groupCollapsed('SegmentEnt');
-  // console.dir(segmentEnt);
-  // console.groupEnd();
+  console.groupCollapsed('SegmentEnt');
+  console.dir(segmentEnt);
+  console.groupEnd();
 
-  // if (segmentEnt.hNode) {
-  //   console.groupCollapsed('HNode');
-  //   console.dir(segmentEnt.hNode);
-  //   console.groupEnd();
-  // }
+  if (segmentEnt.hNode) {
+    console.groupCollapsed('HNode');
+    console.dir(segmentEnt.hNode);
+    console.groupEnd();
+  }
 
-  // console.groupEnd();
+  console.groupEnd();
 };
 
 const checkValidError = (error: unknown): error is Error => {

@@ -1,4 +1,4 @@
-import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Root} from '../root/root.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
 import {VOld} from '../v/types.ts';
@@ -48,21 +48,26 @@ export const rednerRaw = ({
     });
   globalCtx.globalClientCtx = globalClientCtx;
 
-  globalClientCtx.atomsTracker = atomsTracker;
+  const areaCtx = new AreaCtx();
 
-  const {renderTemplate} = node.render({
-    parentSegmentEnt,
-    globalCtx,
-    globalClientCtx,
-    jsxSegmentName,
-    renderCtx: {
-      atomsTracker,
-    },
-  });
+  try {
+    const {renderTemplate} = node.render({
+      parentSegmentEnt,
+      globalCtx,
+      globalClientCtx,
+      jsxSegmentName,
+      renderCtx: {
+        atomsTracker,
+      },
+      areaCtx,
+    });
 
-  atomsTracker.finish();
+    areaCtx.updaterInit.cancel();
 
-  return {renderTemplate};
+    return {renderTemplate};
+  } finally {
+    areaCtx.updaterInit.cancel();
+  }
 };
 
 export const render = (

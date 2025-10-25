@@ -44,6 +44,7 @@ export function renderComponent(
     stage: 'render',
     segmentEnt,
     contextEnt,
+    areaCtx: props.areaCtx,
   });
 
   const renderTemplate: RenderTemplateComponent = {

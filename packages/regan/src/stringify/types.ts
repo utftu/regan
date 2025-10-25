@@ -1,5 +1,5 @@
 import {ContextEnt} from '../context/context.tsx';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 
 export type StringifyContext = {};
@@ -9,6 +9,7 @@ export type StringifyProps = {
   pathSegmentName: string;
   parentSegmentEnt?: SegmentEnt;
   stringifyContext: StringifyContext;
+  areaCtx: AreaCtx;
 };
 
 export type StringifyResult = {

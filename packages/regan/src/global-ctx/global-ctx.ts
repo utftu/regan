@@ -7,6 +7,10 @@ type Data = Record<any, any>;
 
 type Mode = 'server' | 'client';
 
+export class AreaCtx {
+  updaterInit = createUpdaterSync();
+}
+
 export class GlobalCtx {
   data: Data;
   root: Root;
@@ -24,7 +28,7 @@ export class GlobalCtx {
 export class GlobalClientCtx {
   initDomPointer: DomPointer;
   window: Window;
-  atomsTracker?: AtomsTracker;
+  // atomsTracker?: AtomsTracker;
 
   constructor({
     window: localWindow,

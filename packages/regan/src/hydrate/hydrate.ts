@@ -1,9 +1,8 @@
-import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Root} from '../root/root.ts';
 import {DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
-import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 
 export function hydrateRaw({
   node,
@@ -16,8 +15,6 @@ export function hydrateRaw({
   data?: Record<any, any>;
   domPointer: DomPointer;
 }) {
-  const atomTracker = new AtomsTracker();
-
   const globalCtx = new GlobalCtx({
     data,
     mode: 'client',
@@ -30,24 +27,25 @@ export function hydrateRaw({
   });
 
   globalCtx.globalClientCtx = globalClientCtx;
-  globalClientCtx.atomsTracker = atomTracker;
 
-  const {hNode} = node.hydrate({
-    jsxSegmentName: '',
-    domPointer,
-    globalCtx,
-    globalClientCtx,
-    hydrateCtx: {
-      atomsTracker: atomTracker,
-    },
-    lastText: false,
-  });
+  const areaCtx = new AreaCtx();
 
-  atomTracker.finish();
+  try {
+    const {hNode} = node.hydrate({
+      jsxSegmentName: '',
+      domPointer,
+      globalCtx,
+      globalClientCtx,
+      areaCtx,
+      hydrateCtx: {},
+      lastText: false,
+    });
+    mountHNodes(hNode);
 
-  mountHNodes(hNode);
-
-  return {hNode};
+    return {hNode};
+  } finally {
+    areaCtx.updaterInit.cancel();
+  }
 }
 
 export const hydrate = (

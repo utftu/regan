@@ -46,6 +46,7 @@ export function hydrateComponent(
     segmentEnt: hNode.segmentEnt,
     stage: 'hydrate',
     contextEnt: contextEnt,
+    areaCtx: props.areaCtx,
   });
 
   const rawChidlren = this.component(this.props, componentCtx);
