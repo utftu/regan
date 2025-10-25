@@ -1,4 +1,4 @@
-import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SingleChild} from '../types.ts';
 import {
   checkAllowedPrivitive,
@@ -20,15 +20,13 @@ export type HandleChildrenResult = {
 export function handleChildren({
   children,
   globalCtx,
-  renderCtx,
-  globalClientCtx,
   parentSegmentEnt,
+  areaCtx,
 }: {
   children: SingleChild[];
   globalCtx: GlobalCtx;
-  globalClientCtx: GlobalClientCtx;
   parentSegmentEnt: SegmentEnt;
-  renderCtx: RenderCtx;
+  areaCtx: AreaCtx;
 }) {
   const renderTemplates: RenderTemplate[] = [];
 
@@ -58,7 +56,6 @@ export function handleChildren({
           return new HNodeText(
             {
               globalCtx,
-              globalClientCtx,
               segmentEnt: parentSegmentEnt,
             },
             {
@@ -82,10 +79,9 @@ export function handleChildren({
 
     const {renderTemplate} = jsxNode.render({
       globalCtx,
-      globalClientCtx,
-      renderCtx,
       jsxSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,
+      areaCtx,
     });
     renderTemplates.push(renderTemplate);
 

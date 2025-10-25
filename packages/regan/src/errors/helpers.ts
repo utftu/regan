@@ -1,4 +1,4 @@
-import {ContextEnt, getContextValue} from '../context/context.tsx';
+import {getContextValue} from '../context/context.tsx';
 import {HNode, Mount} from '../h-node/h-node.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -7,14 +7,19 @@ import {LisneterManager} from '../utils/listeners.ts';
 import {ErrorHandler, getErrorContext} from './errors.tsx';
 import {Fragment} from '../components/fragment/fragment.ts';
 
+type GlobalHandlerProps = {
+  error: unknown;
+  segmentEnt: SegmentEnt;
+  handled: boolean;
+};
+export type GlobalHandler = (props: GlobalHandlerProps) => any;
+
 export const createErrorComponent = ({
   error,
-  // parentContextEnt,
   segmentEnt,
   errorHandler,
 }: {
   error: unknown;
-  // parentContextEnt?: ContextEnt;
   segmentEnt: SegmentEnt;
   errorHandler: ErrorHandler;
 }) => {
@@ -25,38 +30,12 @@ export const createErrorComponent = ({
     {component: Fragment}
   );
 
-  // const errorHandler = getContextValue(getErrorContext(), parentContextEnt);
-
-  // const errorJsx = errorHandler({error, segmentEnt});
-
-  // const errorJsxComponent = new JsxNodeComponent(
-  //   {props: {}, children: [errorJsx]},
-  //   {component: Fragment}
-  // );
+  segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
+    handler({error, segmentEnt, handled: true});
+  });
 
   return errorJsxComponent;
 };
-
-// export const createErrorJsxNodeComponent = ({
-//   error,
-//   parentContextEnt,
-//   segmentEnt,
-// }: {
-//   error: unknown;
-//   parentContextEnt?: ContextEnt;
-//   segmentEnt: SegmentEnt;
-// }) => {
-//   const errorHandler = getContextValue(getErrorContext(), parentContextEnt);
-
-//   const errorJsx = errorHandler({error, segmentEnt});
-
-//   const errorJsxComponent = new JsxNodeComponent(
-//     {props: {}, children: [errorJsx]},
-//     {component: Fragment}
-//   );
-
-//   return errorJsxComponent;
-// };
 
 export const prepareListener = ({
   listenerManager,
@@ -75,8 +54,8 @@ export const prepareListener = ({
       );
       errorHandler({
         error,
-        // jsxNode: listenerManager.segmentEnt.jsxNode,
         segmentEnt: listenerManager.segmentEnt,
+        place: 'handler',
       });
     }
   };
@@ -92,8 +71,8 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
     );
     errorHandler({
       error,
-      // jsxNode: hNode.segmentEnt.jsxNode,
       segmentEnt: hNode.segmentEnt,
+      place: 'mount',
     });
   }
 };
@@ -106,5 +85,6 @@ export const handleCommonError = (message: string, segmentEnt: SegmentEnt) => {
   commonHandler({
     segmentEnt,
     error: new Error(message),
+    place: 'jsx',
   });
 };

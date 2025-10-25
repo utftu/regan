@@ -1,4 +1,4 @@
-import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 
 export type Unmount = () => any;
@@ -12,7 +12,6 @@ export type PropsHNode = {
   children?: HNode[];
   parent?: HNode;
   globalCtx: GlobalCtx;
-  globalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
 };
 
@@ -22,7 +21,6 @@ export class HNode {
   unmounts: MountUnmounFunc[];
   parent?: HNode;
   globalCtx: GlobalCtx;
-  globalClientCtx: GlobalClientCtx;
   segmentEnt: SegmentEnt;
   systemUnmounts: Unmount[] = [];
 
@@ -34,14 +32,12 @@ export class HNode {
     unmounts = [],
     children = [],
     globalCtx,
-    globalClientCtx,
     segmentEnt,
   }: PropsHNode) {
     this.mounts = mounts;
     this.unmounts = unmounts;
     this.parent = parent;
     this.globalCtx = globalCtx;
-    this.globalClientCtx = globalClientCtx;
     this.children = children;
     this.segmentEnt = segmentEnt;
   }

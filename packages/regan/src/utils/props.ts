@@ -3,7 +3,7 @@ import {AnyFunc, Props} from '../types.ts';
 import {LisneterManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {subsribeAtomStages} from './atom.ts';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 
 export const splitProps = (props: Props) => {
   const joinedProps: Props = {};
@@ -57,9 +57,11 @@ export const initStaticProps = (
 export const initDynamicPropsStage0 = ({
   dynamicProps,
   globalCtx,
+  areaCtx,
 }: {
   dynamicProps: Props;
   globalCtx: GlobalCtx;
+  areaCtx: AreaCtx;
 }) => {
   const subsribers: Record<string, {subscriber: AnyFunc; atom: Atom}> = {};
   for (const name in dynamicProps) {
@@ -68,6 +70,7 @@ export const initDynamicPropsStage0 = ({
     const subscriber = subsribeAtomStages({
       atom,
       globalCtx,
+      areaCtx,
     });
 
     subsribers[name] = {subscriber, atom};

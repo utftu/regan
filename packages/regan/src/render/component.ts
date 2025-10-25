@@ -22,13 +22,13 @@ export function renderComponent(
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
     contextEnt,
+    globalCtx: props.globalCtx,
   });
   this.segmentEnt = segmentEnt;
 
   const hNode = new HNodeComponent({
     segmentEnt,
     globalCtx: props.globalCtx,
-    globalClientCtx: props.globalClientCtx,
   });
   segmentEnt.hNode = hNode;
 
@@ -67,10 +67,9 @@ export function renderComponent(
   try {
     handleChildrenResult = handleChildren({
       children,
-      globalClientCtx: props.globalClientCtx,
       globalCtx: props.globalCtx,
-      renderCtx: props.renderCtx,
       parentSegmentEnt: segmentEnt,
+      areaCtx: props.areaCtx,
     });
   } catch (error) {
     if (this.component === ErrorGurard) {
@@ -84,10 +83,9 @@ export function renderComponent(
 
       handleChildrenResult = handleChildren({
         children: [errorComponent],
-        globalClientCtx: props.globalClientCtx,
         globalCtx: props.globalCtx,
-        renderCtx: props.renderCtx,
         parentSegmentEnt: segmentEnt,
+        areaCtx: props.areaCtx,
       });
     } else {
       throw error;

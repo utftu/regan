@@ -23,6 +23,7 @@ export function strigifyComponent(
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
     contextEnt,
+    globalCtx: props.globalCtx,
   });
 
   this.segmentEnt = segmentEnt;
@@ -36,6 +37,7 @@ export function strigifyComponent(
     stage: 'string',
     segmentEnt,
     contextEnt,
+    areaCtx: props.areaCtx,
   });
 
   const rawChidlren = this.component(this.props, funcCtx);
@@ -48,8 +50,8 @@ export function strigifyComponent(
     handleChildrenResult = handleChildrenString({
       children,
       globalCtx: props.globalCtx,
-      stringifyContext: props.stringifyContext,
       parentSegmentEnt: segmentEnt,
+      areaCtx: props.areaCtx,
     });
   } catch (error) {
     if (this.component === ErrorGurard) {
@@ -64,8 +66,8 @@ export function strigifyComponent(
       handleChildrenResult = handleChildrenString({
         children: [errorComponent],
         globalCtx: props.globalCtx,
-        stringifyContext: props.stringifyContext,
         parentSegmentEnt: segmentEnt,
+        areaCtx: props.areaCtx,
       });
     } else {
       throw error;

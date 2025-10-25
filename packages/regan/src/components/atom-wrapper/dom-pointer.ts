@@ -31,8 +31,8 @@ export const getDomPointer = (hNode: HNode): DomPointer => {
       };
     } else {
       return {
-        parent: hNode.globalClientCtx.initDomPointer.parent,
-        nodeCount: hNode.globalClientCtx.initDomPointer.nodeCount,
+        parent: hNode.globalCtx.clientCtx.initDomPointer.parent,
+        nodeCount: hNode.globalCtx.clientCtx.initDomPointer.nodeCount,
       };
     }
   }

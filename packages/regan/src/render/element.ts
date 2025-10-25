@@ -17,6 +17,7 @@ export function renderElement(
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
     contextEnt: props.parentSegmentEnt?.contextEnt,
+    globalCtx: props.globalCtx,
   });
   this.segmentEnt = segmentEnt;
 
@@ -27,6 +28,7 @@ export function renderElement(
   const initDynamicPropsStage1 = initDynamicPropsStage0({
     dynamicProps,
     globalCtx: props.globalCtx,
+    areaCtx: props.areaCtx,
   });
 
   // create render template
@@ -47,7 +49,6 @@ export function renderElement(
         {
           segmentEnt,
           globalCtx: props.globalCtx,
-          globalClientCtx: props.globalClientCtx,
         },
         {
           element,
@@ -66,9 +67,8 @@ export function renderElement(
   let handleChildrenRenderResult: HandleChildrenResult = handleChildren({
     children: this.children,
     globalCtx: props.globalCtx,
-    renderCtx: props.renderCtx,
-    globalClientCtx: props.globalClientCtx,
     parentSegmentEnt: segmentEnt,
+    areaCtx: props.areaCtx,
   });
 
   renderTemplate.children = handleChildrenRenderResult.renderTemplates;

@@ -3,7 +3,6 @@ import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
 import {waitTime} from 'utftu';
 import {createAtom} from 'strangelove';
-import {C} from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js';
 
 describe('atom-wrapper', () => {
   it('simple', async () => {

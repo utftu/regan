@@ -22,11 +22,11 @@ export function hydrateComponent(
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
     contextEnt,
+    globalCtx: props.globalCtx,
   });
   this.segmentEnt = segmentEnt;
 
   const hNode = new HNodeComponent({
-    globalClientCtx: props.globalClientCtx,
     parent: props.parentHNode,
     globalCtx: props.globalCtx,
     segmentEnt,
@@ -66,8 +66,8 @@ export function hydrateComponent(
       hydrateCtx: props.hydrateCtx,
       parentDomPointer: props.domPointer,
       parentSegmentEnt: segmentEnt,
-      globalClientCtx: props.globalClientCtx,
       lastText: props.lastText,
+      areaCtx: props.areaCtx,
     });
   } catch (error) {
     if (this.component === ErrorGurard) {
@@ -86,8 +86,8 @@ export function hydrateComponent(
         hydrateCtx: props.hydrateCtx,
         parentDomPointer: props.domPointer,
         parentSegmentEnt: segmentEnt,
-        globalClientCtx: props.globalClientCtx,
         lastText: props.lastText,
+        areaCtx: props.areaCtx,
       });
     } else {
       throw error;

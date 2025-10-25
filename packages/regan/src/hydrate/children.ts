@@ -1,7 +1,5 @@
-// import {getContextValue} from '../context/context.tsx';
-// import {getErrorCommonContext} from '../errors/errors.tsx';
 import {handleCommonError} from '../errors/helpers.ts';
-import {GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -28,17 +26,17 @@ export function handleChildrenHydrate({
   hydrateCtx,
   parentDomPointer,
   parentSegmentEnt,
-  globalClientCtx,
+  areaCtx: areaCtx,
   lastText: propsLastText,
 }: {
   children: SingleChild[];
   parentHNode: HNode;
   globalCtx: GlobalCtx;
-  globalClientCtx: GlobalClientCtx;
   hydrateCtx: HydrateCtx;
   parentDomPointer: DomPointer;
   parentSegmentEnt: SegmentEnt;
   lastText: boolean;
+  areaCtx: AreaCtx;
 }): HandleChildrenHydrateResult {
   const hNodes: HNode[] = [];
   const nodeCountInit = parentDomPointer.nodeCount;
@@ -72,7 +70,6 @@ export function handleChildrenHydrate({
         {
           parent: parentHNode,
           globalCtx,
-          globalClientCtx,
           segmentEnt: parentSegmentEnt,
         },
         {
@@ -108,9 +105,9 @@ export function handleChildrenHydrate({
       },
       parentHNode,
       globalCtx,
-      globalClientCtx,
       hydrateCtx,
-      lastText: lastText,
+      lastText,
+      areaCtx,
     });
     hNodes.push(hydrateResult.hNode);
 

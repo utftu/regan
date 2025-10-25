@@ -17,7 +17,7 @@ export type HydrateProps = {
   globalCtx: GlobalCtx;
   jsxSegmentName: string;
   hydrateCtx: HydrateCtx;
-  globalClientCtx: GlobalClientCtx;
+  // globalClientCtx: GlobalClientCtx;
   areaCtx: AreaCtx;
   parentSegmentEnt?: SegmentEnt;
   lastText: boolean;

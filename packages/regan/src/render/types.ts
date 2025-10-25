@@ -9,9 +9,7 @@ export type RenderCtx = {
 
 export type RenderProps = {
   globalCtx: GlobalCtx;
-  globalClientCtx: GlobalClientCtx;
   areaCtx: AreaCtx;
-  renderCtx: RenderCtx;
   jsxSegmentName: string;
   parentSegmentEnt?: SegmentEnt;
 };

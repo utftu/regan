@@ -3,28 +3,30 @@ import {HNode} from '../h-node/h-node.ts';
 import {AnyFunc} from '../types.ts';
 import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 import {Ctx} from '../ctx/ctx.ts';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 
 export const subsribeAtomStages = ({
   atom,
   globalCtx,
+  areaCtx,
 }: {
   atom: Atom;
   globalCtx: GlobalCtx;
+  areaCtx: AreaCtx;
 }) => {
   let changed = false;
 
   const funcTemp = () => {
     changed = true;
   };
-  globalCtx.updaterInit.add(atom, funcTemp);
+  areaCtx.updaterInit.add(atom, funcTemp);
 
   return (hNode: HNode, cb: AnyFunc) => {
     hNode.mounts.push(() => {
       const cbWapper = () => {
         cb(hNode);
       };
-      globalCtx.updaterInit.remove(atom, funcTemp);
+      areaCtx.updaterInit.remove(atom, funcTemp);
       globalCtx.updater.add(atom, cbWapper);
 
       hNode.unmounts.push(() => {
@@ -52,14 +54,14 @@ export const subsribeAtomWrapper = ({
   const func1 = () => {
     changed = true;
   };
-  ctx.globalCtx.updaterInit.add(atom, func1);
+  ctx.areaCtx.updaterInit.add(atom, func1);
 
   ctx.mount((hNode) => {
     const cbWapper = () => {
       cb(hNode);
     };
 
-    ctx.globalCtx.updaterInit.remove(atom, func1);
+    ctx.areaCtx.updaterInit.remove(atom, func1);
     ctx.globalCtx.updater.add(atom, cbWapper);
 
     hNode.unmounts.push(() => {

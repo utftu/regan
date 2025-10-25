@@ -32,21 +32,21 @@ export const rednerRaw = ({
 }) => {
   const atomsTracker = new AtomsTracker();
 
+  const globalClientCtx =
+    parentHNode?.globalCtx.clientCtx ??
+    new GlobalClientCtx({
+      window: localWindow,
+      initDomPointer: domPointer,
+    });
+
   const globalCtx =
     parentHNode?.globalCtx ??
     new GlobalCtx({
       data,
       mode: 'client',
       root: new Root(),
+      clientCtx: globalClientCtx,
     });
-
-  const globalClientCtx =
-    parentHNode?.globalClientCtx ??
-    new GlobalClientCtx({
-      window: localWindow,
-      initDomPointer: domPointer,
-    });
-  globalCtx.globalClientCtx = globalClientCtx;
 
   const areaCtx = new AreaCtx();
 
@@ -54,11 +54,7 @@ export const rednerRaw = ({
     const {renderTemplate} = node.render({
       parentSegmentEnt,
       globalCtx,
-      globalClientCtx,
       jsxSegmentName,
-      renderCtx: {
-        atomsTracker,
-      },
       areaCtx,
     });
 

@@ -15,18 +15,19 @@ export function hydrateRaw({
   data?: Record<any, any>;
   domPointer: DomPointer;
 }) {
-  const globalCtx = new GlobalCtx({
-    data,
-    mode: 'client',
-    root: new Root(),
-  });
-
   const globalClientCtx = new GlobalClientCtx({
     window: windowLocal,
     initDomPointer: domPointer,
   });
 
-  globalCtx.globalClientCtx = globalClientCtx;
+  const globalCtx = new GlobalCtx({
+    data,
+    mode: 'client',
+    root: new Root(),
+    clientCtx: globalClientCtx,
+  });
+
+  globalCtx.clientCtx = globalClientCtx;
 
   const areaCtx = new AreaCtx();
 
@@ -35,7 +36,7 @@ export function hydrateRaw({
       jsxSegmentName: '',
       domPointer,
       globalCtx,
-      globalClientCtx,
+      // globalClientCtx,
       areaCtx,
       hydrateCtx: {},
       lastText: false,

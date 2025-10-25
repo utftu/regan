@@ -19,7 +19,7 @@ const logError = ({
   console.log(error);
   console.groupEnd();
 
-  if (typeof segmentEnt.hNode?.globalClientCtx.window === 'undefined') {
+  if (typeof segmentEnt.hNode?.globalCtx.clientCtx.window === 'undefined') {
     console.groupEnd();
     return;
   }

@@ -39,6 +39,7 @@ export function stringifyElement(
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
     contextEnt: props.parentSegmentEnt?.contextEnt,
+    globalCtx: props.globalCtx,
   });
   this.segmentEnt = segmentEnt;
 
@@ -60,24 +61,8 @@ export function stringifyElement(
       children: this.children,
       parentSegmentEnt: segmentEnt,
       globalCtx: props.globalCtx,
-      stringifyContext: props.stringifyContext,
+      areaCtx: props.areaCtx,
     });
-  // try {
-  //   hadnlerChildrenResult = handleChildrenString({
-  //     children: this.children,
-  //     parentSegmentEnt: segmentEnt,
-  //     globalCtx: props.globalCtx,
-  //     stringifyContext: props.stringifyContext,
-  //   });
-  // } catch (error) {
-  //   const jsxNodeComponent = createErrorJsxNodeComponent(
-  //     this,
-  //     error,
-  //     props.parentSegmentEnt?.contextEnt
-  //   );
-
-  //   return jsxNodeComponent.stingify(props);
-  // }
 
   return {
     text: `${elementString.left}${hadnlerChildrenResult.text}${elementString.right}`,

@@ -22,6 +22,7 @@ export function hydrateElement(
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
     contextEnt: props.parentSegmentEnt?.contextEnt,
+    globalCtx: props.globalCtx,
   });
   this.segmentEnt = segmentEnt;
 
@@ -35,7 +36,7 @@ export function hydrateElement(
 
   const hNode = new HNodeElement(
     {
-      globalClientCtx: props.globalClientCtx,
+      // globalClientCtx: props.globalClientCtx,
       parent: props.parentHNode,
       globalCtx: props.globalCtx,
       segmentEnt,
@@ -54,6 +55,7 @@ export function hydrateElement(
   const initDynamicPropsStage1 = initDynamicPropsStage0({
     dynamicProps,
     globalCtx: props.globalCtx,
+    areaCtx: props.areaCtx,
   });
   initDynamicPropsStage1(hNode, listenerManager);
 
@@ -75,9 +77,9 @@ export function hydrateElement(
       parentHNode: hNode,
       globalCtx: props.globalCtx,
       hydrateCtx: props.hydrateCtx,
-      globalClientCtx: props.globalClientCtx,
       parentSegmentEnt: segmentEnt,
       lastText: false,
+      areaCtx: props.areaCtx,
     });
 
   hNode.addChildren(handlerChildrenResult.hNodes);

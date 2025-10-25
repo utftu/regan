@@ -1,5 +1,5 @@
 import {handleCommonError} from '../errors/helpers.ts';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtx, GlobalCtxServer} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {SingleChild} from '../types.ts';
 import {
@@ -9,7 +9,6 @@ import {
   formatJsxValue,
   wrapChildIfNeed,
 } from '../utils/jsx.ts';
-import {StringifyContext} from './types.ts';
 
 export type HandleChildrenStringifyResult = {
   text: string;
@@ -18,13 +17,13 @@ export type HandleChildrenStringifyResult = {
 export function handleChildrenString({
   children,
   globalCtx,
-  stringifyContext,
   parentSegmentEnt,
+  areaCtx,
 }: {
   children: SingleChild[];
-  globalCtx: GlobalCtx;
-  stringifyContext: StringifyContext;
+  globalCtx: GlobalCtxServer;
   parentSegmentEnt: SegmentEnt;
+  areaCtx: AreaCtx;
 }): HandleChildrenStringifyResult {
   let insertedJsxCount = 0;
 
@@ -55,7 +54,7 @@ export function handleChildrenString({
       globalCtx,
       pathSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,
-      stringifyContext,
+      areaCtx,
     });
 
     insertedJsxCount++;

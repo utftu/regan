@@ -1,6 +1,11 @@
 import {SingleChild, DomPointer, SystemProps} from '../types.ts';
 import {HNode, Mount, Unmount} from '../h-node/h-node.ts';
-import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {
+  AreaCtx,
+  GlobalCtx,
+  GlobalCtxBoth,
+  GlobalCtxServer,
+} from '../global-ctx/global-ctx.ts';
 import {Context, ContextEnt, getContextValue} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';
 import {HNodeComponent} from '../h-node/component.ts';
@@ -27,7 +32,7 @@ type PropsCtx<TProps> = {
   systemProps: SystemPropsCtx;
   state: ComponentState;
   children: SingleChild[];
-  globalCtx: GlobalCtx;
+  globalCtx: GlobalCtxBoth;
   areaCtx: AreaCtx;
   stage: Stage;
   segmentEnt: SegmentEnt;
@@ -42,12 +47,13 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   systemProps: SystemPropsCtx;
   children: SingleChild[];
   segmentEnt: SegmentEnt;
-  globalCtx: GlobalCtx;
+  globalCtx: GlobalCtxBoth;
   stage: Stage;
   ctx: Ctx;
   client?: Client;
   contextEnt?: ContextEnt;
-  system: {atomTracker?: AtomsTracker} = {};
+  // system: {atomTracker?: AtomsTracker} = {};
+  areaCtx: AreaCtx;
 
   constructor({
     props,
@@ -59,6 +65,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
     client,
     segmentEnt,
     contextEnt,
+    areaCtx,
   }: PropsCtx<TProps>) {
     this.state = state;
     this.props = props;
@@ -69,7 +76,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
     this.client = client;
     this.segmentEnt = segmentEnt;
     this.contextEnt = contextEnt;
-
+    this.areaCtx = areaCtx;
     this.ctx = this;
   }
 
