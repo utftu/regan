@@ -1,5 +1,4 @@
 import {createErrorRegan} from '../errors/errors.tsx';
-import {handleJsxError} from '../errors/helpers.ts';
 import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';

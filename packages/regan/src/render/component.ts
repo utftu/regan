@@ -90,6 +90,7 @@ export function renderComponent(
       const errorComponent = createErrorComponent({
         error: errorRegan,
         errorHandler,
+        segmentEnt,
       });
 
       handleChildrenResult = handleChildren({

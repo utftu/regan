@@ -8,10 +8,9 @@ import {
   wrapChildIfNeed,
 } from '../utils/jsx.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {RenderCtx} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {RenderTemplate, RenderTemplateText} from './template.types.ts';
-import {handleJsxError} from '../errors/helpers.ts';
+import {createErrorRegan} from '../errors/errors.tsx';
 
 export type HandleChildrenResult = {
   renderTemplates: RenderTemplate[];
@@ -71,8 +70,13 @@ export function handleChildren({
     }
 
     if (checkAllowedStructure(childOrAtom) === false) {
-      handleJsxError('Invalid structura', parentSegmentEnt);
-      continue;
+      const errorRegan = createErrorRegan({
+        error: 'Invalid structura',
+        place: 'jsx',
+        segmentEnt: parentSegmentEnt,
+      });
+
+      throw errorRegan;
     }
 
     const jsxNode = wrapChildIfNeed(childOrAtom);

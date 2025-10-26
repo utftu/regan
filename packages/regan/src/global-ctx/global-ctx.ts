@@ -1,5 +1,5 @@
 import {ErrorProps} from '../errors/errors.tsx';
-import {GlobalHandler} from '../errors/helpers.ts';
+import {GlobalErrorHandler} from '../errors/helpers.ts';
 import {Root} from '../root/root.ts';
 import {DomPointer} from '../types.ts';
 import {createUpdaterAsync, createUpdaterSync} from '../updater/updater.ts';
@@ -19,23 +19,26 @@ export class GlobalCtx<
   root: Root;
   mode: Mode;
   updater = createUpdaterAsync();
-  errorHandlers: GlobalHandler[] = [];
+  errorHandlers: GlobalErrorHandler[];
   clientCtx: TClientCtx;
   constructor({
     data = {},
     root,
     mode,
     clientCtx,
+    errorHandlers = [],
   }: {
     data?: Data;
     root: Root;
     mode: Mode;
     clientCtx: TClientCtx;
+    errorHandlers?: GlobalErrorHandler[];
   }) {
     this.data = data;
     this.root = root;
     this.mode = mode;
     this.clientCtx = clientCtx;
+    this.errorHandlers = errorHandlers;
   }
 }
 

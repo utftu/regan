@@ -68,6 +68,7 @@ export function strigifyComponent(
       const errorComponent = createErrorComponent({
         error: errorRegan,
         errorHandler,
+        segmentEnt,
       });
 
       handleChildrenResult = handleChildrenString({

@@ -11,6 +11,7 @@ import {convertFromRtToV} from './convert/from-rt-to-v.ts';
 import {convertFromRtToH} from './convert/from-rt-to-h.ts';
 import {RenderTemplateExtended} from './template.types.ts';
 import {virtualApply} from '../v/v.ts';
+import {throwGlobalSystemErros} from '../errors/helpers.ts';
 
 export const rednerRaw = ({
   node,
@@ -61,6 +62,11 @@ export const rednerRaw = ({
     areaCtx.updaterInit.cancel();
 
     return {renderTemplate};
+  } catch (error) {
+    if (!parentHNode) {
+      throwGlobalSystemErros(error, globalCtx);
+    }
+    throw error;
   } finally {
     areaCtx.updaterInit.cancel();
   }

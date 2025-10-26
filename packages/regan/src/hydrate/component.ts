@@ -83,6 +83,7 @@ export function hydrateComponent(
       const errorComponent = createErrorComponent({
         error: errorRegan,
         errorHandler,
+        segmentEnt,
       });
 
       resultHandlerChildren = handleChildrenHydrate({

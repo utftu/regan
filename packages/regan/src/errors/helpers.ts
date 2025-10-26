@@ -13,16 +13,27 @@ import {
   getErrorContext,
 } from './errors.tsx';
 import {Fragment} from '../components/fragment/fragment.ts';
+import {logError} from './logger.tsx';
+import {GlobalCtx, GlobalCtxBoth} from '../global-ctx/global-ctx.ts';
 
 type GlobalHandlerProps = ErrorProps & {handled: boolean};
-export type GlobalHandler = (props: GlobalHandlerProps) => any;
+export type GlobalErrorHandler = (props: GlobalHandlerProps) => any;
+
+const checkDefaultHandler = (handler: AnyFunc) => {
+  if (handler === defaultErrorHandler || handler === logError) {
+    return true;
+  }
+  return false;
+};
 
 export const createErrorComponent = ({
   error,
   errorHandler,
+  segmentEnt,
 }: {
   error: ErrorRegan;
   errorHandler: ErrorHandler;
+  segmentEnt: SegmentEnt;
 }) => {
   const errorJsx = errorHandler({error});
 
@@ -31,8 +42,8 @@ export const createErrorComponent = ({
     {component: Fragment}
   );
 
-  error.segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
-    handler({error, handled: errorHandler !== defaultErrorHandler});
+  segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
+    handler({error, handled: !checkDefaultHandler(errorHandler)});
   });
 
   return errorJsxComponent;
@@ -65,8 +76,8 @@ export const prepareListener = ({
 
       segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
         handler({
-          error,
-          handled: errorHandler !== defaultErrorHandler,
+          error: errorRegan,
+          handled: !checkDefaultHandler(errorHandler),
         });
       });
     }
@@ -92,24 +103,41 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
 
     hNode.segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
       handler({
-        error,
-        handled: errorHandler !== defaultErrorHandler,
+        error: errorRegan,
+        handled: !checkDefaultHandler(errorHandler),
       });
     });
   }
 };
 
-export const handleJsxError = (message: string, segmentEnt: SegmentEnt) => {
-  const commonHandler = getContextValue(
-    getErrorContext(),
-    segmentEnt.contextEnt
-  );
+export const throwGlobalSystemErros = (
+  error: unknown,
+  globalCtx: GlobalCtxBoth
+) => {
   const errorRegan = createErrorRegan({
-    error: message,
-    place: 'jsx',
-    segmentEnt,
+    error,
+    place: 'system',
+    segmentEnt: undefined,
   });
-  commonHandler({
-    error: errorRegan,
+
+  globalCtx.errorHandlers.forEach((handler) => {
+    handler({error: errorRegan, handled: false});
   });
+
+  throw errorRegan;
 };
+
+// export const handleJsxError = (message: string, segmentEnt: SegmentEnt) => {
+//   const commonHandler = getContextValue(
+//     getErrorContext(),
+//     segmentEnt.contextEnt
+//   );
+//   const errorRegan = createErrorRegan({
+//     error: message,
+//     place: 'jsx',
+//     segmentEnt,
+//   });
+//   commonHandler({
+//     error: errorRegan,
+//   });
+// };

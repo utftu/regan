@@ -1,36 +1,28 @@
 import {ErrorGurard} from '../components/error-guard.tsx';
-import {JsxNode} from '../regan.ts';
-import {SegmentEnt} from '../segment/segment.ts';
 import {FC} from '../types.ts';
-// import {ErrorCommanGuard, ErrorGuardHandler, ErrorGuardJsx} from './errors.tsx';
+import {ErrorRegan} from './errors.tsx';
 
-const logError = ({
-  error,
-  // jsxNode,
-  segmentEnt,
-}: {
-  // jsxNode: JsxNode;
-  error: Error;
-  segmentEnt: SegmentEnt;
-}) => {
+export const logError = ({error}: {error: ErrorRegan}) => {
   console.group(`regan: error: ${error.message}`);
 
   console.groupCollapsed('Stack');
   console.log(error);
   console.groupEnd();
 
-  if (typeof segmentEnt.hNode?.globalCtx.clientCtx.window === 'undefined') {
+  if (
+    typeof error.segmentEnt?.hNode?.globalCtx.clientCtx.window === 'undefined'
+  ) {
     console.groupEnd();
     return;
   }
 
   console.groupCollapsed('SegmentEnt');
-  console.dir(segmentEnt);
+  console.dir(error.segmentEnt);
   console.groupEnd();
 
-  if (segmentEnt.hNode) {
+  if (error.segmentEnt.hNode) {
     console.groupCollapsed('HNode');
-    console.dir(segmentEnt.hNode);
+    console.dir(error.segmentEnt.hNode);
     console.groupEnd();
   }
 
@@ -55,12 +47,9 @@ export const ErrorLogger: FC<{enabled?: boolean}> = (
   }
   return (
     <ErrorGurard
-      handler={({error, segmentEnt}) => {
-        if (!checkValidError(error)) {
-          return createErrorJsxNodeComponent(error);
-        }
-        logError({error, jsxNode});
-        return createErrorJsxNodeComponent(jsxNode, error);
+      handler={({error}) => {
+        logError({error});
+        throw error;
       }}
     >
       {children}

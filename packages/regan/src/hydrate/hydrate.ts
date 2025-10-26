@@ -3,17 +3,21 @@ import {Root} from '../root/root.ts';
 import {DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
+import {GlobalErrorHandler, throwGlobalSystemErros} from '../errors/helpers.ts';
+import {createErrorRegan} from '../errors/errors.tsx';
 
 export function hydrateRaw({
   node,
   window: windowLocal = window,
   data = {},
   domPointer,
+  errorHandlers = [],
 }: {
   node: JsxNode;
   window?: Window;
   data?: Record<any, any>;
   domPointer: DomPointer;
+  errorHandlers?: GlobalErrorHandler[];
 }) {
   const globalClientCtx = new GlobalClientCtx({
     window: windowLocal,
@@ -25,6 +29,7 @@ export function hydrateRaw({
     mode: 'client',
     root: new Root(),
     clientCtx: globalClientCtx,
+    errorHandlers,
   });
 
   globalCtx.clientCtx = globalClientCtx;
@@ -36,7 +41,6 @@ export function hydrateRaw({
       jsxSegmentName: '',
       domPointer,
       globalCtx,
-      // globalClientCtx,
       areaCtx,
       hydrateCtx: {},
       lastText: false,
@@ -44,6 +48,8 @@ export function hydrateRaw({
     mountHNodes(hNode);
 
     return {hNode};
+  } catch (error) {
+    throwGlobalSystemErros(error, globalCtx);
   } finally {
     areaCtx.updaterInit.cancel();
   }

@@ -1,5 +1,5 @@
-import {handleJsxError} from '../errors/helpers.ts';
-import {AreaCtx, GlobalCtx, GlobalCtxServer} from '../global-ctx/global-ctx.ts';
+import {createErrorRegan} from '../errors/errors.tsx';
+import {AreaCtx, GlobalCtxServer} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {SingleChild} from '../types.ts';
 import {
@@ -44,8 +44,13 @@ export function handleChildrenString({
     }
 
     if (checkAllowedStructure(childOrAtom) === false) {
-      handleJsxError('Invalid structura', parentSegmentEnt);
-      continue;
+      const errorRegan = createErrorRegan({
+        error: 'Invalid structura',
+        place: 'jsx',
+        segmentEnt: parentSegmentEnt,
+      });
+
+      throw errorRegan;
     }
 
     const jsxNode = wrapChildIfNeed(childOrAtom);

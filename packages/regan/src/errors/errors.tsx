@@ -7,7 +7,7 @@ type ErrorPlace = 'jsx' | 'component' | 'handler' | 'mount' | 'system';
 
 export class ErrorRegan extends Error {
   place: ErrorPlace;
-  segmentEnt: SegmentEnt;
+  segmentEnt?: SegmentEnt;
   originalError: unknown;
 
   constructor({
@@ -17,7 +17,7 @@ export class ErrorRegan extends Error {
   }: {
     error: unknown;
     place?: ErrorPlace;
-    segmentEnt: SegmentEnt;
+    segmentEnt?: SegmentEnt;
   }) {
     if (typeof error === 'string') {
       super(error);
@@ -42,7 +42,7 @@ export const createErrorRegan = ({
 }: {
   error: unknown;
   place?: ErrorPlace;
-  segmentEnt: SegmentEnt;
+  segmentEnt: SegmentEnt | undefined;
 }): ErrorRegan => {
   if (error instanceof ErrorRegan) {
     return error;
@@ -52,9 +52,7 @@ export const createErrorRegan = ({
 };
 
 export type ErrorProps = {
-  error: ErrorRegan | unknown;
-  // segmentEnt: SegmentEnt;
-  // place: ErrorPlace;
+  error: ErrorRegan;
 };
 
 export type ErrorHandler = (props: ErrorProps) => SingleChild;
