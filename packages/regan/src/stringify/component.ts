@@ -9,8 +9,9 @@ import {
   HandleChildrenStringifyResult,
 } from './children.ts';
 import {createErrorComponent} from '../errors/helpers.ts';
-import {ErrorHandler} from '../errors/errors.tsx';
+import {createErrorRegan, ErrorHandler} from '../errors/errors.tsx';
 import {ErrorGurard} from '../components/error-guard.tsx';
+import {Child} from '../types.ts';
 
 export function strigifyComponent(
   this: JsxNodeComponent,
@@ -40,7 +41,13 @@ export function strigifyComponent(
     areaCtx: props.areaCtx,
   });
 
-  const rawChidlren = this.component(this.props, funcCtx);
+  let rawChidlren: Child;
+  try {
+    rawChidlren = this.component(this.props, funcCtx);
+  } catch (error) {
+    const myError = createErrorRegan({error, place: 'component', segmentEnt});
+    throw myError;
+  }
 
   const children = normalizeChildren(rawChidlren);
 
@@ -54,12 +61,12 @@ export function strigifyComponent(
       areaCtx: props.areaCtx,
     });
   } catch (error) {
+    const errorRegan = createErrorRegan({error, segmentEnt});
     if (this.component === ErrorGurard) {
       const errorHandler = this.props.handler as ErrorHandler;
 
       const errorComponent = createErrorComponent({
-        error,
-        segmentEnt,
+        error: errorRegan,
         errorHandler,
       });
 
@@ -70,7 +77,7 @@ export function strigifyComponent(
         areaCtx: props.areaCtx,
       });
     } else {
-      throw error;
+      throw errorRegan;
     }
   }
 

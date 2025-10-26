@@ -4,34 +4,35 @@ import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc} from '../types.ts';
 import {LisneterManager} from '../utils/listeners.ts';
-import {ErrorHandler, getErrorContext} from './errors.tsx';
+import {
+  createErrorRegan,
+  defaultErrorHandler,
+  ErrorHandler,
+  ErrorProps,
+  ErrorRegan,
+  getErrorContext,
+} from './errors.tsx';
 import {Fragment} from '../components/fragment/fragment.ts';
 
-type GlobalHandlerProps = {
-  error: unknown;
-  segmentEnt: SegmentEnt;
-  handled: boolean;
-};
+type GlobalHandlerProps = ErrorProps & {handled: boolean};
 export type GlobalHandler = (props: GlobalHandlerProps) => any;
 
 export const createErrorComponent = ({
   error,
-  segmentEnt,
   errorHandler,
 }: {
-  error: unknown;
-  segmentEnt: SegmentEnt;
+  error: ErrorRegan;
   errorHandler: ErrorHandler;
 }) => {
-  const errorJsx = errorHandler({error, segmentEnt});
+  const errorJsx = errorHandler({error});
 
   const errorJsxComponent = new JsxNodeComponent(
     {props: {}, children: [errorJsx]},
     {component: Fragment}
   );
 
-  segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
-    handler({error, segmentEnt, handled: true});
+  error.segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
+    handler({error, handled: errorHandler !== defaultErrorHandler});
   });
 
   return errorJsxComponent;
@@ -44,18 +45,29 @@ export const prepareListener = ({
   func: AnyFunc;
   listenerManager: LisneterManager;
 }) => {
+  const segmentEnt = listenerManager.segmentEnt;
   return async (...args: any[]) => {
     try {
       await func(...args);
     } catch (error) {
+      const errorRegan = createErrorRegan({
+        error,
+        place: 'handler',
+        segmentEnt,
+      });
       const errorHandler = getContextValue(
         getErrorContext(),
-        listenerManager.segmentEnt.contextEnt
+        segmentEnt.contextEnt
       );
       errorHandler({
-        error,
-        segmentEnt: listenerManager.segmentEnt,
-        place: 'handler',
+        error: errorRegan,
+      });
+
+      segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
+        handler({
+          error,
+          handled: errorHandler !== defaultErrorHandler,
+        });
       });
     }
   };
@@ -69,22 +81,35 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
       getErrorContext(),
       hNode.segmentEnt.contextEnt
     );
-    errorHandler({
+    const errorRegan = createErrorRegan({
       error,
-      segmentEnt: hNode.segmentEnt,
       place: 'mount',
+      segmentEnt: hNode.segmentEnt,
+    });
+    errorHandler({
+      error: errorRegan,
+    });
+
+    hNode.segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
+      handler({
+        error,
+        handled: errorHandler !== defaultErrorHandler,
+      });
     });
   }
 };
 
-export const handleCommonError = (message: string, segmentEnt: SegmentEnt) => {
+export const handleJsxError = (message: string, segmentEnt: SegmentEnt) => {
   const commonHandler = getContextValue(
     getErrorContext(),
     segmentEnt.contextEnt
   );
-  commonHandler({
-    segmentEnt,
-    error: new Error(message),
+  const errorRegan = createErrorRegan({
+    error: message,
     place: 'jsx',
+    segmentEnt,
+  });
+  commonHandler({
+    error: errorRegan,
   });
 };

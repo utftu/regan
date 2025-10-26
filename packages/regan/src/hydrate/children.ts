@@ -1,4 +1,5 @@
-import {handleCommonError} from '../errors/helpers.ts';
+import {createErrorRegan} from '../errors/errors.tsx';
+import {handleJsxError} from '../errors/helpers.ts';
 import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
@@ -90,8 +91,13 @@ export function handleChildrenHydrate({
     }
 
     if (checkAllowedStructure(childOrAtom) === false) {
-      handleCommonError('Invalid structura', parentSegmentEnt);
-      continue;
+      const errorRegan = createErrorRegan({
+        error: new Error('Invalid structura'),
+        place: 'jsx',
+        segmentEnt: parentSegmentEnt,
+      });
+
+      throw errorRegan;
     }
 
     const jsxNode = wrapChildIfNeed(childOrAtom);

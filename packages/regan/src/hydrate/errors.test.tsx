@@ -91,8 +91,8 @@ describe('hydrate errors', () => {
     expect(parentChild.mock.calls.length).toBe(2);
 
     // str and hydraye = 2 jsx error
-    expect(errors[0]).toBe(errorJsx);
-    expect(errors[1]).toBe(errorJsx);
-    expect(errors[2]).toBe(errorHandler);
+    expect(errors[0].message).toBe(errorJsx.message);
+    expect(errors[1].message).toBe(errorJsx.message);
+    expect(errors[2].message).toBe(errorHandler.message);
   });
 });

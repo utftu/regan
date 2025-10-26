@@ -1,12 +1,13 @@
 import {ErrorGurard} from '../components/error-guard.tsx';
 import {selectContextEnt} from '../context/context.tsx';
 import {ComponentState, Ctx} from '../ctx/ctx.ts';
-import {ErrorHandler} from '../errors/errors.tsx';
+import {createErrorRegan, ErrorHandler, ErrorRegan} from '../errors/errors.tsx';
 import {createErrorComponent} from '../errors/helpers.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
+import {Child} from '../types.ts';
 import {handleChildren, HandleChildrenResult} from './children.ts';
 import {RenderTemplate, RenderTemplateComponent} from './template.types.ts';
 import {RenderProps, RenderResult} from './types.ts';
@@ -55,7 +56,17 @@ export function renderComponent(
     },
   };
 
-  const rawChidlren = this.component(this.props, componentCtx);
+  let rawChidlren: Child;
+  try {
+    rawChidlren = this.component(this.props, componentCtx);
+  } catch (error) {
+    const errorRegan = createErrorRegan({
+      error,
+      place: 'component',
+      segmentEnt,
+    });
+    throw errorRegan;
+  }
 
   hNode.mounts = componentCtx.state.mounts;
   hNode.unmounts = componentCtx.state.unmounts;
@@ -72,12 +83,12 @@ export function renderComponent(
       areaCtx: props.areaCtx,
     });
   } catch (error) {
+    const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
     if (this.component === ErrorGurard) {
       const errorHandler = this.props.handler as ErrorHandler;
 
       const errorComponent = createErrorComponent({
-        error,
-        segmentEnt,
+        error: errorRegan,
         errorHandler,
       });
 
@@ -88,7 +99,7 @@ export function renderComponent(
         areaCtx: props.areaCtx,
       });
     } else {
-      throw error;
+      throw errorRegan;
     }
   }
 

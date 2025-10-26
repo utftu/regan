@@ -1,4 +1,4 @@
-import {handleCommonError} from '../errors/helpers.ts';
+import {handleJsxError} from '../errors/helpers.ts';
 import {AreaCtx, GlobalCtx, GlobalCtxServer} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {SingleChild} from '../types.ts';
@@ -44,7 +44,7 @@ export function handleChildrenString({
     }
 
     if (checkAllowedStructure(childOrAtom) === false) {
-      handleCommonError('Invalid structura', parentSegmentEnt);
+      handleJsxError('Invalid structura', parentSegmentEnt);
       continue;
     }
 

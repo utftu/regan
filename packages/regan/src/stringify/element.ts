@@ -1,4 +1,4 @@
-import {Atom, checkAtom} from 'strangelove';
+import {checkAtom} from 'strangelove';
 import {
   handleChildrenString,
   HandleChildrenStringifyResult,

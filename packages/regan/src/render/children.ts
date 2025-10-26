@@ -11,7 +11,7 @@ import {HNodeText} from '../h-node/text.ts';
 import {RenderCtx} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {RenderTemplate, RenderTemplateText} from './template.types.ts';
-import {handleCommonError} from '../errors/helpers.ts';
+import {handleJsxError} from '../errors/helpers.ts';
 
 export type HandleChildrenResult = {
   renderTemplates: RenderTemplate[];
@@ -71,7 +71,7 @@ export function handleChildren({
     }
 
     if (checkAllowedStructure(childOrAtom) === false) {
-      handleCommonError('Invalid structura', parentSegmentEnt);
+      handleJsxError('Invalid structura', parentSegmentEnt);
       continue;
     }
 

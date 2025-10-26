@@ -1,9 +1,5 @@
 import {ContextEnt} from '../context/context.tsx';
-import {
-  GlobalCtx,
-  GlobalCtxBoth,
-  GlobalCtxServer,
-} from '../global-ctx/global-ctx.ts';
+import {GlobalCtxBoth} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {PathSegment as PathSegment} from './jsx-path/jsx-path.ts';

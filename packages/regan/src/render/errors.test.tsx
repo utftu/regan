@@ -105,7 +105,7 @@ describe('render errors', () => {
 
     expect(parentChild.mock.calls.length).toBe(2);
 
-    expect(errors[0]).toBe(errorJsx);
-    expect(errors[1]).toBe(errorHandler);
+    expect(errors[0].message).toBe(errorJsx.message);
+    expect(errors[1].message).toBe(errorHandler.message);
   });
 });
