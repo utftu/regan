@@ -1,6 +1,6 @@
 {
   "name": "regan",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "main": "./dist/regan.js",
   "types": "./dist/types/regan.d.ts",
