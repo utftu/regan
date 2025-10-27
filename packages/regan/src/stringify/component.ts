@@ -61,7 +61,7 @@ export function strigifyComponent(
       areaCtx: props.areaCtx,
     });
   } catch (error) {
-    const errorRegan = createErrorRegan({error, segmentEnt});
+    const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
     if (this.component === ErrorGurard) {
       const errorHandler = this.props.handler as ErrorHandler;
 

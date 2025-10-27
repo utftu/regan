@@ -45,7 +45,7 @@ export function handleChildrenString({
 
     if (checkAllowedStructure(childOrAtom) === false) {
       const errorRegan = createErrorRegan({
-        error: 'Invalid structura',
+        error: `Invalid structura: ${childOrAtom}`,
         place: 'jsx',
         segmentEnt: parentSegmentEnt,
       });

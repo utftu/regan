@@ -91,7 +91,7 @@ export function handleChildrenHydrate({
 
     if (checkAllowedStructure(childOrAtom) === false) {
       const errorRegan = createErrorRegan({
-        error: new Error('Invalid structura'),
+        error: `Invalid structura: ${childOrAtom}`,
         place: 'jsx',
         segmentEnt: parentSegmentEnt,
       });

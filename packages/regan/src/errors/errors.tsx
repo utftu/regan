@@ -31,7 +31,13 @@ export class ErrorRegan extends Error {
 
     this.place = place;
     this.originalError = error;
-    this.segmentEnt = segmentEnt;
+
+    Object.defineProperty(this, 'segmentEnt', {
+      value: segmentEnt,
+      enumerable: false,
+      writable: true,
+      configurable: true,
+    });
   }
 }
 
