@@ -29,15 +29,6 @@ export const logError = ({error}: {error: ErrorRegan}) => {
   console.groupEnd();
 };
 
-const checkValidError = (error: unknown): error is Error => {
-  if (error instanceof Error) {
-    return true;
-  }
-
-  console.error('regan: regan: (invalid error) ', error);
-  return false;
-};
-
 export const ErrorLogger: FC<{enabled?: boolean}> = (
   {enabled = true},
   {children}
@@ -55,36 +46,4 @@ export const ErrorLogger: FC<{enabled?: boolean}> = (
       {children}
     </ErrorGurard>
   );
-  // return (
-  //   <ErrorGuardJsx
-  //     errorJsx={({error, jsxNode}) => {
-  //       if (!checkValidError(error)) {
-  //         return createErrorJsxNodeComponent(jsxNode, error);
-  //       }
-  //       logError({error, jsxNode});
-  //       return createErrorJsxNodeComponent(jsxNode, error);
-  //     }}
-  //   >
-  //     <ErrorGuardHandler
-  //       errorHandler={({error, jsxNode}) => {
-  //         if (!checkValidError(error)) {
-  //           return;
-  //         }
-  //         logError({error, jsxNode});
-  //       }}
-  //     >
-  //       <ErrorCommanGuard
-  //         errorCommon={({error, jsxNode}) => {
-  //           if (!checkValidError(error)) {
-  //             return;
-  //           }
-
-  //           logError({error, jsxNode});
-  //         }}
-  //       >
-  //         {children}
-  //       </ErrorCommanGuard>
-  //     </ErrorGuardHandler>
-  //   </ErrorGuardJsx>
-  // );
 };

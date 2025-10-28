@@ -2,6 +2,7 @@ import type {Ctx} from '../ctx/ctx.ts';
 import type {JsxNode} from '../jsx-node/jsx-node.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import type {FC} from '../types.ts';
+import {checkClassChild} from '../utils/check-parent.ts';
 
 export type Context<TValue = any> = {
   name: string;
@@ -65,7 +66,7 @@ export const selectContextEnt = (
   parentContextEnt?: ContextEnt
 ): ContextEnt | undefined => {
   if (
-    jsxNode instanceof JsxNodeComponent &&
+    checkClassChild(jsxNode, 'jsxNodeComponent') &&
     jsxNode.component === ContextProvider
   ) {
     return {

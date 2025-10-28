@@ -1,3 +1,4 @@
+import {defineClassName} from '../utils/check-parent.ts';
 import {LisneterManager} from '../utils/listeners.ts';
 import {VOldElement} from '../v/types.ts';
 import {HNode, PropsHNode} from './h-node.ts';
@@ -18,3 +19,4 @@ export class HNodeElement extends HNode {
 
   vOldElement?: VOldElement;
 }
+defineClassName(HNodeElement, 'hNodeElement');

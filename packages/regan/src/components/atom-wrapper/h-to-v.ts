@@ -3,13 +3,14 @@ import {HNodeElement} from '../../h-node/element.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {HNodeText} from '../../h-node/text.ts';
 import {JsxNodeElement} from '../../jsx-node/variants/element/element.ts';
+import {checkClassChild} from '../../utils/check-parent.ts';
 import {VOld, VOldElement, VOldText} from '../../v/types.ts';
 
 export const convertHToV = (
   hNode: HNode,
   store: {text?: VOldText} = {}
 ): VOld[] => {
-  if (hNode instanceof HNodeText) {
+  if (checkClassChild(hNode, 'hNodeText')) {
     if (!store.text) {
       store.text = {
         type: 'text',
@@ -25,7 +26,7 @@ export const convertHToV = (
     return [store.text];
   }
 
-  if (hNode instanceof HNodeElement) {
+  if (checkClassChild(hNode, 'hNodeElement')) {
     store.text = undefined;
     const children = hNode.children
       .map((hNode) => convertHToV(hNode, store))
@@ -48,7 +49,7 @@ export const convertHToV = (
     return [vOld];
   }
 
-  if (hNode instanceof HNodeComponent) {
+  if (checkClassChild(hNode, 'hNodeComponent')) {
     const children = hNode.children
       .map((hNode) => convertHToV(hNode, store))
       .flat();

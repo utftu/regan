@@ -2,6 +2,7 @@ import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {createContext} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc, SingleChild} from '../types.ts';
+import {checkClassChild} from '../utils/check-parent.ts';
 
 type ErrorPlace = 'jsx' | 'component' | 'handler' | 'mount' | 'system';
 
@@ -50,7 +51,7 @@ export const createErrorRegan = ({
   place?: ErrorPlace;
   segmentEnt: SegmentEnt | undefined;
 }): ErrorRegan => {
-  if (error instanceof ErrorRegan) {
+  if (checkClassChild(error, 'errorRegan')) {
     return error;
   }
 

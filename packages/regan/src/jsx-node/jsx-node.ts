@@ -3,6 +3,7 @@ import {HydrateProps, HydrateResult} from '../hydrate/types.ts';
 import {StringifyProps, StringifyResult} from '../stringify/types.ts';
 import {RenderProps, RenderResult} from '../render/types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
+import {defineClassName} from '../utils/check-parent.ts';
 
 export type JsxNodeProps<TProps extends Props = Props> = {
   props: TProps;
@@ -26,3 +27,4 @@ export abstract class JsxNode<TProps extends Props = Props> {
   abstract hydrate(ctx: HydrateProps): HydrateResult;
   abstract render(ctx: RenderProps): RenderResult;
 }
+defineClassName(JsxNode, 'jsxNode');

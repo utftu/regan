@@ -1,3 +1,4 @@
+import {checkClassChild} from '../../utils/check-parent.ts';
 import {HNodeElement} from '../element.ts';
 import {HNode} from '../h-node.ts';
 import {Checker, CheckerAnswer, Config} from './find.ts';
@@ -11,7 +12,7 @@ export const findPrevHNode = (
 ) => {
   const result = findPrevUp(hNode, checker, config);
 
-  if (result instanceof HNode) {
+  if (checkClassChild(result, 'hNode')) {
     return result;
   }
 };
@@ -35,7 +36,7 @@ const findPrevUp = (
     const child = checkingHNode.children[i];
 
     const downAnswer = findPrevDown(child, checker);
-    if (downAnswer instanceof HNode) {
+    if (checkClassChild(downAnswer, 'hNode')) {
       return downAnswer;
     }
 
@@ -44,7 +45,7 @@ const findPrevUp = (
     }
   }
 
-  if (checkingHNode instanceof HNodeElement) {
+  if (checkClassChild(checkingHNode, 'hNodeElement')) {
     return;
   }
 
@@ -54,7 +55,7 @@ const findPrevUp = (
 const findPrevDown = (hNode: HNode, checker: Checker): CheckerAnswer => {
   const checkerAnswer = checker(hNode);
 
-  if (checkerAnswer instanceof HNode) {
+  if (checkClassChild(checkerAnswer, 'hNode')) {
     return hNode;
   }
 
@@ -67,7 +68,7 @@ const findPrevDown = (hNode: HNode, checker: Checker): CheckerAnswer => {
 
     const downAnswer = findPrevDown(child, checker);
 
-    if (downAnswer instanceof HNode) {
+    if (checkClassChild(downAnswer, 'hNode')) {
       return downAnswer;
     }
 

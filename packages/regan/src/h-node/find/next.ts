@@ -1,11 +1,11 @@
-import {HNodeElement} from '../element.ts';
+import {checkClassChild} from '../../utils/check-parent.ts';
 import {HNode} from '../h-node.ts';
 import {Checker, CheckerAnswer} from './find.ts';
 
 export const findNextHNode = (hNode: HNode, checker: Checker) => {
   const result = findNextUp(hNode, checker);
 
-  if (result instanceof HNode) {
+  if (checkClassChild(result, 'hNode')) {
     return result;
   }
 };
@@ -24,7 +24,7 @@ const findNextUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
 
     const downAnswer = findNextDown(child, checker);
 
-    if (downAnswer instanceof HNode) {
+    if (checkClassChild(downAnswer, 'hNode')) {
       return downAnswer;
     }
 
@@ -33,7 +33,7 @@ const findNextUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
     }
   }
 
-  if (checkingHNode instanceof HNodeElement) {
+  if (checkClassChild(checkingHNode, 'hNodeElement')) {
     return;
   }
 
@@ -43,7 +43,7 @@ const findNextUp = (hNode: HNode, checker: Checker): CheckerAnswer => {
 const findNextDown = (hNode: HNode, checker: Checker): CheckerAnswer => {
   const checkerAnswer = checker(hNode);
 
-  if (checkerAnswer instanceof HNode) {
+  if (checkClassChild(checkerAnswer, 'hNode')) {
     return hNode;
   }
 
@@ -56,7 +56,7 @@ const findNextDown = (hNode: HNode, checker: Checker): CheckerAnswer => {
 
     const downAnswer = findNextDown(child, checker);
 
-    if (downAnswer instanceof HNode) {
+    if (checkClassChild(downAnswer, 'hNode')) {
       return downAnswer;
     }
 

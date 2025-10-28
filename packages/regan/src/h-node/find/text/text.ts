@@ -1,3 +1,4 @@
+import {checkClassChild} from '../../../utils/check-parent.ts';
 import {HNodeElement} from '../../element.ts';
 import {HNode} from '../../h-node.ts';
 import {HNodeText} from '../../text.ts';
@@ -6,11 +7,11 @@ import {findPrevHNode} from '../prev.ts';
 
 export const findPrevTextHNode = (hNode: HNode) => {
   const nextTextHNode = findPrevHNode(hNode, (hNode) => {
-    if (hNode instanceof HNodeElement) {
+    if (checkClassChild(hNode, 'hNodeElement')) {
       return 'stop';
     }
 
-    if (hNode instanceof HNodeText) {
+    if (checkClassChild(hNode, 'hNodeText')) {
       return hNode;
     }
   });
@@ -20,11 +21,11 @@ export const findPrevTextHNode = (hNode: HNode) => {
 
 export const findNextTextHNode = (hNode: HNode): HNodeText | undefined => {
   const nextHNode = findNextHNode(hNode, (hNode) => {
-    if (hNode instanceof HNodeElement) {
+    if (checkClassChild(hNode, 'hNodeElement')) {
       return 'stop';
     }
 
-    if (hNode instanceof HNodeText) {
+    if (checkClassChild(hNode, 'hNodeText')) {
       return hNode;
     }
   });

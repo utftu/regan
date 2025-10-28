@@ -1,5 +1,6 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
+import {defineClassName} from '../utils/check-parent.ts';
 
 export type Unmount = () => any;
 export type Mount<THNode extends HNode = HNode> = (hNode: THNode) => any;
@@ -60,3 +61,4 @@ export class HNode {
     });
   }
 }
+defineClassName(HNode, 'hNode');

@@ -3,6 +3,7 @@ import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
+import {checkClassChild} from './check-parent.ts';
 
 export const formatJsxValue = <TValue>(
   value: TValue
@@ -29,7 +30,11 @@ export function checkPassPrimitive(value: any) {
 }
 
 export const checkAllowedStructure = (value: any) => {
-  if (value instanceof JsxNode || checkAtom(value) || Array.isArray(value)) {
+  if (
+    checkClassChild(value, 'jsxNode') ||
+    checkAtom(value) ||
+    Array.isArray(value)
+  ) {
     return true;
   }
   return false;
