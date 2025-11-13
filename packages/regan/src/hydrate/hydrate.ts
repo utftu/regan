@@ -1,21 +1,21 @@
 import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Root} from '../root/root.ts';
-import {DomPointer} from '../types.ts';
+import {Data, DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
 import {GlobalErrorHandler, throwGlobalSystemErros} from '../errors/helpers.ts';
-import {createErrorRegan} from '../errors/errors.tsx';
+import {defaultData} from '../consts.ts';
 
 export function hydrateRaw({
   node,
   window: windowLocal = window,
-  data = {},
+  data = defaultData,
   domPointer,
   errorHandlers = [],
 }: {
   node: JsxNode;
   window?: Window;
-  data?: Record<any, any>;
+  data?: Data;
   domPointer: DomPointer;
   errorHandlers?: GlobalErrorHandler[];
 }) {
@@ -58,13 +58,14 @@ export function hydrateRaw({
 export const hydrate = (
   element: HTMLElement,
   node: JsxNode,
-  options: {window: Window} = {window}
+  options: {window: Window; data?: Data} = {window}
 ) => {
   return hydrateRaw({
     domPointer: {
       parent: element,
       nodeCount: 0,
     },
+    data: options.data,
 
     window: options.window,
     node,

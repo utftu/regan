@@ -2,7 +2,7 @@ import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {Root} from '../root/root.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
 import {VOld} from '../v/types.ts';
-import {DomPointer} from '../types.ts';
+import {Data, DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -25,14 +25,12 @@ export const rednerRaw = ({
   node: JsxNode;
   domPointer: DomPointer;
   window?: Window;
-  data?: Record<any, any>;
+  data?: Data;
   parentHNode?: HNode;
   parentSegmentEnt?: SegmentEnt;
   jsxSegmentName?: string;
   vOlds?: VOld[];
 }) => {
-  const atomsTracker = new AtomsTracker();
-
   const globalClientCtx =
     parentHNode?.globalCtx.clientCtx ??
     new GlobalClientCtx({
@@ -86,7 +84,6 @@ export const render = (
     node,
     window: localWindow,
     parentHNode: undefined,
-    data: {},
     parentSegmentEnt: undefined,
     domPointer,
   });

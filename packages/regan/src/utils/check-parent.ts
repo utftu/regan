@@ -25,13 +25,6 @@ type Types = {
 type Name = keyof Types;
 
 export const defineClassName = (ent: any, name: Name) => {
-  Object.defineProperty(ent.prototype, key, {
-    value: name,
-    enumerable: false,
-    writable: false,
-    configurable: false,
-  });
-
   const childName = getChildName(name);
 
   Object.defineProperty(ent.prototype, childName, {
@@ -41,13 +34,6 @@ export const defineClassName = (ent: any, name: Name) => {
     configurable: false,
   });
 };
-
-// export const checkClassInstance = <T extends Name>(
-//   ent: unknown,
-//   name: T
-// ): ent is Types[T] => {
-//   return typeof ent === 'object' && ent !== null && (ent as any)[key] === name;
-// };
 
 export const checkClassChild = <T extends Name>(
   ent: unknown,

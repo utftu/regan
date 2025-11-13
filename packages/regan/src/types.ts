@@ -32,3 +32,8 @@ export type SystemProps = {
   ref?: Atom<HTMLElement | void>;
   rawHtml?: string;
 };
+
+export type Data = {envs: Record<any, any>; props: Record<any, any>} & Record<
+  any,
+  any
+>;

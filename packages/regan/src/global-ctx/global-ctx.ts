@@ -1,10 +1,11 @@
+import {defaultData} from '../consts.ts';
 import {ErrorProps} from '../errors/errors.tsx';
 import {GlobalErrorHandler} from '../errors/helpers.ts';
 import {Root} from '../root/root.ts';
-import {DomPointer} from '../types.ts';
+import {Data, DomPointer} from '../types.ts';
 import {createUpdaterAsync, createUpdaterSync} from '../updater/updater.ts';
 
-type Data = Record<any, any>;
+// type Data = Record<any, any>;
 
 type Mode = 'server' | 'client';
 
@@ -22,7 +23,7 @@ export class GlobalCtx<
   errorHandlers: GlobalErrorHandler[];
   clientCtx: TClientCtx;
   constructor({
-    data = {},
+    data = defaultData,
     root,
     mode,
     clientCtx,
