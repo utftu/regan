@@ -5,6 +5,7 @@ import {FC} from '../types.ts';
 import {waitTime} from 'utftu';
 import {insertAndHydrate} from '../utils/tests.ts';
 import {createAtom} from 'strangelove';
+import {hydrate, stringify} from '../regan.ts';
 
 describe('hydrate', () => {
   describe('child', () => {
@@ -297,5 +298,40 @@ describe('hydrate', () => {
     const child4 = jsdom.window.document.getElementById('child4')!;
     child4.click();
     expect(childClick.mock.calls.length).toBe(1);
+  });
+  it('html', () => {
+    const clickFn = vi.fn();
+    const Component = () => {
+      return (
+        <Fragment>
+          {'<!DOCTYPE html>'}
+          <html>
+            <head>
+              <title>1</title>
+              <title>2</title>
+            </head>
+            <body>
+              <div>3</div>
+              <div click={clickFn} id='4'>
+                4
+              </div>
+            </body>
+          </html>
+        </Fragment>
+      );
+    };
+
+    const str = stringify(<Component />);
+    const jsdom = new JSDOM(str);
+
+    hydrate(jsdom.window.document, <Component />, {
+      window: jsdom.window as any,
+    });
+
+    const elem = jsdom.window.document.getElementById('4')!;
+    elem.click();
+    elem.click();
+
+    expect(clickFn.mock.calls.length).toBe(2);
   });
 });

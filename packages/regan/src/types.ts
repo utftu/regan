@@ -3,7 +3,7 @@ import {JsxNode} from './jsx-node/jsx-node.ts';
 import {Ctx} from './ctx/ctx.ts';
 
 export type DomPointer = {
-  parent: ParentNode;
+  parent: ParentNode | Document;
   nodeCount: number;
 };
 

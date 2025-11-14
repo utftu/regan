@@ -8,7 +8,7 @@ import {defaultData} from '../consts.ts';
 
 export function hydrateRaw({
   node,
-  window: windowLocal = window,
+  window: windowLocal,
   data = defaultData,
   domPointer,
   errorHandlers = [],
@@ -20,7 +20,7 @@ export function hydrateRaw({
   errorHandlers?: GlobalErrorHandler[];
 }) {
   const globalClientCtx = new GlobalClientCtx({
-    window: windowLocal,
+    window: windowLocal || window,
     initDomPointer: domPointer,
   });
 
@@ -56,18 +56,18 @@ export function hydrateRaw({
 }
 
 export const hydrate = (
-  element: HTMLElement,
+  element: HTMLElement | Document,
   node: JsxNode,
-  options: {window: Window; data?: Data} = {window}
+  options?: {window?: Window; data?: Data}
 ) => {
   return hydrateRaw({
     domPointer: {
       parent: element,
       nodeCount: 0,
     },
-    data: options.data,
+    data: options?.data || defaultData,
 
-    window: options.window,
+    window: options?.window,
     node,
   });
 };
