@@ -17,9 +17,12 @@
   "license": "MIT",
   "devDependencies": {
     "dapes": "^0.0.37",
+    "rollup-plugin-strip-code": "^0.2.8",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "vite-plugin-conditional-compiler": "^0.4.0",
+    "vite-plugin-strip-code": "^1.1.0",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "strangelove": "^2.1.4",

@@ -13,6 +13,34 @@ import {
 } from './children.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
 
+function isElement<TNode extends ChildNode>(args: {
+  element: TNode;
+  localWindow: Window;
+  jsxNodeElement: JsxNodeElement;
+}): args is {
+  element: Extract<TNode, Element>;
+  localWindow: Window;
+  jsxNodeElement: JsxNodeElement;
+} {
+  const {element, localWindow, jsxNodeElement} = args;
+
+  const NodeCtor = (localWindow as any).Node;
+
+  if (element.nodeType === NodeCtor.ELEMENT_NODE) {
+    const el = element as any as Element;
+
+    if (el.tagName.toLowerCase() === jsxNodeElement.tagName.toLowerCase()) {
+      return true;
+    }
+
+    throw new Error(
+      `Tag mismatch: DOM <${el.tagName}> vs JSX <${jsxNodeElement.tagName}>`
+    );
+  }
+
+  throw new Error(`Expected Element, got nodeType ${element.nodeType}`);
+}
+
 export function hydrateElement(
   this: JsxNodeElement,
   props: HydrateProps
