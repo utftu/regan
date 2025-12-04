@@ -3,6 +3,8 @@ import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
 import {waitTime} from 'utftu';
 import {createAtom} from 'strangelove';
+import {ErrorGurard} from '../error-guard.tsx';
+import {ErrorLogger} from '../../regan.ts';
 
 describe('atom-wrapper', () => {
   it('simple', async () => {
@@ -31,12 +33,6 @@ describe('atom-wrapper', () => {
     await waitTime();
 
     expect(document.getElementById('child')).toBe(null);
-
-    // createdAtom.set(positiveAtomValue);
-
-    // await waitTime(0);
-
-    // expect(document.getElementById('child')).not.toBe(null);
   });
   it('name change', async () => {
     const start = '<div id="name">My name is ';
@@ -61,6 +57,39 @@ describe('atom-wrapper', () => {
     expect(document.getElementById('name')?.outerHTML).toBe(
       `${start}Ivan${end}`
     );
+  });
+  it.only('names change', async () => {
+    const names = createAtom(['1']);
+
+    const Component = () => <div id='name'>{names}</div>;
+
+    const jsdom = new JSDOM();
+    const document = jsdom.window.document;
+
+    insertAndHydrate({
+      jsdom,
+      jsxNode: (
+        <ErrorLogger>
+          <Component />
+        </ErrorLogger>
+      ),
+    });
+
+    expect(document.getElementById('name')?.textContent).toBe(`1`);
+
+    names.get().push('1');
+    names.update();
+
+    await waitTime(0);
+
+    expect(document.getElementById('name')?.textContent).toBe(`11`);
+
+    names.get().push('1');
+    names.update();
+
+    await waitTime(0);
+
+    expect(document.getElementById('name')?.textContent).toBe(`111`);
   });
   it('several dynamic zones', async () => {
     const atom1 = createAtom('1');

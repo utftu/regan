@@ -1,7 +1,4 @@
-import {HNodeComponent} from '../../h-node/component.ts';
-import {HNodeElement} from '../../h-node/element.ts';
 import {HNode} from '../../h-node/h-node.ts';
-import {HNodeText} from '../../h-node/text.ts';
 import {JsxNodeElement} from '../../jsx-node/variants/element/element.ts';
 import {checkClassChild} from '../../utils/check-parent.ts';
 import {VOld, VOldElement, VOldText} from '../../v/types.ts';

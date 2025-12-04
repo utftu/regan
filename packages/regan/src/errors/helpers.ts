@@ -126,18 +126,3 @@ export const throwGlobalSystemErros = (
 
   throw errorRegan;
 };
-
-// export const handleJsxError = (message: string, segmentEnt: SegmentEnt) => {
-//   const commonHandler = getContextValue(
-//     getErrorContext(),
-//     segmentEnt.contextEnt
-//   );
-//   const errorRegan = createErrorRegan({
-//     error: message,
-//     place: 'jsx',
-//     segmentEnt,
-//   });
-//   commonHandler({
-//     error: errorRegan,
-//   });
-// };

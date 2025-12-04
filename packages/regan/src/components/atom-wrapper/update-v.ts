@@ -27,14 +27,9 @@ export const updateV = ({
   const nextTextHNode = findNextTextHNode(hNode);
 
   const firstVNew = vNews[0] as VNew | void;
-  const savedTextFirstVNew =
-    firstVNew?.type === 'text' ? firstVNew.data.text : undefined;
   const firstVOld = vOlds[0] as VOld | void;
 
   const lastVNew = vNews[vNews.length - 1] as VNew | void;
-  const savedTextLastVNew =
-    lastVNew?.type === 'text' ? lastVNew.data.text : undefined;
-  const lastVOld = vOlds[vOlds.length - 1] as VOld | void;
 
   const preparedVNews: VNew[] = vNews;
   const preparedVOlds: VOld[] = vOlds;
@@ -97,28 +92,4 @@ export const updateV = ({
     window,
     domPointer,
   });
-
-  // split neighbour text nodes and update neighbour
-
-  // if (prevTextHNode) {
-  //   const firstVNewOld = newVOlds[0] as VOldText;
-  //   prevTextHNode.textNode = firstVNewOld.textNode;
-
-  //   if (firstVNew?.type === 'text') {
-  //     firstVNewOld.data.text = savedTextFirstVNew!;
-  //   } else {
-  //     newVOlds.shift();
-  //   }
-  // }
-
-  // if (nextTextHNode) {
-  //   const lastVNewOld = newVOlds[newVOlds.length - 1] as VOldText;
-  //   nextTextHNode.textNode = lastVNewOld.textNode;
-
-  //   if (lastVOld?.type === 'text') {
-  //     lastVNewOld.data.text = savedTextLastVNew!;
-  //   } else {
-  //     newVOlds.pop();
-  //   }
-  // }
 };
