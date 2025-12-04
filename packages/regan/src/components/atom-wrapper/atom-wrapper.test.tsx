@@ -58,7 +58,7 @@ describe('atom-wrapper', () => {
       `${start}Ivan${end}`
     );
   });
-  it.only('names change', async () => {
+  it('names change', async () => {
     const names = createAtom(['1']);
 
     const Component = () => <div id='name'>{names}</div>;

@@ -6,7 +6,6 @@ import {Data, DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 import {convertFromRtToV} from './convert/from-rt-to-v.ts';
 import {convertFromRtToH} from './convert/from-rt-to-h.ts';
 import {RenderTExtended} from './template.types.ts';

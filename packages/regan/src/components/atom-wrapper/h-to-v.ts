@@ -16,11 +16,12 @@ export const convertHToV = (
         },
         textNode: hNode.textNode,
       } satisfies VOldText;
+
+      return [store.text];
     } else {
       store.text.data.text += hNode.text;
+      return [];
     }
-
-    return [store.text];
   }
 
   if (checkClassChild(hNode, 'hNodeElement')) {

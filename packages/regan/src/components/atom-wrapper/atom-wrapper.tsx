@@ -43,7 +43,6 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
   ctx.segmentEnt.pathSegment.name += `?a=0`;
 
   const cb = (hNode: HNode) => {
-    // console.log('-----', 'cb');
     const vOlds = convertHToV(hNode);
     detachChildren(hNode);
 
@@ -74,13 +73,13 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
 
     const hNodeChild = convertFromRtToH(renderTemplate as RenderTExtended);
 
-    // console.log('-----', 'hNode', hNode);
-    // console.log('-----', 'hNodeChild', hNodeChild);
     hNode.addChildren([hNodeChild]);
 
-    console.log('-----', 'hNode', hNode);
+    // logHNodes(hNode);
 
     mountHNodes(hNodeChild);
+
+    // logHNodes(hNode);
   };
 
   subsribeAtomWrapper({atom, ctx, cb});
