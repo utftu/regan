@@ -10,7 +10,7 @@ import {convertHToV} from './h-to-v.ts';
 import {AtomsTracker} from '../../atoms-tracker/atoms-tracker.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {convertFromRtToH} from '../../render/convert/from-rt-to-h.ts';
-import {RenderTemplateExtended} from '../../render/template.types.ts';
+import {RenderTExtended} from '../../render/template.types.ts';
 import {subsribeAtomWrapper} from '../../utils/atom.ts';
 
 type Props = {
@@ -72,9 +72,7 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
       domPointer,
     });
 
-    const hNodeChild = convertFromRtToH(
-      renderTemplate as RenderTemplateExtended
-    );
+    const hNodeChild = convertFromRtToH(renderTemplate as RenderTExtended);
 
     // console.log('-----', 'hNode', hNode);
     // console.log('-----', 'hNodeChild', hNodeChild);

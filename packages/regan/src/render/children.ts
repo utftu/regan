@@ -9,25 +9,24 @@ import {
 } from '../utils/jsx.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {RenderTemplate, RenderTemplateText} from './template.types.ts';
+import {RenderT, RenderTemplateText} from './template.types.ts';
 import {createErrorRegan} from '../errors/errors.tsx';
+import {RenderCtx} from './types.ts';
 
 export type HandleChildrenResult = {
-  renderTemplates: RenderTemplate[];
+  renderTemplates: RenderT[];
 };
 
 export function handleChildren({
   children,
-  globalCtx,
   parentSegmentEnt,
-  areaCtx,
+  renderCtx,
 }: {
   children: SingleChild[];
-  globalCtx: GlobalCtx;
+  renderCtx: RenderCtx;
   parentSegmentEnt: SegmentEnt;
-  areaCtx: AreaCtx;
 }) {
-  const renderTemplates: RenderTemplate[] = [];
+  const renderTemplates: RenderT[] = [];
 
   let insertedJsxCount = 0;
 
@@ -54,7 +53,7 @@ export function handleChildren({
         createHNode(vOld) {
           return new HNodeText(
             {
-              globalCtx,
+              globalCtx: renderCtx.globalCtx,
               segmentEnt: parentSegmentEnt,
             },
             {
@@ -82,10 +81,9 @@ export function handleChildren({
     const jsxNode = wrapChildIfNeed(childOrAtom);
 
     const {renderTemplate} = jsxNode.render({
-      globalCtx,
       jsxSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,
-      areaCtx,
+      renderCtx,
     });
     renderTemplates.push(renderTemplate);
 

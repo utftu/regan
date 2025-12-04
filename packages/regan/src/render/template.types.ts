@@ -1,31 +1,22 @@
 import {HNodeComponent} from '../h-node/component.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {
-  VNewElement,
-  VNewText,
-  VOld,
-  VOldElement,
-  VOldText,
-} from '../v/types.ts';
+import {VNewElement, VNewText, VOldElement, VOldText} from '../v/types.ts';
 
-export type RenderTemplateComponent = {
+export type RenderTComponent = {
   type: 'component';
-  children: RenderTemplate[];
+  children: RenderT[];
 
   createHNode: () => HNodeComponent;
 };
 
-export type RenderTemplateComponentExtended = Omit<
-  RenderTemplateComponent,
-  'children'
-> & {
-  children: RenderTemplateExtended[];
+export type RenderTComponentExtended = Omit<RenderTComponent, 'children'> & {
+  children: RenderTExtended[];
 };
 
 export type RenderTemplateElement = {
   type: 'element';
-  children: RenderTemplate[];
+  children: RenderT[];
 
   vNew: VNewElement;
 
@@ -38,7 +29,7 @@ export type RenderTemplateElementExtended = Omit<
 > & {
   vOld: VOldElement;
 
-  children: RenderTemplateExtended[];
+  children: RenderTExtended[];
 };
 
 export type RenderTemplateText = {
@@ -53,12 +44,12 @@ export type RenderTemplateTextExtended = RenderTemplateText & {
   vOld: VOldText;
 };
 
-export type RenderTemplate =
-  | RenderTemplateComponent
+export type RenderT =
+  | RenderTComponent
   | RenderTemplateElement
   | RenderTemplateText;
 
-export type RenderTemplateExtended =
-  | RenderTemplateComponentExtended
+export type RenderTExtended =
+  | RenderTComponentExtended
   | RenderTemplateElementExtended
   | RenderTemplateTextExtended;

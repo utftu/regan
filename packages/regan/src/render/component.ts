@@ -9,7 +9,7 @@ import {normalizeChildren} from '../jsx/jsx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Child} from '../types.ts';
 import {handleChildren, HandleChildrenResult} from './children.ts';
-import {RenderTemplate, RenderTemplateComponent} from './template.types.ts';
+import {RenderT, RenderTComponent} from './template.types.ts';
 import {RenderProps, RenderResult} from './types.ts';
 
 export function renderComponent(
@@ -23,18 +23,18 @@ export function renderComponent(
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
     contextEnt,
-    globalCtx: props.globalCtx,
+    globalCtx: props.renderCtx.globalCtx,
   });
   this.segmentEnt = segmentEnt;
 
   const hNode = new HNodeComponent({
     segmentEnt,
-    globalCtx: props.globalCtx,
+    globalCtx: props.renderCtx.globalCtx,
   });
   segmentEnt.hNode = hNode;
 
   const componentCtx = new Ctx({
-    globalCtx: props.globalCtx,
+    globalCtx: props.renderCtx.globalCtx,
     props: this.props,
     systemProps: {
       ...this.systemProps,
@@ -45,12 +45,12 @@ export function renderComponent(
     stage: 'render',
     segmentEnt,
     contextEnt,
-    areaCtx: props.areaCtx,
+    areaCtx: props.renderCtx.areaCtx,
   });
 
-  const renderTemplate: RenderTemplateComponent = {
+  const renderTemplate: RenderTComponent = {
     type: 'component',
-    children: [] as RenderTemplate[],
+    children: [] as RenderT[],
     createHNode: () => {
       return hNode;
     },
@@ -78,9 +78,8 @@ export function renderComponent(
   try {
     handleChildrenResult = handleChildren({
       children,
-      globalCtx: props.globalCtx,
       parentSegmentEnt: segmentEnt,
-      areaCtx: props.areaCtx,
+      renderCtx: props.renderCtx,
     });
   } catch (error) {
     const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
@@ -95,9 +94,8 @@ export function renderComponent(
 
       handleChildrenResult = handleChildren({
         children: [errorComponent],
-        globalCtx: props.globalCtx,
         parentSegmentEnt: segmentEnt,
-        areaCtx: props.areaCtx,
+        renderCtx: props.renderCtx,
       });
     } else {
       throw errorRegan;

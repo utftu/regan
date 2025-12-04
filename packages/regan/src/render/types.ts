@@ -1,19 +1,20 @@
-import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
-import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {RenderTemplate} from './template.types.ts';
+import {RenderT} from './template.types.ts';
 
 export type RenderCtx = {
-  // atomsTracker: AtomsTracker;
+  globalCtx: GlobalCtx;
+  areaCtx: AreaCtx;
 };
 
 export type RenderProps = {
-  globalCtx: GlobalCtx;
-  areaCtx: AreaCtx;
+  // globalCtx: GlobalCtx;
+  // areaCtx: AreaCtx;
   jsxSegmentName: string;
   parentSegmentEnt?: SegmentEnt;
+  renderCtx: RenderCtx;
 };
 
 export type RenderResult = {
-  renderTemplate: RenderTemplate;
+  renderTemplate: RenderT;
 };

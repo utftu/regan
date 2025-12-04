@@ -9,7 +9,7 @@ import {SegmentEnt} from '../segment/segment.ts';
 import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 import {convertFromRtToV} from './convert/from-rt-to-v.ts';
 import {convertFromRtToH} from './convert/from-rt-to-h.ts';
-import {RenderTemplateExtended} from './template.types.ts';
+import {RenderTExtended} from './template.types.ts';
 import {virtualApply} from '../v/v.ts';
 import {throwGlobalSystemErros} from '../errors/helpers.ts';
 
@@ -52,9 +52,11 @@ export const rednerRaw = ({
   try {
     const {renderTemplate} = node.render({
       parentSegmentEnt,
-      globalCtx,
+      renderCtx: {
+        areaCtx,
+        globalCtx,
+      },
       jsxSegmentName,
-      areaCtx,
     });
 
     areaCtx.updaterInit.cancel();
@@ -97,7 +99,7 @@ export const render = (
     domPointer,
   });
 
-  const hNode = convertFromRtToH(renderTemplate as RenderTemplateExtended);
+  const hNode = convertFromRtToH(renderTemplate as RenderTExtended);
 
   mountHNodes(hNode);
 

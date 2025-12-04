@@ -1,9 +1,9 @@
 import {HNode} from '../../h-node/h-node.ts';
-import {RenderTemplateExtended} from '../template.types.ts';
+import {RenderTExtended} from '../template.types.ts';
 
 const connectChildren = (
   parentHNode: HNode,
-  renderTemplates: RenderTemplateExtended[]
+  renderTemplates: RenderTExtended[]
 ) => {
   const children = renderTemplates.map((childRenderTemplate) => {
     const childHNode = convertFromRtToH(childRenderTemplate);
@@ -14,9 +14,7 @@ const connectChildren = (
   parentHNode.children = children;
 };
 
-export const convertFromRtToH = (
-  renderTemplate: RenderTemplateExtended
-): HNode => {
+export const convertFromRtToH = (renderTemplate: RenderTExtended): HNode => {
   if (renderTemplate.type === 'text') {
     const hNode = renderTemplate.createHNode(renderTemplate.vOld);
     return hNode;

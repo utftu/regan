@@ -7,7 +7,7 @@ import {
   VOldText,
 } from '../../v/types.ts';
 import {
-  RenderTemplate,
+  RenderT,
   RenderTemplateElementExtended,
   RenderTemplateTextExtended,
 } from '../template.types.ts';
@@ -22,7 +22,7 @@ const wrapMethod = (obj: Record<string, any>, name: string, fn: AnyFunc) => {
 };
 
 export const convertFromRtToV = (
-  renderTemplate: RenderTemplate,
+  renderTemplate: RenderT,
   store: {vNew?: VNewText} = {}
 ): VNew[] => {
   if (renderTemplate.type === 'text') {
