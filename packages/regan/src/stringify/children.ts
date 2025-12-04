@@ -9,6 +9,7 @@ import {
   formatJsxValue,
   wrapChildIfNeed,
 } from '../utils/jsx.ts';
+import {StringifyCtx} from './types.ts';
 
 export type HandleChildrenStringifyResult = {
   text: string;
@@ -16,14 +17,12 @@ export type HandleChildrenStringifyResult = {
 
 export function handleChildrenString({
   children,
-  globalCtx,
   parentSegmentEnt,
-  areaCtx,
+  stringifyCtx,
 }: {
   children: SingleChild[];
-  globalCtx: GlobalCtxServer;
   parentSegmentEnt: SegmentEnt;
-  areaCtx: AreaCtx;
+  stringifyCtx: StringifyCtx;
 }): HandleChildrenStringifyResult {
   let insertedJsxCount = 0;
 
@@ -56,10 +55,9 @@ export function handleChildrenString({
     const jsxNode = wrapChildIfNeed(childOrAtom);
 
     const {text} = jsxNode.stingify({
-      globalCtx,
+      stringifyCtx,
       pathSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,
-      areaCtx,
     });
 
     insertedJsxCount++;

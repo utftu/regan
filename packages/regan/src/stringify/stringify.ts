@@ -17,9 +17,11 @@ export function stringify(node: JsxNode, options?: {data?: Data}) {
 
   try {
     const {text} = node.stingify({
-      globalCtx,
+      stringifyCtx: {
+        globalCtx,
+        areaCtx,
+      },
       pathSegmentName: '',
-      areaCtx,
     });
 
     return text;

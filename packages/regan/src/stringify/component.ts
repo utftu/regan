@@ -24,13 +24,13 @@ export function strigifyComponent(
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
     contextEnt,
-    globalCtx: props.globalCtx,
+    globalCtx: props.stringifyCtx.globalCtx,
   });
 
   this.segmentEnt = segmentEnt;
 
   const funcCtx = new Ctx({
-    globalCtx: props.globalCtx,
+    globalCtx: props.stringifyCtx.globalCtx,
     props: this.props,
     systemProps: this.systemProps,
     state: new ComponentState(),
@@ -38,7 +38,7 @@ export function strigifyComponent(
     stage: 'string',
     segmentEnt,
     contextEnt,
-    areaCtx: props.areaCtx,
+    areaCtx: props.stringifyCtx.areaCtx,
   });
 
   let rawChidlren: Child;
@@ -56,9 +56,8 @@ export function strigifyComponent(
   try {
     handleChildrenResult = handleChildrenString({
       children,
-      globalCtx: props.globalCtx,
+      stringifyCtx: props.stringifyCtx,
       parentSegmentEnt: segmentEnt,
-      areaCtx: props.areaCtx,
     });
   } catch (error) {
     const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
@@ -73,9 +72,8 @@ export function strigifyComponent(
 
       handleChildrenResult = handleChildrenString({
         children: [errorComponent],
-        globalCtx: props.globalCtx,
+        stringifyCtx: props.stringifyCtx,
         parentSegmentEnt: segmentEnt,
-        areaCtx: props.areaCtx,
       });
     } else {
       throw errorRegan;

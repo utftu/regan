@@ -39,7 +39,7 @@ export function stringifyElement(
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode: this,
     contextEnt: props.parentSegmentEnt?.contextEnt,
-    globalCtx: props.globalCtx,
+    globalCtx: props.stringifyCtx.globalCtx,
   });
   this.segmentEnt = segmentEnt;
 
@@ -60,8 +60,7 @@ export function stringifyElement(
     handleChildrenString({
       children: this.children,
       parentSegmentEnt: segmentEnt,
-      globalCtx: props.globalCtx,
-      areaCtx: props.areaCtx,
+      stringifyCtx: props.stringifyCtx,
     });
 
   return {
