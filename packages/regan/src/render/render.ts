@@ -12,7 +12,7 @@ import {RenderTExtended} from './template.types.ts';
 import {virtualApply} from '../v/v.ts';
 import {throwGlobalSystemErros} from '../errors/helpers.ts';
 
-export const rednerRaw = ({
+export const renderRaw = ({
   node,
   window: localWindow = window,
   parentHNode,
@@ -74,14 +74,14 @@ export const rednerRaw = ({
 export const render = (
   element: HTMLElement,
   node: JsxNode,
-  {window: localWindow}: {window: Window} = {window}
+  {window: localWindow}: {window: Window} = {window},
 ) => {
   const domPointer = {
     parent: element,
     nodeCount: 0,
   };
 
-  const {renderTemplate} = rednerRaw({
+  const {renderTemplate} = renderRaw({
     node,
     window: localWindow,
     parentHNode: undefined,

@@ -23,7 +23,6 @@ export class HNode {
   parent?: HNode;
   globalCtx: GlobalCtx;
   segmentEnt: SegmentEnt;
-  systemUnmounts: Unmount[] = [];
 
   data: Record<string, any> = {};
 

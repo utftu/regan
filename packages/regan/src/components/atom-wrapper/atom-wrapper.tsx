@@ -2,7 +2,7 @@ import {Atom} from 'strangelove';
 import {FC} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {detachChildren, mountHNodes} from '../../h-node/helpers.ts';
-import {rednerRaw} from '../../render/render.ts';
+import {renderRaw} from '../../render/render.ts';
 import {getDomPointer} from './dom-pointer.ts';
 import {convertFromRtToV} from '../../render/convert/from-rt-to-v.ts';
 import {updateV} from './update-v.ts';
@@ -20,7 +20,7 @@ type Props = {
 
 function incrementWithLimit(
   value: number,
-  limit: number = Number.MAX_SAFE_INTEGER
+  limit: number = Number.MAX_SAFE_INTEGER,
 ): number {
   // Проверяем, что value не NaN и не Infinity
   if (!Number.isFinite(value)) {
@@ -42,7 +42,15 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
   let updateCount = 0;
   ctx.segmentEnt.pathSegment.name += `?a=0`;
 
+  let progress = false;
+  let pending = false;
+
   const cb = (hNode: HNode) => {
+    if (progress) {
+      pending = true;
+      return;
+    }
+    progress = true;
     const vOlds = convertHToV(hNode);
     detachChildren(hNode);
 
@@ -53,7 +61,7 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
 
     const domPointer = getDomPointer(hNode);
 
-    const {renderTemplate} = rednerRaw({
+    const {renderTemplate} = renderRaw({
       node: <Fragment>{atom.get()}</Fragment>,
       parentHNode: hNode,
       window: hNode.globalCtx.clientCtx.window,
@@ -79,7 +87,11 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
 
     mountHNodes(hNodeChild);
 
-    // logHNodes(hNode);
+    progress = false;
+    if (pending) {
+      pending = false;
+      cb(hNode);
+    }
   };
 
   subsribeAtomWrapper({atom, ctx, cb});

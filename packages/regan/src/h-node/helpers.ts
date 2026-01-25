@@ -21,6 +21,8 @@ export const detachChildren = (hNode: HNode) => {
   hNode.children.forEach((hNodeChild) => {
     unmountHNodes(hNodeChild);
     hNodeChild.parent = undefined;
+
+    detachChildren(hNodeChild);
   });
   hNode.children.length = 0;
 };
