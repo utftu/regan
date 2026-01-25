@@ -83,8 +83,6 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
 
     hNode.addChildren([hNodeChild]);
 
-    // logHNodes(hNode);
-
     mountHNodes(hNodeChild);
 
     progress = false;
