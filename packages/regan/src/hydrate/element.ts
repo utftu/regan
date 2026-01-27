@@ -1,7 +1,7 @@
 import {HNodeElement} from '../h-node/element.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {LisneterManager} from '../utils/listeners.ts';
+import {ListenerManager} from '../utils/listeners.ts';
 import {
   initDynamicPropsStage0,
   initStaticProps,
@@ -60,7 +60,7 @@ export function hydrateElement(
 
   const {dynamicProps, staticProps} = splitProps(this.props);
 
-  const listenerManager = new LisneterManager(segmentEnt);
+  const listenerManager = new ListenerManager(segmentEnt);
 
   const hNode = new HNodeElement(
     {

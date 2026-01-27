@@ -67,6 +67,11 @@ export const insert = ({
 };
 
 const replaceFull = (vNew: VNew, vOld: VOld, window: Window) => {
+  // Cleanup listeners from old element before replacing
+  if (vOld.type === 'element') {
+    vOld.listenerManager.cleanup();
+  }
+
   const newDomNode = create(vNew, window);
   getDomNode(vOld).replaceWith(newDomNode);
 
@@ -152,11 +157,15 @@ export const handle = ({
 }) => {
   // delete
   if (!vNew) {
+    // Cleanup listeners before removing element
+    if (vOld!.type === 'element') {
+      vOld!.listenerManager.cleanup();
+    }
     getDomNode(vOld!).remove();
     return;
   }
 
-  // crate
+  // create
   if (!vOld) {
     const newDomNode = create(vNew, window);
 
@@ -197,7 +206,7 @@ export const handle = ({
 
   if (
     vOldSure.data.tag !== vNewSure.data.tag ||
-    // rawHtm
+    // rawHtml
     hasRawHtml(vNewSure, vOldSure)
   ) {
     const node = replaceFull(vNewSure, vOldSure, window);

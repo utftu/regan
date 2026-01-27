@@ -32,8 +32,6 @@ export function hydrateRaw({
     errorHandlers,
   });
 
-  globalCtx.clientCtx = globalClientCtx;
-
   const areaCtx = new AreaCtx();
 
   try {

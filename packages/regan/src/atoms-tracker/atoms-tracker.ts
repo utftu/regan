@@ -3,7 +3,7 @@ import {AnyFunc} from '../types.ts';
 
 type AtomConfig = {
   funcs: AnyFunc[];
-  subsriber: AnyFunc;
+  subscriber: AnyFunc;
   changed: boolean;
 };
 
@@ -15,12 +15,12 @@ export class AtomsTracker {
       const atomConfig: AtomConfig = {
         funcs: [callback],
         changed: false,
-        subsriber: () => {
+        subscriber: () => {
           atomConfig.changed = true;
         },
       };
 
-      atom.listeners.subscribe(atomConfig.subsriber);
+      atom.listeners.subscribe(atomConfig.subscriber);
 
       return;
     }
@@ -29,7 +29,7 @@ export class AtomsTracker {
 
   finish() {
     for (const [atom, atomConfig] of this.atoms.entries()) {
-      atom.listeners.unsubscribe(atomConfig.subsriber);
+      atom.listeners.unsubscribe(atomConfig.subscriber);
 
       if (atomConfig.changed) {
         atomConfig.funcs.forEach((fun) => fun());

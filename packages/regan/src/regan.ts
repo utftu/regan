@@ -11,4 +11,4 @@ export {stringify} from './stringify/stringify.ts';
 export {JsxNode} from './jsx-node/jsx-node.ts';
 export {ErrorLogger} from './errors/logger.tsx';
 export {detachChildren} from './h-node/helpers.ts';
-export {ErrorGurard} from './components/error-guard.tsx';
+export {ErrorGuard} from './components/error-guard.tsx';

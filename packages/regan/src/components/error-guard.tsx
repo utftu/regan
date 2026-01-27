@@ -6,9 +6,9 @@ type Props = {
   handler: ErrorHandler;
 };
 
-export const ErrorGurard: FC<Props> = ({handler}, {children, globalCtx}) => {
+export const ErrorGuard: FC<Props> = ({handler}, {children, globalCtx}) => {
   const Provider = getErrorContext().Provider;
-  const chidlrenAtom = createAtom<Child>(children);
+  const childrenAtom = createAtom<Child>(children);
 
   return (
     <Provider
@@ -18,10 +18,10 @@ export const ErrorGurard: FC<Props> = ({handler}, {children, globalCtx}) => {
         globalCtx.errorHandlers.forEach((handler) => {
           handler({...props, handled: true});
         });
-        chidlrenAtom.set(result);
+        childrenAtom.set(result);
       }}
     >
-      {chidlrenAtom}
+      {childrenAtom}
     </Provider>
   );
 };

@@ -5,7 +5,7 @@ import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 
-export const subsribeAtomStages = ({
+export const subscribeAtomStages = ({
   atom,
   globalCtx,
   areaCtx,
@@ -40,7 +40,7 @@ export const subsribeAtomStages = ({
   };
 };
 
-export const subsribeAtomWrapper = ({
+export const subscribeAtomWrapper = ({
   atom,
   ctx,
   cb,

@@ -1,8 +1,8 @@
 import {Atom, checkAtom} from 'strangelove';
 import {AnyFunc, Props} from '../types.ts';
-import {LisneterManager} from './listeners.ts';
+import {ListenerManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {subsribeAtomStages} from './atom.ts';
+import {subscribeAtomStages} from './atom.ts';
 import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 
 export const splitProps = (props: Props) => {
@@ -33,7 +33,7 @@ const setProperty = ({
   name: string;
   value: any;
   element: Element;
-  listenerManager: LisneterManager;
+  listenerManager: ListenerManager;
 }) => {
   if (typeof value === 'function') {
     listenerManager.add(element, name, value);
@@ -45,7 +45,7 @@ const setProperty = ({
 export const initStaticProps = (
   element: Element,
   staticProps: Props,
-  listenerManager: LisneterManager
+  listenerManager: ListenerManager
 ) => {
   for (const name in staticProps) {
     const value = staticProps[name];
@@ -63,26 +63,26 @@ export const initDynamicPropsStage0 = ({
   globalCtx: GlobalCtx;
   areaCtx: AreaCtx;
 }) => {
-  const subsribers: Record<string, {subscriber: AnyFunc; atom: Atom}> = {};
+  const subscribers: Record<string, {subscriber: AnyFunc; atom: Atom}> = {};
   for (const name in dynamicProps) {
     const atom = dynamicProps[name];
 
-    const subscriber = subsribeAtomStages({
+    const subscriber = subscribeAtomStages({
       atom,
       globalCtx,
       areaCtx,
     });
 
-    subsribers[name] = {subscriber, atom};
+    subscribers[name] = {subscriber, atom};
   }
 
   return function initDynamicPropsStage1(
     hNode: HNodeElement,
-    listenerManager: LisneterManager
+    listenerManager: ListenerManager
   ) {
-    for (const name in subsribers) {
-      const {subscriber: subsriber, atom} = subsribers[name];
-      subsriber(hNode, () => {
+    for (const name in subscribers) {
+      const {subscriber, atom} = subscribers[name];
+      subscriber(hNode, () => {
         setProperty({
           name,
           value: atom.get(),

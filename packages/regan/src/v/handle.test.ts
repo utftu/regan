@@ -3,7 +3,7 @@ import {describe, expect, it, vi} from 'vitest';
 import {VNewElement, VNewText, VOldElement, VOldText} from './types.ts';
 import {JSDOM} from 'jsdom';
 import {handle} from './handle.ts';
-import {LisneterManager} from '../utils/listeners.ts';
+import {ListenerManager} from '../utils/listeners.ts';
 import {DomPointer} from '../types.ts';
 
 export const createDomPointer = (window: Window): DomPointer => {
@@ -21,8 +21,8 @@ const document = jsdom.window.document;
 const createListenerManager = () => {
   const dumpSegmentEnt = vi.fn();
 
-  // return new LisneterManager({} as any);
-  return new LisneterManager(dumpSegmentEnt as any);
+  // return new ListenerManager({} as any);
+  return new ListenerManager(dumpSegmentEnt as any);
 };
 
 const vNewElement: VNewElement = {
@@ -54,7 +54,7 @@ const getVOldElement = (): VOldElement => {
     },
     element,
     children: [],
-    listenerManager: new LisneterManager(null as any),
+    listenerManager: new ListenerManager(null as any),
   };
 };
 

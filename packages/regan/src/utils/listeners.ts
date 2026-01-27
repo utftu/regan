@@ -7,8 +7,9 @@ export type ListenerStore = {
   segmentEnt: SegmentEnt;
 };
 
-export class LisneterManager {
+export class ListenerManager {
   listeners: Record<string, AnyFunc> = {};
+  element?: Element;
   segmentEnt: SegmentEnt;
 
   constructor(segmentEnt: SegmentEnt) {
@@ -20,7 +21,10 @@ export class LisneterManager {
       this.remove(element, name);
     }
 
-    const preparedFuncForError = prepareListener({listenerManager: this, func});
+    const preparedFuncForError = prepareListener({
+      listenerManager: this as any,
+      func,
+    });
     const preparedFunc = (...args: any[]) => {
       return preparedFuncForError(...args, element);
     };
@@ -28,6 +32,7 @@ export class LisneterManager {
     element.addEventListener(name, preparedFunc);
 
     this.listeners[name] = preparedFunc;
+    this.element = element;
   }
 
   check(name: string) {
@@ -37,5 +42,15 @@ export class LisneterManager {
   remove(element: Element, name: string) {
     element.removeEventListener(name, this.listeners[name]);
     delete this.listeners[name];
+  }
+
+  cleanup() {
+    if (this.element) {
+      for (const name in this.listeners) {
+        this.element.removeEventListener(name, this.listeners[name]);
+      }
+      this.listeners = {};
+      this.element = undefined;
+    }
   }
 }

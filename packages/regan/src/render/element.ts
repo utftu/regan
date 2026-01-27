@@ -5,7 +5,7 @@ import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {RenderProps, RenderResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {initDynamicPropsStage0, splitProps} from '../utils/props.ts';
-import {LisneterManager} from '../utils/listeners.ts';
+import {ListenerManager} from '../utils/listeners.ts';
 import {RenderTemplateElement} from './template.types.ts';
 
 export function renderElement(
@@ -23,7 +23,7 @@ export function renderElement(
 
   const {dynamicProps, joinedProps} = splitProps(this.props);
 
-  const listenerManager = new LisneterManager(segmentEnt);
+  const listenerManager = new ListenerManager(segmentEnt);
 
   const initDynamicPropsStage1 = initDynamicPropsStage0({
     dynamicProps,

@@ -1,7 +1,7 @@
 import {describe, expect, it, vi} from 'vitest';
 import {JSDOM} from 'jsdom';
 import {render} from './render.ts';
-import {ErrorGurard} from '../components/error-guard.tsx';
+import {ErrorGuard} from '../components/error-guard.tsx';
 
 describe('render errors', () => {
   it('default', () => {
@@ -61,7 +61,7 @@ describe('render errors', () => {
 
     const Parent = () => {
       return (
-        <ErrorGurard
+        <ErrorGuard
           handler={({error}) => {
             errors.push(error);
 
@@ -70,7 +70,7 @@ describe('render errors', () => {
         >
           <div id='parent' click={parentChild}>
             parent
-            <ErrorGurard
+            <ErrorGuard
               handler={({error}) => {
                 errors.push(error);
 
@@ -78,8 +78,8 @@ describe('render errors', () => {
               }}
             >
               <ChildJsxError />
-            </ErrorGurard>
-            <ErrorGurard
+            </ErrorGuard>
+            <ErrorGuard
               handler={({error}) => {
                 errors.push(error);
 
@@ -87,9 +87,9 @@ describe('render errors', () => {
               }}
             >
               <ChildHandlerError />
-            </ErrorGurard>
+            </ErrorGuard>
           </div>
-        </ErrorGurard>
+        </ErrorGuard>
       );
     };
 

@@ -10,7 +10,7 @@ import {
 } from './children.ts';
 import {createErrorComponent} from '../errors/helpers.ts';
 import {createErrorRegan, ErrorHandler} from '../errors/errors.tsx';
-import {ErrorGurard} from '../components/error-guard.tsx';
+import {ErrorGuard} from '../components/error-guard.tsx';
 import {Child} from '../types.ts';
 
 export function strigifyComponent(
@@ -41,15 +41,15 @@ export function strigifyComponent(
     areaCtx: props.stringifyCtx.areaCtx,
   });
 
-  let rawChidlren: Child;
+  let rawChildren: Child;
   try {
-    rawChidlren = this.component(this.props, funcCtx);
+    rawChildren = this.component(this.props, funcCtx);
   } catch (error) {
     const myError = createErrorRegan({error, place: 'component', segmentEnt});
     throw myError;
   }
 
-  const children = normalizeChildren(rawChidlren);
+  const children = normalizeChildren(rawChildren);
 
   let handleChildrenResult: HandleChildrenStringifyResult;
 
@@ -61,7 +61,7 @@ export function strigifyComponent(
     });
   } catch (error) {
     const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
-    if (this.component === ErrorGurard) {
+    if (this.component === ErrorGuard) {
       const errorHandler = this.props.handler as ErrorHandler;
 
       const errorComponent = createErrorComponent({

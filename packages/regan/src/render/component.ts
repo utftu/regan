@@ -1,4 +1,4 @@
-import {ErrorGurard} from '../components/error-guard.tsx';
+import {ErrorGuard} from '../components/error-guard.tsx';
 import {selectContextEnt} from '../context/context.tsx';
 import {ComponentState, Ctx} from '../ctx/ctx.ts';
 import {createErrorRegan, ErrorHandler, ErrorRegan} from '../errors/errors.tsx';
@@ -56,9 +56,9 @@ export function renderComponent(
     },
   };
 
-  let rawChidlren: Child;
+  let rawChildren: Child;
   try {
-    rawChidlren = this.component(this.props, componentCtx);
+    rawChildren = this.component(this.props, componentCtx);
   } catch (error) {
     const errorRegan = createErrorRegan({
       error,
@@ -71,7 +71,7 @@ export function renderComponent(
   hNode.mounts = componentCtx.state.mounts;
   hNode.unmounts = componentCtx.state.unmounts;
 
-  const children = normalizeChildren(rawChidlren);
+  const children = normalizeChildren(rawChildren);
 
   let handleChildrenResult: HandleChildrenResult;
 
@@ -83,7 +83,7 @@ export function renderComponent(
     });
   } catch (error) {
     const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
-    if (this.component === ErrorGurard) {
+    if (this.component === ErrorGuard) {
       const errorHandler = this.props.handler as ErrorHandler;
 
       const errorComponent = createErrorComponent({

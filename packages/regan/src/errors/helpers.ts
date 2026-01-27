@@ -3,7 +3,7 @@ import {HNode, Mount} from '../h-node/h-node.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc} from '../types.ts';
-import {LisneterManager} from '../utils/listeners.ts';
+import {ListenerManager} from '../utils/listeners.ts';
 import {
   createErrorRegan,
   defaultErrorHandler,
@@ -54,7 +54,7 @@ export const prepareListener = ({
   func,
 }: {
   func: AnyFunc;
-  listenerManager: LisneterManager;
+  listenerManager: ListenerManager;
 }) => {
   const segmentEnt = listenerManager.segmentEnt;
   return async (...args: any[]) => {

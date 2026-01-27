@@ -31,5 +31,5 @@ export function stringify(node: JsxNode, options?: {data?: Data}) {
     areaCtx.updaterInit.cancel();
   }
 
-  throw new Error('Unknow stringify error');
+  throw new Error('Unknown stringify error');
 }

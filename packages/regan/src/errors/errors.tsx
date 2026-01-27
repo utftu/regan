@@ -27,7 +27,7 @@ export class ErrorRegan extends Error {
       this.stack = error.stack;
       this.name = error.name;
     } else {
-      super('Unknow type of error');
+      super('Unknown type of error');
     }
 
     this.place = place;

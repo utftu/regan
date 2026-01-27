@@ -58,8 +58,6 @@ export const renderRaw = ({
       jsxSegmentName,
     });
 
-    areaCtx.updaterInit.cancel();
-
     return {renderTemplate};
   } catch (error) {
     if (!parentHNode) {

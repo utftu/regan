@@ -1,4 +1,4 @@
-import {LisneterManager} from '../utils/listeners.ts';
+import {ListenerManager} from '../utils/listeners.ts';
 
 export type VNewElement = {
   type: 'element';
@@ -8,7 +8,7 @@ export type VNewElement = {
     props: Record<string, any>;
   };
   rawHtml?: string;
-  listenerManager: LisneterManager;
+  listenerManager: ListenerManager;
   init?: (vOld: VOldElement) => void;
 
   children: VNew[];

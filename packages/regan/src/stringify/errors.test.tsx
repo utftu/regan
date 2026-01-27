@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {stringify} from './stringify.ts';
-import {ErrorGurard} from '../components/error-guard.tsx';
+import {ErrorGuard} from '../components/error-guard.tsx';
 
 const defaultAnswer = '';
 
@@ -21,11 +21,11 @@ describe('string errors', () => {
 
     const Parent = () => {
       return (
-        <ErrorGurard handler={() => 'error'}>
+        <ErrorGuard handler={() => 'error'}>
           <Fragment>
             <Child />
           </Fragment>
-        </ErrorGurard>
+        </ErrorGuard>
       );
     };
 

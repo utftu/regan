@@ -1,4 +1,4 @@
-import {ErrorGurard} from '../components/error-guard.tsx';
+import {ErrorGuard} from '../components/error-guard.tsx';
 import {FC} from '../types.ts';
 import {ErrorRegan} from './errors.tsx';
 
@@ -37,13 +37,13 @@ export const ErrorLogger: FC<{enabled?: boolean}> = (
     return children;
   }
   return (
-    <ErrorGurard
+    <ErrorGuard
       handler={({error}) => {
         logError({error});
         throw error;
       }}
     >
       {children}
-    </ErrorGurard>
+    </ErrorGuard>
   );
 };

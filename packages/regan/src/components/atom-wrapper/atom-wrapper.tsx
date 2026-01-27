@@ -11,7 +11,7 @@ import {AtomsTracker} from '../../atoms-tracker/atoms-tracker.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {convertFromRtToH} from '../../render/convert/from-rt-to-h.ts';
 import {RenderTExtended} from '../../render/template.types.ts';
-import {subsribeAtomWrapper} from '../../utils/atom.ts';
+import {subscribeAtomWrapper} from '../../utils/atom.ts';
 
 type Props = {
   atom: Atom;
@@ -46,6 +46,10 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
   let pending = false;
 
   const cb = (hNode: HNode) => {
+    // Check if node is already unmounted
+    if (hNode.unmounted) {
+      return;
+    }
     if (progress) {
       pending = true;
       return;
@@ -92,7 +96,7 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
     }
   };
 
-  subsribeAtomWrapper({atom, ctx, cb});
+  subscribeAtomWrapper({atom, ctx, cb});
 
   return <Fragment>{atom.get()}</Fragment>;
 };

@@ -3,7 +3,7 @@ import {AnyFunc} from '../types.ts';
 
 type Ent = {
   funcs: AnyFunc[];
-  subsriber: AnyFunc;
+  subscriber: AnyFunc;
 };
 
 type UpdaterTask = {
@@ -26,17 +26,21 @@ class UpdaterTaskAsync {
 
     if (!this.started) {
       this.started = true;
-      setTimeout(() => {
+      this.timer = setTimeout(() => {
         this.collection.forEach((func) => func());
         this.started = false;
         this.collection.clear();
+        this.timer = undefined;
       });
     }
   }
 
   cancel() {
     this.started = false;
-    clearTimeout(this.timer);
+    if (this.timer !== undefined) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
     this.collection.clear();
   }
 }
@@ -51,15 +55,15 @@ export class Updater<TUpdaterTask extends UpdaterTask = any> {
 
   add(atom: Atom, func: AnyFunc) {
     if (!this.collection.has(atom)) {
-      const subsriber = () => {
+      const subscriber = () => {
         this.collection.get(atom)!.funcs.forEach((func) => {
           this.updaterTask.add(func);
         });
       };
-      atom.listeners.subscribe(subsriber);
+      atom.listeners.subscribe(subscriber);
       this.collection.set(atom, {
         funcs: [func],
-        subsriber,
+        subscriber,
       });
 
       return;
@@ -77,7 +81,7 @@ export class Updater<TUpdaterTask extends UpdaterTask = any> {
     const newFuncs = ent.funcs.filter((localFunc) => localFunc !== func);
 
     if (newFuncs.length === 0) {
-      atom.listeners.unsubscribe(ent.subsriber);
+      atom.listeners.unsubscribe(ent.subscriber);
       this.collection.delete(atom);
       return;
     }
@@ -87,7 +91,7 @@ export class Updater<TUpdaterTask extends UpdaterTask = any> {
 
   cancel() {
     this.collection.forEach((ent, atom) => {
-      atom.listeners.unsubscribe(ent.subsriber);
+      atom.listeners.unsubscribe(ent.subscriber);
     });
     this.collection.clear();
   }
