@@ -10,7 +10,7 @@ import {convertFromRtToV} from './convert/from-rt-to-v.ts';
 import {convertFromRtToH} from './convert/from-rt-to-h.ts';
 import {RenderTExtended} from './template.types.ts';
 import {virtualApply} from '../v/v.ts';
-import {throwGlobalSystemErros} from '../errors/helpers.ts';
+import {throwGlobalSystemError} from '../errors/helpers.ts';
 
 export const renderRaw = ({
   node,
@@ -60,7 +60,7 @@ export const renderRaw = ({
 
     return {renderTemplate};
   } catch (error) {
-    throw throwGlobalSystemErros(error, globalCtx);
+    throw throwGlobalSystemError(error, globalCtx);
   } finally {
     areaCtx.updaterInit.cancel();
   }

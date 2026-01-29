@@ -1,5 +1,5 @@
 import {defaultData} from '../consts.ts';
-import {throwGlobalSystemErros} from '../errors/helpers.ts';
+import {throwGlobalSystemError} from '../errors/helpers.ts';
 import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {Root} from '../root/root.ts';
@@ -26,7 +26,7 @@ export function stringify(node: JsxNode, options?: {data?: Data}) {
 
     return text;
   } catch (error) {
-    throwGlobalSystemErros(error, globalCtx);
+    throwGlobalSystemError(error, globalCtx);
   } finally {
     areaCtx.updaterInit.cancel();
   }

@@ -110,7 +110,7 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
   }
 };
 
-export const throwGlobalSystemErros = (
+export const throwGlobalSystemError = (
   error: unknown,
   globalCtx: GlobalCtxBoth
 ) => {

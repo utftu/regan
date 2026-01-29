@@ -3,7 +3,7 @@ import {Root} from '../root/root.ts';
 import {Data, DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
-import {GlobalErrorHandler, throwGlobalSystemErros} from '../errors/helpers.ts';
+import {GlobalErrorHandler, throwGlobalSystemError} from '../errors/helpers.ts';
 import {defaultData} from '../consts.ts';
 
 export function hydrateRaw({
@@ -47,7 +47,7 @@ export function hydrateRaw({
 
     return {hNode};
   } catch (error) {
-    throwGlobalSystemErros(error, globalCtx);
+    throwGlobalSystemError(error, globalCtx);
   } finally {
     areaCtx.updaterInit.cancel();
   }
