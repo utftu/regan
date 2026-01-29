@@ -23,7 +23,7 @@ export abstract class JsxNode<TProps extends Props = Props> {
     this.systemProps = systemProps;
   }
 
-  abstract stingify(props: StringifyProps): StringifyResult;
+  abstract stringify(props: StringifyProps): StringifyResult;
   abstract hydrate(ctx: HydrateProps): HydrateResult;
   abstract render(ctx: RenderProps): RenderResult;
 }

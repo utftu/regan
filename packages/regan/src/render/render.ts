@@ -60,10 +60,7 @@ export const renderRaw = ({
 
     return {renderTemplate};
   } catch (error) {
-    if (!parentHNode) {
-      throwGlobalSystemErros(error, globalCtx);
-    }
-    throw error;
+    throw throwGlobalSystemErros(error, globalCtx);
   } finally {
     areaCtx.updaterInit.cancel();
   }

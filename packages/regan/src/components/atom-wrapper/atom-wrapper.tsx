@@ -50,6 +50,11 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
     if (hNode.unmounted) {
       return;
     }
+    // AtomWrapper runs only on client; skip if clientCtx is missing (e.g. SSR edge case)
+    const clientCtx = hNode.globalCtx.clientCtx;
+    if (!clientCtx) {
+      return;
+    }
     if (progress) {
       pending = true;
       return;
@@ -64,11 +69,12 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
     ctx.segmentEnt.pathSegment.name = initPathSegmentName + `?a=${updateCount}`;
 
     const domPointer = getDomPointer(hNode);
+    const window = clientCtx.window;
 
     const {renderTemplate} = renderRaw({
       node: <Fragment>{atom.get()}</Fragment>,
       parentHNode: hNode,
-      window: hNode.globalCtx.clientCtx.window,
+      window,
       parentSegmentEnt: ctx.segmentEnt,
       domPointer,
     });
@@ -79,7 +85,7 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
       vNews,
       vOlds,
       hNode,
-      window: hNode.globalCtx.clientCtx.window,
+      window,
       domPointer,
     });
 

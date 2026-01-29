@@ -16,7 +16,7 @@ export function stringify(node: JsxNode, options?: {data?: Data}) {
   });
 
   try {
-    const {text} = node.stingify({
+    const {text} = node.stringify({
       stringifyCtx: {
         globalCtx,
         areaCtx,

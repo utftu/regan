@@ -5,6 +5,8 @@ import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 
+const ATOM_WRAPPER_SUBSCRIPTIONS_KEY = '__atomWrapperAtoms';
+
 export const subscribeAtomStages = ({
   atom,
   globalCtx,
@@ -57,6 +59,21 @@ export const subscribeAtomWrapper = ({
   ctx.areaCtx.updaterInit.add(atom, func1);
 
   ctx.mount((hNode) => {
+    // Avoid duplicate subscriptions when the same AtomWrapper re-renders before mount.
+    let subscribed = (hNode.data as Record<string, Set<Atom> | undefined>)[
+      ATOM_WRAPPER_SUBSCRIPTIONS_KEY
+    ];
+    if (!subscribed) {
+      subscribed = new Set();
+      (hNode.data as Record<string, Set<Atom>>)[ATOM_WRAPPER_SUBSCRIPTIONS_KEY] =
+        subscribed;
+    }
+    if (subscribed.has(atom)) {
+      ctx.areaCtx.updaterInit.remove(atom, func1);
+      return;
+    }
+    subscribed.add(atom);
+
     const cbWapper = () => {
       cb(hNode);
     };

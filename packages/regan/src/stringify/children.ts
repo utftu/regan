@@ -54,7 +54,7 @@ export function handleChildrenString({
 
     const jsxNode = wrapChildIfNeed(childOrAtom);
 
-    const {text} = jsxNode.stingify({
+    const {text} = jsxNode.stringify({
       stringifyCtx,
       pathSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,

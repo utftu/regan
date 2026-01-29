@@ -13,7 +13,7 @@ export class JsxNodeElement extends JsxNode {
     this.tagName = tagName;
   }
 
-  stingify(ctx: StringifyProps): StringifyResult {
+  stringify(ctx: StringifyProps): StringifyResult {
     return stringifyElement.call(this, ctx);
   }
 

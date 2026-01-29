@@ -9,7 +9,7 @@ import {RenderProps, RenderResult} from '../../../render/types.ts';
 import {defineClassName} from '../../../utils/check-parent.ts';
 
 export class JsxNodeComponent<
-  TProps extends Props = Props
+  TProps extends Props = Props,
 > extends JsxNode<TProps> {
   component: FC<TProps>;
 
@@ -18,7 +18,7 @@ export class JsxNodeComponent<
     this.component = component;
   }
 
-  stingify(props: StringifyProps): StringifyResult {
+  stringify(props: StringifyProps): StringifyResult {
     return strigifyComponent.call(this as JsxNodeComponent, props);
   }
 

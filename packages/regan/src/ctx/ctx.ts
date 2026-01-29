@@ -77,6 +77,7 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
     this.segmentEnt = segmentEnt;
     this.contextEnt = contextEnt;
     this.areaCtx = areaCtx;
+    // Intentional self-reference: allows `ctx` and `ctx.ctx` to be used interchangeably in FC(props, ctx).
     this.ctx = this;
   }
 
