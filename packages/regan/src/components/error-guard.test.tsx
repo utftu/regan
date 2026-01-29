@@ -60,7 +60,7 @@ describe('ErrorGuard', () => {
     );
 
     expect(handler).toHaveBeenCalled();
-    expect(handler.mock.calls[0][0]).toHaveProperty('error');
+    expect((handler.mock.calls as any)[0]?.[0]).toHaveProperty('error');
   });
 
   it('works with stringify', () => {

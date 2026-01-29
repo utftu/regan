@@ -92,7 +92,7 @@ describe('jsx-path', () => {
     it('builds path from parent', () => {
       const parentSegmentEnt = {parentSegmentEnt: undefined} as SegmentEnt;
       const parentSegment = new PathSegment({name: 'parent', systemEnt: parentSegmentEnt});
-      parentSegmentEnt.pathSegment = parentSegment;
+      (parentSegmentEnt as any).pathSegment = parentSegment;
 
       const childSegmentEnt = {parentSegmentEnt} as SegmentEnt;
       const childSegment = new PathSegment({name: 'child', systemEnt: childSegmentEnt});
