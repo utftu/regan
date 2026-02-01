@@ -5,6 +5,10 @@ import {A, Div, Head, Html, Input, Body, Script, Template} from './elements.ts';
 export declare namespace JSX {
   export type ElementType = string | FC<any>;
   export type Element = JsxNode;
+  
+  // Пустой интерфейс = children не проверяются в props компонентов
+  export interface ElementChildrenAttribute {}
+  
   export type IntrinsicElements = {
     div: Div;
     a: A;
