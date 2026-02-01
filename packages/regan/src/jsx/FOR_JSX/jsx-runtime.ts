@@ -6,3 +6,5 @@ import {Fragment as FragmentOrig} from '../../regan.ts';
 export const jsxs = jsxOrig;
 export const jsx = jsxOrig;
 export const Fragment = FragmentOrig;
+
+export type {JSX} from '../types.ts';
