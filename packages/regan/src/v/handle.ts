@@ -117,8 +117,7 @@ export const patchElement = (vNew: VNewElement, vOld: VOldElement) => {
     const value = oldProps[key];
 
     if (typeof value === 'function') {
-      vNew.listenerManager.remove(element, key);
-      // element.removeEventListener(key, value);
+      vOld.listenerManager.remove(element, key);
     } else {
       element.removeAttribute(key);
     }
@@ -127,6 +126,9 @@ export const patchElement = (vNew: VNewElement, vOld: VOldElement) => {
     const newValue = newProps[key];
 
     if (typeof newValue === 'function') {
+      // The current listener for this element+name was registered by vOld's
+      // manager; remove it before attaching the replacement.
+      vOld.listenerManager.remove(element, key);
       vNew.listenerManager.add(element, key, newValue);
     } else {
       element.setAttribute(key, newValue);
@@ -210,7 +212,11 @@ export const handle = ({
     hasRawHtml(vNewSure, vOldSure)
   ) {
     const node = replaceFull(vNewSure, vOldSure, window);
+    // Old children were detached together with the old element; rebuild them
+    // from scratch inside the new node instead of patching detached nodes.
+    vOldSure.children = [];
     convertFromNewToOld(vNew, node);
+    return;
   }
 
   // now we sure that vNew and vOld have one type and should be replaced by properties

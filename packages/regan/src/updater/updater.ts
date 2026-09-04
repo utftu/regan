@@ -27,9 +27,15 @@ class UpdaterTaskAsync {
     if (!this.started) {
       this.started = true;
       this.timer = setTimeout(() => {
-        this.collection.forEach((func) => func());
+        // Drain the set one entry at a time. A func may be re-added while
+        // another func of the same batch runs (a set on an atom whose render
+        // already happened in this batch); the live set iterator picks it up,
+        // so the update is not lost until the next set.
+        for (const func of this.collection) {
+          this.collection.delete(func);
+          func();
+        }
         this.started = false;
-        this.collection.clear();
         this.timer = undefined;
       });
     }

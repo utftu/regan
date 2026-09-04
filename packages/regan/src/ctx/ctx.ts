@@ -9,7 +9,6 @@ import {
 import {Context, ContextEnt, getContextValue} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';
 import {HNodeComponent} from '../h-node/component.ts';
-import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 
 export class ComponentState {
   mounts: Mount[] = [];
@@ -52,7 +51,6 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   ctx: Ctx;
   client?: Client;
   contextEnt?: ContextEnt;
-  // system: {atomTracker?: AtomsTracker} = {};
   areaCtx: AreaCtx;
 
   constructor({

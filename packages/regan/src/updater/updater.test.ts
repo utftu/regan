@@ -75,6 +75,33 @@ describe('updater', () => {
       expect(listener).not.toHaveBeenCalled();
     });
 
+    it('re-runs a listener whose atom is set again during the same batch', async () => {
+      const updater = createUpdaterAsync();
+      const atomA = createAtom(0);
+      const atomB = createAtom(0);
+      const seenValues: number[] = [];
+
+      // renderA reads atomA; renderB (another wrapper) updates atomA as a side effect.
+      const renderA = () => {
+        seenValues.push(atomA.get());
+      };
+      const renderB = () => {
+        atomA.set(atomA.get() + 1);
+      };
+
+      updater.add(atomA, renderA);
+      updater.add(atomB, renderB);
+
+      atomA.set(1);
+      atomB.set(1);
+
+      await waitTime(0);
+
+      // renderA must render the final value, not stop at the stale one.
+      expect(seenValues).toEqual([1, 2]);
+      expect(atomA.get()).toBe(2);
+    });
+
     it('batches multiple updates', async () => {
       const updater = createUpdaterAsync();
       const atom = createAtom(0);

@@ -1,7 +1,6 @@
 import {Atom} from 'strangelove';
 import {HNode} from '../h-node/h-node.ts';
 import {AnyFunc} from '../types.ts';
-import {AtomsTracker} from '../atoms-tracker/atoms-tracker.ts';
 import {Ctx} from '../ctx/ctx.ts';
 import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 

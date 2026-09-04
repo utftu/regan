@@ -1,8 +1,10 @@
 import {createContext, getContextValue} from '../regan.ts';
 import {describe, expect, it, vi} from 'vitest';
-import {VNewElement, VNewText, VOldElement, VOldText} from './types.ts';
+import {VNew, VNewElement, VNewText, VOldElement, VOldText} from './types.ts';
 import {JSDOM} from 'jsdom';
 import {handle} from './handle.ts';
+import {convertFromNewToOld} from './convert.ts';
+import {virtualApply} from './v.ts';
 import {ListenerManager} from '../utils/listeners.ts';
 import {DomPointer} from '../types.ts';
 
@@ -172,6 +174,26 @@ describe('v/handle', () => {
     expect(parent.children[0].tagName).toBe('DIV');
     expect(parent.children[0].getAttribute('a')).toBe('aa');
   });
+  it('element => element (diff tag) rebuilds children', () => {
+    const domPointer = createDomPointer(window);
+    const parent = domPointer.parent as HTMLElement;
+
+    const makeText = (text: string): VNewText => ({type: 'text', data: {text}});
+    const makeEl = (tag: string, children: VNew[] = []): VNewElement => ({
+      type: 'element',
+      data: {tag, props: {}},
+      children,
+      listenerManager: createListenerManager(),
+    });
+
+    const v1 = makeEl('span', [makeEl('b', [makeText('x')])]);
+    const olds = virtualApply({vNews: [v1], vOlds: [], window, domPointer});
+    expect(parent.innerHTML).toBe('<span><b>x</b></span>');
+
+    const v2 = makeEl('div', [makeEl('b', [makeText('x')])]);
+    virtualApply({vNews: [v2], vOlds: olds, window, domPointer});
+    expect(parent.innerHTML).toBe('<div><b>x</b></div>');
+  });
   it('text => text', () => {
     const domPointer = createDomPointer(window);
     const {parent} = domPointer;
@@ -202,5 +224,36 @@ describe('v/handle', () => {
     handle({vNew: vNewElementtMy, window, domPointer});
     expect(mockFn.mock.calls.length).toBe(1);
     expect(mockFn.mock.calls[0][0]).toBe(vNewElementtMy);
+  });
+  it('replacing a listener removes the old one', () => {
+    const domPointer = createDomPointer(window);
+    const {parent} = domPointer;
+
+    const oldFn = vi.fn();
+    const vNew1: VNewElement = {
+      type: 'element',
+      data: {tag: 'div', props: {click: oldFn}},
+      children: [],
+      listenerManager: createListenerManager(),
+    };
+    handle({vNew: vNew1, window, domPointer});
+    const element = parent.children[0] as HTMLElement;
+    const vOld = convertFromNewToOld(vNew1, element);
+
+    element.click();
+    expect(oldFn).toHaveBeenCalledTimes(1);
+
+    const newFn = vi.fn();
+    const vNew2: VNewElement = {
+      type: 'element',
+      data: {tag: 'div', props: {click: newFn}},
+      children: [],
+      listenerManager: createListenerManager(),
+    };
+    handle({vNew: vNew2, vOld, window, domPointer: {parent, nodeCount: 1}});
+
+    element.click();
+    expect(oldFn).toHaveBeenCalledTimes(1);
+    expect(newFn).toHaveBeenCalledTimes(1);
   });
 });

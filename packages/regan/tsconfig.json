@@ -3,6 +3,6 @@
   "compilerOptions": {
     "jsx": "preserve"
   },
-  "include": ["./src/**/*.tsx", "./src/**/*.ts", "a.ts"],
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"],
   "files": ["jsx.global.d.ts"]
 }

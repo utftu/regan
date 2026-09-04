@@ -7,7 +7,6 @@ import {getDomPointer} from './dom-pointer.ts';
 import {convertFromRtToV} from '../../render/convert/from-rt-to-v.ts';
 import {updateV} from './update-v.ts';
 import {convertHToV} from './h-to-v.ts';
-import {AtomsTracker} from '../../atoms-tracker/atoms-tracker.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {convertFromRtToH} from '../../render/convert/from-rt-to-h.ts';
 import {RenderTExtended} from '../../render/template.types.ts';
@@ -15,7 +14,6 @@ import {subscribeAtomWrapper} from '../../utils/atom.ts';
 
 type Props = {
   atom: Atom;
-  atomsTracker?: AtomsTracker;
 };
 
 function incrementWithLimit(
