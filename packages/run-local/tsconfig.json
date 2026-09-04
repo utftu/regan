@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "jsxImportSource": "regan"
   },
-  "include": ["./src/**/*.tsx", "./src/**/*.ts"],
-  "exclude": []
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
 }

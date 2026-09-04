@@ -8,6 +8,5 @@
     "jsx": "preserve",
     "skipLibCheck": true,
     "allowImportingTsExtensions": true
-  },
-  "exclude": ["packages/run-local"]
+  }
 }
