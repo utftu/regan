@@ -13,5 +13,8 @@ export default defineConfig({
       entry: ['./src/regan-vite.ts'],
       formats: ['es'],
     },
+    rollupOptions: {
+      external: ['vite'],
+    },
   },
 });
