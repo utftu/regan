@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from 'bun:test';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {FC} from '../types.ts';
 import {createAtom} from 'strangelove';

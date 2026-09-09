@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, vi} from 'bun:test';
 import {mountHNodes, unmountHNodes, addChildren, detachChildren} from './helpers.ts';
 import {HNode} from './h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';

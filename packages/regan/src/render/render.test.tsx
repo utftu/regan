@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, vi} from 'bun:test';
 import {JSDOM} from 'jsdom';
 import {FC} from '../types.ts';
 import {Fragment} from '../components/fragment/fragment.ts';

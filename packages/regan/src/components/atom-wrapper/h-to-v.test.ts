@@ -1,4 +1,4 @@
-import {describe, it, expect} from 'vitest';
+import {describe, it, expect} from 'bun:test';
 import {HNodeText} from '../../h-node/text.ts';
 import {convertHToV} from './h-to-v.ts';
 import {JsxNodeElement} from '../../jsx-node/variants/element/element.ts';

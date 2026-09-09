@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from 'bun:test';
 import {createContext, getContextValue} from './context.tsx';
 import {FC} from '../types.ts';
 import {insertAndHydrate} from '../utils/tests.ts';

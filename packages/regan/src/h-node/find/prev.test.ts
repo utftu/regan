@@ -1,4 +1,4 @@
-import {describe, it, expect, vi} from 'vitest';
+import {describe, it, expect, vi} from 'bun:test';
 import {HNode} from '../h-node.ts';
 import {findPrevHNode} from './prev.ts';
 import {HNodeElement} from '../element.ts';

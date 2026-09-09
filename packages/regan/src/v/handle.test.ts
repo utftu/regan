@@ -1,5 +1,5 @@
 import {createContext, getContextValue} from '../regan.ts';
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, vi} from 'bun:test';
 import {VNew, VNewElement, VNewText, VOldElement, VOldText} from './types.ts';
 import {JSDOM} from 'jsdom';
 import {handle} from './handle.ts';

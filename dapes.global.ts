@@ -1,11 +1,11 @@
 import {Group, publishPackage, startIfMain, Task} from 'dapes';
 import {reganGroup} from './packages/regan/dapes.regan.ts';
-import {viteGroup} from 'regan-vite/dapes.vite.ts';
+import {viteGroup} from './packages/regan-vite/dapes.vite.ts';
 
 const types = new Task({
   name: 'types',
   exec: async ({command}) => {
-    await command('npm run types');
+    await command('bun run types');
   },
 });
 
@@ -13,7 +13,7 @@ const build = new Task({
   name: 'build',
   parents: [types],
   exec: async ({command}) => {
-    await command('npm run build');
+    await command('bun run build');
   },
 });
 

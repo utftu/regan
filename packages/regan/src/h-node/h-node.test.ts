@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, vi} from 'bun:test';
 import {HNode} from './h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';

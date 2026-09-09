@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, vi} from 'bun:test';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../utils/tests.ts';

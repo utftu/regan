@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, vi} from 'bun:test';
 import {JSDOM} from 'jsdom';
 import {render} from './render.ts';
 import {ErrorGuard} from '../components/error-guard.tsx';

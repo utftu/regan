@@ -1,5 +1,5 @@
 import {createElementString} from './flat.ts';
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from 'bun:test';
 
 describe('node', () => {
   it('createElementString', () => {

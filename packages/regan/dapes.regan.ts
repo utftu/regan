@@ -5,7 +5,7 @@ const currentDir = getAbsolutePath('.', import.meta);
 const types = new Task({
   name: 'types',
   exec: async ({command}) => {
-    await command('npm run types', {cwd: currentDir});
+    await command('bun run types', {cwd: currentDir});
   },
 });
 
@@ -13,7 +13,7 @@ export const buildRegan = new Task({
   name: 'build',
   parents: [types],
   exec: async ({command}) => {
-    await command('npm run build', {cwd: currentDir});
+    await command('bun run build', {cwd: currentDir});
   },
 });
 

@@ -1,26 +1,17 @@
 import {getAbsolutePath, Group, publishPackage, startIfMain, Task} from 'dapes';
-import {reganGroup} from '../regan/dapes.regan.ts';
 
 const currentDir = getAbsolutePath('.', import.meta);
 
-const types = new Task({
-  name: 'types',
-  exec: async ({command}) => {
-    await command('npm run types', {cwd: currentDir});
-  },
-});
-
-const build = new Task({
+const buildVite = new Task({
   name: 'build',
-  parents: [reganGroup.getTaskControl('build'), types],
   exec: async ({command}) => {
-    await command('npm run build', {cwd: currentDir});
+    await command('bun run build', {cwd: currentDir});
   },
 });
 
 const publish = new Task({
   name: 'publish',
-  parents: [build],
+  parents: [buildVite],
   exec: async ({ctx}) => {
     await publishPackage({
       pathToPackage: getAbsolutePath('./package.json', import.meta),
@@ -31,8 +22,8 @@ const publish = new Task({
 });
 
 export const viteGroup = new Group({
-  name: 'vite',
-  tasks: [build, types, publish],
+  name: 'regan-vite',
+  tasks: [buildVite, publish],
 });
 
 await startIfMain(viteGroup, import.meta);

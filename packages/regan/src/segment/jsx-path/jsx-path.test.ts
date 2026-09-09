@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from 'bun:test';
 import {PathSegment, getJsxPath, joinPath, djb2} from './jsx-path.ts';
 import {SegmentEnt} from '../segment.ts';
 

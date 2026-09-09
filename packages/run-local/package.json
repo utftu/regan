@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "build": "vite build",
+    "build": "bun build ./index.html --outdir=./dist --external=strangelove --minify",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, vi} from 'bun:test';
 import {createUpdaterSync, createUpdaterAsync} from './updater.ts';
 import {createAtom} from 'strangelove';
 import {waitTime} from 'utftu';

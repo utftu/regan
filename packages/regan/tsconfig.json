@@ -1,8 +1,5 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "jsx": "preserve"
-  },
-  "include": ["./src/**/*.tsx", "./src/**/*.ts", "./vite.config.ts"],
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"],
   "files": ["jsx.global.d.ts"]
 }

@@ -6,7 +6,15 @@
     "moduleResolution": "NodeNext",
     "noEmit": true,
     "jsx": "preserve",
+    "jsxImportSource": "for-jsx",
     "skipLibCheck": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "for-jsx/jsx-runtime": ["./packages/regan/src/jsx/FOR_JSX/jsx-runtime.ts"],
+      "for-jsx/jsx-dev-runtime": ["./packages/regan/src/jsx/FOR_JSX/jsx-dev-runtime.ts"],
+      "regan": ["./packages/regan/src/regan.ts"],
+      "regan/jsx-runtime": ["./packages/regan/src/regan.ts"],
+      "regan/jsx-dev-runtime": ["./packages/regan/src/regan.ts"]
+    }
   }
 }

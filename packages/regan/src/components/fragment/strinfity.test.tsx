@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it} from 'bun:test';
 import {Fragment} from './fragment.ts';
 import {stringify} from '../../stringify/stringify.ts';
 

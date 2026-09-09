@@ -8,7 +8,7 @@
   "scripts": {
     "build": "bun run build:js && bun run build:types",
     "build:types": "tsc --project tsconfig.gen.json",
-    "build:js": "vite build"
+    "build:js": "bun build ./src/regan-vite.ts --outdir=./dist --format=esm --minify"
   },
   "keywords": [],
   "author": "",
@@ -21,8 +21,5 @@
   },
   "files": [
     "dist"
-  ],
-  "devDependencies": {
-    "vite-plugin-dts": "^4.5.4"
-  }
+  ]
 }
