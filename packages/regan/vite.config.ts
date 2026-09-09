@@ -2,12 +2,12 @@ import {defineConfig, UserConfig} from 'vite';
 
 export default defineConfig(({mode}) => {
   const config: UserConfig = {
-    esbuild: {
-      jsx: 'automatic',
-      jsxDev: mode === 'development',
-      jsxImportSource: new URL('./src/jsx/FOR_JSX', import.meta.url).pathname,
-      jsxFragment: 'Fragment',
-      jsxFactory: 'createElement',
+    oxc: {
+      jsx: {
+        runtime: 'automatic',
+        importSource: new URL('./src/jsx/FOR_JSX', import.meta.url).pathname,
+        development: mode === 'development',
+      },
     },
     build: {
       emptyOutDir: false,

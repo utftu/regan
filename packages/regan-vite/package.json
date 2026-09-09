@@ -16,6 +16,9 @@
   "dependencies": {
     "regan": ">=0.0.3"
   },
+  "peerDependencies": {
+    "vite": ">=8"
+  },
   "files": [
     "dist"
   ],

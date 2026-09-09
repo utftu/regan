@@ -5,5 +5,5 @@
     "moduleResolution": "nodenext",
     "jsxImportSource": "regan"
   },
-  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
+  "include": ["./src/**/*.tsx", "./src/**/*.ts", "./vite.config.ts"]
 }
