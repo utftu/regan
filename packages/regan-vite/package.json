@@ -6,8 +6,9 @@
   "types": "./dist/types/regan-vite.d.ts",
   "type": "module",
   "scripts": {
-    "types": "tsc --project tsconfig.gen.json",
-    "build": "vite build"
+    "build": "bun runbun run types",
+    "build:types": "tsc --project tsconfig.gen.json",
+    "build:js": "vite build"
   },
   "keywords": [],
   "author": "",
