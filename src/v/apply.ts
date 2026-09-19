@@ -8,6 +8,10 @@ import {checkClassChild} from '../utils/check-parent.ts';
 
 type HNodeDom = HNodeElement | HNodeText;
 
+// куда класть следующий узел внутри одного dom-родителя;
+// компонентные узлы dom не создают, поэтому делят курсор с родителем
+type Cursor = {prevNode?: ChildNode};
+
 const getDomNode = (hNode: HNodeDom): ChildNode => {
   if (checkClassChild(hNode, 'hNodeText')) {
     return hNode.textNode;
@@ -15,35 +19,106 @@ const getDomNode = (hNode: HNodeDom): ChildNode => {
   return (hNode as HNodeElement).element;
 };
 
-// компонентные узлы не несут DOM, поэтому для сравнения позиций
-// обе стороны раскладываются в плоский список
-const flatRenderNodes = (
-  renderNodes: RenderNode[],
-  store: RenderNodeDom[] = []
-): RenderNodeDom[] => {
-  for (const renderNode of renderNodes) {
-    if (renderNode.type === 'component') {
-      flatRenderNodes(renderNode.children, store);
-      continue;
-    }
-
-    store.push(renderNode);
+// ключ живёт в jsx-узле, а на него ссылаются обе стороны сравнения:
+// и свежий renderNode, и старый hNode (хоть из рендера, хоть из гидратации).
+// У текста segmentEnt родительский, поэтому ключа у него быть не может.
+const getRenderNodeKey = (renderNode: RenderNode) => {
+  if (renderNode.type === 'text') {
+    return;
   }
-
-  return store;
+  return renderNode.segmentEnt.jsxNode.systemProps.key;
 };
 
-const flatHNodes = (hNodes: HNode[], store: HNodeDom[] = []): HNodeDom[] => {
-  for (const hNode of hNodes) {
-    if (checkClassChild(hNode, 'hNodeComponent')) {
-      flatHNodes(hNode.children, store);
+const getHNodeKey = (hNode: HNode) => {
+  if (checkClassChild(hNode, 'hNodeText')) {
+    return;
+  }
+  return hNode.segmentEnt?.jsxNode.systemProps.key;
+};
+
+const checkSameType = (renderNode: RenderNode, hNode: HNode) => {
+  if (renderNode.type === 'component') {
+    return checkClassChild(hNode, 'hNodeComponent');
+  }
+  if (renderNode.type === 'text') {
+    return checkClassChild(hNode, 'hNodeText');
+  }
+  return checkClassChild(hNode, 'hNodeElement');
+};
+
+type Pair = {renderNode: RenderNode; oldHNode?: HNode};
+
+// Сопоставляет новых детей со старыми. Без ключей это сравнение по позиции,
+// с ключами узел находит свою пару, даже если переехал.
+const align = (renderNodes: RenderNode[], oldHNodes: HNode[]) => {
+  let keyed: Map<string, HNode> | undefined;
+
+  for (const oldHNode of oldHNodes) {
+    const key = getHNodeKey(oldHNode);
+
+    if (key === undefined) {
       continue;
     }
 
-    store.push(hNode as HNodeDom);
+    keyed ??= new Map();
+    // при дублях выигрывает первый — так же, как при сравнении по позиции
+    if (keyed.has(key) === false) {
+      keyed.set(key, oldHNode);
+    }
   }
 
-  return store;
+  if (!keyed) {
+    const pairs: Pair[] = renderNodes.map((renderNode, index) => ({
+      renderNode,
+      oldHNode: oldHNodes[index],
+    }));
+
+    return {pairs, removed: oldHNodes.slice(renderNodes.length)};
+  }
+
+  const used = new Set<HNode>();
+  const pairs: Pair[] = [];
+  let index = 0;
+
+  for (const renderNode of renderNodes) {
+    const key = getRenderNodeKey(renderNode);
+
+    if (key !== undefined) {
+      const oldHNode = keyed.get(key);
+
+      const found =
+        oldHNode && !used.has(oldHNode) && checkSameType(renderNode, oldHNode);
+
+      if (found) {
+        used.add(oldHNode);
+        pairs.push({renderNode, oldHNode});
+      } else {
+        pairs.push({renderNode});
+      }
+
+      continue;
+    }
+
+    // узел без ключа берёт следующий свободный старый — тоже без ключа,
+    // иначе он забрал бы чужую пару
+    while (
+      index < oldHNodes.length &&
+      (used.has(oldHNodes[index]) || getHNodeKey(oldHNodes[index]) !== undefined)
+    ) {
+      index++;
+    }
+
+    const oldHNode = oldHNodes[index];
+
+    if (oldHNode) {
+      used.add(oldHNode);
+      index++;
+    }
+
+    pairs.push({renderNode, oldHNode});
+  }
+
+  return {pairs, removed: oldHNodes.filter((oldHNode) => !used.has(oldHNode))};
 };
 
 const createDomNode = (renderNode: RenderNodeDom, window: Window): ChildNode => {
@@ -93,7 +168,17 @@ const createHNode = (renderNode: RenderNodeDom, domNode: ChildNode): HNodeDom =>
   return hNode;
 };
 
-const insert = (node: ChildNode, insertPoint: InsertPoint) => {
+// ставит узел на нужное место; для уже вставленного узла after/prepend
+// работают как перенос, поэтому отдельная ветка на перемещение не нужна
+const placeNode = (node: ChildNode, insertPoint: InsertPoint) => {
+  const expected = insertPoint.prevNode
+    ? insertPoint.prevNode.nextSibling
+    : insertPoint.parent.firstChild;
+
+  if (expected === node) {
+    return;
+  }
+
   if (insertPoint.prevNode) {
     insertPoint.prevNode.after(node);
     return;
@@ -171,7 +256,7 @@ const handleNode = ({
 }): HandleResult => {
   if (!hNode) {
     const domNode = createDomNode(renderNode, window);
-    insert(domNode, insertPoint);
+    placeNode(domNode, insertPoint);
 
     return {hNode: createHNode(renderNode, domNode), oldChildren: []};
   }
@@ -183,6 +268,7 @@ const handleNode = ({
 
     const domNode = createDomNode(renderNode, window);
     getDomNode(hNode).replaceWith(domNode);
+    placeNode(domNode, insertPoint);
 
     return {hNode: createHNode(renderNode, domNode), oldChildren: []};
   }
@@ -194,6 +280,8 @@ const handleNode = ({
       hNodeText.textNode.textContent = renderNode.text;
     }
 
+    placeNode(hNodeText.textNode, insertPoint);
+
     return {
       hNode: createHNode(renderNode, hNodeText.textNode),
       oldChildren: [],
@@ -202,6 +290,7 @@ const handleNode = ({
 
   const hNodeElement = hNode as HNodeElement;
   patchProps(renderNode, hNodeElement);
+  placeNode(hNodeElement.element, insertPoint);
 
   return {
     hNode: createHNode(renderNode, hNodeElement.element),
@@ -209,45 +298,83 @@ const handleNode = ({
   };
 };
 
-const removeNode = (hNode: HNodeDom) => {
+// у компонента своего dom нет, поэтому удаляется всё, что он собой накрыл
+const removeHNode = (hNode: HNode) => {
   if (checkClassChild(hNode, 'hNodeElement')) {
     hNode.listenerManager.cleanup();
+    hNode.element.remove();
+    return;
   }
 
-  getDomNode(hNode).remove();
+  if (checkClassChild(hNode, 'hNodeText')) {
+    hNode.textNode.remove();
+    return;
+  }
+
+  hNode.children.forEach(removeHNode);
 };
 
-// собирает дерево узлов: компонентные создаёт на месте,
-// несущие DOM берёт из уже применённых, в том же порядке обхода
-const buildHNodes = (
-  renderNodes: RenderNode[],
-  applied: HNodeDom[],
-  cursor: {index: number},
-  parent?: HNode
-): HNode[] => {
-  return renderNodes.map((renderNode) => {
+const applyChildren = ({
+  renderNodes,
+  oldHNodes,
+  parentDomNode,
+  cursor,
+  window,
+  parentHNode,
+}: {
+  renderNodes: RenderNode[];
+  oldHNodes: HNode[];
+  parentDomNode: ParentNode | Document;
+  cursor: Cursor;
+  window: Window;
+  parentHNode?: HNode;
+}): HNode[] => {
+  const {pairs, removed} = align(renderNodes, oldHNodes);
+
+  removed.forEach(removeHNode);
+
+  return pairs.map(({renderNode, oldHNode}) => {
     if (renderNode.type === 'component') {
       const hNode = new HNodeComponent({
         globalCtx: renderNode.globalCtx,
         segmentEnt: renderNode.segmentEnt,
         mounts: renderNode.mounts,
         unmounts: renderNode.unmounts,
+        parent: parentHNode,
       });
       renderNode.segmentEnt.hNode = hNode;
-      hNode.parent = parent;
-      hNode.children = buildHNodes(
-        renderNode.children,
-        applied,
+
+      hNode.children = applyChildren({
+        renderNodes: renderNode.children,
+        oldHNodes: oldHNode ? oldHNode.children : [],
+        parentDomNode,
         cursor,
-        hNode
-      );
+        window,
+        parentHNode: hNode,
+      });
 
       return hNode;
     }
 
-    const hNode = applied[cursor.index];
-    cursor.index++;
-    hNode.parent = parent;
+    const {hNode, oldChildren} = handleNode({
+      renderNode,
+      hNode: oldHNode as HNodeDom | undefined,
+      window,
+      insertPoint: {parent: parentDomNode, prevNode: cursor.prevNode},
+    });
+    hNode.parent = parentHNode;
+    cursor.prevNode = getDomNode(hNode);
+
+    if (renderNode.type === 'element') {
+      hNode.children = applyChildren({
+        renderNodes: renderNode.children,
+        oldHNodes: oldChildren,
+        parentDomNode: (hNode as HNodeElement).element,
+        cursor: {},
+        window,
+        parentHNode: hNode,
+      });
+    }
 
     return hNode;
   });
@@ -266,45 +393,12 @@ export const applyRenderNodes = ({
   window: Window;
   parent?: HNode;
 }): HNode[] => {
-  const newFlat = flatRenderNodes(renderNodes);
-  const oldFlat = flatHNodes(oldHNodes);
-
-  const applied: HNodeDom[] = [];
-  let prevNode = insertPoint.prevNode;
-
-  const max = Math.max(newFlat.length, oldFlat.length);
-
-  for (let i = 0; i < max; i++) {
-    const renderNode = newFlat[i];
-    const oldHNode = oldFlat[i];
-
-    if (!renderNode) {
-      removeNode(oldHNode);
-      continue;
-    }
-
-    const {hNode, oldChildren} = handleNode({
-      renderNode,
-      hNode: oldHNode,
-      window,
-      insertPoint: {parent: insertPoint.parent, prevNode},
-    });
-
-    applied.push(hNode);
-    prevNode = getDomNode(hNode);
-
-    if (renderNode.type === 'element') {
-      const children = applyRenderNodes({
-        renderNodes: renderNode.children,
-        oldHNodes: oldChildren,
-        insertPoint: {parent: (hNode as HNodeElement).element},
-        window,
-        parent: hNode,
-      });
-
-      hNode.children = children;
-    }
-  }
-
-  return buildHNodes(renderNodes, applied, {index: 0}, parent);
+  return applyChildren({
+    renderNodes,
+    oldHNodes,
+    parentDomNode: insertPoint.parent,
+    cursor: {prevNode: insertPoint.prevNode},
+    window,
+    parentHNode: parent,
+  });
 };

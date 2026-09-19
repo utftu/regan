@@ -16,11 +16,7 @@ export const separateProps = (rawProps: Props) => {
     if (detectSystemProps(key)) {
       systemProps[key] = value;
     } else {
-      if (key === 'className') {
-        userProps.class = value;
-      } else {
-        userProps[key] = value;
-      }
+      userProps[key] = value;
     }
   }
 

@@ -1,4 +1,9 @@
+import {Atom} from 'strangelove';
 import {Ref} from '../types.ts';
+
+// любой атрибут можно задать атомом — тогда regan подпишется и будет
+// обновлять его точечно, не пересобирая элемент
+type Dyn<TValue> = TValue | Atom<TValue>;
 
 type InputEventRegan = Omit<InputEvent, 'target'> & {target: HTMLInputElement};
 
@@ -7,13 +12,13 @@ type BaseElement<TElement extends Element = any> = {
   ref?: Ref;
   rawHtml?: string;
 
-  id?: string;
-  style?: string;
-  class?: string;
-  className?: string;
-  title?: string;
-  hidden?: boolean;
-  tabIndex?: number;
+  id?: Dyn<string>;
+  style?: Dyn<string>;
+  class?: Dyn<string>;
+  className?: Dyn<string>;
+  title?: Dyn<string>;
+  hidden?: Dyn<boolean>;
+  tabIndex?: Dyn<number>;
 
   click?: (event: MouseEvent, element: TElement) => void;
   keydown?: (event: KeyboardEvent, element: TElement) => void;
@@ -29,16 +34,16 @@ export type Div = BaseElement & {};
 export type Span = BaseElement & {};
 
 export type Img = BaseElement<HTMLImageElement> & {
-  src: string;
-  alt?: string;
-  width?: number | string;
-  height?: number | string;
-  loading?: 'eager' | 'lazy';
+  src: Dyn<string>;
+  alt?: Dyn<string>;
+  width?: Dyn<number | string>;
+  height?: Dyn<number | string>;
+  loading?: Dyn<'eager' | 'lazy'>;
 };
 
 export type A = BaseElement & {
-  href: string;
-  target?: string;
+  href: Dyn<string>;
+  target?: Dyn<string>;
 };
 
 export type Input = BaseElement & {
@@ -54,6 +59,6 @@ export type Head = {};
 export type Body = {};
 
 export type Script = BaseElement & {
-  type?: string;
-  src: string;
+  type?: Dyn<string>;
+  src: Dyn<string>;
 };

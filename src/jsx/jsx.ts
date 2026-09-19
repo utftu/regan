@@ -15,6 +15,13 @@ type PropsPrepareRaw = {
 const prepare = ({type, props, children}: PropsPrepareRaw) => {
   const {userProps, systemProps} = separateProps(props);
   if (typeof type === 'string') {
+    // className — синоним class, но только для тегов: пропу компонента
+    // переименование не нужно
+    if ('className' in userProps) {
+      userProps.class = userProps.className;
+      delete userProps.className;
+    }
+
     return new JsxNodeElement(
       {
         props: userProps,
@@ -24,7 +31,10 @@ const prepare = ({type, props, children}: PropsPrepareRaw) => {
       {tagName: type}
     );
   }
-  return new JsxNodeComponent({props, children}, {component: type});
+  return new JsxNodeComponent(
+    {props: userProps, systemProps, children},
+    {component: type}
+  );
 };
 
 export const normalizeChildren = (rawChildren: RawChildren) => {

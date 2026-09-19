@@ -9,5 +9,7 @@ declare global {
     type ElementType = JSXOrig.ElementType;
     type Element = JSXOrig.Element;
     type IntrinsicElements = JSXOrig.IntrinsicElements;
+    type LibraryManagedAttributes<TComponent, TProps> =
+      JSXOrig.LibraryManagedAttributes<TComponent, TProps>;
   }
 }
