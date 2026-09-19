@@ -1,6 +1,4 @@
 import {Group, publishPackage, startIfMain, Task} from 'dapes';
-import {reganGroup} from './packages/regan/dapes.regan.ts';
-import {viteGroup} from './packages/regan-vite/dapes.vite.ts';
 
 const types = new Task({
   name: 'types',
@@ -32,7 +30,6 @@ const publish = new Task({
 const group = new Group({
   name: '',
   tasks: [build, types, publish],
-  subgroups: [reganGroup, viteGroup],
 });
 
 await startIfMain(group, import.meta);

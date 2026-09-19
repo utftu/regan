@@ -1,30 +1,54 @@
 {
-  "name": "regan-repo",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "regan",
+  "version": "0.0.16",
+  "description": "Легковесный JSX-фреймворк с SSR, гидратацией и реактивностью на атомах",
   "type": "module",
+  "main": "./dist/regan.js",
   "types": "./dist/types/regan.d.ts",
-  "scripts": {
-    "test": "bun test"
-  },
   "exports": {
-    "jsx-runtime": "./dist/regan.js",
-    "default": "./dist/regan.js"
+    ".": {
+      "types": "./dist/types/regan.d.ts",
+      "default": "./dist/regan.js"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/types/regan.d.ts",
+      "default": "./dist/regan.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./dist/types/regan.d.ts",
+      "default": "./dist/regan.js"
+    },
+    "./vite": {
+      "types": "./dist/types/subpackages/vite.d.ts",
+      "default": "./dist/subpackages/vite.js"
+    }
   },
+  "scripts": {
+    "test": "bun test",
+    "coverage": "bun test --coverage",
+    "types": "tsc --project tsconfig.json",
+    "build": "bun run build:js && bun run build:types",
+    "build:js": "bun build ./src/regan.ts ./src/subpackages/vite.ts --outdir=./dist --format=esm --external=strangelove --external=vite --minify",
+    "build:types": "tsc --project tsconfig.gen.json",
+    "watch": "bun build ./src/regan.ts ./src/subpackages/vite.ts --outdir=./dist --format=esm --external=strangelove --external=vite --watch"
+  },
+  "files": [
+    "dist/**/*"
+  ],
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "peerDependencies": {
+    "strangelove": ">=2"
+  },
   "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "@types/jsdom": "^21.1.7",
     "dapes": "^0.0.61",
+    "jsdom": "^26.1.0",
+    "strangelove": "^2.1.4",
     "typescript": "^5.9.2",
+    "utftu": "^1.0.31",
     "vite": "^8.2.2"
-  },
-  "dependencies": {
-    "strangelove": "^2.1.4"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "packageManager": "npm@11.5.2"
+  }
 }

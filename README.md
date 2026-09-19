@@ -1,58 +1,193 @@
 # Regan
 
-Легковесный JSX-фреймворк с SSR, hydration и реактивностью.
+Легковесный JSX-фреймворк с поддержкой SSR, hydration и реактивности через атомы.
 
-## Пакеты
-
-| Пакет | Описание |
-|-------|----------|
-| [regan](./packages/regan) | Основная библиотека |
-| [regan-vite](./packages/regan-vite) | Vite плагин |
-| [run-local](./packages/run-local) | Dev-сервер для разработки |
-
-## Быстрый старт
+## Установка
 
 ```bash
-npm install regan regan-vite strangelove
+npm install regan strangelove
 ```
+
+## Настройка
+
+### TypeScript
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "regan"
+  }
+}
+```
+
+### Vite
 
 ```ts
 // vite.config.ts
-import {reganVite} from 'regan-vite';
+import {defineConfig} from 'vite';
+import {reganVite} from 'regan/vite';
 
-export default {
+export default defineConfig({
   plugins: [reganVite()],
-};
+});
 ```
 
-```tsx
-// App.tsx
-import {render} from 'regan';
+Плагин задаёт `runtime: 'automatic'`, `importSource: 'regan'` и включает
+dev-режим JSX при `mode === 'development'`. Он рассчитан на vite 8 и выше, где
+JSX настраивается через `oxc`. Для vite 7 и ниже то же самое пишется вручную:
 
-const App = () => <h1>Hello, Regan!</h1>;
+```ts
+export default defineConfig({
+  esbuild: {
+    jsx: 'automatic',
+    jsxImportSource: 'regan',
+  },
+});
+```
+
+## Быстрый старт
+
+### Рендеринг на клиенте
+
+```tsx
+import {render, Fragment} from 'regan';
+
+const App = () => <div>Hello, Regan!</div>;
 
 render(document.getElementById('root')!, <App />);
 ```
 
-## Особенности
+### SSR + Hydration
 
-- **Легковесный** — минимальный размер бандла
-- **SSR** — `stringify()` для серверного рендеринга
-- **Hydration** — `hydrate()` для оживления HTML
-- **Реактивность** — интеграция с атомами (strangelove)
-- **TypeScript** — полная типизация
+```tsx
+// server.ts
+import {stringify} from 'regan';
+
+const html = stringify(<App />);
+
+// client.ts
+import {hydrate} from 'regan';
+
+hydrate(document.getElementById('root')!, <App />);
+```
+
+## Компоненты
+
+### Функциональные компоненты
+
+```tsx
+import {FC} from 'regan';
+
+const Button: FC<{label: string}> = ({label}, ctx) => {
+  return <button>{label}</button>;
+};
+```
+
+### Lifecycle
+
+```tsx
+const Timer: FC = (props, ctx) => {
+  ctx.mount((hNode) => {
+    const interval = setInterval(() => console.log('tick'), 1000);
+    
+    // Возврат функции = unmount
+    return () => clearInterval(interval);
+  });
+
+  return <div>Timer</div>;
+};
+```
+
+## Реактивность
+
+Используется библиотека [strangelove](https://github.com/utftu/strangelove) для атомов.
+
+```tsx
+import {Atom} from 'strangelove';
+import {AtomWrapper} from 'regan';
+
+const Counter: FC = () => {
+  const count = new Atom(0);
+
+  return (
+    <div>
+      <AtomWrapper atom={count}>{count.get()}</AtomWrapper>
+      <button onClick={() => count.set(count.get() + 1)}>+1</button>
+    </div>
+  );
+};
+```
+
+## Встроенные компоненты
+
+| Компонент | Описание |
+|-----------|----------|
+| `Fragment` | Группировка без DOM-элемента |
+| `AtomWrapper` | Реактивная обёртка для атомов |
+| `Show` | Условный рендеринг |
+| `ErrorGuard` | Error boundary |
+| `ErrorLogger` | Логирование ошибок |
+
+## Context API
+
+```tsx
+import {createContext, FC} from 'regan';
+
+const ThemeContext = createContext('light');
+
+const App: FC = () => (
+  <ThemeContext.Provider value="dark">
+    <Child />
+  </ThemeContext.Provider>
+);
+
+const Child: FC = (props, ctx) => {
+  const theme = ctx.getContext(ThemeContext);
+  return <div>Theme: {theme}</div>;
+};
+```
+
+## API
+
+### `render(element, node, options?)`
+
+Рендерит JSX в DOM-элемент.
+
+### `hydrate(element, node, options?)`
+
+Гидратирует существующий HTML.
+
+### `stringify(node, options?)`
+
+Рендерит JSX в строку (SSR).
+
+### `ctx` (второй аргумент компонента)
+
+| Метод | Описание |
+|-------|----------|
+| `ctx.mount(fn)` | Регистрирует callback при монтировании |
+| `ctx.unmount(fn)` | Регистрирует callback при размонтировании |
+| `ctx.getContext(context)` | Получает значение контекста |
+| `ctx.getId()` | Уникальный ID компонента |
+| `ctx.getJsxPath()` | Путь в JSX-дереве |
 
 ## Разработка
 
 ```bash
-# Установка зависимостей
-npm install
+bun install
+bun test              # тесты
+bun test --coverage   # покрытие
+bun run types         # проверка типов
+bun run build         # build:js + build:types
+```
 
-# Запуск тестов
-npm test
+Песочница для ручной проверки — `run-local`, она подключается прямо к
+исходникам через alias в своём `vite.config.ts`:
 
-# Локальный dev-сервер
-cd packages/run-local && npm run dev
+```bash
+cd run-local && npx vite
 ```
 
 ## Лицензия
