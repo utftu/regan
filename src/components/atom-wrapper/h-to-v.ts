@@ -3,33 +3,21 @@ import {JsxNodeElement} from '../../jsx-node/variants/element/element.ts';
 import {checkClassChild} from '../../utils/check-parent.ts';
 import {VOld, VOldElement, VOldText} from '../../v/types.ts';
 
-export const convertHToV = (
-  hNode: HNode,
-  store: {text?: VOldText} = {}
-): VOld[] => {
+export const convertHToV = (hNode: HNode): VOld[] => {
   if (checkClassChild(hNode, 'hNodeText')) {
-    if (!store.text) {
-      store.text = {
-        type: 'text',
-        data: {
-          text: hNode.text,
-        },
-        textNode: hNode.textNode,
-      } satisfies VOldText;
+    const vOld: VOldText = {
+      type: 'text',
+      data: {
+        text: hNode.text,
+      },
+      textNode: hNode.textNode,
+    };
 
-      return [store.text];
-    } else {
-      store.text.data.text += hNode.text;
-      return [];
-    }
+    return [vOld];
   }
 
   if (checkClassChild(hNode, 'hNodeElement')) {
-    store.text = undefined;
-    const children = hNode.children
-      .map((hNode) => convertHToV(hNode, store))
-      .flat();
-    store.text = undefined;
+    const children = hNode.children.map((hNode) => convertHToV(hNode)).flat();
 
     const jsxNodeElement = hNode.segmentEnt.jsxNode as JsxNodeElement;
 
@@ -48,11 +36,7 @@ export const convertHToV = (
   }
 
   if (checkClassChild(hNode, 'hNodeComponent')) {
-    const children = hNode.children
-      .map((hNode) => convertHToV(hNode, store))
-      .flat();
-
-    return children;
+    return hNode.children.map((hNode) => convertHToV(hNode)).flat();
   }
 
   throw new Error('Unknown HNode type');

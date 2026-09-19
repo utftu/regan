@@ -1,19 +1,19 @@
 import {ErrorGuard} from '../components/error-guard.tsx';
 import {selectContextEnt} from '../context/context.tsx';
 import {ComponentState, Ctx} from '../ctx/ctx.ts';
-import {createErrorRegan, ErrorHandler, ErrorRegan} from '../errors/errors.tsx';
+import {createErrorRegan, ErrorHandler} from '../errors/errors.tsx';
 import {createErrorComponent} from '../errors/helpers.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {Child, Props} from '../types.ts';
+import {Child} from '../types.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
 
 export function hydrateComponent(
   this: JsxNodeComponent,
-  props: HydrateProps
+  props: HydrateProps,
 ): HydrateResult {
   const contextEnt = selectContextEnt(this, props.parentSegmentEnt?.contextEnt);
 
@@ -34,13 +34,9 @@ export function hydrateComponent(
   segmentEnt.hNode = hNode;
 
   const componentCtx = new Ctx({
-    client: {
-      parentDomPointer: props.domPointer,
-      hNode,
-    },
     globalCtx: props.globalCtx,
     props: this.props,
-    systemProps: {...this.systemProps, rawHNode: hNode},
+    systemProps: this.systemProps,
     state: new ComponentState(),
     children: this.children,
     segmentEnt: hNode.segmentEnt,
@@ -69,10 +65,8 @@ export function hydrateComponent(
       children,
       parentHNode: hNode,
       globalCtx: props.globalCtx,
-      hydrateCtx: props.hydrateCtx,
       parentDomPointer: props.domPointer,
       parentSegmentEnt: segmentEnt,
-      lastText: props.lastText,
       areaCtx: props.areaCtx,
     });
   } catch (error) {
@@ -90,10 +84,8 @@ export function hydrateComponent(
         children: [errorComponent],
         parentHNode: hNode,
         globalCtx: props.globalCtx,
-        hydrateCtx: props.hydrateCtx,
         parentDomPointer: props.domPointer,
         parentSegmentEnt: segmentEnt,
-        lastText: props.lastText,
         areaCtx: props.areaCtx,
       });
     } else {
@@ -106,6 +98,5 @@ export function hydrateComponent(
   return {
     hNode,
     nodeCount: resultHandlerChildren.nodeCount,
-    lastText: resultHandlerChildren.lastText,
   };
 }

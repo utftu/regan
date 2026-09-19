@@ -1,5 +1,4 @@
 import {checkClassChild} from '../../utils/check-parent.ts';
-import {HNodeElement} from '../element.ts';
 import {HNode} from '../h-node.ts';
 import {Checker, CheckerAnswer, Config} from './find.ts';
 
@@ -8,7 +7,7 @@ import {Checker, CheckerAnswer, Config} from './find.ts';
 export const findPrevHNode = (
   hNode: HNode,
   checker: Checker,
-  config: Config = {}
+  config: Config = {},
 ) => {
   const result = findPrevUp(hNode, checker, config);
 
@@ -20,7 +19,7 @@ export const findPrevHNode = (
 const findPrevUp = (
   hNode: HNode,
   checker: Checker,
-  config: Config
+  config: Config,
 ): CheckerAnswer => {
   const checkingHNode = hNode.parent;
 

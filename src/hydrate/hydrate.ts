@@ -1,5 +1,4 @@
 import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {Root} from '../root/root.ts';
 import {Data, DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
@@ -21,13 +20,11 @@ export function hydrateRaw({
 }) {
   const globalClientCtx = new GlobalClientCtx({
     window: windowLocal || window,
-    initDomPointer: domPointer,
+    initInsertPoint: {parent: domPointer.parent},
   });
 
   const globalCtx = new GlobalCtx({
     data,
-    mode: 'client',
-    root: new Root(),
     clientCtx: globalClientCtx,
     errorHandlers,
   });
@@ -40,8 +37,6 @@ export function hydrateRaw({
       domPointer,
       globalCtx,
       areaCtx,
-      hydrateCtx: {},
-      lastText: false,
     });
     mountHNodes(hNode);
 
@@ -56,7 +51,7 @@ export function hydrateRaw({
 export const hydrate = (
   element: HTMLElement | Document,
   node: JsxNode,
-  options?: {window?: Window; data?: Data}
+  options?: {window?: Window; data?: Data},
 ) => {
   return hydrateRaw({
     domPointer: {

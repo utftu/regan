@@ -2,16 +2,13 @@ import {defaultData} from '../consts.ts';
 import {throwGlobalSystemError} from '../errors/helpers.ts';
 import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
-import {Root} from '../root/root.ts';
 import {Data} from '../types.ts';
 
 export function stringify(node: JsxNode, options?: {data?: Data}) {
   const areaCtx = new AreaCtx();
 
   const globalCtx = new GlobalCtx({
-    mode: 'server',
     data: options?.data || defaultData,
-    root: new Root(),
     clientCtx: undefined,
   });
 
@@ -22,6 +19,7 @@ export function stringify(node: JsxNode, options?: {data?: Data}) {
         areaCtx,
       },
       pathSegmentName: '',
+      lastText: false,
     });
 
     return text;

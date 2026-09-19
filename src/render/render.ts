@@ -1,8 +1,6 @@
 import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {Root} from '../root/root.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
-import {VOld} from '../v/types.ts';
-import {Data, DomPointer} from '../types.ts';
+import {Data, InsertPoint} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -18,31 +16,28 @@ export const renderRaw = ({
   parentHNode,
   data,
   parentSegmentEnt,
-  domPointer,
+  insertPoint,
   jsxSegmentName = '',
 }: {
   node: JsxNode;
-  domPointer: DomPointer;
+  insertPoint: InsertPoint;
   window?: Window;
   data?: Data;
   parentHNode?: HNode;
   parentSegmentEnt?: SegmentEnt;
   jsxSegmentName?: string;
-  vOlds?: VOld[];
 }) => {
   const globalClientCtx =
     parentHNode?.globalCtx.clientCtx ??
     new GlobalClientCtx({
       window: localWindow,
-      initDomPointer: domPointer,
+      initInsertPoint: insertPoint,
     });
 
   const globalCtx =
     parentHNode?.globalCtx ??
     new GlobalCtx({
       data,
-      mode: 'client',
-      root: new Root(),
       clientCtx: globalClientCtx,
     });
 
@@ -71,9 +66,8 @@ export const render = (
   node: JsxNode,
   {window: localWindow}: {window: Window} = {window},
 ) => {
-  const domPointer = {
+  const insertPoint: InsertPoint = {
     parent: element,
-    nodeCount: 0,
   };
 
   const {renderTemplate} = renderRaw({
@@ -81,7 +75,7 @@ export const render = (
     window: localWindow,
     parentHNode: undefined,
     parentSegmentEnt: undefined,
-    domPointer,
+    insertPoint,
   });
 
   const vNews = convertFromRtToV(renderTemplate);
@@ -90,7 +84,7 @@ export const render = (
     vNews,
     vOlds: [],
     window: localWindow,
-    domPointer,
+    insertPoint,
   });
 
   const hNode = convertFromRtToH(renderTemplate as RenderTExtended);

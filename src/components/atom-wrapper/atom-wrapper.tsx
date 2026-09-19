@@ -3,35 +3,38 @@ import {FC} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {detachChildren, mountHNodes} from '../../h-node/helpers.ts';
 import {renderRaw} from '../../render/render.ts';
-import {getDomPointer} from './dom-pointer.ts';
+import {getInsertPoint} from './insert-point.ts';
 import {convertFromRtToV} from '../../render/convert/from-rt-to-v.ts';
-import {updateV} from './update-v.ts';
+import {virtualApply} from '../../v/v.ts';
 import {convertHToV} from './h-to-v.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {convertFromRtToH} from '../../render/convert/from-rt-to-h.ts';
 import {RenderTExtended} from '../../render/template.types.ts';
 import {subscribeAtomWrapper} from '../../utils/atom.ts';
+import {HNodeText} from '../../h-node/text.ts';
+import {checkClassChild} from '../../utils/check-parent.ts';
+import {checkAllowedPrivitive} from '../../utils/jsx.ts';
 
 type Props = {
   atom: Atom;
 };
 
-function incrementWithLimit(
-  value: number,
-  limit: number = Number.MAX_SAFE_INTEGER,
-): number {
-  // Проверяем, что value не NaN и не Infinity
-  if (!Number.isFinite(value)) {
-    return 0;
+// содержимое обёртки — ровно один текстовый узел, значит его можно обновить
+// записью в textContent, не пересобирая поддерево
+function findSingleTextHNode(hNode: HNode): HNodeText | undefined {
+  if (checkClassChild(hNode, 'hNodeText')) {
+    return hNode;
   }
 
-  // Если значение достигло или превысило лимит, обнуляем
-  if (value >= limit) {
-    return 0;
+  if (checkClassChild(hNode, 'hNodeElement')) {
+    return;
   }
 
-  // Увеличиваем на 1
-  return value + 1;
+  if (hNode.children.length !== 1) {
+    return;
+  }
+
+  return findSingleTextHNode(hNode.children[0]);
 }
 
 export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
@@ -57,34 +60,43 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
       pending = true;
       return;
     }
+
+    const value = atom.get();
+    const textHNode = findSingleTextHNode(hNode);
+
+    if (textHNode && checkAllowedPrivitive(value)) {
+      textHNode.text = value.toString();
+      textHNode.textNode.textContent = textHNode.text;
+      return;
+    }
+
     progress = true;
     const vOlds = convertHToV(hNode);
     detachChildren(hNode);
 
     ctx.segmentEnt.pathSegment.clearCache();
 
-    updateCount = incrementWithLimit(updateCount);
+    updateCount++;
     ctx.segmentEnt.pathSegment.name = initPathSegmentName + `?a=${updateCount}`;
 
-    const domPointer = getDomPointer(hNode);
+    const insertPoint = getInsertPoint(hNode);
     const window = clientCtx.window;
 
     const {renderTemplate} = renderRaw({
-      node: <Fragment>{atom.get()}</Fragment>,
+      node: <Fragment>{value}</Fragment>,
       parentHNode: hNode,
       window,
       parentSegmentEnt: ctx.segmentEnt,
-      domPointer,
+      insertPoint,
     });
 
     const vNews = convertFromRtToV(renderTemplate);
 
-    updateV({
+    virtualApply({
       vNews,
       vOlds,
-      hNode,
       window,
-      domPointer,
+      insertPoint,
     });
 
     const hNodeChild = convertFromRtToH(renderTemplate as RenderTExtended);

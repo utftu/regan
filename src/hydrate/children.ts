@@ -1,5 +1,5 @@
 import {createErrorRegan} from '../errors/errors.tsx';
-import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -11,38 +11,45 @@ import {
   formatJsxValue,
   wrapChildIfNeed,
 } from '../utils/jsx.ts';
-import {HydrateCtx} from './types.ts';
+import {commentNodeType} from '../consts.ts';
 
 export type HandleChildrenHydrateResult = {
   hNodes: HNode[];
   nodeCount: number;
-  lastText: boolean;
+};
+
+// stringify ставит разделитель между соседними текстами, иначе браузер
+// склеит их в один узел. Своё дело он сделал при парсинге — убираем,
+// чтобы дерево совпадало с тем, что даёт клиентский рендер.
+const removeTextSeparator = (
+  parent: ParentNode | Document,
+  index: number,
+): void => {
+  const node = parent.childNodes[index];
+
+  if (node && node.nodeType === commentNodeType && node.nodeValue === '') {
+    (node as ChildNode).remove();
+  }
 };
 
 export function handleChildrenHydrate({
   children,
   parentHNode,
   globalCtx,
-  hydrateCtx,
   parentDomPointer,
   parentSegmentEnt,
   areaCtx: areaCtx,
-  lastText: propsLastText,
 }: {
   children: SingleChild[];
   parentHNode: HNode;
   globalCtx: GlobalCtx;
-  hydrateCtx: HydrateCtx;
   parentDomPointer: DomPointer;
   parentSegmentEnt: SegmentEnt;
-  lastText: boolean;
   areaCtx: AreaCtx;
 }): HandleChildrenHydrateResult {
   const hNodes: HNode[] = [];
   const nodeCountInit = parentDomPointer.nodeCount;
   let nodeCount = nodeCountInit;
-
-  let lastText = propsLastText;
 
   let insertedJsxCount = 0;
 
@@ -56,15 +63,7 @@ export function handleChildrenHydrate({
     if (checkAllowedPrivitive(childOrAtom)) {
       const text = childOrAtom.toString();
 
-      let textNode: Text;
-
-      if (nodeCount === 0) {
-        textNode = parentDomPointer.parent.firstChild as Text;
-      } else if (lastText === true) {
-        textNode = parentDomPointer.parent.childNodes[nodeCount - 1] as Text;
-      } else {
-        textNode = parentDomPointer.parent.childNodes[nodeCount] as Text;
-      }
+      const textNode = parentDomPointer.parent.childNodes[nodeCount] as Text;
 
       const textHNode = new HNodeText(
         {
@@ -75,16 +74,13 @@ export function handleChildrenHydrate({
         {
           text: text,
           textNode: textNode as Text,
-        }
+        },
       );
 
       hNodes.push(textHNode);
 
-      if (lastText === false) {
-        nodeCount++;
-      }
-
-      lastText = true;
+      nodeCount++;
+      removeTextSeparator(parentDomPointer.parent, nodeCount);
 
       continue;
     }
@@ -110,13 +106,10 @@ export function handleChildrenHydrate({
       },
       parentHNode,
       globalCtx,
-      hydrateCtx,
-      lastText,
       areaCtx,
     });
     hNodes.push(hydrateResult.hNode);
 
-    lastText = hydrateResult.lastText;
     nodeCount += hydrateResult.nodeCount;
 
     insertedJsxCount++;
@@ -125,6 +118,5 @@ export function handleChildrenHydrate({
   return {
     hNodes,
     nodeCount: nodeCount - nodeCountInit,
-    lastText: lastText,
   };
 }

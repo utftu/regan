@@ -1,4 +1,4 @@
-import {DomPointer} from '../types.ts';
+import {InsertPoint} from '../types.ts';
 import {convertFromNewToOld} from './convert.ts';
 import {
   VNew,
@@ -9,7 +9,7 @@ import {
   VOldText,
 } from './types.ts';
 
-const getDomNode = (vOld: VOld) => {
+export const getDomNode = (vOld: VOld) => {
   if (vOld.type === 'text') {
     return vOld.textNode;
   }
@@ -50,20 +50,17 @@ const create = (vNew: VNew, window: Window) => {
 
 export const insert = ({
   node,
-  domPointer,
+  insertPoint,
 }: {
-  prevVNew: VOld | void;
   node: Node;
-  domPointer: DomPointer;
+  insertPoint: InsertPoint;
 }) => {
-  const prevNode = domPointer.parent.childNodes[domPointer.nodeCount - 1];
-
-  if (prevNode) {
-    prevNode.after(node);
+  if (insertPoint.prevNode) {
+    insertPoint.prevNode.after(node);
     return;
   }
 
-  domPointer.parent.prepend(node);
+  insertPoint.parent.prepend(node);
 };
 
 const replaceFull = (vNew: VNew, vOld: VOld, window: Window) => {
@@ -148,14 +145,12 @@ export const handle = ({
   vNew,
   vOld,
   window,
-  domPointer,
-  prevVNew,
+  insertPoint,
 }: {
   vNew?: VNew;
   vOld?: VOld;
   window: Window;
-  domPointer: DomPointer;
-  prevVNew?: VOld;
+  insertPoint: InsertPoint;
 }) => {
   // delete
   if (!vNew) {
@@ -171,7 +166,7 @@ export const handle = ({
   if (!vOld) {
     const newDomNode = create(vNew, window);
 
-    insert({domPointer, prevVNew, node: newDomNode});
+    insert({insertPoint, node: newDomNode});
 
     convertFromNewToOld(vNew, newDomNode);
     return;

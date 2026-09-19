@@ -26,6 +26,13 @@ export function checkPassPrimitive(value: any) {
   if (value === null || value === undefined || typeof value === 'boolean') {
     return true;
   }
+
+  // пустая строка не даёт узла в SSR, поэтому не должна давать его и на
+  // клиенте — иначе стадии разойдутся по числу узлов
+  if (value === '') {
+    return true;
+  }
+
   return false;
 }
 

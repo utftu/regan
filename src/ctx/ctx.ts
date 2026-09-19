@@ -1,11 +1,6 @@
 import {SingleChild, DomPointer, SystemProps} from '../types.ts';
 import {HNode, Mount, Unmount} from '../h-node/h-node.ts';
-import {
-  AreaCtx,
-  GlobalCtx,
-  GlobalCtxBoth,
-  GlobalCtxServer,
-} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtxBoth} from '../global-ctx/global-ctx.ts';
 import {Context, ContextEnt, getContextValue} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';
 import {HNodeComponent} from '../h-node/component.ts';
@@ -17,14 +12,7 @@ export class ComponentState {
 
 export type Stage = 'render' | 'hydrate' | 'string';
 
-type Client = {
-  hNode: HNode;
-  parentDomPointer: DomPointer;
-};
-
-type SystemPropsCtx = SystemProps & {
-  rawHNode?: HNode;
-};
+type SystemPropsCtx = SystemProps & {};
 
 type PropsCtx<TProps> = {
   props: TProps;
@@ -35,7 +23,6 @@ type PropsCtx<TProps> = {
   areaCtx: AreaCtx;
   stage: Stage;
   segmentEnt: SegmentEnt;
-  client?: Client;
   contextEnt: ContextEnt | undefined;
 };
 
@@ -48,8 +35,6 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   segmentEnt: SegmentEnt;
   globalCtx: GlobalCtxBoth;
   stage: Stage;
-  ctx: Ctx;
-  client?: Client;
   contextEnt?: ContextEnt;
   areaCtx: AreaCtx;
 
@@ -60,7 +45,6 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
     globalCtx,
     stage,
     systemProps,
-    client,
     segmentEnt,
     contextEnt,
     areaCtx,
@@ -71,12 +55,9 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
     this.globalCtx = globalCtx;
     this.stage = stage;
     this.systemProps = systemProps;
-    this.client = client;
     this.segmentEnt = segmentEnt;
     this.contextEnt = contextEnt;
     this.areaCtx = areaCtx;
-    // Intentional self-reference: allows `ctx` and `ctx.ctx` to be used interchangeably in FC(props, ctx).
-    this.ctx = this;
   }
 
   mount = (fn: Mount<HNodeComponent>) => {

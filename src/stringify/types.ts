@@ -10,8 +10,10 @@ export type StringifyProps = {
   pathSegmentName: string;
   parentSegmentEnt?: SegmentEnt;
   stringifyCtx: StringifyCtx;
+  lastText: boolean;
 };
 
 export type StringifyResult = {
   text: string;
+  lastText: boolean;
 };

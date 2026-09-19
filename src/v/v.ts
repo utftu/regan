@@ -1,22 +1,22 @@
-import {DomPointer} from '../types.ts';
-import {handle} from './handle.ts';
+import {InsertPoint} from '../types.ts';
+import {getDomNode, handle} from './handle.ts';
 import {VNew, VOld, VOldElement} from './types.ts';
 
 export const virtualApply = ({
   vNews,
   vOlds,
-  domPointer,
+  insertPoint,
   window,
 }: {
   vNews: VNew[];
   vOlds: VOld[];
-  domPointer: DomPointer;
+  insertPoint: InsertPoint;
   window: Window;
 }) => {
   virtualApplyInternal({
     vNews,
     vOlds,
-    domPointer,
+    insertPoint,
     window,
   });
 
@@ -26,28 +26,30 @@ export const virtualApply = ({
 export const virtualApplyInternal = ({
   vNews,
   vOlds,
-  domPointer,
+  insertPoint,
   window,
 }: {
   vNews: VNew[];
   vOlds: VOld[];
-  domPointer: DomPointer;
+  insertPoint: InsertPoint;
   window: Window;
 }) => {
-  let nodeCount = domPointer.nodeCount;
+  let prevNode = insertPoint.prevNode;
   const maxLayer = Math.max(vNews.length, vOlds.length);
+
   for (let i = 0; i < maxLayer; i++) {
     const vNew = vNews[i];
     const vOld = vOlds[i];
+
     handle({
       vNew,
       vOld,
       window,
-      domPointer: {parent: domPointer.parent, nodeCount},
+      insertPoint: {parent: insertPoint.parent, prevNode},
     });
 
     if (vNew) {
-      nodeCount++;
+      prevNode = getDomNode(vNew as VOld);
     }
 
     if (vNew?.type === 'element' || vOld?.type === 'element') {
@@ -59,15 +61,16 @@ export const virtualApplyInternal = ({
       if (vNewChildren.length === 0 && vOldChildren.length === 0) {
         continue;
       }
-      const localDomPointer: DomPointer =
+
+      const localInsertPoint: InsertPoint =
         vNew?.type === 'element'
-          ? {parent: (vNewAsVOld as VOldElement).element, nodeCount: 0}
-          : {parent: domPointer.parent, nodeCount};
+          ? {parent: (vNewAsVOld as VOldElement).element}
+          : {parent: insertPoint.parent, prevNode};
 
       virtualApplyInternal({
         vNews: vNewChildren,
         vOlds: vOldChildren,
-        domPointer: localDomPointer,
+        insertPoint: localInsertPoint,
         window,
       });
     }

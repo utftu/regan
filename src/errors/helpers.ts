@@ -14,7 +14,7 @@ import {
 } from './errors.tsx';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {logError} from './logger.tsx';
-import {GlobalCtx, GlobalCtxBoth} from '../global-ctx/global-ctx.ts';
+import {GlobalCtxBoth} from '../global-ctx/global-ctx.ts';
 
 type GlobalHandlerProps = ErrorProps & {handled: boolean};
 export type GlobalErrorHandler = (props: GlobalHandlerProps) => any;
@@ -39,7 +39,7 @@ export const createErrorComponent = ({
 
   const errorJsxComponent = new JsxNodeComponent(
     {props: {}, children: [errorJsx]},
-    {component: Fragment}
+    {component: Fragment},
   );
 
   segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
@@ -68,7 +68,7 @@ export const prepareListener = ({
       });
       const errorHandler = getContextValue(
         getErrorContext(),
-        segmentEnt.contextEnt
+        segmentEnt.contextEnt,
       );
       errorHandler({
         error: errorRegan,
@@ -90,7 +90,7 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
   } catch (error) {
     const errorHandler = getContextValue(
       getErrorContext(),
-      hNode.segmentEnt.contextEnt
+      hNode.segmentEnt.contextEnt,
     );
     const errorRegan = createErrorRegan({
       error,
@@ -112,7 +112,7 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
 
 export const throwGlobalSystemError = (
   error: unknown,
-  globalCtx: GlobalCtxBoth
+  globalCtx: GlobalCtxBoth,
 ) => {
   const errorRegan = createErrorRegan({
     error,

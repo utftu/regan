@@ -53,6 +53,7 @@ export function stringifyElement(
   if (this.systemProps.rawHtml) {
     return {
       text: `${elementString.left}${this.systemProps.rawHtml}${elementString.right}`,
+      lastText: false,
     };
   }
 
@@ -61,9 +62,11 @@ export function stringifyElement(
       children: this.children,
       parentSegmentEnt: segmentEnt,
       stringifyCtx: props.stringifyCtx,
+      lastText: false,
     });
 
   return {
     text: `${elementString.left}${hadnlerChildrenResult.text}${elementString.right}`,
+    lastText: false,
   };
 }

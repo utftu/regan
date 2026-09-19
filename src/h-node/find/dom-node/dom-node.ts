@@ -1,13 +1,11 @@
 import {checkClassChild} from '../../../utils/check-parent.ts';
-import {HNodeElement} from '../../element.ts';
 import {HNode} from '../../h-node.ts';
-import {HNodeText} from '../../text.ts';
 import {Config} from '../find.ts';
 import {findPrevHNode} from '../prev.ts';
 
 export const findPrevDomNodeHNode = (
-  hNode: HNode
-): {domNode?: Node; lastParentHNode?: HNode} => {
+  hNode: HNode,
+): {domNode?: ChildNode; lastParentHNode?: HNode} => {
   const config: Config = {};
   let result = findPrevHNode(
     hNode,
@@ -20,7 +18,7 @@ export const findPrevDomNodeHNode = (
         return hNode;
       }
     },
-    config
+    config,
   );
 
   if (checkClassChild(result, 'hNodeElement')) {

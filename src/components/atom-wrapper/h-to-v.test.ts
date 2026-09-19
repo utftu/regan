@@ -28,18 +28,11 @@ describe('convertHToV', () => {
     ]);
   });
 
-  it('склеивает соседние текстовые узлы через store', () => {
-    const store: any = {};
-
+  it('каждый текстовый узел даёт свой vOld', () => {
     const n1 = new HNodeText(hNodeProps, {text: 'he', textNode});
     const n2 = new HNodeText(hNodeProps, {text: 'llo', textNode});
 
-    const r1 = convertHToV(n1, store);
-    const r2 = convertHToV(n2, store);
-
-    expect(r1.length).toBe(1);
-    expect(r2.length).toBe(0);
-
-    expect(store.text.data.text).toBe('hello');
+    expect(convertHToV(n1).length).toBe(1);
+    expect(convertHToV(n2).length).toBe(1);
   });
 });

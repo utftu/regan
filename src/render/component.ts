@@ -1,7 +1,7 @@
 import {ErrorGuard} from '../components/error-guard.tsx';
 import {selectContextEnt} from '../context/context.tsx';
 import {ComponentState, Ctx} from '../ctx/ctx.ts';
-import {createErrorRegan, ErrorHandler, ErrorRegan} from '../errors/errors.tsx';
+import {createErrorRegan, ErrorHandler} from '../errors/errors.tsx';
 import {createErrorComponent} from '../errors/helpers.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
@@ -14,7 +14,7 @@ import {RenderProps, RenderResult} from './types.ts';
 
 export function renderComponent(
   this: JsxNodeComponent,
-  props: RenderProps
+  props: RenderProps,
 ): RenderResult {
   const contextEnt = selectContextEnt(this, props.parentSegmentEnt?.contextEnt);
 
@@ -36,10 +36,7 @@ export function renderComponent(
   const componentCtx = new Ctx({
     globalCtx: props.renderCtx.globalCtx,
     props: this.props,
-    systemProps: {
-      ...this.systemProps,
-      rawHNode: hNode,
-    },
+    systemProps: this.systemProps,
     state: new ComponentState(),
     children: this.children,
     stage: 'render',

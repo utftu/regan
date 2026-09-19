@@ -10,21 +10,26 @@ import {
   wrapChildIfNeed,
 } from '../utils/jsx.ts';
 import {StringifyCtx} from './types.ts';
+import {textSeparator} from '../consts.ts';
 
 export type HandleChildrenStringifyResult = {
   text: string;
+  lastText: boolean;
 };
 
 export function handleChildrenString({
   children,
   parentSegmentEnt,
   stringifyCtx,
+  lastText: propsLastText,
 }: {
   children: SingleChild[];
   parentSegmentEnt: SegmentEnt;
   stringifyCtx: StringifyCtx;
+  lastText: boolean;
 }): HandleChildrenStringifyResult {
   let insertedJsxCount = 0;
+  let lastText = propsLastText;
 
   const strings: string[] = [];
   for (let i = 0; i <= children.length; i++) {
@@ -37,7 +42,12 @@ export function handleChildrenString({
     if (checkAllowedPrivitive(childOrAtom)) {
       const text = childOrAtom.toString();
 
+      if (lastText === true) {
+        strings.push(textSeparator);
+      }
+
       strings.push(text);
+      lastText = true;
 
       continue;
     }
@@ -54,17 +64,20 @@ export function handleChildrenString({
 
     const jsxNode = wrapChildIfNeed(childOrAtom);
 
-    const {text} = jsxNode.stringify({
+    const stringifyResult = jsxNode.stringify({
       stringifyCtx,
       pathSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,
+      lastText,
     });
 
     insertedJsxCount++;
-    strings.push(text);
+    strings.push(stringifyResult.text);
+    lastText = stringifyResult.lastText;
   }
 
   return {
     text: strings.join(''),
+    lastText,
   };
 }

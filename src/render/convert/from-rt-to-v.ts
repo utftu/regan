@@ -21,22 +21,11 @@ const wrapMethod = (obj: Record<string, any>, name: string, fn: AnyFunc) => {
   };
 };
 
-export const convertFromRtToV = (
-  renderTemplate: RenderT,
-  store: {vNew?: VNewText} = {}
-): VNew[] => {
+export const convertFromRtToV = (renderTemplate: RenderT): VNew[] => {
   if (renderTemplate.type === 'text') {
-    const vNewExist = !!store.vNew;
-
-    if (!store.vNew) {
-      store.vNew = {
-        ...renderTemplate.vNew,
-      };
-    } else {
-      store.vNew.data.text += renderTemplate.vNew.data.text;
-    }
-
-    const vNew = store.vNew;
+    const vNew: VNewText = {
+      ...renderTemplate.vNew,
+    };
 
     wrapMethod(vNew, 'init', (vOld: VOldText) => {
       const renderTemplateExtended =
@@ -44,18 +33,13 @@ export const convertFromRtToV = (
       renderTemplateExtended.vOld = vOld;
     });
 
-    if (!vNewExist) {
-      return [vNew];
-    }
-
-    return [];
+    return [vNew];
   }
+
   if (renderTemplate.type === 'element') {
-    store.vNew = undefined;
     const children = renderTemplate.children
-      .map((renderTemplate) => convertFromRtToV(renderTemplate, store))
+      .map((renderTemplate) => convertFromRtToV(renderTemplate))
       .flat();
-    store.vNew = undefined;
 
     const vNewResult: VNewElement = {
       ...renderTemplate.vNew,
@@ -73,7 +57,7 @@ export const convertFromRtToV = (
 
   if (renderTemplate.type === 'component') {
     const children = renderTemplate.children
-      .map((renderTemplate) => convertFromRtToV(renderTemplate, store))
+      .map((renderTemplate) => convertFromRtToV(renderTemplate))
       .flat();
     return children;
   }

@@ -1,5 +1,4 @@
 import {defineClassName} from '../utils/check-parent.ts';
-import {VOldText} from '../v/types.ts';
 import {HNode, PropsHNode} from './h-node.ts';
 
 export type HNodeTextProps = {

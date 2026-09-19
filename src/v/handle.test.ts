@@ -6,13 +6,12 @@ import {handle} from './handle.ts';
 import {convertFromNewToOld} from './convert.ts';
 import {virtualApply} from './v.ts';
 import {ListenerManager} from '../utils/listeners.ts';
-import {DomPointer} from '../types.ts';
+import {InsertPoint} from '../types.ts';
 
-export const createDomPointer = (window: Window): DomPointer => {
+export const createInsertPoint = (window: Window): InsertPoint => {
   const parent = window.document.createElement('div');
   return {
     parent,
-    nodeCount: 0,
   };
 };
 
@@ -79,77 +78,77 @@ const getVOldText = (): VOldText => {
 
 describe('v/handle', () => {
   it('null => text', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
 
     handle({
       vNew: vNewText,
       window,
-      domPointer,
+      insertPoint,
     });
     expect(parent.childNodes[0].textContent).toBe('helloworld');
   });
   it('text => null', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
 
     const vOldText = getVOldText();
     parent.appendChild(vOldText.textNode);
 
-    handle({vOld: vOldText, window, domPointer});
+    handle({vOld: vOldText, window, insertPoint});
     expect(parent.childNodes.length).toBe(0);
   });
   it('null => element', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
-    handle({vNew: vNewElement, window, domPointer});
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
+    handle({vNew: vNewElement, window, insertPoint});
 
     expect(parent.children[0].getAttribute('a')).toBe('aa');
   });
   it('element => null', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
 
     const vOldElement = getVOldElement();
     parent.appendChild(vOldElement.element);
-    handle({vOld: vOldElement, window, domPointer});
+    handle({vOld: vOldElement, window, insertPoint});
 
     expect(parent.childNodes.length).toBe(0);
   });
   it('text => element', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
     const vOldText = getVOldText();
     parent.appendChild(vOldText.textNode);
 
-    handle({vNew: vNewElement, vOld: vOldText, window, domPointer});
+    handle({vNew: vNewElement, vOld: vOldText, window, insertPoint});
     expect(parent.childNodes.length).toBe(1);
     expect((parent.childNodes[0] as Element).tagName).toBe('DIV');
   });
 
   it('element => text', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
     const vOldElement = getVOldElement();
     parent.appendChild(vOldElement.element);
 
-    handle({vNew: vNewText, vOld: vOldElement, window, domPointer});
+    handle({vNew: vNewText, vOld: vOldElement, window, insertPoint});
     expect(parent.childNodes.length).toBe(1);
     expect(parent.childNodes[0].textContent).toBe('helloworld');
   });
   it('element => element', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
     const vOldElement = getVOldElement();
     parent.appendChild(vOldElement.element);
 
-    handle({vNew: vNewElement, vOld: vOldElement, window, domPointer});
+    handle({vNew: vNewElement, vOld: vOldElement, window, insertPoint});
     expect(parent.children[0]).toBe(vOldElement.element);
     expect(parent.children[0].getAttribute('a')).toBe('aa');
   });
   it('element => element (diff tag)', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
     const elementSpan = document.createElement('span');
     elementSpan.setAttribute('a', 'aa');
     elementSpan.setAttribute('b', 'bb');
@@ -169,14 +168,14 @@ describe('v/handle', () => {
     };
     parent.appendChild(vOldElement.element);
 
-    handle({vNew: vNewElement, vOld: vOldElement, window, domPointer});
+    handle({vNew: vNewElement, vOld: vOldElement, window, insertPoint});
 
     expect(parent.children[0].tagName).toBe('DIV');
     expect(parent.children[0].getAttribute('a')).toBe('aa');
   });
   it('element => element (diff tag) rebuilds children', () => {
-    const domPointer = createDomPointer(window);
-    const parent = domPointer.parent as HTMLElement;
+    const insertPoint = createInsertPoint(window);
+    const parent = insertPoint.parent as HTMLElement;
 
     const makeText = (text: string): VNewText => ({type: 'text', data: {text}});
     const makeEl = (tag: string, children: VNew[] = []): VNewElement => ({
@@ -187,47 +186,47 @@ describe('v/handle', () => {
     });
 
     const v1 = makeEl('span', [makeEl('b', [makeText('x')])]);
-    const olds = virtualApply({vNews: [v1], vOlds: [], window, domPointer});
+    const olds = virtualApply({vNews: [v1], vOlds: [], window, insertPoint});
     expect(parent.innerHTML).toBe('<span><b>x</b></span>');
 
     const v2 = makeEl('div', [makeEl('b', [makeText('x')])]);
-    virtualApply({vNews: [v2], vOlds: olds, window, domPointer});
+    virtualApply({vNews: [v2], vOlds: olds, window, insertPoint});
     expect(parent.innerHTML).toBe('<div><b>x</b></div>');
   });
   it('text => text', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
     const vOldText = getVOldText();
     parent.appendChild(vOldText.textNode);
 
-    handle({vNew: vNewText, vOld: vOldText, window, domPointer});
+    handle({vNew: vNewText, vOld: vOldText, window, insertPoint});
 
     expect(parent.childNodes[0].textContent).toBe('helloworld');
   });
   it('init text', () => {
-    const domPointer = createDomPointer(window);
+    const insertPoint = createInsertPoint(window);
     const mockFn = vi.fn();
 
     const vNewTextMy: VNewText = {...vNewText, init: mockFn};
 
-    handle({vNew: vNewTextMy, window, domPointer});
+    handle({vNew: vNewTextMy, window, insertPoint});
     expect(mockFn.mock.calls.length).toBe(1);
     expect(mockFn.mock.calls[0][0]).toBe(vNewTextMy);
   });
   it('init element', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
     const mockFn = vi.fn();
 
     const vNewElementtMy: VNewElement = {...vNewElement, init: mockFn};
 
-    handle({vNew: vNewElementtMy, window, domPointer});
+    handle({vNew: vNewElementtMy, window, insertPoint});
     expect(mockFn.mock.calls.length).toBe(1);
     expect(mockFn.mock.calls[0][0]).toBe(vNewElementtMy);
   });
   it('replacing a listener removes the old one', () => {
-    const domPointer = createDomPointer(window);
-    const {parent} = domPointer;
+    const insertPoint = createInsertPoint(window);
+    const {parent} = insertPoint;
 
     const oldFn = vi.fn();
     const vNew1: VNewElement = {
@@ -236,7 +235,7 @@ describe('v/handle', () => {
       children: [],
       listenerManager: createListenerManager(),
     };
-    handle({vNew: vNew1, window, domPointer});
+    handle({vNew: vNew1, window, insertPoint});
     const element = parent.children[0] as HTMLElement;
     const vOld = convertFromNewToOld(vNew1, element);
 
@@ -250,7 +249,7 @@ describe('v/handle', () => {
       children: [],
       listenerManager: createListenerManager(),
     };
-    handle({vNew: vNew2, vOld, window, domPointer: {parent, nodeCount: 1}});
+    handle({vNew: vNew2, vOld, window, insertPoint: {parent}});
 
     element.click();
     expect(oldFn).toHaveBeenCalledTimes(1);

@@ -35,7 +35,7 @@ function isElement<TNode extends ChildNode>(args: {
     }
 
     throw new Error(
-      `Tag mismatch: DOM <${el.tagName}> vs JSX <${jsxNodeElement.tagName}>`
+      `Tag mismatch: DOM <${el.tagName}> vs JSX <${jsxNodeElement.tagName}>`,
     );
   }
 
@@ -44,7 +44,7 @@ function isElement<TNode extends ChildNode>(args: {
 
 export function hydrateElement(
   this: JsxNodeElement,
-  props: HydrateProps
+  props: HydrateProps,
 ): HydrateResult {
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
@@ -73,7 +73,7 @@ export function hydrateElement(
     {
       element,
       listenerManager,
-    }
+    },
   );
   segmentEnt.hNode = hNode;
 
@@ -96,7 +96,6 @@ export function hydrateElement(
     return {
       hNode,
       nodeCount: 1,
-      lastText: false,
     };
   }
 
@@ -109,9 +108,7 @@ export function hydrateElement(
       },
       parentHNode: hNode,
       globalCtx: props.globalCtx,
-      hydrateCtx: props.hydrateCtx,
       parentSegmentEnt: segmentEnt,
-      lastText: false,
       areaCtx: props.areaCtx,
     });
 
@@ -120,6 +117,5 @@ export function hydrateElement(
   return {
     hNode,
     nodeCount: 1,
-    lastText: false,
   };
 }

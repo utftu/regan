@@ -1,6 +1,5 @@
 import type {Ctx} from '../ctx/ctx.ts';
 import type {JsxNode} from '../jsx-node/jsx-node.ts';
-import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import type {FC} from '../types.ts';
 import {checkClassChild} from '../utils/check-parent.ts';
 
@@ -18,7 +17,7 @@ export type ContextEnt<TValue = any> = {
 
 export function createContext<TValue extends any = any>(
   name: string,
-  defaultValue: TValue
+  defaultValue: TValue,
 ) {
   const context = {
     name,
@@ -37,7 +36,7 @@ export function createContext<TValue extends any = any>(
 
 export const getContextValue = <TValue extends any = any>(
   context: Context<TValue>,
-  contextEnt?: ContextEnt
+  contextEnt?: ContextEnt,
 ): TValue => {
   if (!contextEnt) {
     return context.defaultValue;
@@ -56,14 +55,14 @@ export const getContextValue = <TValue extends any = any>(
 
 export const ContextProvider: FC = <TValue extends any = any>(
   _props: {value: TValue; context: Context},
-  {children}: Ctx
+  {children}: Ctx,
 ) => {
   return children;
 };
 
 export const selectContextEnt = (
   jsxNode: JsxNode,
-  parentContextEnt?: ContextEnt
+  parentContextEnt?: ContextEnt,
 ): ContextEnt | undefined => {
   if (
     checkClassChild(jsxNode, 'jsxNodeComponent') &&

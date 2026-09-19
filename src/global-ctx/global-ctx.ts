@@ -1,40 +1,29 @@
 import {defaultData} from '../consts.ts';
 import {GlobalErrorHandler} from '../errors/helpers.ts';
-import {Root} from '../root/root.ts';
-import {Data, DomPointer} from '../types.ts';
+import {Data, InsertPoint} from '../types.ts';
 import {createUpdaterAsync, createUpdaterSync} from '../updater/updater.ts';
-
-type Mode = 'server' | 'client';
 
 export class AreaCtx {
   updaterInit = createUpdaterSync();
 }
 
 export class GlobalCtx<
-  TClientCtx extends GlobalClientCtx | undefined = GlobalClientCtx
+  TClientCtx extends GlobalClientCtx | undefined = GlobalClientCtx,
 > {
   data: Data;
-  root: Root;
-  mode: Mode;
   updater = createUpdaterAsync();
   errorHandlers: GlobalErrorHandler[];
   clientCtx: TClientCtx;
   constructor({
     data = defaultData,
-    root,
-    mode,
     clientCtx,
     errorHandlers = [],
   }: {
     data?: Data;
-    root: Root;
-    mode: Mode;
     clientCtx: TClientCtx;
     errorHandlers?: GlobalErrorHandler[];
   }) {
     this.data = data;
-    this.root = root;
-    this.mode = mode;
     this.clientCtx = clientCtx;
     this.errorHandlers = errorHandlers;
   }
@@ -44,17 +33,17 @@ export type GlobalCtxServer = GlobalCtx<undefined>;
 export type GlobalCtxBoth = GlobalCtx<GlobalClientCtx | undefined>;
 
 export class GlobalClientCtx {
-  initDomPointer: DomPointer;
+  initInsertPoint: InsertPoint;
   window: Window;
 
   constructor({
     window: localWindow,
-    initDomPointer,
+    initInsertPoint,
   }: {
-    initDomPointer: DomPointer;
+    initInsertPoint: InsertPoint;
     window: Window;
   }) {
-    this.initDomPointer = initDomPointer;
+    this.initInsertPoint = initInsertPoint;
     this.window = localWindow;
   }
 }

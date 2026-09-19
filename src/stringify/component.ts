@@ -58,6 +58,7 @@ export function strigifyComponent(
       children,
       stringifyCtx: props.stringifyCtx,
       parentSegmentEnt: segmentEnt,
+      lastText: props.lastText,
     });
   } catch (error) {
     const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
@@ -74,6 +75,7 @@ export function strigifyComponent(
         children: [errorComponent],
         stringifyCtx: props.stringifyCtx,
         parentSegmentEnt: segmentEnt,
+        lastText: props.lastText,
       });
     } else {
       throw errorRegan;
@@ -82,5 +84,6 @@ export function strigifyComponent(
 
   return {
     text: handleChildrenResult.text,
+    lastText: handleChildrenResult.lastText,
   };
 }
