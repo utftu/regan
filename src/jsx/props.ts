@@ -2,19 +2,10 @@ import {Props, SystemProps} from '../types.ts';
 
 type SystemPropsKey = keyof SystemProps;
 
-const detectSystemProps = (key: string) => {
-  if (key === 'key' || key === 'ref' || key.startsWith('r_')) {
-    return true;
-  }
+const systemPropsNames: SystemPropsKey[] = ['key', 'ref', 'rawHtml'];
 
-  return false;
-};
-
-const renameSystemProps = (key: string): SystemPropsKey => {
-  if (key === 'key' || key === 'ref') {
-    return key;
-  }
-  return key.slice(2) as SystemPropsKey;
+const detectSystemProps = (key: string): key is SystemPropsKey => {
+  return systemPropsNames.includes(key as SystemPropsKey);
 };
 
 export const separateProps = (rawProps: Props) => {
@@ -23,7 +14,7 @@ export const separateProps = (rawProps: Props) => {
   for (const key in rawProps) {
     const value = rawProps[key];
     if (detectSystemProps(key)) {
-      systemProps[renameSystemProps(key)] = value;
+      systemProps[key] = value;
     } else {
       if (key === 'className') {
         userProps.class = value;

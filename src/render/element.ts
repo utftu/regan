@@ -7,6 +7,7 @@ import {SegmentEnt} from '../segment/segment.ts';
 import {initDynamicPropsStage0, splitProps} from '../utils/props.ts';
 import {ListenerManager} from '../utils/listeners.ts';
 import {RenderTemplateElement} from './template.types.ts';
+import {applyRef} from '../utils/ref.ts';
 
 export function renderElement(
   this: JsxNodeElement,
@@ -20,6 +21,8 @@ export function renderElement(
     globalCtx: props.renderCtx.globalCtx,
   });
   this.segmentEnt = segmentEnt;
+
+  const {ref} = this.systemProps;
 
   const {dynamicProps, joinedProps} = splitProps(this.props);
 
@@ -58,6 +61,13 @@ export function renderElement(
       segmentEnt.hNode = hNode;
 
       initDynamicPropsStage1(hNode, listenerManager);
+
+      hNode.mounts.push(() => {
+        applyRef(ref, element);
+      });
+      hNode.unmounts.push(() => {
+        applyRef(ref, undefined);
+      });
 
       return hNode;
     },

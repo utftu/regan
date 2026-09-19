@@ -1,6 +1,12 @@
+import {Ref} from '../types.ts';
+
 type InputEventRegan = Omit<InputEvent, 'target'> & {target: HTMLInputElement};
 
 type BaseElement<TElement extends Element = any> = {
+  key?: string;
+  ref?: Ref;
+  rawHtml?: string;
+
   id?: string;
   style?: string;
   class?: string;

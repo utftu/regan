@@ -27,9 +27,13 @@ export type FC<TProps extends Record<any, any> = any> = (
 
 export type Props = Record<string, any>;
 
+export type Ref =
+  | Atom<Element | undefined>
+  | ((element: Element | undefined) => void);
+
 export type SystemProps = {
   key?: string;
-  ref?: Atom<HTMLElement | void>;
+  ref?: Ref;
   rawHtml?: string;
 };
 

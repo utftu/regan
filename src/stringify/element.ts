@@ -50,9 +50,9 @@ export function stringifyElement(
     props: preparedProps,
   });
 
-  if (this.props.rawHtml) {
+  if (this.systemProps.rawHtml) {
     return {
-      text: `${elementString.left}${this.props.rawHtml}${elementString.right}`,
+      text: `${elementString.left}${this.systemProps.rawHtml}${elementString.right}`,
     };
   }
 

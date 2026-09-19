@@ -12,6 +12,7 @@ import {
   HandleChildrenHydrateResult,
 } from './children.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
+import {applyRef} from '../utils/ref.ts';
 
 function isElement<TNode extends ChildNode>(args: {
   element: TNode;
@@ -78,6 +79,10 @@ export function hydrateElement(
 
   hNode.mounts.push(() => {
     initStaticProps(element, staticProps, listenerManager);
+    applyRef(this.systemProps.ref, element);
+  });
+  hNode.unmounts.push(() => {
+    applyRef(this.systemProps.ref, undefined);
   });
 
   const initDynamicPropsStage1 = initDynamicPropsStage0({
@@ -87,7 +92,7 @@ export function hydrateElement(
   });
   initDynamicPropsStage1(hNode, listenerManager);
 
-  if (this.props.rawHtml) {
+  if (this.systemProps.rawHtml) {
     return {
       hNode,
       nodeCount: 1,
