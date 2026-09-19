@@ -56,12 +56,14 @@ export function renderElement(
     mounts,
     unmounts,
     children: [],
+    oldHNode: props.oldHNode,
   };
 
   renderNode.children = handleChildren({
     children: this.children,
     renderCtx: props.renderCtx,
     parentSegmentEnt: segmentEnt,
+    oldHNodes: props.oldHNode?.children,
   }).renderNodes;
 
   return {renderNode};

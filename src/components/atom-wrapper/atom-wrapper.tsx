@@ -1,7 +1,6 @@
 import {Atom} from 'strangelove';
 import {FC} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
-import {mountHNodes, unmountHNodes} from '../../h-node/helpers.ts';
 import {renderRaw} from '../../render/render.ts';
 import {getInsertPoint} from './insert-point.ts';
 import {applyRenderNodes} from '../../v/apply.ts';
@@ -10,6 +9,7 @@ import {subscribeAtomWrapper} from '../../utils/atom.ts';
 import {HNodeText} from '../../h-node/text.ts';
 import {checkClassChild} from '../../utils/check-parent.ts';
 import {checkAllowedPrivitive} from '../../utils/jsx.ts';
+import {handleError} from '../../errors/helpers.ts';
 
 type Props = {
   atom: Atom;
@@ -41,6 +41,9 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
 
   let progress = false;
   let pending = false;
+  // сколько падений подряд: каждое следующее уходит на ErrorGuard выше,
+  // иначе упавший запасной вариант зациклил бы сам себя
+  let failCount = 0;
 
   const cb = (hNode: HNode) => {
     // Check if node is already unmounted
@@ -67,13 +70,9 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
     }
 
     progress = true;
-    // старое поддерево нужно диффу целиком, поэтому только размонтируем,
-    // а структуру рвать нельзя
+    // старое дерево не разбираем: рендер сверит его с новым и сам решит,
+    // что переиспользовать, что сохранить целиком, а что размонтировать
     const oldHNodes = [...hNode.children];
-    oldHNodes.forEach((child) => unmountHNodes(child));
-    hNode.children.length = 0;
-
-    ctx.segmentEnt.pathSegment.clearCache();
 
     updateCount++;
     ctx.segmentEnt.pathSegment.name = initPathSegmentName + `?a=${updateCount}`;
@@ -81,26 +80,47 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
     const insertPoint = getInsertPoint(hNode);
     const window = clientCtx.window;
 
-    const {renderNode} = renderRaw({
-      node: <Fragment>{value}</Fragment>,
-      parentHNode: hNode,
-      window,
-      parentSegmentEnt: ctx.segmentEnt,
-      insertPoint,
-    });
+    try {
+      const {renderNode} = renderRaw({
+        node: <Fragment>{value}</Fragment>,
+        parentHNode: hNode,
+        window,
+        parentSegmentEnt: ctx.segmentEnt,
+        insertPoint,
+        oldHNode: oldHNodes[0],
+      });
 
-    const [hNodeChild] = applyRenderNodes({
-      renderNodes: [renderNode],
-      oldHNodes,
-      insertPoint,
-      window,
-    });
+      const {hNodes, created} = applyRenderNodes({
+        renderNodes: [renderNode],
+        oldHNodes,
+        insertPoint,
+        window,
+        parent: hNode,
+      });
 
-    hNode.addChildren([hNodeChild]);
+      hNode.children = hNodes;
 
-    mountHNodes(hNodeChild);
+      created.forEach((createdHNode) => createdHNode.mount());
 
-    progress = false;
+      failCount = 0;
+    } catch (error) {
+      // старое дерево цело: падение случилось на рендере, до правок дома
+      const {handled} = handleError({
+        error,
+        place: 'component',
+        segmentEnt: ctx.segmentEnt,
+        skip: failCount,
+      });
+      failCount++;
+
+      if (handled === false) {
+        // перехватить некому — прятать ошибку нельзя
+        throw error;
+      }
+    } finally {
+      progress = false;
+    }
+
     if (pending) {
       pending = false;
       cb(hNode);

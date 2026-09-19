@@ -4,7 +4,12 @@ import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc, SingleChild} from '../types.ts';
 import {checkClassChild} from '../utils/check-parent.ts';
 
-type ErrorPlace = 'jsx' | 'component' | 'handler' | 'mount' | 'system';
+export type ErrorPlace =
+  | 'jsx'
+  | 'component'
+  | 'handler'
+  | 'mount'
+  | 'system';
 
 export class ErrorRegan extends Error {
   place: ErrorPlace;

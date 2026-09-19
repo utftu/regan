@@ -46,38 +46,18 @@ describe('jsx-path', () => {
       expect(segment.name).toBe('test');
     });
 
-    it('caches jsxPath', () => {
+    it('путь и id не кэшируются — всегда по живой цепочке', () => {
       const mockSegmentEnt = {parentSegmentEnt: undefined} as SegmentEnt;
       const segment = new PathSegment({name: 'test', systemEnt: mockSegmentEnt});
-      
-      const path1 = segment.getJsxPath();
-      const path2 = segment.getJsxPath();
-      
-      expect(path1).toBe(path2);
-      expect(path1).toBe('test');
-    });
 
-    it('caches id', () => {
-      const mockSegmentEnt = {parentSegmentEnt: undefined} as SegmentEnt;
-      const segment = new PathSegment({name: 'test', systemEnt: mockSegmentEnt});
-      
-      const id1 = segment.getId();
-      const id2 = segment.getId();
-      
-      expect(id1).toBe(id2);
-    });
+      expect(segment.getJsxPath()).toBe('test');
+      const id = segment.getId();
+      expect(segment.getId()).toBe(id);
 
-    it('clearCache resets cache', () => {
-      const mockSegmentEnt = {parentSegmentEnt: undefined} as SegmentEnt;
-      const segment = new PathSegment({name: 'test', systemEnt: mockSegmentEnt});
-      
-      segment.getJsxPath();
-      segment.getId();
-      
       segment.name = 'changed';
-      segment.clearCache();
-      
+
       expect(segment.getJsxPath()).toBe('changed');
+      expect(segment.getId()).not.toBe(id);
     });
   });
 

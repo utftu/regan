@@ -8,30 +8,15 @@ export class PathSegment {
     this.systemEnt = systemEnt;
   }
 
-  private jsxPathCached: null | string = null;
+  // Путь считается каждый раз заново, по живой цепочке родителей.
+  // Кэшировать его нельзя: сохранённое поддерево переезжает вместе с
+  // ключом, и закэшированный путь тут же перестаёт быть правдой.
   getJsxPath() {
-    if (this.jsxPathCached !== null) {
-      return this.jsxPathCached;
-    }
-    const jsxPath = getJsxPath(this);
-    this.jsxPathCached = jsxPath;
-    return jsxPath;
+    return getJsxPath(this);
   }
 
-  private idCached: null | string = null;
   getId() {
-    if (this.idCached !== null) {
-      return this.idCached;
-    }
-
-    const id = djb2(this.getJsxPath());
-    this.idCached = id;
-    return id;
-  }
-
-  clearCache() {
-    this.jsxPathCached = null;
-    this.idCached = null;
+    return djb2(this.getJsxPath());
   }
 }
 

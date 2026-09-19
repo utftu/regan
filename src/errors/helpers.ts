@@ -1,4 +1,4 @@
-import {getContextValue} from '../context/context.tsx';
+import {ContextEnt, getContextValue} from '../context/context.tsx';
 import {HNode, Mount} from '../h-node/h-node.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -8,6 +8,7 @@ import {
   createErrorRegan,
   defaultErrorHandler,
   ErrorHandler,
+  ErrorPlace,
   ErrorProps,
   ErrorRegan,
   getErrorContext,
@@ -84,29 +85,63 @@ export const prepareListener = ({
   };
 };
 
+// Поднимается на skip штук ErrorGuard вверх: если запасной вариант тоже
+// упал, ошибку должен увидеть следующий guard, а не тот же самый.
+const getErrorContextEnt = (contextEnt: ContextEnt | undefined, skip: number) => {
+  const context = getErrorContext();
+  let current = contextEnt;
+
+  while (skip > 0) {
+    while (current && current.context !== context) {
+      current = current.parent;
+    }
+
+    if (!current) {
+      return;
+    }
+
+    current = current.parent;
+    skip--;
+  }
+
+  return current;
+};
+
+// Отдаёт ошибку ближайшему ErrorGuard и глобальным обработчикам.
+// Так работают и слушатели, и mount, и обновление динамической области.
+export const handleError = ({
+  error,
+  place,
+  segmentEnt,
+  skip = 0,
+}: {
+  error: unknown;
+  place: ErrorPlace;
+  segmentEnt: SegmentEnt;
+  skip?: number;
+}) => {
+  const errorRegan = createErrorRegan({error, place, segmentEnt});
+  const errorHandler = getContextValue(
+    getErrorContext(),
+    getErrorContextEnt(segmentEnt.contextEnt, skip),
+  );
+
+  const handled = !checkDefaultHandler(errorHandler);
+
+  errorHandler({error: errorRegan});
+
+  segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
+    handler({error: errorRegan, handled});
+  });
+
+  return {handled};
+};
+
 export const runMount = async (mount: Mount, hNode: HNode) => {
   try {
     await mount(hNode);
   } catch (error) {
-    const errorHandler = getContextValue(
-      getErrorContext(),
-      hNode.segmentEnt.contextEnt,
-    );
-    const errorRegan = createErrorRegan({
-      error,
-      place: 'mount',
-      segmentEnt: hNode.segmentEnt,
-    });
-    errorHandler({
-      error: errorRegan,
-    });
-
-    hNode.segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
-      handler({
-        error: errorRegan,
-        handled: !checkDefaultHandler(errorHandler),
-      });
-    });
+    handleError({error, place: 'mount', segmentEnt: hNode.segmentEnt});
   }
 };
 

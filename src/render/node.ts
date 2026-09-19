@@ -1,5 +1,5 @@
 import {GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {MountUnmounFunc} from '../h-node/h-node.ts';
+import {HNode, MountUnmounFunc} from '../h-node/h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Props} from '../types.ts';
 import {ListenerManager} from '../utils/listeners.ts';
@@ -12,6 +12,9 @@ type RenderNodeBase = {
   mounts: MountUnmounFunc[];
   unmounts: MountUnmounFunc[];
   children: RenderNode[];
+  // узел прошлого дерева, который здесь переиспользуется; подбирает его
+  // align на этапе рендера, потому что только там известны обе стороны
+  oldHNode?: HNode;
 };
 
 export type RenderNodeElement = RenderNodeBase & {
@@ -31,9 +34,17 @@ export type RenderNodeComponent = RenderNodeBase & {
   type: 'component';
 };
 
+// Компонент с тем же ключом не перезапускался — его поддерево переезжает
+// в новое дерево как есть, вместе со всем своим состоянием.
+export type RenderNodeKeep = {
+  type: 'keep';
+  oldHNode: HNode;
+};
+
 export type RenderNode =
   | RenderNodeElement
   | RenderNodeText
-  | RenderNodeComponent;
+  | RenderNodeComponent
+  | RenderNodeKeep;
 
 export type RenderNodeDom = RenderNodeElement | RenderNodeText;

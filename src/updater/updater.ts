@@ -10,6 +10,17 @@ type UpdaterTask = {
   add: (func: AnyFunc) => void;
 };
 
+// Ошибку, которую никто не перехватил, показываем так же, как показал бы
+// её непойманный throw: событие error в браузере, консоль где угодно ещё.
+const reportUncaught = (error: unknown) => {
+  if (typeof reportError === 'function') {
+    reportError(error);
+    return;
+  }
+
+  console.error(error);
+};
+
 class UpdaterTaskSync {
   add(func: AnyFunc) {
     func();
@@ -35,10 +46,18 @@ class UpdaterTaskAsync {
       // another func of the same batch runs (a set on an atom whose render
       // already happened in this batch); the live set iterator picks it up,
       // so the update is not lost until the next set.
+      // Падение одного обновления не должно ронять остальные и тем более
+      // оставлять апдейтер запущенным навсегда.
       for (const func of this.collection) {
         this.collection.delete(func);
-        func();
+
+        try {
+          func();
+        } catch (error) {
+          reportUncaught(error);
+        }
       }
+
       this.started = false;
     });
   }

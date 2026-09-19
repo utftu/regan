@@ -1,5 +1,4 @@
 import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
-import {mountHNodes} from '../h-node/helpers.ts';
 import {Data, InsertPoint} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {HNode} from '../h-node/h-node.ts';
@@ -15,6 +14,8 @@ export const renderRaw = ({
   parentSegmentEnt,
   insertPoint,
   jsxSegmentName = '',
+  oldHNode,
+  globalCtx: outerGlobalCtx,
 }: {
   node: JsxNode;
   insertPoint: InsertPoint;
@@ -23,19 +24,18 @@ export const renderRaw = ({
   parentHNode?: HNode;
   parentSegmentEnt?: SegmentEnt;
   jsxSegmentName?: string;
+  oldHNode?: HNode;
+  globalCtx?: GlobalCtx;
 }) => {
-  const globalClientCtx =
-    parentHNode?.globalCtx.clientCtx ??
-    new GlobalClientCtx({
-      window: localWindow,
-      initInsertPoint: insertPoint,
-    });
-
   const globalCtx =
     parentHNode?.globalCtx ??
+    outerGlobalCtx ??
     new GlobalCtx({
       data,
-      clientCtx: globalClientCtx,
+      clientCtx: new GlobalClientCtx({
+        window: localWindow,
+        initInsertPoint: insertPoint,
+      }),
     });
 
   const areaCtx = new AreaCtx();
@@ -48,11 +48,10 @@ export const renderRaw = ({
         globalCtx,
       },
       jsxSegmentName,
+      oldHNode,
     });
 
     return {renderNode};
-  } catch (error) {
-    throw throwGlobalSystemError(error, globalCtx);
   } finally {
     areaCtx.updaterInit.cancel();
   }
@@ -67,22 +66,34 @@ export const render = (
     parent: element,
   };
 
-  const {renderNode} = renderRaw({
-    node,
-    window: localWindow,
-    parentHNode: undefined,
-    parentSegmentEnt: undefined,
-    insertPoint,
+  const globalCtx = new GlobalCtx({
+    clientCtx: new GlobalClientCtx({
+      window: localWindow,
+      initInsertPoint: insertPoint,
+    }),
   });
 
-  const [hNode] = applyRenderNodes({
-    renderNodes: [renderNode],
-    oldHNodes: [],
-    insertPoint,
-    window: localWindow,
-  });
+  try {
+    const {renderNode} = renderRaw({
+      node,
+      window: localWindow,
+      parentHNode: undefined,
+      parentSegmentEnt: undefined,
+      insertPoint,
+      globalCtx,
+    });
 
-  mountHNodes(hNode);
+    const {hNodes, created} = applyRenderNodes({
+      renderNodes: [renderNode],
+      oldHNodes: [],
+      insertPoint,
+      window: localWindow,
+    });
 
-  return {hNode};
+    created.forEach((hNode) => hNode.mount());
+
+    return {hNode: hNodes[0]};
+  } catch (error) {
+    throw throwGlobalSystemError(error, globalCtx);
+  }
 };

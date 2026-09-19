@@ -45,6 +45,7 @@ export function renderComponent(
     mounts: [],
     unmounts: [],
     children: [],
+    oldHNode: props.oldHNode,
   };
 
   let rawChildren: Child;
@@ -71,6 +72,7 @@ export function renderComponent(
       children,
       parentSegmentEnt: segmentEnt,
       renderCtx: props.renderCtx,
+      oldHNodes: props.oldHNode?.children,
     });
   } catch (error) {
     const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
