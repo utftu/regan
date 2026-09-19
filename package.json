@@ -39,14 +39,14 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "strangelove": ">=2"
+    "strangelove": ">=2.1.5"
   },
   "devDependencies": {
     "@types/bun": "^1.4.2",
     "@types/jsdom": "^21.1.7",
     "dapes": "^0.0.61",
     "jsdom": "^26.1.0",
-    "strangelove": "^2.1.4",
+    "strangelove": "^2.1.5",
     "typescript": "^5.9.2",
     "utftu": "^1.0.31",
     "vite": "^8.2.2"

@@ -1,6 +1,8 @@
 import {describe, expect, it, vi} from 'bun:test';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
+import {render} from '../../render/render.ts';
+import {detachChildren} from '../../h-node/helpers.ts';
 import {Show} from './show.tsx';
 import {waitTime} from 'utftu';
 import {createAtom} from 'strangelove';
@@ -38,5 +40,33 @@ describe('show', () => {
     await waitTime(0);
 
     expect(document.getElementById('child')).not.toBe(null);
+  });
+  it('не копит производные атомы на when', () => {
+    const when = createAtom(true);
+
+    const App = () => {
+      return (
+        <Show when={when}>
+          <div id='child'>child</div>
+        </Show>
+      );
+    };
+
+    const jsdom = new JSDOM();
+    const document = jsdom.window.document;
+
+    for (let i = 0; i < 10; i++) {
+      const element = document.createElement('div');
+      document.body.append(element);
+
+      const {hNode} = render(element, <App />, {
+        window: jsdom.window as any,
+      });
+
+      detachChildren(hNode);
+      element.remove();
+    }
+
+    expect(when.relations.children.size).toBe(0);
   });
 });
