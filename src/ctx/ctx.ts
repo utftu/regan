@@ -1,5 +1,5 @@
-import {SingleChild, DomPointer, SystemProps} from '../types.ts';
-import {HNode, Mount, Unmount} from '../h-node/h-node.ts';
+import {SingleChild, SystemProps} from '../types.ts';
+import {Mount, Unmount} from '../h-node/h-node.ts';
 import {AreaCtx, GlobalCtxBoth} from '../global-ctx/global-ctx.ts';
 import {Context, ContextEnt, getContextValue} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';

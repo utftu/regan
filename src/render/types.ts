@@ -1,6 +1,6 @@
 import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {RenderT} from './template.types.ts';
+import {RenderNode} from './node.ts';
 
 export type RenderCtx = {
   globalCtx: GlobalCtx;
@@ -8,13 +8,11 @@ export type RenderCtx = {
 };
 
 export type RenderProps = {
-  // globalCtx: GlobalCtx;
-  // areaCtx: AreaCtx;
   jsxSegmentName: string;
   parentSegmentEnt?: SegmentEnt;
   renderCtx: RenderCtx;
 };
 
 export type RenderResult = {
-  renderTemplate: RenderT;
+  renderNode: RenderNode;
 };

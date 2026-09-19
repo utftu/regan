@@ -1,9 +1,9 @@
-import {Atom, checkAtom} from 'strangelove';
-import {AnyFunc, Props} from '../types.ts';
+import {checkAtom} from 'strangelove';
+import {Props} from '../types.ts';
 import {ListenerManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {subscribeAtomStages} from './atom.ts';
-import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {MountUnmounFunc} from '../h-node/h-node.ts';
 
 export const splitProps = (props: Props) => {
   const joinedProps: Props = {};
@@ -12,12 +12,13 @@ export const splitProps = (props: Props) => {
 
   for (const key in props) {
     const value = props[key];
+
     if (checkAtom(value)) {
       joinedProps[key] = value.get();
       dynamicProps[key] = value;
     } else {
-      staticProps[key] = props[key];
-      joinedProps[key] = props[key];
+      staticProps[key] = value;
+      joinedProps[key] = value;
     }
   }
 
@@ -48,52 +49,48 @@ export const initStaticProps = (
   listenerManager: ListenerManager
 ) => {
   for (const name in staticProps) {
-    const value = staticProps[name];
-
-    setProperty({name, value, element, listenerManager});
+    setProperty({name, value: staticProps[name], element, listenerManager});
   }
 };
 
-export const initDynamicPropsStage0 = ({
+// Подписка вешается на монтировании: там уже есть и элемент, и hNode.
+// Значение применяется сразу, поэтому изменение атома между рендером
+// и монтированием не теряется — отдельная стадия для этого не нужна.
+export const subscribeDynamicProps = ({
   dynamicProps,
+  mounts,
   globalCtx,
-  areaCtx,
+  listenerManager,
 }: {
   dynamicProps: Props;
+  mounts: MountUnmounFunc[];
   globalCtx: GlobalCtx;
-  areaCtx: AreaCtx;
+  listenerManager: ListenerManager;
 }) => {
-  const subscribers: Record<string, {subscriber: AnyFunc; atom: Atom}> = {};
   for (const name in dynamicProps) {
     const atom = dynamicProps[name];
 
-    const subscriber = subscribeAtomStages({
-      atom,
-      globalCtx,
-      areaCtx,
-    });
+    mounts.push((hNode) => {
+      const hNodeElement = hNode as HNodeElement;
 
-    subscribers[name] = {subscriber, atom};
-  }
+      const update = () => {
+        const value = atom.get();
 
-  return function initDynamicPropsStage1(
-    hNode: HNodeElement,
-    listenerManager: ListenerManager
-  ) {
-    for (const name in subscribers) {
-      const {subscriber, atom} = subscribers[name];
-      subscriber(hNode, () => {
         setProperty({
           name,
-          value: atom.get(),
-          element: hNode.element,
+          value,
+          element: hNodeElement.element,
           listenerManager,
         });
+        hNodeElement.props[name] = value;
+      };
 
-        if (hNode.vOldElement) {
-          hNode.vOldElement.data.props[name] = atom.get();
-        }
+      update();
+
+      globalCtx.updater.add(atom, update);
+      hNodeElement.unmounts.push(() => {
+        globalCtx.updater.remove(atom, update);
       });
-    }
-  };
+    });
+  }
 };

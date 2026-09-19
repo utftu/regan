@@ -4,10 +4,7 @@ import {Data, InsertPoint} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {convertFromRtToV} from './convert/from-rt-to-v.ts';
-import {convertFromRtToH} from './convert/from-rt-to-h.ts';
-import {RenderTExtended} from './template.types.ts';
-import {virtualApply} from '../v/v.ts';
+import {applyRenderNodes} from '../v/apply.ts';
 import {throwGlobalSystemError} from '../errors/helpers.ts';
 
 export const renderRaw = ({
@@ -44,7 +41,7 @@ export const renderRaw = ({
   const areaCtx = new AreaCtx();
 
   try {
-    const {renderTemplate} = node.render({
+    const {renderNode} = node.render({
       parentSegmentEnt,
       renderCtx: {
         areaCtx,
@@ -53,7 +50,7 @@ export const renderRaw = ({
       jsxSegmentName,
     });
 
-    return {renderTemplate};
+    return {renderNode};
   } catch (error) {
     throw throwGlobalSystemError(error, globalCtx);
   } finally {
@@ -64,13 +61,13 @@ export const renderRaw = ({
 export const render = (
   element: HTMLElement,
   node: JsxNode,
-  {window: localWindow}: {window: Window} = {window},
+  {window: localWindow}: {window: Window} = {window}
 ) => {
   const insertPoint: InsertPoint = {
     parent: element,
   };
 
-  const {renderTemplate} = renderRaw({
+  const {renderNode} = renderRaw({
     node,
     window: localWindow,
     parentHNode: undefined,
@@ -78,16 +75,12 @@ export const render = (
     insertPoint,
   });
 
-  const vNews = convertFromRtToV(renderTemplate);
-
-  virtualApply({
-    vNews,
-    vOlds: [],
-    window: localWindow,
+  const [hNode] = applyRenderNodes({
+    renderNodes: [renderNode],
+    oldHNodes: [],
     insertPoint,
+    window: localWindow,
   });
-
-  const hNode = convertFromRtToH(renderTemplate as RenderTExtended);
 
   mountHNodes(hNode);
 

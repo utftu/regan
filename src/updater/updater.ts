@@ -19,34 +19,32 @@ class UpdaterTaskSync {
 class UpdaterTaskAsync {
   collection = new Set<AnyFunc>();
   started = false;
-  timer?: ReturnType<typeof setTimeout>;
 
   add(func: AnyFunc) {
     this.collection.add(func);
 
-    if (!this.started) {
-      this.started = true;
-      this.timer = setTimeout(() => {
-        // Drain the set one entry at a time. A func may be re-added while
-        // another func of the same batch runs (a set on an atom whose render
-        // already happened in this batch); the live set iterator picks it up,
-        // so the update is not lost until the next set.
-        for (const func of this.collection) {
-          this.collection.delete(func);
-          func();
-        }
-        this.started = false;
-        this.timer = undefined;
-      });
+    if (this.started) {
+      return;
     }
+
+    this.started = true;
+
+    // микротаск, а не setTimeout: обновление успевает до отрисовки кадра
+    queueMicrotask(() => {
+      // Drain the set one entry at a time. A func may be re-added while
+      // another func of the same batch runs (a set on an atom whose render
+      // already happened in this batch); the live set iterator picks it up,
+      // so the update is not lost until the next set.
+      for (const func of this.collection) {
+        this.collection.delete(func);
+        func();
+      }
+      this.started = false;
+    });
   }
 
   cancel() {
     this.started = false;
-    if (this.timer !== undefined) {
-      clearTimeout(this.timer);
-      this.timer = undefined;
-    }
     this.collection.clear();
   }
 }

@@ -1,15 +1,11 @@
 import {Atom} from 'strangelove';
 import {FC} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
-import {detachChildren, mountHNodes} from '../../h-node/helpers.ts';
+import {mountHNodes, unmountHNodes} from '../../h-node/helpers.ts';
 import {renderRaw} from '../../render/render.ts';
 import {getInsertPoint} from './insert-point.ts';
-import {convertFromRtToV} from '../../render/convert/from-rt-to-v.ts';
-import {virtualApply} from '../../v/v.ts';
-import {convertHToV} from './h-to-v.ts';
+import {applyRenderNodes} from '../../v/apply.ts';
 import {HNode} from '../../h-node/h-node.ts';
-import {convertFromRtToH} from '../../render/convert/from-rt-to-h.ts';
-import {RenderTExtended} from '../../render/template.types.ts';
 import {subscribeAtomWrapper} from '../../utils/atom.ts';
 import {HNodeText} from '../../h-node/text.ts';
 import {checkClassChild} from '../../utils/check-parent.ts';
@@ -71,8 +67,11 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
     }
 
     progress = true;
-    const vOlds = convertHToV(hNode);
-    detachChildren(hNode);
+    // старое поддерево нужно диффу целиком, поэтому только размонтируем,
+    // а структуру рвать нельзя
+    const oldHNodes = [...hNode.children];
+    oldHNodes.forEach((child) => unmountHNodes(child));
+    hNode.children.length = 0;
 
     ctx.segmentEnt.pathSegment.clearCache();
 
@@ -82,7 +81,7 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
     const insertPoint = getInsertPoint(hNode);
     const window = clientCtx.window;
 
-    const {renderTemplate} = renderRaw({
+    const {renderNode} = renderRaw({
       node: <Fragment>{value}</Fragment>,
       parentHNode: hNode,
       window,
@@ -90,16 +89,12 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
       insertPoint,
     });
 
-    const vNews = convertFromRtToV(renderTemplate);
-
-    virtualApply({
-      vNews,
-      vOlds,
-      window,
+    const [hNodeChild] = applyRenderNodes({
+      renderNodes: [renderNode],
+      oldHNodes,
       insertPoint,
+      window,
     });
-
-    const hNodeChild = convertFromRtToH(renderTemplate as RenderTExtended);
 
     hNode.addChildren([hNodeChild]);
 

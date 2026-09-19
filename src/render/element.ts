@@ -1,13 +1,13 @@
-import {handleChildren, HandleChildrenResult} from './children.ts';
-import {HNodeElement} from '../h-node/element.ts';
-import {VOldElement} from '../v/types.ts';
 import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
-import {RenderProps, RenderResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {initDynamicPropsStage0, splitProps} from '../utils/props.ts';
+import {MountUnmounFunc} from '../h-node/h-node.ts';
+import {HNodeElement} from '../h-node/element.ts';
 import {ListenerManager} from '../utils/listeners.ts';
-import {RenderTemplateElement} from './template.types.ts';
+import {splitProps, subscribeDynamicProps} from '../utils/props.ts';
 import {applyRef} from '../utils/ref.ts';
+import {handleChildren} from './children.ts';
+import {RenderNodeElement} from './node.ts';
+import {RenderProps, RenderResult} from './types.ts';
 
 export function renderElement(
   this: JsxNodeElement,
@@ -22,67 +22,47 @@ export function renderElement(
   });
   this.segmentEnt = segmentEnt;
 
-  const {ref} = this.systemProps;
-
+  const {ref, rawHtml} = this.systemProps;
   const {dynamicProps, joinedProps} = splitProps(this.props);
-
   const listenerManager = new ListenerManager(segmentEnt);
 
-  const initDynamicPropsStage1 = initDynamicPropsStage0({
+  const mounts: MountUnmounFunc[] = [];
+  const unmounts: MountUnmounFunc[] = [];
+
+  subscribeDynamicProps({
     dynamicProps,
+    mounts,
     globalCtx: props.renderCtx.globalCtx,
-    areaCtx: props.renderCtx.areaCtx,
+    listenerManager,
   });
 
-  // create render template
-  const renderTemplate: RenderTemplateElement = {
+  if (ref) {
+    mounts.push((hNode) => {
+      applyRef(ref, (hNode as HNodeElement).element);
+    });
+    unmounts.push(() => {
+      applyRef(ref, undefined);
+    });
+  }
+
+  const renderNode: RenderNodeElement = {
     type: 'element',
-    vNew: {
-      type: 'element',
-      data: {
-        tag: this.tagName,
-        props: joinedProps,
-      },
-      children: [],
-      listenerManager,
-    },
-    createHNode: (vOld: VOldElement) => {
-      const element = vOld.element;
-      const hNode = new HNodeElement(
-        {
-          segmentEnt,
-          globalCtx: props.renderCtx.globalCtx,
-        },
-        {
-          element,
-          listenerManager,
-        }
-      );
-      segmentEnt.hNode = hNode;
-
-      initDynamicPropsStage1(hNode, listenerManager);
-
-      hNode.mounts.push(() => {
-        applyRef(ref, element);
-      });
-      hNode.unmounts.push(() => {
-        applyRef(ref, undefined);
-      });
-
-      return hNode;
-    },
+    tag: this.tagName,
+    props: joinedProps,
+    rawHtml,
+    listenerManager,
+    segmentEnt,
+    globalCtx: props.renderCtx.globalCtx,
+    mounts,
+    unmounts,
     children: [],
   };
 
-  let handleChildrenRenderResult: HandleChildrenResult = handleChildren({
+  renderNode.children = handleChildren({
     children: this.children,
     renderCtx: props.renderCtx,
     parentSegmentEnt: segmentEnt,
-  });
+  }).renderNodes;
 
-  renderTemplate.children = handleChildrenRenderResult.renderTemplates;
-
-  return {
-    renderTemplate,
-  };
+  return {renderNode};
 }

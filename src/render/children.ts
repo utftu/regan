@@ -1,4 +1,5 @@
-import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {createErrorRegan} from '../errors/errors.tsx';
+import {SegmentEnt} from '../segment/segment.ts';
 import {SingleChild} from '../types.ts';
 import {
   checkAllowedPrivitive,
@@ -7,14 +8,11 @@ import {
   formatJsxValue,
   wrapChildIfNeed,
 } from '../utils/jsx.ts';
-import {HNodeText} from '../h-node/text.ts';
-import {SegmentEnt} from '../segment/segment.ts';
-import {RenderT, RenderTemplateText} from './template.types.ts';
-import {createErrorRegan} from '../errors/errors.tsx';
+import {RenderNode, RenderNodeText} from './node.ts';
 import {RenderCtx} from './types.ts';
 
 export type HandleChildrenResult = {
-  renderTemplates: RenderT[];
+  renderNodes: RenderNode[];
 };
 
 export function handleChildren({
@@ -25,12 +23,12 @@ export function handleChildren({
   children: SingleChild[];
   renderCtx: RenderCtx;
   parentSegmentEnt: SegmentEnt;
-}) {
-  const renderTemplates: RenderT[] = [];
+}): HandleChildrenResult {
+  const renderNodes: RenderNode[] = [];
 
   let insertedJsxCount = 0;
 
-  for (let i = 0; i <= children.length; i++) {
+  for (let i = 0; i < children.length; i++) {
     const childOrAtom = formatJsxValue(children[i]);
 
     if (checkPassPrimitive(childOrAtom)) {
@@ -38,59 +36,40 @@ export function handleChildren({
     }
 
     if (checkAllowedPrivitive(childOrAtom)) {
-      const text = childOrAtom.toString();
-
-      const renderTemplateText: RenderTemplateText = {
+      const renderNodeText: RenderNodeText = {
         type: 'text',
-
-        vNew: {
-          type: 'text',
-          data: {
-            text,
-          },
-        },
-
-        createHNode(vOld) {
-          return new HNodeText(
-            {
-              globalCtx: renderCtx.globalCtx,
-              segmentEnt: parentSegmentEnt,
-            },
-            {
-              text,
-              textNode: vOld.textNode,
-            }
-          );
-        },
+        text: childOrAtom.toString(),
+        segmentEnt: parentSegmentEnt,
+        globalCtx: renderCtx.globalCtx,
+        mounts: [],
+        unmounts: [],
+        children: [],
       };
-      renderTemplates.push(renderTemplateText);
+
+      renderNodes.push(renderNodeText);
 
       continue;
     }
 
     if (checkAllowedStructure(childOrAtom) === false) {
-      const errorRegan = createErrorRegan({
+      throw createErrorRegan({
         error: `Invalid structura: ${childOrAtom}`,
         place: 'jsx',
         segmentEnt: parentSegmentEnt,
       });
-
-      throw errorRegan;
     }
 
     const jsxNode = wrapChildIfNeed(childOrAtom);
 
-    const {renderTemplate} = jsxNode.render({
+    const {renderNode} = jsxNode.render({
       jsxSegmentName: insertedJsxCount.toString(),
       parentSegmentEnt,
       renderCtx,
     });
-    renderTemplates.push(renderTemplate);
+    renderNodes.push(renderNode);
 
     insertedJsxCount++;
   }
 
-  return {
-    renderTemplates,
-  };
+  return {renderNodes};
 }

@@ -3,13 +3,12 @@ import {selectContextEnt} from '../context/context.tsx';
 import {ComponentState, Ctx} from '../ctx/ctx.ts';
 import {createErrorRegan, ErrorHandler} from '../errors/errors.tsx';
 import {createErrorComponent} from '../errors/helpers.ts';
-import {HNodeComponent} from '../h-node/component.ts';
 import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Child} from '../types.ts';
 import {handleChildren, HandleChildrenResult} from './children.ts';
-import {RenderT, RenderTComponent} from './template.types.ts';
+import {RenderNodeComponent} from './node.ts';
 import {RenderProps, RenderResult} from './types.ts';
 
 export function renderComponent(
@@ -27,12 +26,6 @@ export function renderComponent(
   });
   this.segmentEnt = segmentEnt;
 
-  const hNode = new HNodeComponent({
-    segmentEnt,
-    globalCtx: props.renderCtx.globalCtx,
-  });
-  segmentEnt.hNode = hNode;
-
   const componentCtx = new Ctx({
     globalCtx: props.renderCtx.globalCtx,
     props: this.props,
@@ -45,12 +38,13 @@ export function renderComponent(
     areaCtx: props.renderCtx.areaCtx,
   });
 
-  const renderTemplate: RenderTComponent = {
+  const renderNode: RenderNodeComponent = {
     type: 'component',
-    children: [] as RenderT[],
-    createHNode: () => {
-      return hNode;
-    },
+    segmentEnt,
+    globalCtx: props.renderCtx.globalCtx,
+    mounts: [],
+    unmounts: [],
+    children: [],
   };
 
   let rawChildren: Child;
@@ -65,8 +59,8 @@ export function renderComponent(
     throw errorRegan;
   }
 
-  hNode.mounts = componentCtx.state.mounts;
-  hNode.unmounts = componentCtx.state.unmounts;
+  renderNode.mounts = componentCtx.state.mounts;
+  renderNode.unmounts = componentCtx.state.unmounts;
 
   const children = normalizeChildren(rawChildren);
 
@@ -99,9 +93,9 @@ export function renderComponent(
     }
   }
 
-  renderTemplate.children = handleChildrenResult.renderTemplates;
+  renderNode.children = handleChildrenResult.renderNodes;
 
   return {
-    renderTemplate,
+    renderNode,
   };
 }

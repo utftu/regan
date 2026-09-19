@@ -3,9 +3,9 @@ import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {ListenerManager} from '../utils/listeners.ts';
 import {
-  initDynamicPropsStage0,
   initStaticProps,
   splitProps,
+  subscribeDynamicProps,
 } from '../utils/props.ts';
 import {
   handleChildrenHydrate,
@@ -59,7 +59,7 @@ export function hydrateElement(
     props.domPointer.nodeCount
   ] as Element;
 
-  const {dynamicProps, staticProps} = splitProps(this.props);
+  const {dynamicProps, staticProps, joinedProps} = splitProps(this.props);
 
   const listenerManager = new ListenerManager(segmentEnt);
 
@@ -72,6 +72,8 @@ export function hydrateElement(
     },
     {
       element,
+      tag: this.tagName,
+      props: joinedProps,
       listenerManager,
     },
   );
@@ -85,12 +87,12 @@ export function hydrateElement(
     applyRef(this.systemProps.ref, undefined);
   });
 
-  const initDynamicPropsStage1 = initDynamicPropsStage0({
+  subscribeDynamicProps({
     dynamicProps,
+    mounts: hNode.mounts,
     globalCtx: props.globalCtx,
-    areaCtx: props.areaCtx,
+    listenerManager,
   });
-  initDynamicPropsStage1(hNode, listenerManager);
 
   if (this.systemProps.rawHtml) {
     return {
