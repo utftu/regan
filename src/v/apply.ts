@@ -7,10 +7,25 @@ import {RenderNode, RenderNodeDom} from '../render/node.ts';
 import {InsertPoint} from '../types.ts';
 import {checkClassChild} from '../utils/check-parent.ts';
 
+// Единственное место, которое трогает DOM на клиенте.
+//
+// На вход — дерево RenderNode, свежий результат рендера. Каждый его узел уже
+// знает свою пару в прошлом дереве (`renderNode.oldHNode`): сопоставлением
+// занимается render/align.ts, здесь ничего не решается. На выход — дерево
+// HNode, которое станет «прошлым» для следующего обновления.
+//
+// Работы ровно четыре:
+//   1. удалить старые узлы, которым пары не нашлось;
+//   2. переиспользовать те, у кого пара есть (пропатчить пропы или текст);
+//   3. создать недостающие;
+//   4. расставить всё по порядку.
+
 type HNodeDom = HNodeElement | HNodeText;
 
-// куда класть следующий узел внутри одного dom-родителя;
-// компонентные узлы dom не создают, поэтому делят курсор с родителем
+// Позиция внутри одного dom-родителя: узел, после которого класть следующий.
+// Курсор общий на весь список детей этого родителя. Компонент своего dom-узла
+// не создаёт, поэтому он курсор не заводит, а пишет в родительский —
+// компонент из трёх элементов подвинет курсор трижды.
 type Cursor = {prevNode?: ChildNode};
 
 const getDomNode = (hNode: HNodeDom): ChildNode => {
@@ -20,8 +35,9 @@ const getDomNode = (hNode: HNodeDom): ChildNode => {
   return (hNode as HNodeElement).element;
 };
 
-// верхние dom-узлы поддерева: у компонента своего узла нет,
-// поэтому спускаемся до первых настоящих
+// Верхние dom-узлы поддерева — те, что лежат прямо в родителе.
+// У компонента своего узла нет, поэтому спускаемся до первых настоящих;
+// вглубь элемента не идём, его дети переедут вместе с ним.
 const collectDomNodes = (hNode: HNode, store: ChildNode[] = []) => {
   if (checkClassChild(hNode, 'hNodeElement')) {
     store.push(hNode.element);
@@ -38,6 +54,8 @@ const collectDomNodes = (hNode: HNode, store: ChildNode[] = []) => {
   return store;
 };
 
+// Узел создаётся отсоединённым: ни в каком родителе его сейчас нет.
+// Вставит его вызывающий, позже, когда соберёт детей.
 const createDomNode = (renderNode: RenderNodeDom, window: Window): ChildNode => {
   if (renderNode.type === 'text') {
     return window.document.createTextNode(renderNode.text);
@@ -62,6 +80,9 @@ const createDomNode = (renderNode: RenderNodeDom, window: Window): ChildNode => 
   return element;
 };
 
+// HNode заводится заново на каждое обновление, даже когда dom-узел
+// переиспользован: у нового узла свои mounts/unmounts и свой снимок пропов.
+// segmentEnt.hNode переставляется на свежий — по нему ищут узел снаружи.
 const createHNode = (renderNode: RenderNodeDom, domNode: ChildNode): HNodeDom => {
   const base = {
     globalCtx: renderNode.globalCtx,
@@ -85,8 +106,11 @@ const createHNode = (renderNode: RenderNodeDom, domNode: ChildNode): HNodeDom =>
   return hNode;
 };
 
-// ставит узел на нужное место; для уже вставленного узла after/prepend
-// работают как перенос, поэтому отдельная ветка на перемещение не нужна
+// Ставит узел на нужное место — и это же перемещение.
+// after/prepend на уже вставленном узле переносят его, поэтому отдельной
+// ветки на «подвинуть» не нужно. Сверка с ожидаемым соседом нужна, чтобы не
+// трогать dom там, где узел и так стоит правильно: на списке без перестановок
+// это ноль операций.
 const placeNode = (node: ChildNode, insertPoint: InsertPoint) => {
   const expected = insertPoint.prevNode
     ? insertPoint.prevNode.nextSibling
@@ -104,6 +128,8 @@ const placeNode = (node: ChildNode, insertPoint: InsertPoint) => {
   insertPoint.parent.prepend(node);
 };
 
+// Сверяем снимок пропов со старого HNode с новым набором.
+// Первый проход убирает то, чего больше нет, второй — ставит изменившееся.
 const patchProps = (renderNode: RenderNodeDom, hNode: HNodeElement) => {
   if (renderNode.type !== 'element') {
     return;
@@ -143,9 +169,14 @@ const patchProps = (renderNode: RenderNodeDom, hNode: HNodeElement) => {
 
 type HandleResult = {
   hNode: HNodeDom;
+  // дети старого элемента — их сверит рекурсивный вызов;
+  // у созданного заново и у текста сверять нечего
   oldChildren: HNode[];
 };
 
+// Приводит один dom-несущий узел в нужное состояние, но не вставляет его.
+// Если пары нет — создаёт. Если есть — она гарантированно того же вида
+// и того же тега: несовместимые пары отсеял align, до сюда они не доходят.
 const handleNode = ({
   renderNode,
   hNode,
@@ -183,7 +214,8 @@ const handleNode = ({
   };
 };
 
-// у компонента своего dom нет, поэтому удаляется всё, что он собой накрыл
+// У компонента своего dom нет, поэтому удаляется всё, что он собой накрыл.
+// В элемент не спускаемся: его дети уходят вместе с ним.
 const removeDomNode = (hNode: HNode) => {
   if (checkClassChild(hNode, 'hNodeElement')) {
     hNode.listenerManager.cleanup();
@@ -199,11 +231,15 @@ const removeDomNode = (hNode: HNode) => {
   hNode.children.forEach(removeDomNode);
 };
 
+// Размонтирование рекурсивное: уходит всё поддерево, значит и его подписки.
 const removeHNode = (hNode: HNode) => {
   unmountHNodes(hNode);
   removeDomNode(hNode);
 };
 
+// Обрабатывает один список детей. Рекурсия идёт по дереву RenderNode;
+// element заводит новый курсор (он сам себе dom-родитель),
+// component передаёт дальше родительский.
 const applyChildren = ({
   renderNodes,
   oldHNodes,
@@ -219,9 +255,13 @@ const applyChildren = ({
   cursor: Cursor;
   window: Window;
   parentHNode?: HNode;
+  // плоский список созданных узлов, общий на весь обход: монтирует их
+  // вызывающий, когда дерево уже собрано целиком
   created: HNode[];
 }): HNode[] => {
-  // пары подобраны на рендере, здесь остаётся убрать то, чему пары не нашлось
+  // Пары подобраны на рендере, здесь остаётся убрать то, чему пары не нашлось.
+  // Делаем это до расстановки: удалённые узлы не должны попадаться курсору
+  // как соседи.
   if (oldHNodes.length) {
     const used = new Set(renderNodes.map((renderNode) => renderNode.oldHNode));
 
@@ -235,8 +275,10 @@ const applyChildren = ({
   return renderNodes.map((renderNode) => {
     const oldHNode = renderNode.oldHNode;
 
-    // сохранённое поддерево не трогаем вообще: ни размонтирования,
-    // ни рендера его не касались, осталось только переставить dom
+    // Компонент с тем же ключом: его не перезапускали на рендере, и здесь
+    // тоже не трогаем — ни размонтирования, ни новых HNode. Всё, что нужно, —
+    // переставить его dom-узлы и переподвесить на нового родителя, иначе
+    // вложенная динамическая область при вставке пойдёт по мёртвой цепочке.
     if (renderNode.type === 'keep') {
       const keptHNode = renderNode.oldHNode;
       keptHNode.parent = parentHNode;
@@ -250,7 +292,8 @@ const applyChildren = ({
     }
 
     if (renderNode.type === 'component') {
-      // старый компонент отработал: дальше живёт новый hNode
+      // старый компонент отработал: дальше живёт новый hNode.
+      // размонтирование здесь нерекурсивное — до детей дойдёт свой вызов
       oldHNode?.unmount();
 
       const hNode = new HNodeComponent({
@@ -263,6 +306,7 @@ const applyChildren = ({
       renderNode.segmentEnt.hNode = hNode;
       created.push(hNode);
 
+      // курсор и dom-родитель те же: компонент в dom не существует
       hNode.children = applyChildren({
         renderNodes: renderNode.children,
         oldHNodes: oldHNode ? oldHNode.children : [],
@@ -288,6 +332,9 @@ const applyChildren = ({
     // переехали в новый менеджер, и старый ничего лишнего не снимет
     oldHNode?.unmount();
 
+    // Место запоминаем сейчас, а вставляем в конце: пока собираются дети,
+    // курсор уже должен показывать на этот узел — иначе следующий сосед
+    // встанет не за ним.
     const insertPoint = {parent: parentDomNode, prevNode: cursor.prevNode};
     const domNode = getDomNode(hNode);
     cursor.prevNode = domNode;
@@ -296,6 +343,8 @@ const applyChildren = ({
       hNode.children = applyChildren({
         renderNodes: renderNode.children,
         oldHNodes: oldChildren,
+        // элемент — свой dom-родитель, и нумерация детей в нём начинается
+        // с нуля, поэтому курсор новый
         parentDomNode: (hNode as HNodeElement).element,
         cursor: {},
         window,
@@ -304,14 +353,19 @@ const applyChildren = ({
       });
     }
 
-    // вставка после сборки детей: новый узел всё это время отсоединён,
-    // и в живой DOM попадает один раз, целиком
+    // Вставка после сборки детей. Созданный узел всё это время висел
+    // отдельно, дети добавлялись в отсоединённое поддерево, и в живой DOM
+    // оно попадает один раз, целиком. Переиспользованный узел уже на месте —
+    // для него placeNode либо ничего не сделает, либо подвинет.
     placeNode(domNode, insertPoint);
 
     return hNode;
   });
 };
 
+// Точка входа: первый рендер (oldHNodes пустой) и обновление динамической
+// области. Возвращает новое дерево и отдельно — список созданных узлов:
+// монтировать надо только их, сохранённые поддеревья уже смонтированы.
 export const applyRenderNodes = ({
   renderNodes,
   oldHNodes,
@@ -325,8 +379,6 @@ export const applyRenderNodes = ({
   window: Window;
   parent?: HNode;
 }) => {
-  // монтировать надо только то, что действительно создано: сохранённые
-  // поддеревья уже смонтированы и второй раз этого не переживут
   const created: HNode[] = [];
 
   const hNodes = applyChildren({

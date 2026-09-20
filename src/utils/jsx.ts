@@ -6,7 +6,7 @@ import {Fragment} from '../components/fragment/fragment.ts';
 import {checkClassChild} from './check-parent.ts';
 
 export const formatJsxValue = <TValue>(
-  value: TValue
+  value: TValue,
 ): TValue extends () => infer FunctResult ? FunctResult : TValue => {
   const valueResult = typeof value === 'function' ? value() : value;
   return valueResult;
@@ -57,7 +57,7 @@ export const wrapChildIfNeed = (child: JsxNode | Atom) => {
         },
         systemProps: {},
       },
-      {component: AtomWrapper}
+      {component: AtomWrapper},
     );
   } else if (Array.isArray(child)) {
     return new JsxNodeComponent(
@@ -66,7 +66,7 @@ export const wrapChildIfNeed = (child: JsxNode | Atom) => {
         props: {},
         systemProps: {},
       },
-      {component: Fragment}
+      {component: Fragment},
     );
   } else {
     return child;
