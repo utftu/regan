@@ -1,6 +1,6 @@
 import {Atom} from 'strangelove';
-import {AnyFunc} from '../types.ts';
-import {Ctx} from '../ctx/ctx.ts';
+import {AnyFunc} from '../../types.ts';
+import {Ctx} from '../../ctx/ctx.ts';
 
 const ATOM_WRAPPER_SUBSCRIPTIONS_KEY = '__atomWrapperAtoms';
 

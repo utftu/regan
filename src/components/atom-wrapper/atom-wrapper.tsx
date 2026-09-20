@@ -3,11 +3,10 @@ import {FC} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {renderRaw} from '../../render/render.ts';
 import {getInsertPoint} from './insert-point.ts';
-import {applyRenderNodes} from '../../v/apply.ts';
+import {applyRenderNodes} from '../../render/apply.ts';
 import {HNode} from '../../h-node/h-node.ts';
-import {subscribeAtomWrapper} from '../../utils/atom.ts';
+import {subscribeAtomWrapper} from './subscribe.ts';
 import {HNodeText} from '../../h-node/text.ts';
-import {checkClassChild} from '../../utils/check-parent.ts';
 import {checkAllowedPrivitive} from '../../utils/jsx.ts';
 import {handleError} from '../../errors/helpers.ts';
 
@@ -18,11 +17,11 @@ type Props = {
 // содержимое обёртки — ровно один текстовый узел, значит его можно обновить
 // записью в textContent, не пересобирая поддерево
 function findSingleTextHNode(hNode: HNode): HNodeText | undefined {
-  if (checkClassChild(hNode, 'hNodeText')) {
+  if (hNode.type === 'text') {
     return hNode;
   }
 
-  if (checkClassChild(hNode, 'hNodeElement')) {
+  if (hNode.type === 'element') {
     return;
   }
 

@@ -1,9 +1,10 @@
-import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../ctx/global.ts';
 import {Data, DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
 import {GlobalErrorHandler, throwGlobalSystemError} from '../errors/helpers.ts';
 import {defaultData} from '../consts.ts';
+import {hydrateJsxNode} from './children.ts';
 
 export function hydrateRaw({
   node,
@@ -32,7 +33,7 @@ export function hydrateRaw({
   const areaCtx = new AreaCtx();
 
   try {
-    const {hNode} = node.hydrate({
+    const {hNode} = hydrateJsxNode(node, {
       jsxSegmentName: '',
       domPointer,
       globalCtx,

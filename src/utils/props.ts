@@ -2,7 +2,7 @@ import {checkAtom} from 'strangelove';
 import {Props} from '../types.ts';
 import {ListenerManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../ctx/global.ts';
 import {MountUnmounFunc} from '../h-node/h-node.ts';
 
 export const splitProps = (props: Props) => {

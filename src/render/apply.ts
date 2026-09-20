@@ -2,10 +2,18 @@ import {HNodeComponent} from '../h-node/component.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {HNodeText} from '../h-node/text.ts';
-import {unmountHNodes} from '../h-node/helpers.ts';
-import {RenderNode, RenderNodeDom} from '../render/node.ts';
+import {RenderNode, RenderNodeDom} from './node.ts';
 import {InsertPoint} from '../types.ts';
-import {checkClassChild} from '../utils/check-parent.ts';
+import {
+  collectDomNodes,
+  createDomNode,
+  createHNode,
+  getDomNode,
+  HNodeDom,
+  patchProps,
+  placeNode,
+  removeHNode,
+} from './dom.ts';
 
 // Единственное место, которое трогает DOM на клиенте.
 //
@@ -20,152 +28,11 @@ import {checkClassChild} from '../utils/check-parent.ts';
 //   3. создать недостающие;
 //   4. расставить всё по порядку.
 
-type HNodeDom = HNodeElement | HNodeText;
-
 // Позиция внутри одного dom-родителя: узел, после которого класть следующий.
 // Курсор общий на весь список детей этого родителя. Компонент своего dom-узла
 // не создаёт, поэтому он курсор не заводит, а пишет в родительский —
 // компонент из трёх элементов подвинет курсор трижды.
 type Cursor = {prevNode?: ChildNode};
-
-const getDomNode = (hNode: HNodeDom): ChildNode => {
-  if (checkClassChild(hNode, 'hNodeText')) {
-    return hNode.textNode;
-  }
-  return (hNode as HNodeElement).element;
-};
-
-// Верхние dom-узлы поддерева — те, что лежат прямо в родителе.
-// У компонента своего узла нет, поэтому спускаемся до первых настоящих;
-// вглубь элемента не идём, его дети переедут вместе с ним.
-const collectDomNodes = (hNode: HNode, store: ChildNode[] = []) => {
-  if (checkClassChild(hNode, 'hNodeElement')) {
-    store.push(hNode.element);
-    return store;
-  }
-
-  if (checkClassChild(hNode, 'hNodeText')) {
-    store.push(hNode.textNode);
-    return store;
-  }
-
-  hNode.children.forEach((child) => collectDomNodes(child, store));
-
-  return store;
-};
-
-// Узел создаётся отсоединённым: ни в каком родителе его сейчас нет.
-// Вставит его вызывающий, позже, когда соберёт детей.
-const createDomNode = (renderNode: RenderNodeDom, window: Window): ChildNode => {
-  if (renderNode.type === 'text') {
-    return window.document.createTextNode(renderNode.text);
-  }
-
-  const element = window.document.createElement(renderNode.tag);
-
-  for (const name in renderNode.props) {
-    const value = renderNode.props[name];
-
-    if (typeof value === 'function') {
-      renderNode.listenerManager.add(element, name, value);
-    } else {
-      element.setAttribute(name, value);
-    }
-  }
-
-  if (renderNode.rawHtml) {
-    element.innerHTML = renderNode.rawHtml;
-  }
-
-  return element;
-};
-
-// HNode заводится заново на каждое обновление, даже когда dom-узел
-// переиспользован: у нового узла свои mounts/unmounts и свой снимок пропов.
-// segmentEnt.hNode переставляется на свежий — по нему ищут узел снаружи.
-const createHNode = (renderNode: RenderNodeDom, domNode: ChildNode): HNodeDom => {
-  const base = {
-    globalCtx: renderNode.globalCtx,
-    segmentEnt: renderNode.segmentEnt,
-    mounts: renderNode.mounts,
-    unmounts: renderNode.unmounts,
-  };
-
-  const hNode =
-    renderNode.type === 'text'
-      ? new HNodeText(base, {text: renderNode.text, textNode: domNode as Text})
-      : new HNodeElement(base, {
-          element: domNode as Element,
-          tag: renderNode.tag,
-          props: renderNode.props,
-          listenerManager: renderNode.listenerManager,
-        });
-
-  renderNode.segmentEnt.hNode = hNode;
-
-  return hNode;
-};
-
-// Ставит узел на нужное место — и это же перемещение.
-// after/prepend на уже вставленном узле переносят его, поэтому отдельной
-// ветки на «подвинуть» не нужно. Сверка с ожидаемым соседом нужна, чтобы не
-// трогать dom там, где узел и так стоит правильно: на списке без перестановок
-// это ноль операций.
-const placeNode = (node: ChildNode, insertPoint: InsertPoint) => {
-  const expected = insertPoint.prevNode
-    ? insertPoint.prevNode.nextSibling
-    : insertPoint.parent.firstChild;
-
-  if (expected === node) {
-    return;
-  }
-
-  if (insertPoint.prevNode) {
-    insertPoint.prevNode.after(node);
-    return;
-  }
-
-  insertPoint.parent.prepend(node);
-};
-
-// Сверяем снимок пропов со старого HNode с новым набором.
-// Первый проход убирает то, чего больше нет, второй — ставит изменившееся.
-const patchProps = (renderNode: RenderNodeDom, hNode: HNodeElement) => {
-  if (renderNode.type !== 'element') {
-    return;
-  }
-
-  const element = hNode.element;
-
-  for (const name in hNode.props) {
-    if (name in renderNode.props) {
-      continue;
-    }
-
-    if (typeof hNode.props[name] === 'function') {
-      hNode.listenerManager.remove(element, name);
-    } else {
-      element.removeAttribute(name);
-    }
-  }
-
-  for (const name in renderNode.props) {
-    const value = renderNode.props[name];
-
-    // обработчик переезжает в новый менеджер всегда, даже если это та же
-    // функция: иначе старый менеджер снимет его с элемента при размонтировании
-    if (value === hNode.props[name] && typeof value !== 'function') {
-      continue;
-    }
-
-    if (typeof value === 'function') {
-      hNode.listenerManager.remove(element, name);
-      renderNode.listenerManager.add(element, name, value);
-    } else {
-      element.setAttribute(name, value);
-    }
-  }
-};
 
 type HandleResult = {
   hNode: HNodeDom;
@@ -192,6 +59,7 @@ const handleNode = ({
     return {hNode: createHNode(renderNode, domNode), oldChildren: []};
   }
 
+  // Пара того же вида — это гарантия align, отдельно её здесь не проверяем.
   if (renderNode.type === 'text') {
     const hNodeText = hNode as HNodeText;
 
@@ -212,29 +80,6 @@ const handleNode = ({
     hNode: createHNode(renderNode, hNodeElement.element),
     oldChildren: hNodeElement.children,
   };
-};
-
-// У компонента своего dom нет, поэтому удаляется всё, что он собой накрыл.
-// В элемент не спускаемся: его дети уходят вместе с ним.
-const removeDomNode = (hNode: HNode) => {
-  if (checkClassChild(hNode, 'hNodeElement')) {
-    hNode.listenerManager.cleanup();
-    hNode.element.remove();
-    return;
-  }
-
-  if (checkClassChild(hNode, 'hNodeText')) {
-    hNode.textNode.remove();
-    return;
-  }
-
-  hNode.children.forEach(removeDomNode);
-};
-
-// Размонтирование рекурсивное: уходит всё поддерево, значит и его подписки.
-const removeHNode = (hNode: HNode) => {
-  unmountHNodes(hNode);
-  removeDomNode(hNode);
 };
 
 // Обрабатывает один список детей. Рекурсия идёт по дереву RenderNode;

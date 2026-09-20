@@ -1,9 +1,10 @@
-import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../ctx/global.ts';
 import {Data, InsertPoint} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {applyRenderNodes} from '../v/apply.ts';
+import {applyRenderNodes} from './apply.ts';
+import {renderJsxNode} from './children.ts';
 import {throwGlobalSystemError} from '../errors/helpers.ts';
 
 export const renderRaw = ({
@@ -41,7 +42,7 @@ export const renderRaw = ({
   const areaCtx = new AreaCtx();
 
   try {
-    const {renderNode} = node.render({
+    const {renderNode} = renderJsxNode(node, {
       parentSegmentEnt,
       renderCtx: {
         areaCtx,

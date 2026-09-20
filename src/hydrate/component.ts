@@ -4,27 +4,24 @@ import {ComponentState, Ctx} from '../ctx/ctx.ts';
 import {createErrorRegan, ErrorHandler} from '../errors/errors.tsx';
 import {createErrorComponent} from '../errors/helpers.ts';
 import {HNodeComponent} from '../h-node/component.ts';
-import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
+import {JsxNodeComponent} from '../jsx-node/jsx-node.ts';
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Child} from '../types.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
 
-export function hydrateComponent(
-  this: JsxNodeComponent,
-  props: HydrateProps,
-): HydrateResult {
-  const contextEnt = selectContextEnt(this, props.parentSegmentEnt?.contextEnt);
+export function hydrateComponent(jsxNode: JsxNodeComponent, props: HydrateProps): HydrateResult {
+  const contextEnt = selectContextEnt(jsxNode, props.parentSegmentEnt?.contextEnt);
 
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
-    jsxNode: this,
+    jsxNode,
     contextEnt,
     globalCtx: props.globalCtx,
   });
-  this.segmentEnt = segmentEnt;
+  jsxNode.segmentEnt = segmentEnt;
 
   const hNode = new HNodeComponent({
     parent: props.parentHNode,
@@ -35,10 +32,10 @@ export function hydrateComponent(
 
   const componentCtx = new Ctx({
     globalCtx: props.globalCtx,
-    props: this.props,
-    systemProps: this.systemProps,
+    props: jsxNode.props,
+    systemProps: jsxNode.systemProps,
     state: new ComponentState(),
-    children: this.children,
+    children: jsxNode.children,
     segmentEnt: hNode.segmentEnt,
     stage: 'hydrate',
     contextEnt: contextEnt,
@@ -47,7 +44,7 @@ export function hydrateComponent(
 
   let rawChildren: Child;
   try {
-    rawChildren = this.component(this.props, componentCtx);
+    rawChildren = jsxNode.component(jsxNode.props, componentCtx);
   } catch (error) {
     const myError = createErrorRegan({error, place: 'component', segmentEnt});
     throw myError;
@@ -71,8 +68,8 @@ export function hydrateComponent(
     });
   } catch (error) {
     const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
-    if (this.component === ErrorGuard) {
-      const errorHandler = this.props.handler as ErrorHandler;
+    if (jsxNode.component === ErrorGuard) {
+      const errorHandler = jsxNode.props.handler as ErrorHandler;
 
       const errorComponent = createErrorComponent({
         error: errorRegan,

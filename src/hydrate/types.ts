@@ -1,4 +1,4 @@
-import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtx} from '../ctx/global.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';

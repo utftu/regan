@@ -1,20 +1,25 @@
-import {createErrorRegan} from '../errors/errors.tsx';
 import {HNode} from '../h-node/h-node.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
-import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
+import {walkChildren} from '../jsx-node/children.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {SingleChild} from '../types.ts';
-import {checkClassChild} from '../utils/check-parent.ts';
-import {
-  checkAllowedPrivitive,
-  checkAllowedStructure,
-  checkPassPrimitive,
-  formatJsxValue,
-  wrapChildIfNeed,
-} from '../utils/jsx.ts';
 import {createMatcher} from './align.ts';
-import {RenderNode, RenderNodeText} from './node.ts';
-import {RenderCtx} from './types.ts';
+import {RenderNode} from './node.ts';
+import {RenderCtx, RenderProps, RenderResult} from './types.ts';
+import {renderElement} from './element.ts';
+import {renderComponent} from './component.ts';
+
+// Что делать с узлом, решает его вид — методов у него больше нет.
+export function renderJsxNode(
+  jsxNode: JsxNode,
+  props: RenderProps
+): RenderResult {
+  if (jsxNode.type === 'element') {
+    return renderElement(jsxNode, props);
+  }
+
+  return renderComponent(jsxNode, props);
+}
 
 export type HandleChildrenResult = {
   renderNodes: RenderNode[];
@@ -28,20 +33,17 @@ const checkKeep = (jsxNode: JsxNode, oldHNode?: HNode) => {
     return false;
   }
 
-  if (checkClassChild(jsxNode, 'jsxNodeComponent') === false) {
+  if (jsxNode.type !== 'component') {
     return false;
   }
 
   const oldJsxNode = oldHNode.segmentEnt?.jsxNode;
 
-  if (checkClassChild(oldJsxNode, 'jsxNodeComponent') === false) {
+  if (oldJsxNode?.type !== 'component') {
     return false;
   }
 
-  return (
-    (oldJsxNode as JsxNodeComponent).component ===
-    (jsxNode as JsxNodeComponent).component
-  );
+  return oldJsxNode.component === jsxNode.component;
 };
 
 export function handleChildren({
@@ -58,66 +60,46 @@ export function handleChildren({
   const renderNodes: RenderNode[] = [];
   const match = createMatcher(oldHNodes);
 
-  let insertedJsxCount = 0;
-
-  for (let i = 0; i < children.length; i++) {
-    const childOrAtom = formatJsxValue(children[i]);
-
-    if (checkPassPrimitive(childOrAtom)) {
-      continue;
-    }
-
-    if (checkAllowedPrivitive(childOrAtom)) {
-      const renderNodeText: RenderNodeText = {
+  walkChildren({
+    children,
+    parentSegmentEnt,
+    text: (text) => {
+      renderNodes.push({
         type: 'text',
-        text: childOrAtom.toString(),
+        text,
         segmentEnt: parentSegmentEnt,
         globalCtx: renderCtx.globalCtx,
         mounts: [],
         unmounts: [],
         children: [],
         oldHNode: match(),
-      };
-
-      renderNodes.push(renderNodeText);
-
-      continue;
-    }
-
-    if (checkAllowedStructure(childOrAtom) === false) {
-      throw createErrorRegan({
-        error: `Invalid structura: ${childOrAtom}`,
-        place: 'jsx',
-        segmentEnt: parentSegmentEnt,
       });
-    }
+    },
+    node: (jsxNode, jsxSegmentName) => {
+      const oldHNode = match(jsxNode);
 
-    const jsxNode = wrapChildIfNeed(childOrAtom);
-    const oldHNode = match(jsxNode);
+      if (checkKeep(jsxNode, oldHNode)) {
+        // поддерево не трогаем, но место в дереве у него новое —
+        // сегмент переподвешиваем, иначе getJsxPath начнёт врать
+        const keptSegmentEnt = oldHNode!.segmentEnt;
+        keptSegmentEnt.parentSegmentEnt = parentSegmentEnt;
+        keptSegmentEnt.pathSegment.name = jsxSegmentName;
 
-    if (checkKeep(jsxNode, oldHNode)) {
-      // поддерево не трогаем, но место в дереве у него новое —
-      // сегмент переподвешиваем, иначе getJsxPath начнёт врать
-      const keptSegmentEnt = oldHNode!.segmentEnt;
-      keptSegmentEnt.parentSegmentEnt = parentSegmentEnt;
-      keptSegmentEnt.pathSegment.name = insertedJsxCount.toString();
+        renderNodes.push({type: 'keep', oldHNode: oldHNode!});
 
-      renderNodes.push({type: 'keep', oldHNode: oldHNode!});
-      insertedJsxCount++;
+        return;
+      }
 
-      continue;
-    }
+      const {renderNode} = renderJsxNode(jsxNode, {
+        jsxSegmentName,
+        parentSegmentEnt,
+        renderCtx,
+        oldHNode,
+      });
 
-    const {renderNode} = jsxNode.render({
-      jsxSegmentName: insertedJsxCount.toString(),
-      parentSegmentEnt,
-      renderCtx,
-      oldHNode,
-    });
-    renderNodes.push(renderNode);
-
-    insertedJsxCount++;
-  }
+      renderNodes.push(renderNode);
+    },
+  });
 
   return {renderNodes};
 }

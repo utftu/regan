@@ -3,7 +3,7 @@ import {
   handleChildrenString,
   HandleChildrenStringifyResult,
 } from './children.ts';
-import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
+import {JsxNodeElement} from '../jsx-node/jsx-node.ts';
 import {StringifyProps, StringifyResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Props} from '../types.ts';
@@ -30,36 +30,33 @@ const prepareProps = (props: Record<string, any>) => {
   return newProps;
 };
 
-export function stringifyElement(
-  this: JsxNodeElement,
-  props: StringifyProps
-): StringifyResult {
+export function stringifyElement(jsxNode: JsxNodeElement, props: StringifyProps): StringifyResult {
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.pathSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
-    jsxNode: this,
+    jsxNode,
     contextEnt: props.parentSegmentEnt?.contextEnt,
     globalCtx: props.stringifyCtx.globalCtx,
   });
-  this.segmentEnt = segmentEnt;
+  jsxNode.segmentEnt = segmentEnt;
 
-  const preparedProps = prepareProps(this.props);
+  const preparedProps = prepareProps(jsxNode.props);
 
   const elementString = createElementString({
-    tagName: this.tagName,
+    tagName: jsxNode.tagName,
     props: preparedProps,
   });
 
-  if (this.systemProps.rawHtml) {
+  if (jsxNode.systemProps.rawHtml) {
     return {
-      text: `${elementString.left}${this.systemProps.rawHtml}${elementString.right}`,
+      text: `${elementString.left}${jsxNode.systemProps.rawHtml}${elementString.right}`,
       lastText: false,
     };
   }
 
   let hadnlerChildrenResult: HandleChildrenStringifyResult =
     handleChildrenString({
-      children: this.children,
+      children: jsxNode.children,
       parentSegmentEnt: segmentEnt,
       stringifyCtx: props.stringifyCtx,
       lastText: false,

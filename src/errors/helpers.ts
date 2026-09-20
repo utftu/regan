@@ -1,6 +1,6 @@
 import {ContextEnt, getContextValue} from '../context/context.tsx';
 import {HNode, Mount} from '../h-node/h-node.ts';
-import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
+import {createJsxNodeComponent} from '../jsx-node/jsx-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc} from '../types.ts';
 import {ListenerManager} from '../utils/listeners.ts';
@@ -15,7 +15,7 @@ import {
 } from './errors.tsx';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {logError} from './logger.tsx';
-import {GlobalCtxBoth} from '../global-ctx/global-ctx.ts';
+import {GlobalCtxBoth} from '../ctx/global.ts';
 
 type GlobalHandlerProps = ErrorProps & {handled: boolean};
 export type GlobalErrorHandler = (props: GlobalHandlerProps) => any;
@@ -38,10 +38,11 @@ export const createErrorComponent = ({
 }) => {
   const errorJsx = errorHandler({error});
 
-  const errorJsxComponent = new JsxNodeComponent(
-    {props: {}, children: [errorJsx]},
-    {component: Fragment},
-  );
+  const errorJsxComponent = createJsxNodeComponent({
+    component: Fragment,
+    props: {},
+    children: [errorJsx],
+  });
 
   segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
     handler({error, handled: !checkDefaultHandler(errorHandler)});

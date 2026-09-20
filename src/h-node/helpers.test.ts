@@ -1,11 +1,11 @@
 import {describe, expect, it, vi} from 'bun:test';
 import {mountHNodes, unmountHNodes, addChildren, detachChildren} from './helpers.ts';
-import {HNode} from './h-node.ts';
+import {HNodeComponent} from './component.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../ctx/global.ts';
 
 const createMockHNode = (overrides = {}) => {
-  return new HNode({
+  return new HNodeComponent({
     globalCtx: {} as GlobalCtx,
     segmentEnt: {} as SegmentEnt,
     ...overrides,

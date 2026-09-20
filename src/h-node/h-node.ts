@@ -1,6 +1,8 @@
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../ctx/global.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {defineClassName} from '../utils/check-parent.ts';
+import type {HNodeComponent} from './component.ts';
+import type {HNodeElement} from './element.ts';
+import type {HNodeText} from './text.ts';
 
 export type Unmount = () => any;
 export type Mount<THNode extends HNode = HNode> = (hNode: THNode) => any;
@@ -16,7 +18,11 @@ export type PropsHNode = {
   segmentEnt: SegmentEnt;
 };
 
-export class HNode {
+export type HNodeType = 'element' | 'text' | 'component';
+
+export abstract class HNodeBase {
+  abstract type: HNodeType;
+
   children: HNode[];
   mounts: MountUnmounFunc[];
   unmounts: MountUnmounFunc[];
@@ -44,20 +50,21 @@ export class HNode {
 
   unmounted = false;
 
-  mount() {
+  mount(this: HNode) {
     this.mounts.forEach((fn) => fn(this));
   }
 
-  unmount() {
+  unmount(this: HNode) {
     this.unmounts.forEach((fn) => fn(this));
     this.unmounted = true;
   }
 
-  addChildren(children: HNode[]) {
+  addChildren(this: HNode, children: HNode[]) {
     children.forEach((child) => {
       this.children.push(child);
       child.parent = this;
     });
   }
 }
-defineClassName(HNode, 'hNode');
+
+export type HNode = HNodeElement | HNodeText | HNodeComponent;

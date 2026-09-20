@@ -1,6 +1,6 @@
 import {SingleChild, SystemProps} from '../types.ts';
-import {Mount, Unmount} from '../h-node/h-node.ts';
-import {AreaCtx, GlobalCtxBoth} from '../global-ctx/global-ctx.ts';
+import {Mount, MountUnmounFunc, Unmount} from '../h-node/h-node.ts';
+import {AreaCtx, GlobalCtxBoth} from '../ctx/global.ts';
 import {Context, ContextEnt, getContextValue} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';
 import {HNodeComponent} from '../h-node/component.ts';
@@ -61,11 +61,10 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   }
 
   mount = (fn: Mount<HNodeComponent>) => {
-    const mount: Mount<HNodeComponent> = (
-      ...args: Parameters<Mount<HNodeComponent>>
-    ) => {
-      const hNode = args[0];
-      const unmount = fn(...args);
+    // обёртка принимает любой HNode, потому что так объявлен список mounts,
+    // но зовут её всегда с hNode того компонента, чей это ctx
+    const mount: MountUnmounFunc = (hNode) => {
+      const unmount = fn(hNode as HNodeComponent);
 
       if (typeof unmount === 'function') {
         hNode.unmounts.push(unmount);

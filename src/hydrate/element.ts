@@ -1,5 +1,5 @@
 import {HNodeElement} from '../h-node/element.ts';
-import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
+import {JsxNodeElement} from '../jsx-node/jsx-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {ListenerManager} from '../utils/listeners.ts';
 import {
@@ -14,52 +14,21 @@ import {
 import {HydrateProps, HydrateResult} from './types.ts';
 import {applyRef} from '../utils/ref.ts';
 
-function isElement<TNode extends ChildNode>(args: {
-  element: TNode;
-  localWindow: Window;
-  jsxNodeElement: JsxNodeElement;
-}): args is {
-  element: Extract<TNode, Element>;
-  localWindow: Window;
-  jsxNodeElement: JsxNodeElement;
-} {
-  const {element, localWindow, jsxNodeElement} = args;
-
-  const NodeCtor = (localWindow as any).Node;
-
-  if (element.nodeType === NodeCtor.ELEMENT_NODE) {
-    const el = element as any as Element;
-
-    if (el.tagName.toLowerCase() === jsxNodeElement.tagName.toLowerCase()) {
-      return true;
-    }
-
-    throw new Error(
-      `Tag mismatch: DOM <${el.tagName}> vs JSX <${jsxNodeElement.tagName}>`,
-    );
-  }
-
-  throw new Error(`Expected Element, got nodeType ${element.nodeType}`);
-}
-
-export function hydrateElement(
-  this: JsxNodeElement,
-  props: HydrateProps,
-): HydrateResult {
+export function hydrateElement(jsxNode: JsxNodeElement, props: HydrateProps): HydrateResult {
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
-    jsxNode: this,
+    jsxNode,
     contextEnt: props.parentSegmentEnt?.contextEnt,
     globalCtx: props.globalCtx,
   });
-  this.segmentEnt = segmentEnt;
+  jsxNode.segmentEnt = segmentEnt;
 
   const element = props.domPointer.parent.childNodes[
     props.domPointer.nodeCount
   ] as Element;
 
-  const {dynamicProps, staticProps, joinedProps} = splitProps(this.props);
+  const {dynamicProps, staticProps, joinedProps} = splitProps(jsxNode.props);
 
   const listenerManager = new ListenerManager(segmentEnt);
 
@@ -72,7 +41,7 @@ export function hydrateElement(
     },
     {
       element,
-      tag: this.tagName,
+      tag: jsxNode.tagName,
       props: joinedProps,
       listenerManager,
     },
@@ -81,10 +50,10 @@ export function hydrateElement(
 
   hNode.mounts.push(() => {
     initStaticProps(element, staticProps, listenerManager);
-    applyRef(this.systemProps.ref, element);
+    applyRef(jsxNode.systemProps.ref, element);
   });
   hNode.unmounts.push(() => {
-    applyRef(this.systemProps.ref, undefined);
+    applyRef(jsxNode.systemProps.ref, undefined);
   });
 
   subscribeDynamicProps({
@@ -94,7 +63,7 @@ export function hydrateElement(
     listenerManager,
   });
 
-  if (this.systemProps.rawHtml) {
+  if (jsxNode.systemProps.rawHtml) {
     return {
       hNode,
       nodeCount: 1,
@@ -103,7 +72,7 @@ export function hydrateElement(
 
   const handlerChildrenResult: HandleChildrenHydrateResult =
     handleChildrenHydrate({
-      children: this.children,
+      children: jsxNode.children,
       parentDomPointer: {
         parent: element,
         nodeCount: 0,

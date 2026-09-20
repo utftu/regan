@@ -1,6 +1,6 @@
 import {normalizeChildren} from '../jsx/jsx.ts';
 import {selectContextEnt} from '../context/context.tsx';
-import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
+import {JsxNodeComponent} from '../jsx-node/jsx-node.ts';
 import {StringifyProps, StringifyResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {ComponentState, Ctx} from '../ctx/ctx.ts';
@@ -13,28 +13,25 @@ import {createErrorRegan, ErrorHandler} from '../errors/errors.tsx';
 import {ErrorGuard} from '../components/error-guard.tsx';
 import {Child} from '../types.ts';
 
-export function strigifyComponent(
-  this: JsxNodeComponent,
-  props: StringifyProps
-): StringifyResult {
-  const contextEnt = selectContextEnt(this, props.parentSegmentEnt?.contextEnt);
+export function strigifyComponent(jsxNode: JsxNodeComponent, props: StringifyProps): StringifyResult {
+  const contextEnt = selectContextEnt(jsxNode, props.parentSegmentEnt?.contextEnt);
 
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.pathSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
-    jsxNode: this,
+    jsxNode,
     contextEnt,
     globalCtx: props.stringifyCtx.globalCtx,
   });
 
-  this.segmentEnt = segmentEnt;
+  jsxNode.segmentEnt = segmentEnt;
 
   const funcCtx = new Ctx({
     globalCtx: props.stringifyCtx.globalCtx,
-    props: this.props,
-    systemProps: this.systemProps,
+    props: jsxNode.props,
+    systemProps: jsxNode.systemProps,
     state: new ComponentState(),
-    children: this.children,
+    children: jsxNode.children,
     stage: 'string',
     segmentEnt,
     contextEnt,
@@ -43,7 +40,7 @@ export function strigifyComponent(
 
   let rawChildren: Child;
   try {
-    rawChildren = this.component(this.props, funcCtx);
+    rawChildren = jsxNode.component(jsxNode.props, funcCtx);
   } catch (error) {
     const myError = createErrorRegan({error, place: 'component', segmentEnt});
     throw myError;
@@ -62,8 +59,8 @@ export function strigifyComponent(
     });
   } catch (error) {
     const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
-    if (this.component === ErrorGuard) {
-      const errorHandler = this.props.handler as ErrorHandler;
+    if (jsxNode.component === ErrorGuard) {
+      const errorHandler = jsxNode.props.handler as ErrorHandler;
 
       const errorComponent = createErrorComponent({
         error: errorRegan,

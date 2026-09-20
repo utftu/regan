@@ -1,16 +1,23 @@
-import {createErrorRegan} from '../errors/errors.tsx';
-import {AreaCtx, GlobalCtxServer} from '../global-ctx/global-ctx.ts';
 import {SegmentEnt} from '../segment/segment.ts';
+import {JsxNode} from '../jsx-node/jsx-node.ts';
+import {walkChildren} from '../jsx-node/children.ts';
+import {StringifyCtx, StringifyProps, StringifyResult} from './types.ts';
+import {stringifyElement} from './element.ts';
+import {strigifyComponent} from './component.ts';
 import {SingleChild} from '../types.ts';
-import {
-  checkAllowedPrivitive,
-  checkAllowedStructure,
-  checkPassPrimitive,
-  formatJsxValue,
-  wrapChildIfNeed,
-} from '../utils/jsx.ts';
-import {StringifyCtx} from './types.ts';
 import {textSeparator} from '../consts.ts';
+
+// Что делать с узлом, решает его вид — методов у него больше нет.
+export function stringifyJsxNode(
+  jsxNode: JsxNode,
+  props: StringifyProps
+): StringifyResult {
+  if (jsxNode.type === 'element') {
+    return stringifyElement(jsxNode, props);
+  }
+
+  return strigifyComponent(jsxNode, props);
+}
 
 export type HandleChildrenStringifyResult = {
   text: string;
@@ -28,56 +35,34 @@ export function handleChildrenString({
   stringifyCtx: StringifyCtx;
   lastText: boolean;
 }): HandleChildrenStringifyResult {
-  let insertedJsxCount = 0;
+  const strings: string[] = [];
   let lastText = propsLastText;
 
-  const strings: string[] = [];
-  for (let i = 0; i <= children.length; i++) {
-    const childOrAtom = formatJsxValue(children[i]);
-
-    if (checkPassPrimitive(childOrAtom)) {
-      continue;
-    }
-
-    if (checkAllowedPrivitive(childOrAtom)) {
-      const text = childOrAtom.toString();
-
+  walkChildren({
+    children,
+    parentSegmentEnt,
+    text: (text) => {
+      // два текста подряд браузер склеит в один узел — разделяем комментарием,
+      // гидратация его уберёт
       if (lastText === true) {
         strings.push(textSeparator);
       }
 
       strings.push(text);
       lastText = true;
-
-      continue;
-    }
-
-    if (checkAllowedStructure(childOrAtom) === false) {
-      const errorRegan = createErrorRegan({
-        error: `Invalid structura: ${childOrAtom}`,
-        place: 'jsx',
-        segmentEnt: parentSegmentEnt,
+    },
+    node: (jsxNode, pathSegmentName) => {
+      const result = stringifyJsxNode(jsxNode, {
+        stringifyCtx,
+        pathSegmentName,
+        parentSegmentEnt,
+        lastText,
       });
 
-      throw errorRegan;
-    }
+      strings.push(result.text);
+      lastText = result.lastText;
+    },
+  });
 
-    const jsxNode = wrapChildIfNeed(childOrAtom);
-
-    const stringifyResult = jsxNode.stringify({
-      stringifyCtx,
-      pathSegmentName: insertedJsxCount.toString(),
-      parentSegmentEnt,
-      lastText,
-    });
-
-    insertedJsxCount++;
-    strings.push(stringifyResult.text);
-    lastText = stringifyResult.lastText;
-  }
-
-  return {
-    text: strings.join(''),
-    lastText,
-  };
+  return {text: strings.join(''), lastText};
 }

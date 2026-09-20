@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'bun:test';
-import {PathSegment, getJsxPath, joinPath, djb2} from './jsx-path.ts';
-import {SegmentEnt} from '../segment.ts';
+import {PathSegment, getJsxPath, joinPath, djb2} from './segment.ts';
+import {SegmentEnt} from './segment.ts';
 
 describe('jsx-path', () => {
   describe('joinPath', () => {

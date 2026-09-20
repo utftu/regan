@@ -1,8 +1,9 @@
 import {defaultData} from '../consts.ts';
 import {throwGlobalSystemError} from '../errors/helpers.ts';
-import {AreaCtx, GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtx} from '../ctx/global.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {Data} from '../types.ts';
+import {stringifyJsxNode} from './children.ts';
 
 export function stringify(node: JsxNode, options?: {data?: Data}) {
   const areaCtx = new AreaCtx();
@@ -13,7 +14,7 @@ export function stringify(node: JsxNode, options?: {data?: Data}) {
   });
 
   try {
-    const {text} = node.stringify({
+    const {text} = stringifyJsxNode(node, {
       stringifyCtx: {
         globalCtx,
         areaCtx,

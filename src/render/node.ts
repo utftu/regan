@@ -1,4 +1,4 @@
-import {GlobalCtx} from '../global-ctx/global-ctx.ts';
+import {GlobalCtx} from '../ctx/global.ts';
 import {HNode, MountUnmounFunc} from '../h-node/h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Props} from '../types.ts';

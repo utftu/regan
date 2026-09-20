@@ -1,13 +1,12 @@
 import {describe, it, expect, vi} from 'bun:test';
-import {HNode} from '../h-node.ts';
-import {findPrevHNode} from './prev.ts';
-import {HNodeElement} from '../element.ts';
-import {HNodeText} from '../text.ts';
-import {addChildren} from '../helpers.ts';
+import {HNodeComponent} from './component.ts';
+import {findPrevHNode} from './find.ts';
+import {HNodeElement} from './element.ts';
+import {addChildren} from './helpers.ts';
 import {Config} from './find.ts';
 
 const createHNode = () => {
-  return new HNode({} as any);
+  return new HNodeComponent({} as any);
 };
 
 const createHNodeElement = () => {

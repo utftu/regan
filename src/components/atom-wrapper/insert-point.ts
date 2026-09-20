@@ -1,8 +1,9 @@
-import {findPrevDomNodeHNode} from '../../h-node/find/dom-node/dom-node.ts';
-import {getTopHNodeElement} from '../../h-node/find/element/element.ts';
+import {
+  findPrevDomNodeHNode,
+  getTopHNodeElement,
+} from '../../h-node/find.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {InsertPoint} from '../../types.ts';
-import {checkClassChild} from '../../utils/check-parent.ts';
 
 export const getInsertPoint = (hNode: HNode): InsertPoint => {
   const {domNode, lastParentHNode} = findPrevDomNodeHNode(hNode);
@@ -14,7 +15,7 @@ export const getInsertPoint = (hNode: HNode): InsertPoint => {
     };
   }
 
-  if (checkClassChild(lastParentHNode, 'hNodeElement')) {
+  if (lastParentHNode?.type === 'element') {
     return {
       parent: lastParentHNode.element,
     };

@@ -34,7 +34,7 @@ describe('ctx', () => {
 
     const jsdom = new JSDOM();
 
-    const {hNode} = insertAndHydrate({jsdom, jsxNode: <Component />}) as any;
+    insertAndHydrate({jsdom, jsxNode: <Component />});
 
     expect(unmountFn).not.toHaveBeenCalled();
   });

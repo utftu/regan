@@ -1,5 +1,7 @@
-import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
-import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
+import {
+  createJsxNodeComponent,
+  createJsxNodeElement,
+} from '../jsx-node/jsx-node.ts';
 import {SingleChild, FC, Props} from '../types.ts';
 import {separateProps} from './props.ts';
 
@@ -22,19 +24,20 @@ const prepare = ({type, props, children}: PropsPrepareRaw) => {
       delete userProps.className;
     }
 
-    return new JsxNodeElement(
-      {
-        props: userProps,
-        systemProps,
-        children,
-      },
-      {tagName: type}
-    );
+    return createJsxNodeElement({
+      tagName: type,
+      props: userProps,
+      systemProps,
+      children,
+    });
   }
-  return new JsxNodeComponent(
-    {props: userProps, systemProps, children},
-    {component: type}
-  );
+
+  return createJsxNodeComponent({
+    component: type,
+    props: userProps,
+    systemProps,
+    children,
+  });
 };
 
 export const normalizeChildren = (rawChildren: RawChildren) => {

@@ -1,4 +1,4 @@
-import {AreaCtx, GlobalCtxServer} from '../global-ctx/global-ctx.ts';
+import {AreaCtx, GlobalCtxServer} from '../ctx/global.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 
 export type StringifyCtx = {

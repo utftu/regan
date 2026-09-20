@@ -1,30 +1,71 @@
-import {SingleChild, Props, SystemProps} from '../types.ts';
-import {HydrateProps, HydrateResult} from '../hydrate/types.ts';
-import {StringifyProps, StringifyResult} from '../stringify/types.ts';
-import {RenderProps, RenderResult} from '../render/types.ts';
+import {FC, Props, SingleChild, SystemProps} from '../types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
-import {defineClassName} from '../utils/check-parent.ts';
 
-export type JsxNodeProps<TProps extends Props = Props> = {
-  props: TProps;
-  children: SingleChild[];
-  systemProps?: SystemProps;
-};
+// Узел из JSX: обычные данные, без методов. Что с ним делать, решает стадия —
+// render, hydrate или stringify, каждая по своему switch.
 
-export abstract class JsxNode<TProps extends Props = Props> {
-  props: TProps;
+type JsxNodeBase = {
+  // метка для checkJsxNode: детьми приходит что угодно, и нужно отличить
+  // свой узел от чужого объекта. Не instanceof — при двух копиях пакета
+  // классы разные, а поле переживёт
+  jsxNode: true;
+  props: Props;
   systemProps: SystemProps;
   children: SingleChild[];
   segmentEnt?: SegmentEnt;
+};
 
-  constructor({props, children, systemProps = {}}: JsxNodeProps<TProps>) {
-    this.props = props;
-    this.children = children;
-    this.systemProps = systemProps;
-  }
+export type JsxNodeElement = JsxNodeBase & {
+  type: 'element';
+  tagName: string;
+};
 
-  abstract stringify(props: StringifyProps): StringifyResult;
-  abstract hydrate(ctx: HydrateProps): HydrateResult;
-  abstract render(ctx: RenderProps): RenderResult;
-}
-defineClassName(JsxNode, 'jsxNode');
+export type JsxNodeComponent = JsxNodeBase & {
+  type: 'component';
+  component: FC<any>;
+};
+
+export type JsxNode = JsxNodeElement | JsxNodeComponent;
+
+export const createJsxNodeElement = ({
+  tagName,
+  props,
+  systemProps = {},
+  children,
+}: {
+  tagName: string;
+  props: Props;
+  systemProps?: SystemProps;
+  children: SingleChild[];
+}): JsxNodeElement => {
+  return {jsxNode: true, type: 'element', tagName, props, systemProps, children};
+};
+
+export const createJsxNodeComponent = ({
+  component,
+  props,
+  systemProps = {},
+  children,
+}: {
+  component: FC<any>;
+  props: Props;
+  systemProps?: SystemProps;
+  children: SingleChild[];
+}): JsxNodeComponent => {
+  return {
+    jsxNode: true,
+    type: 'component',
+    component,
+    props,
+    systemProps,
+    children,
+  };
+};
+
+export const checkJsxNode = (value: unknown): value is JsxNode => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as JsxNode).jsxNode === true
+  );
+};

@@ -1,7 +1,6 @@
 import {Props} from '../types.ts';
-import {defineClassName} from '../utils/check-parent.ts';
 import {ListenerManager} from '../utils/listeners.ts';
-import {HNode, PropsHNode} from './h-node.ts';
+import {HNode, HNodeBase, PropsHNode} from './h-node.ts';
 
 type HNodeElProps = {
   element: Element;
@@ -10,7 +9,9 @@ type HNodeElProps = {
   listenerManager: ListenerManager;
 };
 
-export class HNodeElement extends HNode {
+export class HNodeElement extends HNodeBase {
+  type = 'element' as const;
+
   element: Element;
   tag: string;
   props: Props;
@@ -27,9 +28,8 @@ export class HNodeElement extends HNode {
     this.listenerManager = listenerManager;
   }
 
-  unmount() {
-    this.listenerManager.cleanup();
+  unmount(this: HNode) {
+    (this as HNodeElement).listenerManager.cleanup();
     super.unmount();
   }
 }
-defineClassName(HNodeElement, 'hNodeElement');

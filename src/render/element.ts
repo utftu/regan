@@ -1,4 +1,4 @@
-import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
+import {JsxNodeElement} from '../jsx-node/jsx-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {MountUnmounFunc} from '../h-node/h-node.ts';
 import {HNodeElement} from '../h-node/element.ts';
@@ -9,21 +9,18 @@ import {handleChildren} from './children.ts';
 import {RenderNodeElement} from './node.ts';
 import {RenderProps, RenderResult} from './types.ts';
 
-export function renderElement(
-  this: JsxNodeElement,
-  props: RenderProps
-): RenderResult {
+export function renderElement(jsxNode: JsxNodeElement, props: RenderProps): RenderResult {
   const segmentEnt = new SegmentEnt({
     jsxSegmentName: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
-    jsxNode: this,
+    jsxNode,
     contextEnt: props.parentSegmentEnt?.contextEnt,
     globalCtx: props.renderCtx.globalCtx,
   });
-  this.segmentEnt = segmentEnt;
+  jsxNode.segmentEnt = segmentEnt;
 
-  const {ref, rawHtml} = this.systemProps;
-  const {dynamicProps, joinedProps} = splitProps(this.props);
+  const {ref, rawHtml} = jsxNode.systemProps;
+  const {dynamicProps, joinedProps} = splitProps(jsxNode.props);
   const listenerManager = new ListenerManager(segmentEnt);
 
   const mounts: MountUnmounFunc[] = [];
@@ -47,7 +44,7 @@ export function renderElement(
 
   const renderNode: RenderNodeElement = {
     type: 'element',
-    tag: this.tagName,
+    tag: jsxNode.tagName,
     props: joinedProps,
     rawHtml,
     listenerManager,
@@ -60,7 +57,7 @@ export function renderElement(
   };
 
   renderNode.children = handleChildren({
-    children: this.children,
+    children: jsxNode.children,
     renderCtx: props.renderCtx,
     parentSegmentEnt: segmentEnt,
     oldHNodes: props.oldHNode?.children,

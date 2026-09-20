@@ -1,10 +1,8 @@
 import {HNode} from '../h-node/h-node.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
-import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
-import {checkClassChild} from '../utils/check-parent.ts';
 
 const getKey = (hNode: HNode) => {
-  if (checkClassChild(hNode, 'hNodeText')) {
+  if (hNode.type === 'text') {
     return;
   }
 
@@ -25,7 +23,7 @@ const checkMatch = (jsxNode: JsxNode | undefined, hNode: HNode) => {
   // сюда нечего ровно в одном случае — когда ребёнок текстовый.
   // Парится он только с текстом: патчить у него нечего, кроме textContent.
   if (!jsxNode) {
-    return checkClassChild(hNode, 'hNodeText');
+    return hNode.type === 'text';
   }
 
   // Компоненту хватает того, что напротив тоже компонент. Какая именно
@@ -33,19 +31,19 @@ const checkMatch = (jsxNode: JsxNode | undefined, hNode: HNode) => {
   // отрендерится заново, а его дети разберутся на своём уровне тем же
   // сопоставителем. Личность функции проверяет только checkKeep —
   // там от неё зависит, запускать тело или нет.
-  if (checkClassChild(jsxNode, 'jsxNodeComponent')) {
-    return checkClassChild(hNode, 'hNodeComponent');
+  if (jsxNode.type === 'component') {
+    return hNode.type === 'component';
   }
 
   // Дальше новый узел — элемент. Значит и старый должен быть элементом:
   // ни текст, ни компонент элементом не станут.
-  if (checkClassChild(hNode, 'hNodeElement') === false) {
+  if (hNode.type !== 'element') {
     return false;
   }
 
   // Тег сменить нельзя — в DOM это другой узел. Из <div> не выйдет <span>,
   // как бы ни патчить пропы.
-  if (hNode.tag !== (jsxNode as JsxNodeElement).tagName) {
+  if (hNode.tag !== jsxNode.tagName) {
     return false;
   }
 

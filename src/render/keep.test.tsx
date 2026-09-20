@@ -2,7 +2,7 @@ import {describe, expect, it} from 'bun:test';
 import {JSDOM} from 'jsdom';
 import {createAtom} from 'strangelove';
 import {waitTime} from 'utftu';
-import {render} from '../render/render.ts';
+import {render} from './render.ts';
 import {ErrorGuard} from '../components/error-guard.tsx';
 import {insertAndHydrate} from '../utils/tests.ts';
 import {FC} from '../types.ts';

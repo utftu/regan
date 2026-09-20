@@ -3,7 +3,7 @@ import {Fragment} from '../components/fragment/fragment.ts';
 import {FC} from '../types.ts';
 import {createAtom} from 'strangelove';
 import {stringify} from './stringify.ts';
-import {djb2} from '../segment/jsx-path/jsx-path.ts';
+import {djb2} from '../segment/segment.ts';
 
 describe('node', () => {
   it('body', () => {

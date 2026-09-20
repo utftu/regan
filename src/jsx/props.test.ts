@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'bun:test';
 import {separateProps} from './props.ts';
 import {createElement} from './jsx.ts';
-import {JsxNodeElement} from '../jsx-node/variants/element/element.ts';
+import {JsxNodeElement} from '../jsx-node/jsx-node.ts';
 
 describe('props', () => {
   it('системные пропы отделяются от пользовательских', () => {

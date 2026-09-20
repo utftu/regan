@@ -3,7 +3,6 @@ import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
 import {waitTime} from 'utftu';
 import {createAtom} from 'strangelove';
-import {ErrorGuard} from '../error-guard.tsx';
 import {ErrorLogger} from '../../regan.ts';
 
 describe('atom-wrapper', () => {

@@ -1,8 +1,6 @@
-import {JsxNodeComponent} from '../jsx-node/variants/component/component.ts';
-import {createContext} from '../context/context.tsx';
+import {Context, createContext} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';
-import {AnyFunc, SingleChild} from '../types.ts';
-import {checkClassChild} from '../utils/check-parent.ts';
+import {SingleChild} from '../types.ts';
 
 export type ErrorPlace =
   | 'jsx'
@@ -12,6 +10,10 @@ export type ErrorPlace =
   | 'system';
 
 export class ErrorRegan extends Error {
+  // маркер вместо instanceof: если в дереве зависимостей окажутся две копии
+  // regan, классы у них будут разные, а поле переживёт это
+  readonly reganError = true;
+
   place: ErrorPlace;
   segmentEnt?: SegmentEnt;
   originalError: unknown;
@@ -47,6 +49,14 @@ export class ErrorRegan extends Error {
   }
 }
 
+export const checkErrorRegan = (error: unknown): error is ErrorRegan => {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as ErrorRegan).reganError === true
+  );
+};
+
 export const createErrorRegan = ({
   error,
   place,
@@ -56,7 +66,7 @@ export const createErrorRegan = ({
   place?: ErrorPlace;
   segmentEnt: SegmentEnt | undefined;
 }): ErrorRegan => {
-  if (checkClassChild(error, 'errorRegan')) {
+  if (checkErrorRegan(error)) {
     return error;
   }
 
@@ -70,30 +80,15 @@ export type ErrorProps = {
 export type ErrorHandler = (props: ErrorProps) => SingleChild;
 export const defaultErrorHandler = () => undefined;
 
-export const makeLazy = <TFunc extends AnyFunc>(
-  func: TFunc
-): (() => ReturnType<TFunc>) => {
-  let value: ReturnType<typeof func>;
-  return () => {
-    if (!value) {
-      value = func();
-    }
+// Контекст создаётся при первом обращении: на момент загрузки модуля
+// createContext ещё недоступен из-за кольца импортов.
+let errorContext: Context<ErrorHandler> | undefined;
 
-    return value;
-  };
-};
-
-export const getDefaultErrorComponent = makeLazy(() => {
-  return new JsxNodeComponent(
-    {
-      props: {},
-      systemProps: {},
-      children: [],
-    },
-    {component: () => null}
+export const getErrorContext = () => {
+  errorContext ??= createContext<ErrorHandler>(
+    'error_handler',
+    defaultErrorHandler
   );
-});
 
-export const getErrorContext = makeLazy(() => {
-  return createContext<ErrorHandler>('error_handler', defaultErrorHandler);
-});
+  return errorContext;
+};
