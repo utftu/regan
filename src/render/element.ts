@@ -11,11 +11,11 @@ import {RenderProps, RenderResult} from './types.ts';
 
 export function renderElement(jsxNode: JsxNodeElement, props: RenderProps): RenderResult {
   const segmentEnt = new SegmentEnt({
-    jsxSegmentName: props.jsxSegmentName,
+    name: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode,
     contextEnt: props.parentSegmentEnt?.contextEnt,
-    globalCtx: props.renderCtx.globalCtx,
+    globalCtx: props.globalCtx,
   });
   jsxNode.segmentEnt = segmentEnt;
 
@@ -29,7 +29,7 @@ export function renderElement(jsxNode: JsxNodeElement, props: RenderProps): Rend
   subscribeDynamicProps({
     dynamicProps,
     mounts,
-    globalCtx: props.renderCtx.globalCtx,
+    globalCtx: props.globalCtx,
     listenerManager,
   });
 
@@ -49,7 +49,7 @@ export function renderElement(jsxNode: JsxNodeElement, props: RenderProps): Rend
     rawHtml,
     listenerManager,
     segmentEnt,
-    globalCtx: props.renderCtx.globalCtx,
+    globalCtx: props.globalCtx,
     mounts,
     unmounts,
     children: [],
@@ -58,7 +58,8 @@ export function renderElement(jsxNode: JsxNodeElement, props: RenderProps): Rend
 
   renderNode.children = handleChildren({
     children: jsxNode.children,
-    renderCtx: props.renderCtx,
+    globalCtx: props.globalCtx,
+        areaCtx: props.areaCtx,
     parentSegmentEnt: segmentEnt,
     oldHNodes: props.oldHNode?.children,
   }).renderNodes;

@@ -1,4 +1,4 @@
-import {createElementString} from './flat.ts';
+import {createElementString} from './element.ts';
 import {describe, expect, it} from 'bun:test';
 
 describe('node', () => {

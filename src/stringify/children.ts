@@ -1,9 +1,10 @@
 import {SegmentEnt} from '../segment/segment.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {walkChildren} from '../jsx-node/children.ts';
-import {StringifyCtx, StringifyProps, StringifyResult} from './types.ts';
+import {StringifyProps, StringifyResult} from './types.ts';
+import {GlobalCtxServer, AreaCtx} from '../ctx/global.ts';
 import {stringifyElement} from './element.ts';
-import {strigifyComponent} from './component.ts';
+import {stringifyComponent} from './component.ts';
 import {SingleChild} from '../types.ts';
 import {textSeparator} from '../consts.ts';
 
@@ -16,7 +17,7 @@ export function stringifyJsxNode(
     return stringifyElement(jsxNode, props);
   }
 
-  return strigifyComponent(jsxNode, props);
+  return stringifyComponent(jsxNode, props);
 }
 
 export type HandleChildrenStringifyResult = {
@@ -27,12 +28,14 @@ export type HandleChildrenStringifyResult = {
 export function handleChildrenString({
   children,
   parentSegmentEnt,
-  stringifyCtx,
+  globalCtx,
+  areaCtx,
   lastText: propsLastText,
 }: {
   children: SingleChild[];
   parentSegmentEnt: SegmentEnt;
-  stringifyCtx: StringifyCtx;
+  globalCtx: GlobalCtxServer;
+  areaCtx: AreaCtx;
   lastText: boolean;
 }): HandleChildrenStringifyResult {
   const strings: string[] = [];
@@ -51,10 +54,11 @@ export function handleChildrenString({
       strings.push(text);
       lastText = true;
     },
-    node: (jsxNode, pathSegmentName) => {
+    node: (jsxNode, jsxSegmentName) => {
       const result = stringifyJsxNode(jsxNode, {
-        stringifyCtx,
-        pathSegmentName,
+        globalCtx,
+  areaCtx,
+        jsxSegmentName,
         parentSegmentEnt,
         lastText,
       });

@@ -1,8 +1,8 @@
-import {createErrorRegan} from '../errors/errors.tsx';
+import {createErrorRegan} from '../errors/errors.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {SingleChild} from '../types.ts';
 import {
-  checkAllowedPrivitive,
+  checkAllowedPrimitive,
   checkAllowedStructure,
   checkPassPrimitive,
   formatJsxValue,
@@ -40,14 +40,14 @@ export function walkChildren({
       continue;
     }
 
-    if (checkAllowedPrivitive(value)) {
+    if (checkAllowedPrimitive(value)) {
       text(value.toString());
       continue;
     }
 
     if (checkAllowedStructure(value) === false) {
       throw createErrorRegan({
-        error: `Invalid structura: ${value}`,
+        error: `Invalid child: ${value}`,
         place: 'jsx',
         segmentEnt: parentSegmentEnt,
       });

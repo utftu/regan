@@ -3,8 +3,11 @@ import {GlobalCtxBoth} from '../ctx/global.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 
+// Место узла в дереве JSX: имя своего сегмента плюс ссылки на соседей по
+// дереву — родителя, контекст, созданный HNode.
 export class SegmentEnt {
-  pathSegment: PathSegment;
+  // номер среди детей родителя; AtomWrapper дописывает к нему номер обновления
+  name: string;
   jsxNode: JsxNode;
   parentSegmentEnt: SegmentEnt | undefined;
   contextEnt: ContextEnt | undefined;
@@ -12,72 +15,66 @@ export class SegmentEnt {
   globalCtx: GlobalCtxBoth;
 
   constructor({
-    jsxSegmentName,
+    name,
     parentSegmentEnt,
     jsxNode,
-    contextEnt: parentContextEnt,
+    contextEnt,
     globalCtx,
   }: {
-    jsxSegmentName: string;
+    name: string;
     parentSegmentEnt: SegmentEnt | undefined;
     jsxNode: JsxNode;
     contextEnt: ContextEnt | undefined;
     globalCtx: GlobalCtxBoth;
   }) {
-    this.pathSegment = new PathSegment({name: jsxSegmentName, systemEnt: this});
+    this.name = name;
     this.parentSegmentEnt = parentSegmentEnt;
     this.jsxNode = jsxNode;
-    this.contextEnt = parentContextEnt;
+    this.contextEnt = contextEnt;
     this.globalCtx = globalCtx;
-  }
-}
-
-export class PathSegment {
-  systemEnt: SegmentEnt;
-  name: string;
-  constructor({name, systemEnt}: {name: string; systemEnt: SegmentEnt}) {
-    this.name = name;
-    this.systemEnt = systemEnt;
   }
 
   // Путь считается каждый раз заново, по живой цепочке родителей.
   // Кэшировать его нельзя: сохранённое поддерево переезжает вместе с
   // ключом, и закэшированный путь тут же перестаёт быть правдой.
-  getJsxPath() {
+  getJsxPath(): string {
     return getJsxPath(this);
   }
 
-  getId() {
+  getId(): string {
     return djb2(this.getJsxPath());
   }
 }
 
-export function getJsxPath(jsxSegment: PathSegment, childJsxPath: string = '') {
-  let jsxPath = joinPath(jsxSegment.name, childJsxPath);
+export function getJsxPath(segmentEnt: SegmentEnt, childJsxPath = ''): string {
+  const jsxPath = joinPath(segmentEnt.name, childJsxPath);
 
-  if (jsxSegment.systemEnt.parentSegmentEnt) {
-    return getJsxPath(
-      jsxSegment.systemEnt.parentSegmentEnt.pathSegment,
-      jsxPath
-    );
+  if (segmentEnt.parentSegmentEnt) {
+    return getJsxPath(segmentEnt.parentSegmentEnt, jsxPath);
   }
+
   return jsxPath;
 }
 
-export function joinPath(oldPart: string = '', newPart: string = '') {
+export function joinPath(oldPart = '', newPart = '') {
   if (newPart === '') {
     return oldPart;
   }
+
   if (oldPart === '') {
     return newPart;
   }
+
   return `${oldPart}.${newPart}`;
 }
 
 export function djb2(str: string) {
   let hash = 5381;
+
   for (let i = 0; i < str.length; i++) {
     hash = (hash * 33) ^ str.charCodeAt(i);
   }
-  return (hash >>> 0).toString(); // Убираем знак, возвращаем положительное число
+
+  // убираем знак, возвращаем положительное число
+  return (hash >>> 0).toString();
 }

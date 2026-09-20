@@ -5,7 +5,7 @@ import {HNode} from '../h-node/h-node.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {applyRenderNodes} from './apply.ts';
 import {renderJsxNode} from './children.ts';
-import {throwGlobalSystemError} from '../errors/helpers.ts';
+import {throwGlobalSystemError} from '../errors/handle.ts';
 
 export const renderRaw = ({
   node,
@@ -44,10 +44,8 @@ export const renderRaw = ({
   try {
     const {renderNode} = renderJsxNode(node, {
       parentSegmentEnt,
-      renderCtx: {
-        areaCtx,
-        globalCtx,
-      },
+      globalCtx,
+      areaCtx,
       jsxSegmentName,
       oldHNode,
     });

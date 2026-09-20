@@ -1,99 +1,48 @@
-import {ErrorGuard} from '../components/error-guard.tsx';
-import {selectContextEnt} from '../context/context.tsx';
-import {ComponentState, Ctx} from '../ctx/ctx.ts';
-import {createErrorRegan, ErrorHandler} from '../errors/errors.tsx';
-import {createErrorComponent} from '../errors/helpers.ts';
 import {HNodeComponent} from '../h-node/component.ts';
 import {JsxNodeComponent} from '../jsx-node/jsx-node.ts';
-import {normalizeChildren} from '../jsx/jsx.ts';
-import {SegmentEnt} from '../segment/segment.ts';
-import {Child} from '../types.ts';
+import {getErrorGuardChildren, runComponent} from '../jsx-node/component.ts';
+import {SingleChild} from '../types.ts';
 import {handleChildrenHydrate} from './children.ts';
 import {HydrateProps, HydrateResult} from './types.ts';
 
-export function hydrateComponent(jsxNode: JsxNodeComponent, props: HydrateProps): HydrateResult {
-  const contextEnt = selectContextEnt(jsxNode, props.parentSegmentEnt?.contextEnt);
-
-  const segmentEnt = new SegmentEnt({
-    jsxSegmentName: props.jsxSegmentName,
-    parentSegmentEnt: props.parentSegmentEnt,
+export function hydrateComponent(
+  jsxNode: JsxNodeComponent,
+  props: HydrateProps
+): HydrateResult {
+  const {segmentEnt, state, children} = runComponent({
     jsxNode,
-    contextEnt,
-    globalCtx: props.globalCtx,
+    props,
+    stage: 'hydrate',
   });
-  jsxNode.segmentEnt = segmentEnt;
 
   const hNode = new HNodeComponent({
     parent: props.parentHNode,
     globalCtx: props.globalCtx,
     segmentEnt,
+    mounts: state.mounts,
+    unmounts: state.unmounts,
   });
   segmentEnt.hNode = hNode;
 
-  const componentCtx = new Ctx({
-    globalCtx: props.globalCtx,
-    props: jsxNode.props,
-    systemProps: jsxNode.systemProps,
-    state: new ComponentState(),
-    children: jsxNode.children,
-    segmentEnt: hNode.segmentEnt,
-    stage: 'hydrate',
-    contextEnt: contextEnt,
-    areaCtx: props.areaCtx,
-  });
-
-  let rawChildren: Child;
-  try {
-    rawChildren = jsxNode.component(jsxNode.props, componentCtx);
-  } catch (error) {
-    const myError = createErrorRegan({error, place: 'component', segmentEnt});
-    throw myError;
-  }
-
-  hNode.mounts = componentCtx.state.mounts;
-  hNode.unmounts = componentCtx.state.unmounts;
-
-  const children = normalizeChildren(rawChildren);
-
-  let resultHandlerChildren;
-
-  try {
-    resultHandlerChildren = handleChildrenHydrate({
+  const handle = (children: SingleChild[]) =>
+    handleChildrenHydrate({
       children,
       parentHNode: hNode,
       globalCtx: props.globalCtx,
+      areaCtx: props.areaCtx,
       parentDomPointer: props.domPointer,
       parentSegmentEnt: segmentEnt,
-      areaCtx: props.areaCtx,
     });
+
+  let childrenResult;
+
+  try {
+    childrenResult = handle(children);
   } catch (error) {
-    const errorRegan = createErrorRegan({error, place: 'system', segmentEnt});
-    if (jsxNode.component === ErrorGuard) {
-      const errorHandler = jsxNode.props.handler as ErrorHandler;
-
-      const errorComponent = createErrorComponent({
-        error: errorRegan,
-        errorHandler,
-        segmentEnt,
-      });
-
-      resultHandlerChildren = handleChildrenHydrate({
-        children: [errorComponent],
-        parentHNode: hNode,
-        globalCtx: props.globalCtx,
-        parentDomPointer: props.domPointer,
-        parentSegmentEnt: segmentEnt,
-        areaCtx: props.areaCtx,
-      });
-    } else {
-      throw errorRegan;
-    }
+    childrenResult = handle(getErrorGuardChildren({error, jsxNode, segmentEnt}));
   }
 
-  hNode.addChildren(resultHandlerChildren.hNodes);
+  hNode.addChildren(childrenResult.hNodes);
 
-  return {
-    hNode,
-    nodeCount: resultHandlerChildren.nodeCount,
-  };
+  return {hNode, nodeCount: childrenResult.nodeCount};
 }

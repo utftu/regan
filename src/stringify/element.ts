@@ -7,7 +7,42 @@ import {JsxNodeElement} from '../jsx-node/jsx-node.ts';
 import {StringifyProps, StringifyResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Props} from '../types.ts';
-import {createElementString} from './flat.ts';
+
+const selfClosingTags = [
+  'area',
+  'base',
+  'br',
+  'col',
+  'command',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'keygen',
+  'link',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr',
+];
+
+export function createElementString({
+  tagName,
+  props,
+}: {
+  tagName: string;
+  props: Props;
+}) {
+  const preparedProperties = Object.entries(props)
+    .map(([key, value]) => `${key}="${value}"`)
+    .join(' ');
+  const left = `<${tagName}${
+    preparedProperties.length === 0 ? '' : ` ${preparedProperties}`
+  }>`;
+  const right = selfClosingTags.includes(tagName) ? '' : `</${tagName}>`;
+  return {left, right};
+}
 
 const prepareProps = (props: Record<string, any>) => {
   const newProps: Props = {};
@@ -32,11 +67,11 @@ const prepareProps = (props: Record<string, any>) => {
 
 export function stringifyElement(jsxNode: JsxNodeElement, props: StringifyProps): StringifyResult {
   const segmentEnt = new SegmentEnt({
-    jsxSegmentName: props.pathSegmentName,
+    name: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
     jsxNode,
     contextEnt: props.parentSegmentEnt?.contextEnt,
-    globalCtx: props.stringifyCtx.globalCtx,
+    globalCtx: props.globalCtx,
   });
   jsxNode.segmentEnt = segmentEnt;
 
@@ -54,16 +89,17 @@ export function stringifyElement(jsxNode: JsxNodeElement, props: StringifyProps)
     };
   }
 
-  let hadnlerChildrenResult: HandleChildrenStringifyResult =
+  let childrenResult: HandleChildrenStringifyResult =
     handleChildrenString({
       children: jsxNode.children,
       parentSegmentEnt: segmentEnt,
-      stringifyCtx: props.stringifyCtx,
+      globalCtx: props.globalCtx,
+        areaCtx: props.areaCtx,
       lastText: false,
     });
 
   return {
-    text: `${elementString.left}${hadnlerChildrenResult.text}${elementString.right}`,
+    text: `${elementString.left}${childrenResult.text}${elementString.right}`,
     lastText: false,
   };
 }

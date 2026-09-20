@@ -2,7 +2,8 @@ import {AreaCtx, GlobalClientCtx, GlobalCtx} from '../ctx/global.ts';
 import {Data, DomPointer} from '../types.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {mountHNodes} from '../h-node/helpers.ts';
-import {GlobalErrorHandler, throwGlobalSystemError} from '../errors/helpers.ts';
+import {throwGlobalSystemError} from '../errors/handle.ts';
+import {GlobalErrorHandler} from '../errors/errors.ts';
 import {defaultData} from '../consts.ts';
 import {hydrateJsxNode} from './children.ts';
 

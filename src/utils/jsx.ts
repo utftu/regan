@@ -14,7 +14,7 @@ export const formatJsxValue = <TValue>(
   return valueResult;
 };
 
-export const checkAllowedPrivitive = (value: any): value is string | number => {
+export const checkAllowedPrimitive = (value: any): value is string | number => {
   const typeValue = typeof value;
 
   if (typeValue === 'string' || typeValue === 'number') {

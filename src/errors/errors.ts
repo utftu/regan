@@ -2,12 +2,10 @@ import {Context, createContext} from '../context/context.tsx';
 import {SegmentEnt} from '../segment/segment.ts';
 import {SingleChild} from '../types.ts';
 
-export type ErrorPlace =
-  | 'jsx'
-  | 'component'
-  | 'handler'
-  | 'mount'
-  | 'system';
+// Что такое ошибка regan: тип, класс и способ её опознать.
+// Что с ней делают — в handle.ts.
+
+export type ErrorPlace = 'jsx' | 'component' | 'handler' | 'mount' | 'system';
 
 export class ErrorRegan extends Error {
   // маркер вместо instanceof: если в дереве зависимостей окажутся две копии
@@ -40,6 +38,8 @@ export class ErrorRegan extends Error {
     this.place = place;
     this.originalError = error;
 
+    // segmentEnt тянет за собой всё дерево — прячем от перечисления,
+    // иначе любой console.log ошибки выплюнет полдерева
     Object.defineProperty(this, 'segmentEnt', {
       value: segmentEnt,
       enumerable: false,
@@ -77,8 +77,15 @@ export type ErrorProps = {
   error: ErrorRegan;
 };
 
+// Обработчик ErrorGuard: получает ошибку, отдаёт запасную разметку.
 export type ErrorHandler = (props: ErrorProps) => SingleChild;
+
 export const defaultErrorHandler = () => undefined;
+
+// Глобальный обработчик: видит все ошибки, включая перехваченные.
+export type GlobalErrorHandler = (
+  props: ErrorProps & {handled: boolean}
+) => any;
 
 // Контекст создаётся при первом обращении: на момент загрузки модуля
 // createContext ещё недоступен из-за кольца импортов.

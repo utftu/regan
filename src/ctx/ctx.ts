@@ -79,11 +79,11 @@ export class Ctx<TProps extends Record<any, any> = Record<any, any>> {
   };
 
   getJsxPath = () => {
-    return this.segmentEnt.pathSegment.getJsxPath();
+    return this.segmentEnt.getJsxPath();
   };
 
   getId = () => {
-    return this.segmentEnt.pathSegment.getId();
+    return this.segmentEnt.getId();
   };
 
   getContext = (context: Context) => {

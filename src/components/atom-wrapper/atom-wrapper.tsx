@@ -7,8 +7,8 @@ import {applyRenderNodes} from '../../render/apply.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {subscribeAtomWrapper} from './subscribe.ts';
 import {HNodeText} from '../../h-node/text.ts';
-import {checkAllowedPrivitive} from '../../utils/jsx.ts';
-import {handleError} from '../../errors/helpers.ts';
+import {checkAllowedPrimitive} from '../../utils/jsx.ts';
+import {handleError} from '../../errors/handle.ts';
 
 type Props = {
   atom: Atom;
@@ -33,10 +33,10 @@ function findSingleTextHNode(hNode: HNode): HNodeText | undefined {
 }
 
 export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
-  const initPathSegmentName = ctx.segmentEnt.pathSegment.name;
+  const initPathSegmentName = ctx.segmentEnt.name;
 
   let updateCount = 0;
-  ctx.segmentEnt.pathSegment.name += `?a=0`;
+  ctx.segmentEnt.name += `?a=0`;
 
   let progress = false;
   let pending = false;
@@ -62,7 +62,7 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
     const value = atom.get();
     const textHNode = findSingleTextHNode(hNode);
 
-    if (textHNode && checkAllowedPrivitive(value)) {
+    if (textHNode && checkAllowedPrimitive(value)) {
       textHNode.text = value.toString();
       textHNode.textNode.textContent = textHNode.text;
       return;
@@ -74,7 +74,7 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
     const oldHNodes = [...hNode.children];
 
     updateCount++;
-    ctx.segmentEnt.pathSegment.name = initPathSegmentName + `?a=${updateCount}`;
+    ctx.segmentEnt.name = initPathSegmentName + `?a=${updateCount}`;
 
     const insertPoint = getInsertPoint(hNode);
     const window = clientCtx.window;

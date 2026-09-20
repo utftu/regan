@@ -1,76 +1,98 @@
-import {describe, it, expect, vi} from 'bun:test';
+import {describe, expect, it} from 'bun:test';
+import {JSDOM} from 'jsdom';
 import {HNodeComponent} from './component.ts';
-import {findPrevHNode} from './find.ts';
 import {HNodeElement} from './element.ts';
+import {HNodeText} from './text.ts';
+import {findPrevDomNode, getTopHNodeElement} from './find.ts';
 import {addChildren} from './helpers.ts';
-import {Config} from './find.ts';
 
-const createHNode = () => {
-  return new HNodeComponent({} as any);
+const jsdom = new JSDOM();
+const {document} = jsdom.window;
+
+const createComponent = () => new HNodeComponent({} as any);
+
+const createElement = (id: string) => {
+  const element = document.createElement('div');
+  element.id = id;
+
+  return new HNodeElement({} as any, {element} as any);
 };
 
-const createHNodeElement = () => {
-  return new HNodeElement({} as any, {} as any);
-};
+const createText = (text: string) =>
+  new HNodeText({} as any, {text, textNode: document.createTextNode(text)});
 
-describe('findPrevHNode', () => {
-  it('no prev node', () => {
-    const level1HNode = createHNode();
-    const checker = vi.fn(() => false) as any;
-    const result = findPrevHNode(level1HNode, checker);
-    expect(result).toBeUndefined();
+describe('findPrevDomNode', () => {
+  it('слева ничего нет', () => {
+    const root = createComponent();
+    const child = createComponent();
+    addChildren(root, [child]);
+
+    const {domNode, lastParentHNode} = findPrevDomNode(child);
+
+    expect(domNode).toBeUndefined();
+    expect(lastParentHNode).toBe(root);
   });
 
-  it('prev sibling', () => {
-    const level1_1HNode = createHNode();
-    const level1_2HNode = createHNode();
-    const level0HNode = createHNode();
-    addChildren(level0HNode, [level1_1HNode, level1_2HNode]);
-    const checker = vi.fn((node) => (node === level1_1HNode ? node : false));
-    const result = findPrevHNode(level1_2HNode, checker);
-    expect(result).toBe(level1_1HNode);
+  it('соседний элемент слева', () => {
+    const root = createComponent();
+    const left = createElement('left');
+    const target = createComponent();
+    addChildren(root, [left, target]);
+
+    expect(findPrevDomNode(target).domNode).toBe(left.element);
   });
 
-  it('parent HNodeElement', () => {
-    const level1HNode = createHNode();
-    const level0HNode = createHNodeElement();
-    addChildren(level0HNode, [level1HNode]);
-    const checker = vi.fn(() => false) as any;
-    const result = findPrevHNode(level1HNode, checker);
-    expect(result).toBeUndefined();
+  it('текст слева тоже годится', () => {
+    const root = createComponent();
+    const left = createText('раз');
+    const target = createComponent();
+    addChildren(root, [left, target]);
+
+    expect(findPrevDomNode(target).domNode).toBe(left.textNode);
   });
 
-  it('stop condition', () => {
-    const level1_1HNode = createHNode();
-    const level1_2HNode = createHNode();
-    const level0HNode = createHNode();
-    addChildren(level0HNode, [level1_1HNode, level1_2HNode]);
-    const checker = vi.fn(() => 'stop');
-    const result = findPrevHNode(level1_2HNode, checker as any);
-    expect(result).toBeUndefined();
+  it('спускается в соседа за последним dom-узлом', () => {
+    const root = createComponent();
+    const left = createComponent();
+    const deep = createComponent();
+    const first = createElement('first');
+    const last = createElement('last');
+    addChildren(deep, [first, last]);
+    addChildren(left, [deep]);
+    const target = createComponent();
+    addChildren(root, [left, target]);
+
+    expect(findPrevDomNode(target).domNode).toBe(last.element);
   });
 
-  it('deeper prev siblings', () => {
-    const level3HNode = createHNode();
-    const level2HNode = createHNode();
-    const level1_1HNode = createHNode();
-    const level1_2HNode = createHNode();
-    addChildren(level2HNode, [level3HNode]);
-    addChildren(level1_1HNode, [level2HNode]);
-    const level0HNode = createHNode();
-    addChildren(level0HNode, [level1_1HNode, level1_2HNode]);
-    const checker = vi.fn((node) => (node === level3HNode ? node : undefined));
-    const result = findPrevHNode(level1_2HNode, checker);
-    expect(result).not.toBe(undefined);
+  it('элемент-родитель — граница обхода', () => {
+    const outerLeft = createElement('outer-left');
+    const parent = createElement('parent');
+    const target = createComponent();
+    addChildren(parent, [target]);
+
+    const root = createComponent();
+    addChildren(root, [outerLeft, parent]);
+
+    const {domNode, lastParentHNode} = findPrevDomNode(target);
+
+    expect(domNode).toBeUndefined();
+    expect(lastParentHNode).toBe(parent);
+  });
+});
+
+describe('getTopHNodeElement', () => {
+  it('ближайший элемент вверх', () => {
+    const element = createElement('box');
+    const middle = createComponent();
+    const leaf = createComponent();
+    addChildren(element, [middle]);
+    addChildren(middle, [leaf]);
+
+    expect(getTopHNodeElement(leaf)).toBe(element);
   });
 
-  it('update config', () => {
-    const level1HNode = createHNode();
-    const level0HNode = createHNode();
-    addChildren(level0HNode, [level1HNode]);
-    const checker = vi.fn(() => false) as any;
-    const config: Config = {};
-    findPrevHNode(level1HNode, checker, config);
-    expect(config.lastParentHNode).toBe(level0HNode);
+  it('элементов выше нет', () => {
+    expect(getTopHNodeElement(createComponent())).toBeUndefined();
   });
 });

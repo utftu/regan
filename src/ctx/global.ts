@@ -1,5 +1,5 @@
 import {defaultData} from '../consts.ts';
-import {GlobalErrorHandler} from '../errors/helpers.ts';
+import {GlobalErrorHandler} from '../errors/errors.ts';
 import {Data, InsertPoint} from '../types.ts';
 import {createUpdaterAsync, createUpdaterSync} from '../updater/updater.ts';
 

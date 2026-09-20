@@ -1,12 +1,12 @@
 import {
-  findPrevDomNodeHNode,
+  findPrevDomNode,
   getTopHNodeElement,
 } from '../../h-node/find.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {InsertPoint} from '../../types.ts';
 
 export const getInsertPoint = (hNode: HNode): InsertPoint => {
-  const {domNode, lastParentHNode} = findPrevDomNodeHNode(hNode);
+  const {domNode, lastParentHNode} = findPrevDomNode(hNode);
 
   if (domNode && domNode.parentNode) {
     return {

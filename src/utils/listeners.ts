@@ -1,4 +1,4 @@
-import {prepareListener} from '../errors/helpers.ts';
+import {prepareListener} from '../errors/handle.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc} from '../types.ts';
 

@@ -1,4 +1,4 @@
-import {ErrorHandler, getErrorContext} from '../errors/errors.tsx';
+import {ErrorHandler, getErrorContext} from '../errors/errors.ts';
 import {Child, FC} from '../types.ts';
 import {createAtom} from 'strangelove';
 

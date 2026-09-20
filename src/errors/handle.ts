@@ -1,6 +1,8 @@
 import {ContextEnt, getContextValue} from '../context/context.tsx';
+import {GlobalCtxBoth} from '../ctx/global.ts';
 import {HNode, Mount} from '../h-node/h-node.ts';
 import {createJsxNodeComponent} from '../jsx-node/jsx-node.ts';
+import {Fragment} from '../components/fragment/fragment.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {AnyFunc} from '../types.ts';
 import {ListenerManager} from '../utils/listeners.ts';
@@ -9,86 +11,29 @@ import {
   defaultErrorHandler,
   ErrorHandler,
   ErrorPlace,
-  ErrorProps,
   ErrorRegan,
   getErrorContext,
-} from './errors.tsx';
-import {Fragment} from '../components/fragment/fragment.ts';
+} from './errors.ts';
 import {logError} from './logger.tsx';
-import {GlobalCtxBoth} from '../ctx/global.ts';
 
-type GlobalHandlerProps = ErrorProps & {handled: boolean};
-export type GlobalErrorHandler = (props: GlobalHandlerProps) => any;
+// Что делают с ошибкой: кому отдают, что показывают взамен.
 
+// Обработчик по умолчанию ничего не показывает, логгер только печатает —
+// оба означают «никто не перехватил».
 const checkDefaultHandler = (handler: AnyFunc) => {
   if (handler === defaultErrorHandler || handler === logError) {
     return true;
   }
+
   return false;
-};
-
-export const createErrorComponent = ({
-  error,
-  errorHandler,
-  segmentEnt,
-}: {
-  error: ErrorRegan;
-  errorHandler: ErrorHandler;
-  segmentEnt: SegmentEnt;
-}) => {
-  const errorJsx = errorHandler({error});
-
-  const errorJsxComponent = createJsxNodeComponent({
-    component: Fragment,
-    props: {},
-    children: [errorJsx],
-  });
-
-  segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
-    handler({error, handled: !checkDefaultHandler(errorHandler)});
-  });
-
-  return errorJsxComponent;
-};
-
-export const prepareListener = ({
-  listenerManager,
-  func,
-}: {
-  func: AnyFunc;
-  listenerManager: ListenerManager;
-}) => {
-  const segmentEnt = listenerManager.segmentEnt;
-  return async (...args: any[]) => {
-    try {
-      await func(...args);
-    } catch (error) {
-      const errorRegan = createErrorRegan({
-        error,
-        place: 'handler',
-        segmentEnt,
-      });
-      const errorHandler = getContextValue(
-        getErrorContext(),
-        segmentEnt.contextEnt,
-      );
-      errorHandler({
-        error: errorRegan,
-      });
-
-      segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
-        handler({
-          error: errorRegan,
-          handled: !checkDefaultHandler(errorHandler),
-        });
-      });
-    }
-  };
 };
 
 // Поднимается на skip штук ErrorGuard вверх: если запасной вариант тоже
 // упал, ошибку должен увидеть следующий guard, а не тот же самый.
-const getErrorContextEnt = (contextEnt: ContextEnt | undefined, skip: number) => {
+const getErrorContextEnt = (
+  contextEnt: ContextEnt | undefined,
+  skip: number
+) => {
   const context = getErrorContext();
   let current = contextEnt;
 
@@ -109,7 +54,7 @@ const getErrorContextEnt = (contextEnt: ContextEnt | undefined, skip: number) =>
 };
 
 // Отдаёт ошибку ближайшему ErrorGuard и глобальным обработчикам.
-// Так работают и слушатели, и mount, и обновление динамической области.
+// Через это проходят и слушатели, и mount, и обновление динамической области.
 export const handleError = ({
   error,
   place,
@@ -124,7 +69,7 @@ export const handleError = ({
   const errorRegan = createErrorRegan({error, place, segmentEnt});
   const errorHandler = getContextValue(
     getErrorContext(),
-    getErrorContextEnt(segmentEnt.contextEnt, skip),
+    getErrorContextEnt(segmentEnt.contextEnt, skip)
   );
 
   const handled = !checkDefaultHandler(errorHandler);
@@ -138,6 +83,49 @@ export const handleError = ({
   return {handled};
 };
 
+// Запасная разметка от ErrorGuard, завёрнутая во Fragment,
+// чтобы стадия могла отрендерить её как обычного ребёнка.
+export const createErrorComponent = ({
+  error,
+  errorHandler,
+  segmentEnt,
+}: {
+  error: ErrorRegan;
+  errorHandler: ErrorHandler;
+  segmentEnt: SegmentEnt;
+}) => {
+  const errorJsxComponent = createJsxNodeComponent({
+    component: Fragment,
+    props: {},
+    children: [errorHandler({error})],
+  });
+
+  segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
+    handler({error, handled: !checkDefaultHandler(errorHandler)});
+  });
+
+  return errorJsxComponent;
+};
+
+// Обёртка вокруг пользовательского обработчика события.
+export const prepareListener = ({
+  listenerManager,
+  func,
+}: {
+  func: AnyFunc;
+  listenerManager: ListenerManager;
+}) => {
+  const segmentEnt = listenerManager.segmentEnt;
+
+  return async (...args: any[]) => {
+    try {
+      await func(...args);
+    } catch (error) {
+      handleError({error, place: 'handler', segmentEnt});
+    }
+  };
+};
+
 export const runMount = async (mount: Mount, hNode: HNode) => {
   try {
     await mount(hNode);
@@ -146,9 +134,11 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
   }
 };
 
+// Ошибка, случившаяся вне дерева: перехватывать её некому,
+// глобальным обработчикам сообщаем и бросаем дальше.
 export const throwGlobalSystemError = (
   error: unknown,
-  globalCtx: GlobalCtxBoth,
+  globalCtx: GlobalCtxBoth
 ) => {
   const errorRegan = createErrorRegan({
     error,

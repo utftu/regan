@@ -1,5 +1,5 @@
 import {defaultData} from '../consts.ts';
-import {throwGlobalSystemError} from '../errors/helpers.ts';
+import {throwGlobalSystemError} from '../errors/handle.ts';
 import {AreaCtx, GlobalCtx} from '../ctx/global.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {Data} from '../types.ts';
@@ -15,11 +15,9 @@ export function stringify(node: JsxNode, options?: {data?: Data}) {
 
   try {
     const {text} = stringifyJsxNode(node, {
-      stringifyCtx: {
-        globalCtx,
-        areaCtx,
-      },
-      pathSegmentName: '',
+      globalCtx,
+      areaCtx,
+      jsxSegmentName: '',
       lastText: false,
     });
 

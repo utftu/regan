@@ -1,6 +1,15 @@
 import {describe, expect, it} from 'bun:test';
-import {PathSegment, getJsxPath, joinPath, djb2} from './segment.ts';
-import {SegmentEnt} from './segment.ts';
+import {djb2, getJsxPath, joinPath, SegmentEnt} from './segment.ts';
+
+const createSegmentEnt = (name: string, parentSegmentEnt?: SegmentEnt) => {
+  return new SegmentEnt({
+    name,
+    parentSegmentEnt,
+    jsxNode: {} as any,
+    contextEnt: undefined,
+    globalCtx: {} as any,
+  });
+};
 
 describe('jsx-path', () => {
   describe('joinPath', () => {
@@ -39,45 +48,35 @@ describe('jsx-path', () => {
     });
   });
 
-  describe('PathSegment', () => {
-    it('stores name', () => {
-      const mockSegmentEnt = {} as SegmentEnt;
-      const segment = new PathSegment({name: 'test', systemEnt: mockSegmentEnt});
-      expect(segment.name).toBe('test');
+  describe('SegmentEnt', () => {
+    it('хранит имя', () => {
+      expect(createSegmentEnt('test').name).toBe('test');
     });
 
     it('путь и id не кэшируются — всегда по живой цепочке', () => {
-      const mockSegmentEnt = {parentSegmentEnt: undefined} as SegmentEnt;
-      const segment = new PathSegment({name: 'test', systemEnt: mockSegmentEnt});
+      const segmentEnt = createSegmentEnt('test');
 
-      expect(segment.getJsxPath()).toBe('test');
-      const id = segment.getId();
-      expect(segment.getId()).toBe(id);
+      expect(segmentEnt.getJsxPath()).toBe('test');
+      const id = segmentEnt.getId();
+      expect(segmentEnt.getId()).toBe(id);
 
-      segment.name = 'changed';
+      segmentEnt.name = 'changed';
 
-      expect(segment.getJsxPath()).toBe('changed');
-      expect(segment.getId()).not.toBe(id);
+      expect(segmentEnt.getJsxPath()).toBe('changed');
+      expect(segmentEnt.getId()).not.toBe(id);
     });
   });
 
   describe('getJsxPath', () => {
-    it('returns name for root segment', () => {
-      const mockSegmentEnt = {parentSegmentEnt: undefined} as SegmentEnt;
-      const segment = new PathSegment({name: 'root', systemEnt: mockSegmentEnt});
-      
-      expect(getJsxPath(segment)).toBe('root');
+    it('у корня это его имя', () => {
+      expect(getJsxPath(createSegmentEnt('root'))).toBe('root');
     });
 
-    it('builds path from parent', () => {
-      const parentSegmentEnt = {parentSegmentEnt: undefined} as SegmentEnt;
-      const parentSegment = new PathSegment({name: 'parent', systemEnt: parentSegmentEnt});
-      (parentSegmentEnt as any).pathSegment = parentSegment;
+    it('собирается от родителя', () => {
+      const parent = createSegmentEnt('parent');
+      const child = createSegmentEnt('child', parent);
 
-      const childSegmentEnt = {parentSegmentEnt} as SegmentEnt;
-      const childSegment = new PathSegment({name: 'child', systemEnt: childSegmentEnt});
-      
-      expect(getJsxPath(childSegment)).toBe('parent.child');
+      expect(getJsxPath(child)).toBe('parent.child');
     });
   });
 });

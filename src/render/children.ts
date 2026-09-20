@@ -1,3 +1,4 @@
+import {AreaCtx, GlobalCtx} from '../ctx/global.ts';
 import {HNode} from '../h-node/h-node.ts';
 import {JsxNode} from '../jsx-node/jsx-node.ts';
 import {walkChildren} from '../jsx-node/children.ts';
@@ -5,7 +6,7 @@ import {SegmentEnt} from '../segment/segment.ts';
 import {SingleChild} from '../types.ts';
 import {createMatcher} from './align.ts';
 import {RenderNode} from './node.ts';
-import {RenderCtx, RenderProps, RenderResult} from './types.ts';
+import {RenderProps, RenderResult} from './types.ts';
 import {renderElement} from './element.ts';
 import {renderComponent} from './component.ts';
 
@@ -49,11 +50,13 @@ const checkKeep = (jsxNode: JsxNode, oldHNode?: HNode) => {
 export function handleChildren({
   children,
   parentSegmentEnt,
-  renderCtx,
+  globalCtx,
+      areaCtx,
   oldHNodes = [],
 }: {
   children: SingleChild[];
-  renderCtx: RenderCtx;
+  globalCtx: GlobalCtx;
+  areaCtx: AreaCtx;
   parentSegmentEnt: SegmentEnt;
   oldHNodes?: HNode[];
 }): HandleChildrenResult {
@@ -68,7 +71,7 @@ export function handleChildren({
         type: 'text',
         text,
         segmentEnt: parentSegmentEnt,
-        globalCtx: renderCtx.globalCtx,
+        globalCtx: globalCtx,
         mounts: [],
         unmounts: [],
         children: [],
@@ -83,7 +86,7 @@ export function handleChildren({
         // сегмент переподвешиваем, иначе getJsxPath начнёт врать
         const keptSegmentEnt = oldHNode!.segmentEnt;
         keptSegmentEnt.parentSegmentEnt = parentSegmentEnt;
-        keptSegmentEnt.pathSegment.name = jsxSegmentName;
+        keptSegmentEnt.name = jsxSegmentName;
 
         renderNodes.push({type: 'keep', oldHNode: oldHNode!});
 
@@ -93,7 +96,8 @@ export function handleChildren({
       const {renderNode} = renderJsxNode(jsxNode, {
         jsxSegmentName,
         parentSegmentEnt,
-        renderCtx,
+        globalCtx,
+      areaCtx,
         oldHNode,
       });
 

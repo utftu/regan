@@ -1,6 +1,8 @@
 import {Atom} from 'strangelove';
 import {JsxNode} from './jsx-node/jsx-node.ts';
 import {Ctx} from './ctx/ctx.ts';
+import {AreaCtx, GlobalCtx} from './ctx/global.ts';
+import {SegmentEnt} from './segment/segment.ts';
 
 // гидратация идёт по позициям: узел, который сейчас разбираем
 export type DomPointer = {
@@ -41,3 +43,12 @@ export type Data = {envs: Record<any, any>; props: Record<any, any>} & Record<
   any,
   any
 >;
+
+// Общее у всех трёх стадий: где мы в дереве JSX и что за окружение.
+// Своё каждая добавляет сверху.
+export type StageProps<TGlobalCtx = GlobalCtx> = {
+  jsxSegmentName: string;
+  parentSegmentEnt?: SegmentEnt;
+  globalCtx: TGlobalCtx;
+  areaCtx: AreaCtx;
+};

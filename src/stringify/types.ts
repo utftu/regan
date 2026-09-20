@@ -1,15 +1,8 @@
-import {AreaCtx, GlobalCtxServer} from '../ctx/global.ts';
-import {SegmentEnt} from '../segment/segment.ts';
+import {GlobalCtxServer} from '../ctx/global.ts';
+import {StageProps} from '../types.ts';
 
-export type StringifyCtx = {
-  globalCtx: GlobalCtxServer;
-  areaCtx: AreaCtx;
-};
-
-export type StringifyProps = {
-  pathSegmentName: string;
-  parentSegmentEnt?: SegmentEnt;
-  stringifyCtx: StringifyCtx;
+export type StringifyProps = StageProps<GlobalCtxServer> & {
+  // предыдущий ребёнок был текстом — значит между ними нужен разделитель
   lastText: boolean;
 };
 
