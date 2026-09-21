@@ -5,6 +5,10 @@ import {ErrorRegan} from './errors.tsx';
 export const logError = ({error}: {error: ErrorRegan}) => {
   console.group(`regan: error: ${error.message}`);
 
+  if (error.segmentEnt) {
+    console.log(`место: ${error.segmentEnt.getNamedPath()}`);
+  }
+
   console.groupCollapsed('Stack');
   console.log(error);
   console.groupEnd();

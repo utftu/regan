@@ -79,4 +79,82 @@ describe('jsx-path', () => {
       expect(getJsxPath(child)).toBe('parent.child');
     });
   });
+
+  describe('getNamedPath', () => {
+    const createElementEnt = (
+      tagName: string,
+      parentSegmentEnt?: SegmentEnt,
+      name = '',
+    ) =>
+      new SegmentEnt({
+        name,
+        parentSegmentEnt,
+        jsxNode: {type: 'element', tagName} as any,
+        contextEnt: undefined,
+        globalCtx: {} as any,
+      });
+
+    const createComponentEnt = (
+      component: any,
+      parentSegmentEnt?: SegmentEnt,
+      name = '',
+    ) =>
+      new SegmentEnt({
+        name,
+        parentSegmentEnt,
+        jsxNode: {type: 'component', component} as any,
+        contextEnt: undefined,
+        globalCtx: {} as any,
+      });
+
+    // объявления функций, а не стрелки в const: имя стрелки, использованной
+    // один раз, транспайлер может потерять, инлайнув её в вызов
+    it('имена и номера среди соседей', () => {
+      function App() {
+        return null;
+      }
+      function Row() {
+        return null;
+      }
+
+      const appEnt = createComponentEnt(App);
+      const ulEnt = createElementEnt('ul', appEnt, '2');
+      const rowEnt = createComponentEnt(Row, ulEnt, '7');
+      const liEnt = createElementEnt('li', rowEnt, '0');
+
+      expect(liEnt.getNamedPath()).toBe('<App><ul:2><Row:7><li:0>');
+    });
+
+    it('у корня номера нет', () => {
+      function App() {
+        return null;
+      }
+
+      expect(createComponentEnt(App).getNamedPath()).toBe('<App>');
+    });
+
+    it('у безымянного компонента заглушка', () => {
+      const ent = createComponentEnt(() => null);
+
+      expect(ent.getNamedPath()).toBe('<anonymous>');
+    });
+  });
+
+  describe('displayName', () => {
+    it('важнее имени функции и переживает минификацию', () => {
+      // после minify имя функции превращается в что-то вроде 'e'
+      const minified: any = () => null;
+      minified.displayName = 'List';
+
+      const ent = new SegmentEnt({
+        name: '3',
+        parentSegmentEnt: undefined,
+        jsxNode: {type: 'component', component: minified} as any,
+        contextEnt: undefined,
+        globalCtx: {} as any,
+      });
+
+      expect(ent.getNamedPath()).toBe('<List:3>');
+    });
+  });
 });

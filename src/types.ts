@@ -23,10 +23,14 @@ export type SingleChild =
 
 export type Child = SingleChild | SingleChild[];
 
-export type FC<TProps extends Record<any, any> = any> = (
+export type FC<TProps extends Record<any, any> = any> = ((
   props: TProps,
   ctx: Ctx<TProps>,
-) => Child;
+) => Child) & {
+  // имя для путей в ошибках: minify переименовывает функции, а это поле
+  // переживает сборку
+  displayName?: string;
+};
 
 export type Props = Record<string, any>;
 

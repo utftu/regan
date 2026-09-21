@@ -49,7 +49,7 @@ export function walkChildren({
       // в сообщение идёт тип и место, а не значение: symbol в строку не
       // превращается вовсе, а от объекта строка всё равно ничего не скажет
       throw createErrorRegan({
-        error: `Invalid child of type ${typeof value} at ${parentSegmentEnt.getJsxPath()}`,
+        error: `Invalid child of type ${typeof value} in ${parentSegmentEnt.getNamedPath()}`,
         place: 'jsx',
         segmentEnt: parentSegmentEnt,
       });

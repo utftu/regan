@@ -19,16 +19,23 @@ const setup = (jsxNode: any) => {
 describe('разбор детей', () => {
   it('ребёнок неизвестного вида — ошибка с типом и местом', () => {
     const Inner: FC = () => <div>{{a: 1} as any}</div>;
+    const List: FC = () => (
+      <ul>
+        <li />
+        <Inner />
+      </ul>
+    );
     const App: FC = () => (
       <div>
-        <span />
-        <Inner />
+        <List />
       </div>
     );
 
     expect(() => setup(<App />)).toThrow('Invalid child of type object');
-    // путь показывает, где искать: второй ребёнок внутри Inner
-    expect(() => setup(<App />)).toThrow('at 0.1.0');
+    // место названо именами, а не индексами
+    expect(() => setup(<App />)).toThrow(
+      'in <App><div:0><List:0><ul:0><Inner:1><div:0>',
+    );
   });
 
   it('symbol не ломает саму ошибку', () => {

@@ -15,7 +15,7 @@ Bun (тесты и сборка), TypeScript strict, jsdom в тестах, pret
 ## Команды
 
 ```bash
-bun test          # 179 тестов
+bun test          # 183 теста
 bun run types     # tsc --noEmit
 bun run build     # js + d.ts в dist/
 bun run watch     # пересборка js
@@ -115,7 +115,9 @@ patch-версии).
   опознание, контекст обработчиков. **`handle.ts`** — что с ней делают:
   `handleError`, `runMount`, `prepareListener`, `throwGlobalSystemError`.
 - **`src/components/`** — `Fragment`, `Show`, `ErrorGuard`.
-- **`src/subpackages/vite.ts`** — плагин vite, настраивает `oxc.jsx`.
+- **`src/subpackages/vite.ts`** — плагин vite: настраивает `oxc.jsx` и в
+  dev-режиме включает `output.keepNames`, чтобы имена компонентов в путях ошибок
+  пережили сборку.
 
 ## Чего в коде нет специально
 

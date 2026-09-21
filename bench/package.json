@@ -9,6 +9,14 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "solid-js": "^1.9.15",
-    "strangelove": "^2.1.5"
+    "strangelove": "^2.1.5",
+    "@babel/preset-typescript": "^7.29.0"
+  },
+  "scripts": {
+    "build-solid": "bun build-solid.ts",
+    "bench": "bun --conditions=browser bench.ts",
+    "keyed": "bun keyed.ts",
+    "dommove": "bun dommove.ts",
+    "ctx": "bun ctx.ts"
   }
 }

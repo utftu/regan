@@ -44,6 +44,55 @@ export class SegmentEnt {
   getId(): string {
     return djb2(this.getJsxPath());
   }
+
+  // Путь для человека: <App><div:0><List:1><ul:0>.
+  // getJsxPath() даёт машинный идентификатор позиции и для чтения не годится.
+  //
+  // Имена берутся у функций компонентов, а минификатор их переименовывает —
+  // в продовой сборке вместо <List:1> будет <e:1>. Где имя важно и в проде,
+  // помогает List.displayName = 'List'. Номера верны всегда.
+  getNamedPath(): string {
+    return getNamedPath(this);
+  }
+}
+
+const getName = (segmentEnt: SegmentEnt) => {
+  const jsxNode = segmentEnt.jsxNode;
+
+  if (!jsxNode) {
+    return 'unknown';
+  }
+
+  if (jsxNode.type === 'element') {
+    return jsxNode.tagName;
+  }
+
+  // displayName переживает минификацию, а имя функции — нет
+  return jsxNode.component.displayName || jsxNode.component.name || 'anonymous';
+};
+
+// Номер среди детей родителя: он и отличает одинаковых соседей друг от друга.
+// У корня его нет.
+const getSegment = (segmentEnt: SegmentEnt) => {
+  const name = getName(segmentEnt);
+
+  if (segmentEnt.name === '') {
+    return `<${name}>`;
+  }
+
+  return `<${name}:${segmentEnt.name}>`;
+};
+
+export function getNamedPath(segmentEnt: SegmentEnt): string {
+  const names: string[] = [];
+  let current: SegmentEnt | undefined = segmentEnt;
+
+  while (current) {
+    names.push(getSegment(current));
+    current = current.parentSegmentEnt;
+  }
+
+  return names.reverse().join('');
 }
 
 export function getJsxPath(segmentEnt: SegmentEnt, childJsxPath = ''): string {
