@@ -5,6 +5,9 @@ import {Ref} from '../types.ts';
 // обновлять его точечно, не пересобирая элемент
 type Dyn<TValue> = TValue | Atom<TValue>;
 
+// style принимает и строку, и объект: горбатые имена превращаются в дефисные
+type Style = string | Record<string, string | number>;
+
 type InputEventRegan = Omit<InputEvent, 'target'> & {target: HTMLInputElement};
 
 type BaseElement<TElement extends Element = any> = {
@@ -13,7 +16,7 @@ type BaseElement<TElement extends Element = any> = {
   rawHtml?: string;
 
   id?: Dyn<string>;
-  style?: Dyn<string>;
+  style?: Dyn<Style>;
   class?: Dyn<string>;
   className?: Dyn<string>;
   title?: Dyn<string>;

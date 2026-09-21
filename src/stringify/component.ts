@@ -6,7 +6,7 @@ import {StringifyProps, StringifyResult} from './types.ts';
 
 export function stringifyComponent(
   jsxNode: JsxNodeComponent,
-  props: StringifyProps
+  props: StringifyProps,
 ): StringifyResult {
   const {segmentEnt, children} = runComponent({
     jsxNode,

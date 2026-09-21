@@ -27,8 +27,9 @@ export const subscribeAtomWrapper = ({
     ];
     if (!subscribed) {
       subscribed = new Set();
-      (hNode.data as Record<string, Set<Atom>>)[ATOM_WRAPPER_SUBSCRIPTIONS_KEY] =
-        subscribed;
+      (hNode.data as Record<string, Set<Atom>>)[
+        ATOM_WRAPPER_SUBSCRIPTIONS_KEY
+      ] = subscribed;
     }
     if (subscribed.has(atom)) {
       ctx.areaCtx.updaterInit.remove(atom, func1);

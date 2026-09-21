@@ -59,7 +59,7 @@ export const renderRaw = ({
 export const render = (
   element: HTMLElement,
   node: JsxNode,
-  {window: localWindow}: {window: Window} = {window}
+  {window: localWindow}: {window: Window} = {window},
 ) => {
   const insertPoint: InsertPoint = {
     parent: element,

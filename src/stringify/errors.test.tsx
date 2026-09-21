@@ -3,7 +3,6 @@ import {Fragment} from '../components/fragment/fragment.ts';
 import {stringify} from './stringify.ts';
 import {ErrorGuard} from '../components/error-guard.tsx';
 
-
 describe('string errors', () => {
   it('default error', () => {
     const Component = () => {

@@ -10,7 +10,7 @@ import {stringify} from '../stringify/stringify.ts';
 describe('ErrorGuard', () => {
   it('renders children when no error', () => {
     const Component: FC = () => {
-      return <div id="child">content</div>;
+      return <div id='child'>content</div>;
     };
 
     const jsdom = new JSDOM();
@@ -20,7 +20,7 @@ describe('ErrorGuard', () => {
       <ErrorGuard handler={() => <div>error</div>}>
         <Component />
       </ErrorGuard>,
-      {window: jsdom.window as any as Window}
+      {window: jsdom.window as any as Window},
     );
 
     expect(jsdom.window.document.getElementById('child')).not.toBe(null);
@@ -35,10 +35,10 @@ describe('ErrorGuard', () => {
 
     render(
       jsdom.window.document.body,
-      <ErrorGuard handler={() => <div id="fallback">error occurred</div>}>
+      <ErrorGuard handler={() => <div id='fallback'>error occurred</div>}>
         <ThrowingComponent />
       </ErrorGuard>,
-      {window: jsdom.window as any as Window}
+      {window: jsdom.window as any as Window},
     );
 
     expect(jsdom.window.document.getElementById('fallback')).not.toBe(null);
@@ -58,7 +58,7 @@ describe('ErrorGuard', () => {
       <ErrorGuard handler={handler}>
         <ThrowingComponent />
       </ErrorGuard>,
-      {window: jsdom.window as any as Window}
+      {window: jsdom.window as any as Window},
     );
 
     expect(handler).toHaveBeenCalled();
@@ -71,9 +71,9 @@ describe('ErrorGuard', () => {
     };
 
     const html = stringify(
-      <ErrorGuard handler={() => <div id="fallback">error</div>}>
+      <ErrorGuard handler={() => <div id='fallback'>error</div>}>
         <ThrowingComponent />
-      </ErrorGuard>
+      </ErrorGuard>,
     );
 
     expect(html).toContain('fallback');
@@ -88,14 +88,14 @@ describe('ErrorGuard', () => {
 
     render(
       jsdom.window.document.body,
-      <ErrorGuard handler={() => <div id="outer">outer error</div>}>
+      <ErrorGuard handler={() => <div id='outer'>outer error</div>}>
         <div>
-          <ErrorGuard handler={() => <div id="inner">inner error</div>}>
+          <ErrorGuard handler={() => <div id='inner'>inner error</div>}>
             <ThrowingComponent />
           </ErrorGuard>
         </div>
       </ErrorGuard>,
-      {window: jsdom.window as any as Window}
+      {window: jsdom.window as any as Window},
     );
 
     expect(jsdom.window.document.getElementById('inner')).not.toBe(null);
@@ -126,7 +126,7 @@ describe('ErrorGuard на обновлении динамической обла
         <ErrorGuard handler={() => <span id='caught'>поймали</span>}>
           {value}
         </ErrorGuard>
-      </div>
+      </div>,
     ).querySelector('#holder')!;
 
     expect(holder.textContent).toBe('ok');
@@ -152,7 +152,7 @@ describe('ErrorGuard на обновлении динамической обла
         >
           {value}
         </ErrorGuard>
-      </div>
+      </div>,
     ).querySelector('#holder')!;
 
     value.set(<Boom />);
@@ -170,7 +170,7 @@ describe('ErrorGuard на обновлении динамической обла
         <ErrorGuard handler={() => <span id='outer'>внешний</span>}>
           <ErrorGuard handler={() => <Boom />}>{value}</ErrorGuard>
         </ErrorGuard>
-      </div>
+      </div>,
     ).querySelector('#holder')!;
 
     value.set(<Boom />);
@@ -195,7 +195,7 @@ describe('ErrorGuard на обновлении динамической обла
         <div id='holder'>
           {value}
           <span id='other'>{other}</span>
-        </div>
+        </div>,
       ).querySelector('#holder')!;
 
       value.set(<Boom />);
@@ -229,7 +229,7 @@ describe('ErrorGuard на обновлении динамической обла
       setupUpdate(
         <div id='holder'>
           <ErrorGuard handler={() => <Boom />}>{value}</ErrorGuard>
-        </div>
+        </div>,
       );
 
       value.set(<Boom />);

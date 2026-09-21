@@ -46,8 +46,10 @@ export function walkChildren({
     }
 
     if (checkAllowedStructure(value) === false) {
+      // в сообщение идёт тип и место, а не значение: symbol в строку не
+      // превращается вовсе, а от объекта строка всё равно ничего не скажет
       throw createErrorRegan({
-        error: `Invalid child: ${value}`,
+        error: `Invalid child of type ${typeof value} at ${parentSegmentEnt.getJsxPath()}`,
         place: 'jsx',
         segmentEnt: parentSegmentEnt,
       });

@@ -24,7 +24,7 @@ describe('fragment/stringify', () => {
 
     const str = stringify(<Template />);
     expect(str).toBe(
-      'parent<div>div1</div><div>div2<div>div2.1</div></div><div>div3</div>'
+      'parent<div>div1</div><div>div2<div>div2.1</div></div><div>div3</div>',
     );
   });
 });

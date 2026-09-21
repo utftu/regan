@@ -13,7 +13,7 @@ import {renderComponent} from './component.ts';
 // Что делать с узлом, решает его вид — методов у него больше нет.
 export function renderJsxNode(
   jsxNode: JsxNode,
-  props: RenderProps
+  props: RenderProps,
 ): RenderResult {
   if (jsxNode.type === 'element') {
     return renderElement(jsxNode, props);
@@ -51,7 +51,7 @@ export function handleChildren({
   children,
   parentSegmentEnt,
   globalCtx,
-      areaCtx,
+  areaCtx,
   oldHNodes = [],
 }: {
   children: SingleChild[];
@@ -97,7 +97,7 @@ export function handleChildren({
         jsxSegmentName,
         parentSegmentEnt,
         globalCtx,
-      areaCtx,
+        areaCtx,
         oldHNode,
       });
 

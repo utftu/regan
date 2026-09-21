@@ -1,7 +1,4 @@
-import {
-  findPrevDomNode,
-  getTopHNodeElement,
-} from '../../h-node/find.ts';
+import {findPrevDomNode, getTopHNodeElement} from '../../h-node/find.ts';
 import {HNode} from '../../h-node/h-node.ts';
 import {InsertPoint} from '../../types.ts';
 

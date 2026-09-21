@@ -42,9 +42,6 @@ export type RenderNodeKeep = {
 };
 
 export type RenderNode =
-  | RenderNodeElement
-  | RenderNodeText
-  | RenderNodeComponent
-  | RenderNodeKeep;
+  RenderNodeElement | RenderNodeText | RenderNodeComponent | RenderNodeKeep;
 
 export type RenderNodeDom = RenderNodeElement | RenderNodeText;

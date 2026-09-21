@@ -65,7 +65,7 @@ export const createElement = (
 export function jsx<TProps extends Props>(
   type: ElementType,
   rawProps: {children: RawChildren} & TProps,
-  key?: string
+  key?: string,
 ) {
   const {children: rawChildren, ...props} = rawProps;
 
@@ -104,7 +104,7 @@ export const jsxs = jsx;
 export function h(
   type: ElementType,
   props: Props = {},
-  children: SingleChild[] = []
+  children: SingleChild[] = [],
 ) {
   return prepare({
     type,

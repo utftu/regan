@@ -9,7 +9,10 @@ import {handleChildren} from './children.ts';
 import {RenderNodeElement} from './node.ts';
 import {RenderProps, RenderResult} from './types.ts';
 
-export function renderElement(jsxNode: JsxNodeElement, props: RenderProps): RenderResult {
+export function renderElement(
+  jsxNode: JsxNodeElement,
+  props: RenderProps,
+): RenderResult {
   const segmentEnt = new SegmentEnt({
     name: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
@@ -59,7 +62,7 @@ export function renderElement(jsxNode: JsxNodeElement, props: RenderProps): Rend
   renderNode.children = handleChildren({
     children: jsxNode.children,
     globalCtx: props.globalCtx,
-        areaCtx: props.areaCtx,
+    areaCtx: props.areaCtx,
     parentSegmentEnt: segmentEnt,
     oldHNodes: props.oldHNode?.children,
   }).renderNodes;

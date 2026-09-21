@@ -30,7 +30,7 @@ const findLastDomNode = (hNode: HNode): ChildNode | undefined => {
 // lastParentHNode — родитель, на котором обход остановился. Если dom-узла
 // слева не нашлось, вставлять придётся в начало этого родителя.
 export const findPrevDomNode = (
-  hNode: HNode
+  hNode: HNode,
 ): {domNode?: ChildNode; lastParentHNode?: HNode} => {
   let current = hNode;
   let lastParentHNode: HNode | undefined;

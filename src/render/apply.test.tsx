@@ -84,7 +84,7 @@ describe('apply: сопоставление по позиции', () => {
   it('обработчик события подменяется, старый больше не зовётся', async () => {
     const calls: string[] = [];
     const value = createAtom<any>(
-      <button id='b' click={() => calls.push('первый')} />
+      <button id='b' click={() => calls.push('первый')} />,
     );
 
     const App: FC = () => <div id='holder'>{value}</div>;
@@ -196,7 +196,7 @@ describe('apply: сопоставление по ключу', () => {
 
     expect(ids(holder)).toEqual(['b', 'a']);
     expect((holder.querySelector('#a') as HTMLInputElement).value).toBe(
-      'напечатано'
+      'напечатано',
     );
   });
 

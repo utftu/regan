@@ -4,6 +4,7 @@ import {ListenerManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {GlobalCtx} from '../ctx/global.ts';
 import {MountUnmounFunc} from '../h-node/h-node.ts';
+import {getAttributeValue} from './attributes.ts';
 
 export const splitProps = (props: Props) => {
   const joinedProps: Props = {};
@@ -38,15 +39,23 @@ const setProperty = ({
 }) => {
   if (typeof value === 'function') {
     listenerManager.add(element, name, value);
-  } else {
-    element.setAttribute(name, value);
+    return;
   }
+
+  const attributeValue = getAttributeValue(name, value);
+
+  if (attributeValue === undefined) {
+    element.removeAttribute(name);
+    return;
+  }
+
+  element.setAttribute(name, attributeValue);
 };
 
 export const initStaticProps = (
   element: Element,
   staticProps: Props,
-  listenerManager: ListenerManager
+  listenerManager: ListenerManager,
 ) => {
   for (const name in staticProps) {
     setProperty({name, value: staticProps[name], element, listenerManager});

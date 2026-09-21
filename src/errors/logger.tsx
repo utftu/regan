@@ -31,7 +31,7 @@ export const logError = ({error}: {error: ErrorRegan}) => {
 
 export const ErrorLogger: FC<{enabled?: boolean}> = (
   {enabled = true},
-  {children}
+  {children},
 ) => {
   if (enabled === false) {
     return children;

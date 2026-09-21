@@ -33,7 +33,7 @@ describe('hydrate errors', () => {
     const jsdom = new JSDOM();
 
     expect(() => insertAndHydrate({jsdom, jsxNode: <Parent />})).toThrowError(
-      'child'
+      'child',
     );
   });
   it('deep', async () => {

@@ -35,7 +35,7 @@ describe('render errors', () => {
     expect(() =>
       render(jsdom.window.document.body, <Parent />, {
         window: jsdom.window as any as Window,
-      })
+      }),
     ).toThrowError('child');
   });
   it('deep', () => {

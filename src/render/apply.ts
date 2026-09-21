@@ -47,14 +47,16 @@ type HandleResult = {
 const handleNode = ({
   renderNode,
   hNode,
+  parentDomNode,
   window,
 }: {
   renderNode: RenderNodeDom;
   hNode?: HNodeDom;
+  parentDomNode: ParentNode | Document;
   window: Window;
 }): HandleResult => {
   if (!hNode) {
-    const domNode = createDomNode(renderNode, window);
+    const domNode = createDomNode(renderNode, parentDomNode, window);
 
     return {hNode: createHNode(renderNode, domNode), oldChildren: []};
   }
@@ -168,6 +170,7 @@ const applyChildren = ({
     const {hNode, oldChildren} = handleNode({
       renderNode,
       hNode: oldHNode as HNodeDom | undefined,
+      parentDomNode,
       window,
     });
     hNode.parent = parentHNode;

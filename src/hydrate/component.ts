@@ -7,7 +7,7 @@ import {HydrateProps, HydrateResult} from './types.ts';
 
 export function hydrateComponent(
   jsxNode: JsxNodeComponent,
-  props: HydrateProps
+  props: HydrateProps,
 ): HydrateResult {
   const {segmentEnt, state, children} = runComponent({
     jsxNode,
@@ -39,7 +39,9 @@ export function hydrateComponent(
   try {
     childrenResult = handle(children);
   } catch (error) {
-    childrenResult = handle(getErrorGuardChildren({error, jsxNode, segmentEnt}));
+    childrenResult = handle(
+      getErrorGuardChildren({error, jsxNode, segmentEnt}),
+    );
   }
 
   hNode.addChildren(childrenResult.hNodes);

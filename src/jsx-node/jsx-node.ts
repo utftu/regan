@@ -38,7 +38,14 @@ export const createJsxNodeElement = ({
   systemProps?: SystemProps;
   children: SingleChild[];
 }): JsxNodeElement => {
-  return {jsxNode: true, type: 'element', tagName, props, systemProps, children};
+  return {
+    jsxNode: true,
+    type: 'element',
+    tagName,
+    props,
+    systemProps,
+    children,
+  };
 };
 
 export const createJsxNodeComponent = ({

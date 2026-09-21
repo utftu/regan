@@ -2,3 +2,5 @@ coverage
 dist
 .turbo
 .astro
+node_modules
+bench/solid-app.mjs

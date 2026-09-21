@@ -9,10 +9,10 @@ describe('updater', () => {
       const updater = createUpdaterSync();
       const atom = createAtom(0);
       const listener = vi.fn();
-      
+
       updater.add(atom, listener);
       atom.set(1);
-      
+
       expect(listener).toHaveBeenCalled();
     });
 
@@ -20,11 +20,11 @@ describe('updater', () => {
       const updater = createUpdaterSync();
       const atom = createAtom(0);
       const listener = vi.fn();
-      
+
       updater.add(atom, listener);
       updater.remove(atom, listener);
       atom.set(1);
-      
+
       expect(listener).not.toHaveBeenCalled();
     });
 
@@ -34,14 +34,14 @@ describe('updater', () => {
       const atom2 = createAtom(0);
       const listener1 = vi.fn();
       const listener2 = vi.fn();
-      
+
       updater.add(atom1, listener1);
       updater.add(atom2, listener2);
       updater.cancel();
-      
+
       atom1.set(1);
       atom2.set(1);
-      
+
       expect(listener1).not.toHaveBeenCalled();
       expect(listener2).not.toHaveBeenCalled();
     });
@@ -52,12 +52,12 @@ describe('updater', () => {
       const updater = createUpdaterAsync();
       const atom = createAtom(0);
       const listener = vi.fn();
-      
+
       updater.add(atom, listener);
       atom.set(1);
-      
+
       await waitTime(0);
-      
+
       expect(listener).toHaveBeenCalled();
     });
 
@@ -65,13 +65,13 @@ describe('updater', () => {
       const updater = createUpdaterAsync();
       const atom = createAtom(0);
       const listener = vi.fn();
-      
+
       updater.add(atom, listener);
       updater.remove(atom, listener);
       atom.set(1);
-      
+
       await waitTime(0);
-      
+
       expect(listener).not.toHaveBeenCalled();
     });
 
@@ -106,15 +106,15 @@ describe('updater', () => {
       const updater = createUpdaterAsync();
       const atom = createAtom(0);
       const listener = vi.fn();
-      
+
       updater.add(atom, listener);
-      
+
       atom.set(1);
       atom.set(2);
       atom.set(3);
-      
+
       await waitTime(0);
-      
+
       // Should be called once due to batching
       expect(listener.mock.calls.length).toBeLessThanOrEqual(3);
     });

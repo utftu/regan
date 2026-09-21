@@ -38,7 +38,7 @@ describe('компонент с неизменившимся ключом не �
     ]);
 
     const holder = setup(<div id='holder'>{list}</div>).querySelector(
-      '#holder'
+      '#holder',
     )!;
 
     const buttonA = holder.querySelector('#a') as HTMLElement;
@@ -73,7 +73,7 @@ describe('компонент с неизменившимся ключом не �
     ]);
 
     const holder = setup(<div id='holder'>{list}</div>).querySelector(
-      '#holder'
+      '#holder',
     )!;
 
     expect(mounted).toEqual(['a', 'b']);
@@ -108,7 +108,7 @@ describe('компонент с неизменившимся ключом не �
     ]);
 
     const holder = setup(<div id='holder'>{list}</div>).querySelector(
-      '#holder'
+      '#holder',
     )!;
 
     list.set([<Row key='b' name='b' />, <Row key='a' name='a' />]);
@@ -136,7 +136,7 @@ describe('компонент с неизменившимся ключом не �
     const value = createAtom<any>(<First key='a' />);
 
     const holder = setup(<div id='holder'>{value}</div>).querySelector(
-      '#holder'
+      '#holder',
     )!;
 
     expect(holder.textContent).toBe('first');
@@ -154,7 +154,7 @@ describe('компонент с неизменившимся ключом не �
     const value = createAtom<any>(<Row key='a' name='первый' />);
 
     const holder = setup(<div id='holder'>{value}</div>).querySelector(
-      '#holder'
+      '#holder',
     )!;
 
     expect(holder.textContent).toBe('первый');
@@ -182,7 +182,7 @@ describe('компонент с неизменившимся ключом не �
         <ErrorGuard handler={() => <span id='caught'>поймали</span>}>
           <Boom key='a' />
         </ErrorGuard>
-      </div>
+      </div>,
     ).querySelector('#holder')!;
 
     expect(holder.textContent).toBe('поймали');
@@ -195,11 +195,11 @@ describe('компонент с неизменившимся ключом не �
     const value = createAtom<any>(
       <button id='b' click={onClick}>
         раз
-      </button>
+      </button>,
     );
 
     const holder = setup(<div id='holder'>{value}</div>).querySelector(
-      '#holder'
+      '#holder',
     )!;
     const button = holder.querySelector('#b') as HTMLElement;
 
@@ -210,7 +210,7 @@ describe('компонент с неизменившимся ключом не �
     value.set(
       <button id='b' click={onClick}>
         два
-      </button>
+      </button>,
     );
     await waitTime(0);
 

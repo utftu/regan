@@ -33,7 +33,7 @@ describe('render', () => {
     });
 
     expect(jsdom.window.document.body.innerHTML).toBe(
-      '<div id="parent-wrapper"><div id="parent">parent</div><div id="child">child</div></div>'
+      '<div id="parent-wrapper"><div id="parent">parent</div><div id="child">child</div></div>',
     );
   });
   it('listeners', () => {

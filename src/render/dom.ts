@@ -4,6 +4,7 @@ import {HNodeText} from '../h-node/text.ts';
 import {unmountHNodes} from '../h-node/helpers.ts';
 import {RenderNodeDom} from './node.ts';
 import {InsertPoint} from '../types.ts';
+import {getAttributeValue} from '../utils/attributes.ts';
 
 // Всё, что делается с самим DOM: создать узел, поставить его на место,
 // пропатчить пропы, убрать. В каком порядке это происходит — в apply.ts.
@@ -37,22 +38,52 @@ export const collectDomNodes = (hNode: HNode, store: ChildNode[] = []) => {
   return store;
 };
 
+const svgNamespace = 'http://www.w3.org/2000/svg';
+
+// Внутри <svg> элементы живут в своём пространстве имён, и через
+// createElement их не создать — выйдет html-элемент с тем же именем, который
+// браузер не нарисует. Родитель к этому моменту уже создан, поэтому
+// достаточно спросить его: вложенность разбирается сама.
+const createElement = (
+  tag: string,
+  parentDomNode: ParentNode | Document,
+  window: Window,
+) => {
+  if (
+    tag === 'svg' ||
+    (parentDomNode as Element).namespaceURI === svgNamespace
+  ) {
+    return window.document.createElementNS(svgNamespace, tag);
+  }
+
+  return window.document.createElement(tag);
+};
+
 // Узел создаётся отсоединённым: ни в каком родителе его сейчас нет.
 // Вставит его вызывающий, позже, когда соберёт детей.
-export const createDomNode = (renderNode: RenderNodeDom, window: Window): ChildNode => {
+export const createDomNode = (
+  renderNode: RenderNodeDom,
+  parentDomNode: ParentNode | Document,
+  window: Window,
+): ChildNode => {
   if (renderNode.type === 'text') {
     return window.document.createTextNode(renderNode.text);
   }
 
-  const element = window.document.createElement(renderNode.tag);
+  const element = createElement(renderNode.tag, parentDomNode, window);
 
   for (const name in renderNode.props) {
     const value = renderNode.props[name];
 
     if (typeof value === 'function') {
       renderNode.listenerManager.add(element, name, value);
-    } else {
-      element.setAttribute(name, value);
+      continue;
+    }
+
+    const attributeValue = getAttributeValue(name, value);
+
+    if (attributeValue !== undefined) {
+      element.setAttribute(name, attributeValue);
     }
   }
 
@@ -66,7 +97,10 @@ export const createDomNode = (renderNode: RenderNodeDom, window: Window): ChildN
 // HNode заводится заново на каждое обновление, даже когда dom-узел
 // переиспользован: у нового узла свои mounts/unmounts и свой снимок пропов.
 // segmentEnt.hNode переставляется на свежий — по нему ищут узел снаружи.
-export const createHNode = (renderNode: RenderNodeDom, domNode: ChildNode): HNodeDom => {
+export const createHNode = (
+  renderNode: RenderNodeDom,
+  domNode: ChildNode,
+): HNodeDom => {
   const base = {
     globalCtx: renderNode.globalCtx,
     segmentEnt: renderNode.segmentEnt,
@@ -144,8 +178,15 @@ export const patchProps = (renderNode: RenderNodeDom, hNode: HNodeElement) => {
     if (typeof value === 'function') {
       hNode.listenerManager.remove(element, name);
       renderNode.listenerManager.add(element, name, value);
+      continue;
+    }
+
+    const attributeValue = getAttributeValue(name, value);
+
+    if (attributeValue === undefined) {
+      element.removeAttribute(name);
     } else {
-      element.setAttribute(name, value);
+      element.setAttribute(name, attributeValue);
     }
   }
 };

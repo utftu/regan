@@ -7,6 +7,7 @@ import {JsxNodeElement} from '../jsx-node/jsx-node.ts';
 import {StringifyProps, StringifyResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Props} from '../types.ts';
+import {getAttributeValue} from '../utils/attributes.ts';
 
 const selfClosingTags = [
   'area',
@@ -54,18 +55,23 @@ const prepareProps = (props: Record<string, any>) => {
       continue;
     }
 
-    if (checkAtom(value)) {
-      newProps[key] = value.get();
-      continue;
-    }
+    const attributeValue = getAttributeValue(
+      key,
+      checkAtom(value) ? value.get() : value,
+    );
 
-    newProps[key] = value;
+    if (attributeValue !== undefined) {
+      newProps[key] = attributeValue;
+    }
   }
 
   return newProps;
 };
 
-export function stringifyElement(jsxNode: JsxNodeElement, props: StringifyProps): StringifyResult {
+export function stringifyElement(
+  jsxNode: JsxNodeElement,
+  props: StringifyProps,
+): StringifyResult {
   const segmentEnt = new SegmentEnt({
     name: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,
@@ -89,14 +95,13 @@ export function stringifyElement(jsxNode: JsxNodeElement, props: StringifyProps)
     };
   }
 
-  let childrenResult: HandleChildrenStringifyResult =
-    handleChildrenString({
-      children: jsxNode.children,
-      parentSegmentEnt: segmentEnt,
-      globalCtx: props.globalCtx,
-        areaCtx: props.areaCtx,
-      lastText: false,
-    });
+  let childrenResult: HandleChildrenStringifyResult = handleChildrenString({
+    children: jsxNode.children,
+    parentSegmentEnt: segmentEnt,
+    globalCtx: props.globalCtx,
+    areaCtx: props.areaCtx,
+    lastText: false,
+  });
 
   return {
     text: `${elementString.left}${childrenResult.text}${elementString.right}`,

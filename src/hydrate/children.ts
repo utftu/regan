@@ -13,7 +13,7 @@ import {hydrateComponent} from './component.ts';
 // Что делать с узлом, решает его вид — методов у него больше нет.
 export function hydrateJsxNode(
   jsxNode: JsxNode,
-  props: HydrateProps
+  props: HydrateProps,
 ): HydrateResult {
   if (jsxNode.type === 'element') {
     return hydrateElement(jsxNode, props);
@@ -32,7 +32,7 @@ export type HandleChildrenHydrateResult = {
 // чтобы дерево совпадало с тем, что даёт клиентский рендер.
 const removeTextSeparator = (
   parent: ParentNode | Document,
-  index: number
+  index: number,
 ): void => {
   const node = parent.childNodes[index];
 
@@ -71,8 +71,8 @@ export function handleChildrenHydrate({
       hNodes.push(
         new HNodeText(
           {parent: parentHNode, globalCtx, segmentEnt: parentSegmentEnt},
-          {text, textNode}
-        )
+          {text, textNode},
+        ),
       );
 
       nodeCount++;

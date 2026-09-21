@@ -46,7 +46,7 @@ describe('atom-wrapper', () => {
     insertAndHydrate({jsdom, jsxNode: <Component />});
 
     expect(document.getElementById('name')?.outerHTML).toBe(
-      `${start}Aleksey${end}`
+      `${start}Aleksey${end}`,
     );
 
     atomName.set('Ivan');
@@ -54,7 +54,7 @@ describe('atom-wrapper', () => {
     await waitTime(0);
 
     expect(document.getElementById('name')?.outerHTML).toBe(
-      `${start}Ivan${end}`
+      `${start}Ivan${end}`,
     );
   });
   it('names change', async () => {

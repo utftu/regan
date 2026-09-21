@@ -30,7 +30,7 @@ describe('jsx', () => {
     const root = insertAndHydrate({jsdom, jsxNode: <Parent />});
 
     expect(root.innerHTML).toBe(
-      '<div><div>not empty</div><div id="0">0</div></div>'
+      '<div><div>not empty</div><div id="0">0</div></div>',
     );
 
     jsdom.window.document.getElementById('0')!.click();

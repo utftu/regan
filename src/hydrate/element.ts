@@ -14,7 +14,10 @@ import {
 import {HydrateProps, HydrateResult} from './types.ts';
 import {applyRef} from '../utils/ref.ts';
 
-export function hydrateElement(jsxNode: JsxNodeElement, props: HydrateProps): HydrateResult {
+export function hydrateElement(
+  jsxNode: JsxNodeElement,
+  props: HydrateProps,
+): HydrateResult {
   const segmentEnt = new SegmentEnt({
     name: props.jsxSegmentName,
     parentSegmentEnt: props.parentSegmentEnt,

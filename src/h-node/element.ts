@@ -19,7 +19,7 @@ export class HNodeElement extends HNodeBase {
 
   constructor(
     hNodeProps: PropsHNode,
-    {element, tag, props, listenerManager}: HNodeElProps
+    {element, tag, props, listenerManager}: HNodeElProps,
   ) {
     super(hNodeProps);
     this.element = element;

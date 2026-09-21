@@ -32,7 +32,7 @@ const checkDefaultHandler = (handler: AnyFunc) => {
 // упал, ошибку должен увидеть следующий guard, а не тот же самый.
 const getErrorContextEnt = (
   contextEnt: ContextEnt | undefined,
-  skip: number
+  skip: number,
 ) => {
   const context = getErrorContext();
   let current = contextEnt;
@@ -69,7 +69,7 @@ export const handleError = ({
   const errorRegan = createErrorRegan({error, place, segmentEnt});
   const errorHandler = getContextValue(
     getErrorContext(),
-    getErrorContextEnt(segmentEnt.contextEnt, skip)
+    getErrorContextEnt(segmentEnt.contextEnt, skip),
   );
 
   const handled = !checkDefaultHandler(errorHandler);
@@ -138,7 +138,7 @@ export const runMount = async (mount: Mount, hNode: HNode) => {
 // глобальным обработчикам сообщаем и бросаем дальше.
 export const throwGlobalSystemError = (
   error: unknown,
-  globalCtx: GlobalCtxBoth
+  globalCtx: GlobalCtxBoth,
 ) => {
   const errorRegan = createErrorRegan({
     error,

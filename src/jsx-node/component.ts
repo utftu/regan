@@ -31,7 +31,7 @@ export function runComponent({
 } {
   const contextEnt = selectContextEnt(
     jsxNode,
-    props.parentSegmentEnt?.contextEnt
+    props.parentSegmentEnt?.contextEnt,
   );
 
   const segmentEnt = new SegmentEnt({

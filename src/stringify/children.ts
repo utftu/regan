@@ -11,7 +11,7 @@ import {textSeparator} from '../consts.ts';
 // Что делать с узлом, решает его вид — методов у него больше нет.
 export function stringifyJsxNode(
   jsxNode: JsxNode,
-  props: StringifyProps
+  props: StringifyProps,
 ): StringifyResult {
   if (jsxNode.type === 'element') {
     return stringifyElement(jsxNode, props);
@@ -57,7 +57,7 @@ export function handleChildrenString({
     node: (jsxNode, jsxSegmentName) => {
       const result = stringifyJsxNode(jsxNode, {
         globalCtx,
-  areaCtx,
+        areaCtx,
         jsxSegmentName,
         parentSegmentEnt,
         lastText,

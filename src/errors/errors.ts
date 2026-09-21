@@ -84,7 +84,7 @@ export const defaultErrorHandler = () => undefined;
 
 // Глобальный обработчик: видит все ошибки, включая перехваченные.
 export type GlobalErrorHandler = (
-  props: ErrorProps & {handled: boolean}
+  props: ErrorProps & {handled: boolean},
 ) => any;
 
 // Контекст создаётся при первом обращении: на момент загрузки модуля
@@ -94,7 +94,7 @@ let errorContext: Context<ErrorHandler> | undefined;
 export const getErrorContext = () => {
   errorContext ??= createContext<ErrorHandler>(
     'error_handler',
-    defaultErrorHandler
+    defaultErrorHandler,
   );
 
   return errorContext;

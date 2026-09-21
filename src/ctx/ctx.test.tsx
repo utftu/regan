@@ -116,7 +116,7 @@ describe('ctx', () => {
 
     const jsdom = new JSDOM();
 
-    render(jsdom.window.document.body, <Component name="test" count={42} />, {
+    render(jsdom.window.document.body, <Component name='test' count={42} />, {
       window: jsdom.window as any as Window,
     });
 
@@ -141,7 +141,7 @@ describe('ctx', () => {
         <span>2</span>
         <span>3</span>
       </Wrapper>,
-      {window: jsdom.window as any as Window}
+      {window: jsdom.window as any as Window},
     );
 
     expect(childrenCount).toBe(3);

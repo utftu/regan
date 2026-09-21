@@ -7,7 +7,7 @@ import {RenderProps, RenderResult} from './types.ts';
 
 export function renderComponent(
   jsxNode: JsxNodeComponent,
-  props: RenderProps
+  props: RenderProps,
 ): RenderResult {
   const {segmentEnt, state, children} = runComponent({
     jsxNode,
@@ -38,7 +38,7 @@ export function renderComponent(
     renderNode.children = handle(children);
   } catch (error) {
     renderNode.children = handle(
-      getErrorGuardChildren({error, jsxNode, segmentEnt})
+      getErrorGuardChildren({error, jsxNode, segmentEnt}),
     );
   }
 

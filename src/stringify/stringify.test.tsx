@@ -34,7 +34,7 @@ describe('node', () => {
     const str = stringify(<Parent a='b' />);
 
     expect(str).toBe(
-      '<div hello="world" world="hello"><div>parent</div><div>child</div></div>'
+      '<div hello="world" world="hello"><div>parent</div><div>child</div></div>',
     );
   });
   it('fragment', () => {
@@ -67,7 +67,7 @@ describe('node', () => {
     const str = stringify(<Parent a='b' />);
 
     expect(str).toBe(
-      '<div hello="world" world="hello"><div>parent</div><div>child</div></div>'
+      '<div hello="world" world="hello"><div>parent</div><div>child</div></div>',
     );
   });
   it('jsxPath', () => {
@@ -139,7 +139,7 @@ describe('node', () => {
     // const str = await strPromise;
 
     expect(str).toBe(
-      '<div hello="hello"><div>world</div><div hello="hello"><div>world</div></div></div>'
+      '<div hello="hello"><div>world</div><div hello="hello"><div>world</div></div></div>',
     );
   });
 });
