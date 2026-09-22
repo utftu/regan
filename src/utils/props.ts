@@ -4,7 +4,11 @@ import {ListenerManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {GlobalCtx} from '../ctx/global.ts';
 import {MountUnmounFunc} from '../h-node/h-node.ts';
-import {getAttributeValue} from './attributes.ts';
+import {
+  checkDomProperty,
+  getAttributeValue,
+  setDomProperty,
+} from './attributes.ts';
 
 export const splitProps = (props: Props) => {
   const joinedProps: Props = {};
@@ -39,6 +43,11 @@ const setProperty = ({
 }) => {
   if (typeof value === 'function') {
     listenerManager.add(element, name, value);
+    return;
+  }
+
+  if (checkDomProperty(element, name)) {
+    setDomProperty(element, name, value);
     return;
   }
 

@@ -61,3 +61,48 @@ export const getAttributeValue = (
   // false, null, undefined и всё прочее атрибутом не становятся
   return;
 };
+
+// У этих пропов атрибут — только значение по умолчанию. Как только
+// пользователь напечатал в поле или переключил чекбокс, атрибут и свойство
+// расходятся навсегда, и через setAttribute полем уже не управлять:
+// value={atom} работал бы ровно до первого ввода.
+//
+// Поэтому на клиенте они пишутся свойством и атрибутом не дублируются.
+// В строке из stringify они всё равно атрибуты — других в html нет, и
+// гидратация получает из них верное начальное значение.
+//
+// Значение в таблице — чем заменить пропавший или негодный проп:
+// value='' очищает поле, checked=false снимает галку.
+const domProperties: Record<string, Record<string, string | boolean>> = {
+  input: {value: '', checked: false},
+  textarea: {value: ''},
+  select: {value: ''},
+  option: {selected: false},
+};
+
+export const checkDomProperty = (element: Element, name: string) => {
+  const properties = domProperties[element.localName];
+
+  if (properties === undefined) {
+    return false;
+  }
+
+  return name in properties;
+};
+
+export const setDomProperty = (element: Element, name: string, value: any) => {
+  const known =
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean';
+
+  // null и undefined записывать нельзя: в input.value они превратятся
+  // в строки 'null' и 'undefined'
+  const newValue = known ? value : domProperties[element.localName][name];
+
+  // сравнение спасает каретку: запись того же значения в поле сбрасывает
+  // выделение и позицию курсора
+  if ((element as any)[name] !== newValue) {
+    (element as any)[name] = newValue;
+  }
+};

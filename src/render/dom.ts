@@ -4,7 +4,11 @@ import {HNodeText} from '../h-node/text.ts';
 import {unmountHNodes} from '../h-node/helpers.ts';
 import {RenderNodeDom} from './node.ts';
 import {InsertPoint} from '../types.ts';
-import {getAttributeValue} from '../utils/attributes.ts';
+import {
+  checkDomProperty,
+  getAttributeValue,
+  setDomProperty,
+} from '../utils/attributes.ts';
 
 // Всё, что делается с самим DOM: создать узел, поставить его на место,
 // пропатчить пропы, убрать. В каком порядке это происходит — в apply.ts.
@@ -90,6 +94,11 @@ export const createDomNode = (
       continue;
     }
 
+    if (checkDomProperty(element, name)) {
+      setDomProperty(element, name, value);
+      continue;
+    }
+
     const attributeValue = getAttributeValue(name, value);
 
     if (attributeValue !== undefined) {
@@ -171,6 +180,8 @@ export const patchProps = (renderNode: RenderNodeDom, hNode: HNodeElement) => {
 
     if (typeof hNode.props[name] === 'function') {
       hNode.listenerManager.remove(element, name);
+    } else if (checkDomProperty(element, name)) {
+      setDomProperty(element, name, undefined);
     } else {
       element.removeAttribute(name);
     }
@@ -188,6 +199,11 @@ export const patchProps = (renderNode: RenderNodeDom, hNode: HNodeElement) => {
     if (typeof value === 'function') {
       hNode.listenerManager.remove(element, name);
       renderNode.listenerManager.add(element, name, value);
+      continue;
+    }
+
+    if (checkDomProperty(element, name)) {
+      setDomProperty(element, name, value);
       continue;
     }
 
