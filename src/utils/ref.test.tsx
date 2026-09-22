@@ -2,7 +2,7 @@ import {describe, expect, it} from 'bun:test';
 import {JSDOM} from 'jsdom';
 import {createAtom} from 'strangelove';
 import {render} from '../render/render.ts';
-import {detachChildren} from '../h-node/helpers.ts';
+import {unmountHNodes} from '../h-node/helpers.ts';
 import {insertAndHydrate} from './tests.ts';
 import {FC} from '../types.ts';
 
@@ -71,7 +71,7 @@ describe('ref', () => {
 
     expect(ref.get()).not.toBe(undefined);
 
-    detachChildren(hNode);
+    unmountHNodes(hNode);
 
     expect(ref.get()).toBe(undefined);
   });

@@ -132,6 +132,22 @@ export const createErrorComponent = ({
   });
 };
 
+// Слушатель асинхронный, и пробрасывать из него некуда: проброс станет
+// необработанным отклонением промиса. Поэтому всё, что не перехвачено,
+// показываем сами — в том числе когда бросил сам обработчик, как делает
+// ErrorLogger.
+const handleListenerError = (error: unknown, segmentEnt: SegmentEnt) => {
+  try {
+    const result = handleError({error, place: 'handler', segmentEnt});
+
+    if (result.handled === false) {
+      reportUncaught(result.error);
+    }
+  } catch (handlerError) {
+    reportUncaught(handlerError);
+  }
+};
+
 // Обёртка вокруг пользовательского обработчика события.
 export const prepareListener = ({
   listenerManager,
@@ -146,11 +162,7 @@ export const prepareListener = ({
     try {
       await func(...args);
     } catch (error) {
-      const result = handleError({error, place: 'handler', segmentEnt});
-
-      if (result.handled === false) {
-        reportUncaught(result.error);
-      }
+      handleListenerError(error, segmentEnt);
     }
   };
 };

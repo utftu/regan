@@ -4,8 +4,8 @@ JSX-фреймворк: клиентский рендер, SSR, гидратац
 [strangelove](https://www.npmjs.com/package/strangelove), компилятор не нужен,
 хватает штатного automatic JSX runtime.
 
-Один пакет, публикуется как `regan`. 59 файлов, 3892 строки без тестов, сборка
-25.3 КБ / 7.9 КБ gzip.
+Один пакет, публикуется как `regan`. 59 файлов, 3893 строки без тестов, сборка
+25.2 КБ / 7.9 КБ gzip.
 
 ## Стек
 
@@ -15,7 +15,7 @@ Bun (тесты и сборка), TypeScript strict, jsdom в тестах, pret
 ## Команды
 
 ```bash
-bun test          # 196 тестов
+bun test          # 193 теста
 bun run types     # tsc --noEmit
 bun run build     # js + d.ts в dist/
 bun run watch     # пересборка js

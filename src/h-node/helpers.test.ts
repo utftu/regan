@@ -1,10 +1,5 @@
 import {describe, expect, it, vi} from 'bun:test';
-import {
-  mountHNodes,
-  unmountHNodes,
-  addChildren,
-  detachChildren,
-} from './helpers.ts';
+import {mountHNodes, unmountHNodes, addChildren} from './helpers.ts';
 import {HNodeComponent} from './component.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {GlobalCtx} from '../ctx/global.ts';
@@ -96,57 +91,6 @@ describe('helpers', () => {
       addChildren(parent, [child]);
 
       expect(child.parent).toBe(parent);
-    });
-  });
-
-  describe('detachChildren', () => {
-    it('removes all children', () => {
-      const child1 = createMockHNode();
-      const child2 = createMockHNode();
-      const parent = createMockHNode({children: [child1, child2]});
-
-      child1.parent = parent;
-      child2.parent = parent;
-
-      detachChildren(parent);
-
-      expect(parent.children.length).toBe(0);
-    });
-
-    it('unmounts children', () => {
-      const unmount = vi.fn();
-      const child = createMockHNode({unmounts: [unmount]});
-      const parent = createMockHNode({children: [child]});
-
-      child.parent = parent;
-
-      detachChildren(parent);
-
-      expect(unmount).toHaveBeenCalled();
-    });
-
-    it('clears parent reference', () => {
-      const child = createMockHNode();
-      const parent = createMockHNode({children: [child]});
-
-      child.parent = parent;
-
-      detachChildren(parent);
-
-      expect(child.parent).toBeUndefined();
-    });
-
-    it('detaches nested children recursively', () => {
-      const grandchild = createMockHNode();
-      const child = createMockHNode({children: [grandchild]});
-      const parent = createMockHNode({children: [child]});
-
-      grandchild.parent = child;
-      child.parent = parent;
-
-      detachChildren(parent);
-
-      expect(child.children.length).toBe(0);
     });
   });
 });

@@ -2,7 +2,7 @@ import {describe, expect, it, vi} from 'bun:test';
 import {JSDOM} from 'jsdom';
 import {insertAndHydrate} from '../../utils/tests.ts';
 import {render} from '../../render/render.ts';
-import {detachChildren} from '../../h-node/helpers.ts';
+import {unmountHNodes} from '../../h-node/helpers.ts';
 import {Show} from './show.tsx';
 import {waitTime} from 'utftu';
 import {createAtom} from 'strangelove';
@@ -63,7 +63,7 @@ describe('show', () => {
         window: jsdom.window as any,
       });
 
-      detachChildren(hNode);
+      unmountHNodes(hNode);
       element.remove();
     }
 

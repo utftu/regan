@@ -10,7 +10,6 @@ export type {JSX} from './jsx/types.ts';
 export {stringify} from './stringify/stringify.ts';
 export type {JsxNode} from './jsx-node/jsx-node.ts';
 export {ErrorLogger} from './errors/logger.tsx';
-export {detachChildren} from './h-node/helpers.ts';
 export {ErrorGuard} from './components/error-guard.tsx';
 export type {
   ErrorRegan,

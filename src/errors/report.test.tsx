@@ -94,6 +94,47 @@ describe('непойманная ошибка', () => {
     expect(reported).toHaveLength(0);
   });
 
+  it('бросивший обработчик не превращается в отклонение промиса', async () => {
+    const rejections: unknown[] = [];
+    const onRejection = (error: unknown) => rejections.push(error);
+    process.on('unhandledRejection', onRejection);
+
+    try {
+      const reported = await catchReported(() => {
+        const Component: FC = () => (
+          <button
+            id='button'
+            click={() => {
+              throw new Error('бум');
+            }}
+          >
+            x
+          </button>
+        );
+
+        // ErrorLogger печатает ошибку и бросает её дальше
+        const jsdom = mount(
+          <ErrorGuard
+            handler={({error}) => {
+              throw error;
+            }}
+          >
+            <Component />
+          </ErrorGuard>,
+        );
+        jsdom.window.document.getElementById('button')!.click();
+      });
+
+      // отклонение промиса всплывает не сразу — ждём макротаск
+      await waitTime(10);
+
+      expect(reported).toHaveLength(1);
+      expect(rejections).toHaveLength(0);
+    } finally {
+      process.off('unhandledRejection', onRejection);
+    }
+  });
+
   it('в ошибке лежит путь до узла', async () => {
     const reported = await catchReported(() => {
       const Button: FC = () => (

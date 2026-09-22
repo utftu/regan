@@ -16,13 +16,3 @@ export const addChildren = (parentHNode: HNode, children: HNode[]) => {
     parentHNode.children.push(childHNode);
   });
 };
-
-export const detachChildren = (hNode: HNode) => {
-  hNode.children.forEach((hNodeChild) => {
-    unmountHNodes(hNodeChild);
-    hNodeChild.parent = undefined;
-
-    detachChildren(hNodeChild);
-  });
-  hNode.children.length = 0;
-};
