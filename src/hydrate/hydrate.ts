@@ -53,7 +53,11 @@ export function hydrateRaw({
 export const hydrate = (
   element: HTMLElement | Document,
   node: JsxNode,
-  options?: {window?: Window; data?: Data},
+  options?: {
+    window?: Window;
+    data?: Data;
+    errorHandlers?: GlobalErrorHandler[];
+  },
 ) => {
   return hydrateRaw({
     domPointer: {
@@ -61,7 +65,7 @@ export const hydrate = (
       nodeCount: 0,
     },
     data: options?.data || defaultData,
-
+    errorHandlers: options?.errorHandlers,
     window: options?.window,
     node,
   });

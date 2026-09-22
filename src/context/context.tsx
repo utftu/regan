@@ -22,13 +22,15 @@ export function createContext<TValue extends any = any>(
     name,
     defaultValue,
   } as Context<TValue>;
-  context.Provider = (({value}, {children}) => {
+  const Provider: FC<{value: TValue}> = ({value}, {children}) => {
     return (
       <ContextProvider value={value} context={context}>
         {children}
       </ContextProvider>
     );
-  }) satisfies FC<{value: TValue}>;
+  };
+  Provider.reganInternal = true;
+  context.Provider = Provider;
 
   return context;
 }
@@ -58,6 +60,8 @@ export const ContextProvider: FC = <TValue extends any = any>(
 ) => {
   return children;
 };
+
+ContextProvider.reganInternal = true;
 
 export const selectContextEnt = (
   jsxNode: JsxNode,

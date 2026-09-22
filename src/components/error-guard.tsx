@@ -6,22 +6,20 @@ type Props = {
   handler: ErrorHandler;
 };
 
-export const ErrorGuard: FC<Props> = ({handler}, {children, globalCtx}) => {
+export const ErrorGuard: FC<Props> = ({handler}, {children}) => {
   const Provider = getErrorContext().Provider;
   const childrenAtom = createAtom<Child>(children);
 
   return (
     <Provider
+      // Глобальные обработчики оповещает handleError — один раз на ошибку.
       value={(props) => {
-        const result = handler(props);
-
-        globalCtx.errorHandlers.forEach((handler) => {
-          handler({...props, handled: true});
-        });
-        childrenAtom.set(result);
+        childrenAtom.set(handler(props));
       }}
     >
       {childrenAtom}
     </Provider>
   );
 };
+
+ErrorGuard.reganInternal = true;

@@ -1,4 +1,5 @@
 import {Atom} from 'strangelove';
+import {reportUncaught} from '../errors/report.ts';
 import {AnyFunc} from '../types.ts';
 
 type Ent = {
@@ -8,17 +9,6 @@ type Ent = {
 
 type UpdaterTask = {
   add: (func: AnyFunc) => void;
-};
-
-// Ошибку, которую никто не перехватил, показываем так же, как показал бы
-// её непойманный throw: событие error в браузере, консоль где угодно ещё.
-const reportUncaught = (error: unknown) => {
-  if (typeof reportError === 'function') {
-    reportError(error);
-    return;
-  }
-
-  console.error(error);
 };
 
 class UpdaterTaskSync {

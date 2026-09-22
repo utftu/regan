@@ -176,6 +176,46 @@ describe('svg', () => {
     expect(root.querySelector('#c')!.namespaceURI).toBe(svgNamespace);
   });
 
+  it('дети foreignObject снова html, а вложенный svg — опять svg', () => {
+    const xhtmlNamespace = 'http://www.w3.org/1999/xhtml';
+
+    const App: FC = () => (
+      <svg id='s' viewBox='0 0 10 10'>
+        <foreignObject id='fo' width='10' height='10'>
+          <div id='d'>
+            <span id='sp'>текст</span>
+            <svg id='inner' />
+          </div>
+        </foreignObject>
+      </svg>
+    );
+
+    const root = setup(<App />);
+
+    expect(root.querySelector('#fo')!.namespaceURI).toBe(svgNamespace);
+    expect(root.querySelector('#d')!.namespaceURI).toBe(xhtmlNamespace);
+    // вглубь html наследуется сам, спрашивать больше некого
+    expect(root.querySelector('#sp')!.namespaceURI).toBe(xhtmlNamespace);
+    expect(root.querySelector('#inner')!.namespaceURI).toBe(svgNamespace);
+  });
+
+  it('гидратация и рендер дают одинаковые пространства имён', () => {
+    const App: FC = () => (
+      <svg viewBox='0 0 10 10'>
+        <foreignObject width='10' height='10'>
+          <div id='d'>текст</div>
+        </foreignObject>
+      </svg>
+    );
+
+    const jsdom = new JSDOM();
+    const hydrated = insertAndHydrate({jsdom, jsxNode: <App />});
+
+    expect(hydrated.querySelector('#d')!.namespaceURI).toBe(
+      setup(<App />).querySelector('#d')!.namespaceURI,
+    );
+  });
+
   it('соседний html рядом со svg остаётся html', () => {
     const App: FC = () => (
       <div id='wrap'>

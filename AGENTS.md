@@ -4,8 +4,8 @@ JSX-фреймворк: клиентский рендер, SSR, гидратац
 [strangelove](https://www.npmjs.com/package/strangelove), компилятор не нужен,
 хватает штатного automatic JSX runtime.
 
-Один пакет, публикуется как `regan`. 57 файлов, 3691 строка без тестов, сборка
-24 КБ / 7.5 КБ gzip.
+Один пакет, публикуется как `regan`. 59 файлов, 3892 строки без тестов, сборка
+25.3 КБ / 7.9 КБ gzip.
 
 ## Стек
 
@@ -15,7 +15,7 @@ Bun (тесты и сборка), TypeScript strict, jsdom в тестах, pret
 ## Команды
 
 ```bash
-bun test          # 183 теста
+bun test          # 196 тестов
 bun run types     # tsc --noEmit
 bun run build     # js + d.ts в dist/
 bun run watch     # пересборка js
@@ -111,10 +111,12 @@ patch-версии).
 - **`src/segment/segment.ts`** — `SegmentEnt`: позиция узла в дереве JSX, ссылка
   на `hNode`, вычисление пути и id.
 - **`src/context/`** — контекст через цепочку `ContextEnt`.
-- **`src/errors/errors.ts`** — что такое ошибка regan: класс, типы, создание,
-  опознание, контекст обработчиков. **`handle.ts`** — что с ней делают:
-  `handleError`, `runMount`, `prepareListener`, `throwGlobalSystemError`.
-- **`src/components/`** — `Fragment`, `Show`, `ErrorGuard`.
+- **`src/errors/errors.ts`** — что такое ошибка regan: класс (несёт `place`,
+  `segmentEnt` и путь `path`), типы, создание, опознание, контекст обработчиков.
+  **`handle.ts`** — что с ней делают: `handleError`, `prepareListener`,
+  `throwGlobalSystemError`. **`report.ts`** — как показывают непойманную.
+- **`src/components/`** — `Fragment`, `Show`, `ErrorGuard`. Служебные компоненты
+  regan помечены `reganInternal` и не показываются в пути ошибки.
 - **`src/subpackages/vite.ts`** — плагин vite: настраивает `oxc.jsx` и в
   dev-режиме включает `output.keepNames`, чтобы имена компонентов в путях ошибок
   пережили сборку.

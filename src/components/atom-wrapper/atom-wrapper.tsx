@@ -104,7 +104,7 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
       failCount = 0;
     } catch (error) {
       // старое дерево цело: падение случилось на рендере, до правок дома
-      const {handled} = handleError({
+      const {handled, error: errorRegan} = handleError({
         error,
         place: 'component',
         segmentEnt: ctx.segmentEnt,
@@ -113,8 +113,9 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
       failCount++;
 
       if (handled === false) {
-        // перехватить некому — прятать ошибку нельзя
-        throw error;
+        // перехватить некому — прятать ошибку нельзя. Бросаем завёрнутую:
+        // в ней лежит путь, апдейтер его покажет
+        throw errorRegan;
       }
     } finally {
       progress = false;
@@ -130,3 +131,5 @@ export const AtomWrapper: FC<Props> = ({atom}, ctx) => {
 
   return <Fragment>{atom.get()}</Fragment>;
 };
+
+AtomWrapper.reganInternal = true;

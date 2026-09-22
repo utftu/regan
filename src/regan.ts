@@ -12,3 +12,8 @@ export type {JsxNode} from './jsx-node/jsx-node.ts';
 export {ErrorLogger} from './errors/logger.tsx';
 export {detachChildren} from './h-node/helpers.ts';
 export {ErrorGuard} from './components/error-guard.tsx';
+export type {
+  ErrorRegan,
+  ErrorHandler,
+  GlobalErrorHandler,
+} from './errors/errors.ts';

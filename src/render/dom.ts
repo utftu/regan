@@ -44,14 +44,24 @@ const svgNamespace = 'http://www.w3.org/2000/svg';
 // createElement их не создать — выйдет html-элемент с тем же именем, который
 // браузер не нарисует. Родитель к этому моменту уже создан, поэтому
 // достаточно спросить его: вложенность разбирается сама.
+//
+// Обратный переход — <foreignObject>: его дети снова html, иначе <div> внутри
+// картинки окажется SVGElement и верстать им нечего. Дальше вглубь спрашивать
+// опять некого — у детей такого <div> родитель уже html.
 const createElement = (
   tag: string,
   parentDomNode: ParentNode | Document,
   window: Window,
 ) => {
+  if (tag === 'svg') {
+    return window.document.createElementNS(svgNamespace, tag);
+  }
+
+  const parent = parentDomNode as Element;
+
   if (
-    tag === 'svg' ||
-    (parentDomNode as Element).namespaceURI === svgNamespace
+    parent.namespaceURI === svgNamespace &&
+    parent.localName !== 'foreignObject'
   ) {
     return window.document.createElementNS(svgNamespace, tag);
   }

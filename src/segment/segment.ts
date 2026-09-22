@@ -45,12 +45,12 @@ export class SegmentEnt {
     return djb2(this.getJsxPath());
   }
 
-  // Путь для человека: <App><div:0><List:1><ul:0>.
+  // Путь для человека: <App><Table><tbody:1><Row:37><li>.
   // getJsxPath() даёт машинный идентификатор позиции и для чтения не годится.
   //
   // Имена берутся у функций компонентов, а минификатор их переименовывает —
-  // в продовой сборке вместо <List:1> будет <e:1>. Где имя важно и в проде,
-  // помогает List.displayName = 'List'. Номера верны всегда.
+  // в продовой сборке вместо <Row:37> будет <e:37>. Где имя важно и в проде,
+  // помогает Row.displayName = 'Row'. Номера верны всегда.
   getNamedPath(): string {
     return getNamedPath(this);
   }
@@ -71,12 +71,24 @@ const getName = (segmentEnt: SegmentEnt) => {
   return jsxNode.component.displayName || jsxNode.component.name || 'anonymous';
 };
 
+// Fragment, AtomWrapper, ContextProvider и прочие обёртки самого regan
+// человек не писал, в разметке их нет — в пути они только мешают.
+const checkInternal = (segmentEnt: SegmentEnt) => {
+  const jsxNode = segmentEnt.jsxNode;
+
+  if (!jsxNode || jsxNode.type === 'element') {
+    return false;
+  }
+
+  return jsxNode.component.reganInternal === true;
+};
+
 // Номер среди детей родителя: он и отличает одинаковых соседей друг от друга.
-// У корня его нет.
+// У корня его нет, у первого ребёнка не пишем — ноль ничего не уточняет.
 const getSegment = (segmentEnt: SegmentEnt) => {
   const name = getName(segmentEnt);
 
-  if (segmentEnt.name === '') {
+  if (segmentEnt.name === '' || segmentEnt.name === '0') {
     return `<${name}>`;
   }
 
@@ -88,7 +100,10 @@ export function getNamedPath(segmentEnt: SegmentEnt): string {
   let current: SegmentEnt | undefined = segmentEnt;
 
   while (current) {
-    names.push(getSegment(current));
+    if (checkInternal(current) === false) {
+      names.push(getSegment(current));
+    }
+
     current = current.parentSegmentEnt;
   }
 

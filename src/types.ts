@@ -30,6 +30,9 @@ export type FC<TProps extends Record<any, any> = any> = ((
   // имя для путей в ошибках: minify переименовывает функции, а это поле
   // переживает сборку
   displayName?: string;
+  // служебные компоненты самого regan в путь ошибок не попадают: человек их
+  // не писал и узла в разметке они не создают
+  reganInternal?: boolean;
 };
 
 export type Props = Record<string, any>;

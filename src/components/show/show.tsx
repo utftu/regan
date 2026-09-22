@@ -23,3 +23,5 @@ export const Show: FC<Props> = ({when}, ctx) => {
 
   return <AtomWrapper atom={atom} />;
 };
+
+Show.reganInternal = true;

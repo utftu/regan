@@ -34,7 +34,7 @@ describe('разбор детей', () => {
     expect(() => setup(<App />)).toThrow('Invalid child of type object');
     // место названо именами, а не индексами
     expect(() => setup(<App />)).toThrow(
-      'in <App><div:0><List:0><ul:0><Inner:1><div:0>',
+      'in <App><div><List><ul><Inner:1><div>',
     );
   });
 

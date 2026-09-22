@@ -6,6 +6,7 @@ import {SegmentEnt} from '../segment/segment.ts';
 import {applyRenderNodes} from './apply.ts';
 import {renderJsxNode} from './children.ts';
 import {throwGlobalSystemError} from '../errors/handle.ts';
+import {GlobalErrorHandler} from '../errors/errors.ts';
 
 export const renderRaw = ({
   node,
@@ -59,13 +60,23 @@ export const renderRaw = ({
 export const render = (
   element: HTMLElement,
   node: JsxNode,
-  {window: localWindow}: {window: Window} = {window},
+  {
+    window: localWindow,
+    data,
+    errorHandlers,
+  }: {
+    window: Window;
+    data?: Data;
+    errorHandlers?: GlobalErrorHandler[];
+  } = {window},
 ) => {
   const insertPoint: InsertPoint = {
     parent: element,
   };
 
   const globalCtx = new GlobalCtx({
+    data,
+    errorHandlers,
     clientCtx: new GlobalClientCtx({
       window: localWindow,
       initInsertPoint: insertPoint,
@@ -93,6 +104,6 @@ export const render = (
 
     return {hNode: hNodes[0]};
   } catch (error) {
-    throw throwGlobalSystemError(error, globalCtx);
+    throwGlobalSystemError(error, globalCtx);
   }
 };

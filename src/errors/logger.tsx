@@ -1,12 +1,15 @@
 import {ErrorGuard} from '../components/error-guard.tsx';
 import {FC} from '../types.ts';
-import {ErrorRegan} from './errors.tsx';
+import {ErrorRegan} from './errors.ts';
 
-export const logError = ({error}: {error: ErrorRegan}) => {
+// Единственный потребитель — ErrorLogger ниже. Наружу не отдаём: у handle.ts
+// был на него завязан признак «не перехватил», и это ломало разделение
+// обязанностей.
+const logError = ({error}: {error: ErrorRegan}) => {
   console.group(`regan: error: ${error.message}`);
 
-  if (error.segmentEnt) {
-    console.log(`место: ${error.segmentEnt.getNamedPath()}`);
+  if (error.path) {
+    console.log(`место: ${error.path}`);
   }
 
   console.groupCollapsed('Stack');
@@ -51,3 +54,5 @@ export const ErrorLogger: FC<{enabled?: boolean}> = (
     </ErrorGuard>
   );
 };
+
+ErrorLogger.reganInternal = true;

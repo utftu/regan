@@ -15,6 +15,11 @@ export class ErrorRegan extends Error {
   place: ErrorPlace;
   segmentEnt?: SegmentEnt;
   originalError: unknown;
+  // Путь до узла считается здесь и запоминается строкой: дальше дерево живёт
+  // своей жизнью, сохранённое поддерево переезжает, и getNamedPath() начнёт
+  // отвечать про новое место, а не про то, где случилась ошибка.
+  // В message путь не дописываем — message принадлежит исходной ошибке.
+  path?: string;
 
   constructor({
     error,
@@ -37,6 +42,7 @@ export class ErrorRegan extends Error {
 
     this.place = place;
     this.originalError = error;
+    this.path = segmentEnt?.getNamedPath();
 
     // segmentEnt тянет за собой всё дерево — прячем от перечисления,
     // иначе любой console.log ошибки выплюнет полдерева

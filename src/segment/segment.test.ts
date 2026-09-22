@@ -1,4 +1,6 @@
 import {describe, expect, it} from 'bun:test';
+import {AtomWrapper} from '../components/atom-wrapper/atom-wrapper.tsx';
+import {Fragment} from '../components/fragment/fragment.ts';
 import {djb2, getJsxPath, joinPath, SegmentEnt} from './segment.ts';
 
 const createSegmentEnt = (name: string, parentSegmentEnt?: SegmentEnt) => {
@@ -122,7 +124,7 @@ describe('jsx-path', () => {
       const rowEnt = createComponentEnt(Row, ulEnt, '7');
       const liEnt = createElementEnt('li', rowEnt, '0');
 
-      expect(liEnt.getNamedPath()).toBe('<App><ul:2><Row:7><li:0>');
+      expect(liEnt.getNamedPath()).toBe('<App><ul:2><Row:7><li>');
     });
 
     it('у корня номера нет', () => {
@@ -137,6 +139,29 @@ describe('jsx-path', () => {
       const ent = createComponentEnt(() => null);
 
       expect(ent.getNamedPath()).toBe('<anonymous>');
+    });
+
+    it('первый ребёнок идёт без номера', () => {
+      const ulEnt = createElementEnt('ul', undefined, '');
+      const liEnt = createElementEnt('li', ulEnt, '0');
+
+      expect(liEnt.getNamedPath()).toBe('<ul><li>');
+    });
+
+    it('служебные компоненты regan пропускаются', () => {
+      function App() {
+        return null;
+      }
+      function Row() {
+        return null;
+      }
+
+      const appEnt = createComponentEnt(App);
+      const wrapperEnt = createComponentEnt(AtomWrapper, appEnt, '1');
+      const fragmentEnt = createComponentEnt(Fragment, wrapperEnt, '0');
+      const rowEnt = createComponentEnt(Row, fragmentEnt, '4');
+
+      expect(rowEnt.getNamedPath()).toBe('<App><Row:4>');
     });
   });
 

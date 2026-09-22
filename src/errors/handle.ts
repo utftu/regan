@@ -1,6 +1,5 @@
 import {ContextEnt, getContextValue} from '../context/context.tsx';
 import {GlobalCtxBoth} from '../ctx/global.ts';
-import {HNode, Mount} from '../h-node/h-node.ts';
 import {createJsxNodeComponent} from '../jsx-node/jsx-node.ts';
 import {Fragment} from '../components/fragment/fragment.ts';
 import {SegmentEnt} from '../segment/segment.ts';
@@ -14,18 +13,30 @@ import {
   ErrorRegan,
   getErrorContext,
 } from './errors.ts';
-import {logError} from './logger.tsx';
+import {reportUncaught} from './report.ts';
 
 // Что делают с ошибкой: кому отдают, что показывают взамен.
 
-// Обработчик по умолчанию ничего не показывает, логгер только печатает —
-// оба означают «никто не перехватил».
+// Некому отдавать: до обработчика по умолчанию доходит тот, у кого выше нет
+// ни одного ErrorGuard.
 const checkDefaultHandler = (handler: AnyFunc) => {
-  if (handler === defaultErrorHandler || handler === logError) {
+  if (handler === defaultErrorHandler) {
     return true;
   }
 
   return false;
+};
+
+// Глобальные обработчики видят каждую ошибку, в том числе перехваченную, —
+// один вызов на ошибку, ровно в том месте, где решилась её судьба.
+const notifyGlobal = (
+  globalCtx: GlobalCtxBoth,
+  error: ErrorRegan,
+  handled: boolean,
+) => {
+  globalCtx.errorHandlers.forEach((handler) => {
+    handler({error, handled});
+  });
 };
 
 // Поднимается на skip штук ErrorGuard вверх: если запасной вариант тоже
@@ -72,15 +83,23 @@ export const handleError = ({
     getErrorContextEnt(segmentEnt.contextEnt, skip),
   );
 
-  const handled = !checkDefaultHandler(errorHandler);
+  const guarded = checkDefaultHandler(errorHandler) === false;
 
-  errorHandler({error: errorRegan});
+  try {
+    errorHandler({error: errorRegan});
+  } catch (handlerError) {
+    // Обработчик бросил — так устроен ErrorLogger, он печатает и отходит.
+    // Значит замены разметки не было, и перехваченной ошибку звать нельзя.
+    notifyGlobal(segmentEnt.globalCtx, errorRegan, false);
 
-  segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
-    handler({error: errorRegan, handled});
-  });
+    throw handlerError;
+  }
 
-  return {handled};
+  notifyGlobal(segmentEnt.globalCtx, errorRegan, guarded);
+
+  // Показать ошибку или пробросить дальше — решает вызывающий: у обновления
+  // динамической области ошибка летит в апдейтер, у слушателя лететь некуда.
+  return {handled: guarded, error: errorRegan};
 };
 
 // Запасная разметка от ErrorGuard, завёрнутая во Fragment,
@@ -94,17 +113,23 @@ export const createErrorComponent = ({
   errorHandler: ErrorHandler;
   segmentEnt: SegmentEnt;
 }) => {
-  const errorJsxComponent = createJsxNodeComponent({
+  let children;
+
+  try {
+    children = [errorHandler({error})];
+  } catch (handlerError) {
+    notifyGlobal(segmentEnt.globalCtx, error, false);
+
+    throw handlerError;
+  }
+
+  notifyGlobal(segmentEnt.globalCtx, error, true);
+
+  return createJsxNodeComponent({
     component: Fragment,
     props: {},
-    children: [errorHandler({error})],
+    children,
   });
-
-  segmentEnt.globalCtx.errorHandlers.forEach((handler) => {
-    handler({error, handled: !checkDefaultHandler(errorHandler)});
-  });
-
-  return errorJsxComponent;
 };
 
 // Обёртка вокруг пользовательского обработчика события.
@@ -121,34 +146,30 @@ export const prepareListener = ({
     try {
       await func(...args);
     } catch (error) {
-      handleError({error, place: 'handler', segmentEnt});
+      const result = handleError({error, place: 'handler', segmentEnt});
+
+      if (result.handled === false) {
+        reportUncaught(result.error);
+      }
     }
   };
 };
 
-export const runMount = async (mount: Mount, hNode: HNode) => {
-  try {
-    await mount(hNode);
-  } catch (error) {
-    handleError({error, place: 'mount', segmentEnt: hNode.segmentEnt});
-  }
-};
-
 // Ошибка, случившаяся вне дерева: перехватывать её некому,
 // глобальным обработчикам сообщаем и бросаем дальше.
-export const throwGlobalSystemError = (
+// Объявлена function, а не стрелкой: только так TypeScript понимает, что
+// вызов ничего не возвращает, и не добавляет undefined в тип hydrate/stringify.
+export function throwGlobalSystemError(
   error: unknown,
   globalCtx: GlobalCtxBoth,
-) => {
+): never {
   const errorRegan = createErrorRegan({
     error,
     place: 'system',
     segmentEnt: undefined,
   });
 
-  globalCtx.errorHandlers.forEach((handler) => {
-    handler({error: errorRegan, handled: false});
-  });
+  notifyGlobal(globalCtx, errorRegan, false);
 
   throw errorRegan;
-};
+}
