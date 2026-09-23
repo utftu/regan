@@ -7,27 +7,41 @@ import {MountUnmounFunc} from '../h-node/h-node.ts';
 import {
   checkDomProperty,
   getAttributeValue,
+  getPropertyEvent,
   setDomProperty,
 } from './attributes.ts';
+import {checkNotBind} from './bind.ts';
 
 export const splitProps = (props: Props) => {
   const joinedProps: Props = {};
   const dynamicProps: Props = {};
   const staticProps: Props = {};
+  // кандидаты на обратную запись: все атомы, кроме завёрнутых в notBind
+  const bindProps: Props = {};
 
   for (const key in props) {
     const value = props[key];
 
+    if (checkNotBind(value)) {
+      joinedProps[key] = value.reganNotBind.get();
+      dynamicProps[key] = value.reganNotBind;
+      continue;
+    }
+
     if (checkAtom(value)) {
       joinedProps[key] = value.get();
       dynamicProps[key] = value;
-    } else {
-      staticProps[key] = value;
-      joinedProps[key] = value;
+      // связать выйдет не всякий проп: управляемые перечислены в таблице
+      // свойств, и проверить это можно только зная элемент — на монтировании
+      bindProps[key] = value;
+      continue;
     }
+
+    staticProps[key] = value;
+    joinedProps[key] = value;
   }
 
-  return {joinedProps, dynamicProps, staticProps};
+  return {joinedProps, dynamicProps, staticProps, bindProps};
 };
 
 const setProperty = ({
@@ -108,6 +122,43 @@ export const subscribeDynamicProps = ({
       globalCtx.updater.add(atom, update);
       hNodeElement.unmounts.push(() => {
         globalCtx.updater.remove(atom, update);
+      });
+    });
+  }
+};
+
+// Обратная сторона связки: пользователь изменил элемент — кладём значение
+// в атом. Подписка наоборот, атом в элемент, уже сделана выше.
+//
+// Слушатель вешается отдельно от пользовательских: у ListenerManager на имя
+// события ровно один обработчик, и свой input={...} иначе вытеснил бы этот.
+// Пользовательский при этом срабатывает первым, поэтому читать в нём надо
+// element, а не атом.
+export const subscribeBindProps = ({
+  bindProps,
+  mounts,
+}: {
+  bindProps: Props;
+  mounts: MountUnmounFunc[];
+}) => {
+  for (const name in bindProps) {
+    const atom = bindProps[name];
+
+    mounts.push((hNode) => {
+      const element = (hNode as HNodeElement).element;
+
+      if (checkDomProperty(element, name) === false) {
+        return;
+      }
+
+      const listener = () => {
+        atom.set((element as any)[name]);
+      };
+      const event = getPropertyEvent(element, name);
+
+      element.addEventListener(event, listener);
+      hNode.unmounts.push(() => {
+        element.removeEventListener(event, listener);
       });
     });
   }

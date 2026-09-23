@@ -8,6 +8,7 @@ import {StringifyProps, StringifyResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Props} from '../types.ts';
 import {getAttributeValue} from '../utils/attributes.ts';
+import {checkNotBind} from '../utils/bind.ts';
 
 const selfClosingTags = [
   'area',
@@ -45,6 +46,19 @@ export function createElementString({
   return {left, right};
 }
 
+// В строке связка это обычное значение: обратной записи на сервере нет.
+const unwrap = (value: any) => {
+  if (checkNotBind(value)) {
+    return value.reganNotBind.get();
+  }
+
+  if (checkAtom(value)) {
+    return value.get();
+  }
+
+  return value;
+};
+
 const prepareProps = (props: Record<string, any>) => {
   const newProps: Props = {};
 
@@ -55,10 +69,7 @@ const prepareProps = (props: Record<string, any>) => {
       continue;
     }
 
-    const attributeValue = getAttributeValue(
-      key,
-      checkAtom(value) ? value.get() : value,
-    );
+    const attributeValue = getAttributeValue(key, unwrap(value));
 
     if (attributeValue !== undefined) {
       newProps[key] = attributeValue;

@@ -11,6 +11,7 @@ export {stringify} from './stringify/stringify.ts';
 export type {JsxNode} from './jsx-node/jsx-node.ts';
 export {ErrorLogger} from './errors/logger.tsx';
 export {ErrorGuard} from './components/error-guard.tsx';
+export {notBind} from './utils/bind.ts';
 export type {
   ErrorRegan,
   ErrorHandler,

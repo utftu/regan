@@ -10,6 +10,12 @@ type Style = string | Record<string, string | number>;
 
 type InputEventRegan = Omit<InputEvent, 'target'> & {target: HTMLInputElement};
 
+// Обработчик получает один объект: {event, element}.
+type Listener<TEvent, TElement> = (props: {
+  event: TEvent;
+  element: TElement;
+}) => void;
+
 type BaseElement<TElement extends Element = any> = {
   key?: string;
   ref?: Ref;
@@ -23,13 +29,13 @@ type BaseElement<TElement extends Element = any> = {
   hidden?: Dyn<boolean>;
   tabIndex?: Dyn<number>;
 
-  click?: (event: MouseEvent, element: TElement) => void;
-  keydown?: (event: KeyboardEvent, element: TElement) => void;
-  keyup?: (event: KeyboardEvent, element: TElement) => void;
-  focus?: (event: FocusEvent, element: TElement) => void;
-  blur?: (event: FocusEvent, element: TElement) => void;
-  mouseover?: (event: MouseEvent, element: TElement) => void;
-  mouseout?: (event: MouseEvent, element: TElement) => void;
+  click?: Listener<MouseEvent, TElement>;
+  keydown?: Listener<KeyboardEvent, TElement>;
+  keyup?: Listener<KeyboardEvent, TElement>;
+  focus?: Listener<FocusEvent, TElement>;
+  blur?: Listener<FocusEvent, TElement>;
+  mouseover?: Listener<MouseEvent, TElement>;
+  mouseout?: Listener<MouseEvent, TElement>;
 } & Record<string, any>;
 
 export type Div = BaseElement & {};
@@ -50,7 +56,7 @@ export type A = BaseElement & {
 };
 
 export type Input = BaseElement & {
-  input?: (event: InputEventRegan, element: HTMLInputElement) => void;
+  input?: Listener<InputEventRegan, HTMLInputElement>;
 };
 
 export type Template = BaseElement;

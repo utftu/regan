@@ -5,6 +5,7 @@ import {ListenerManager} from '../utils/listeners.ts';
 import {
   initStaticProps,
   splitProps,
+  subscribeBindProps,
   subscribeDynamicProps,
 } from '../utils/props.ts';
 import {
@@ -31,7 +32,9 @@ export function hydrateElement(
     props.domPointer.nodeCount
   ] as Element;
 
-  const {dynamicProps, staticProps, joinedProps} = splitProps(jsxNode.props);
+  const {dynamicProps, staticProps, joinedProps, bindProps} = splitProps(
+    jsxNode.props,
+  );
 
   const listenerManager = new ListenerManager(segmentEnt);
 
@@ -65,6 +68,7 @@ export function hydrateElement(
     globalCtx: props.globalCtx,
     listenerManager,
   });
+  subscribeBindProps({bindProps, mounts: hNode.mounts});
 
   if (jsxNode.systemProps.rawHtml) {
     return {

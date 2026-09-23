@@ -3,7 +3,11 @@ import {SegmentEnt} from '../segment/segment.ts';
 import {MountUnmounFunc} from '../h-node/h-node.ts';
 import {HNodeElement} from '../h-node/element.ts';
 import {ListenerManager} from '../utils/listeners.ts';
-import {splitProps, subscribeDynamicProps} from '../utils/props.ts';
+import {
+  splitProps,
+  subscribeDynamicProps,
+  subscribeBindProps,
+} from '../utils/props.ts';
 import {applyRef} from '../utils/ref.ts';
 import {handleChildren} from './children.ts';
 import {RenderNodeElement} from './node.ts';
@@ -23,7 +27,7 @@ export function renderElement(
   jsxNode.segmentEnt = segmentEnt;
 
   const {ref, rawHtml} = jsxNode.systemProps;
-  const {dynamicProps, joinedProps} = splitProps(jsxNode.props);
+  const {dynamicProps, joinedProps, bindProps} = splitProps(jsxNode.props);
   const listenerManager = new ListenerManager(segmentEnt);
 
   const mounts: MountUnmounFunc[] = [];
@@ -35,6 +39,7 @@ export function renderElement(
     globalCtx: props.globalCtx,
     listenerManager,
   });
+  subscribeBindProps({bindProps, mounts});
 
   if (ref) {
     mounts.push((hNode) => {

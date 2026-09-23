@@ -5,6 +5,7 @@ import {waitTime} from 'utftu';
 import {render} from '../render/render.ts';
 import {stringify} from '../stringify/stringify.ts';
 import {insertAndHydrate} from './tests.ts';
+import {notBind} from './bind.ts';
 import {FC} from '../types.ts';
 
 const setup = (jsxNode: any) => {
@@ -101,5 +102,52 @@ describe('свойства элементов', () => {
 
     expect(div.getAttribute('value')).toBe('раз');
     expect('value' in div).toBe(false);
+  });
+});
+
+describe('каретка', () => {
+  it('не уезжает в конец, когда значение вернули из атома', async () => {
+    const value = createAtom('123');
+    const App: FC = () => (
+      <input
+        id='input'
+        value={notBind(value)}
+        input={({element}) => {
+          // фильтр: буквы не принимаем, значение в атоме остаётся прежним
+          if (/^\d*$/.test(element.value)) {
+            value.set(element.value);
+            return;
+          }
+
+          value.update();
+        }}
+      />
+    );
+
+    const input = setup(<App />).querySelector('input')!;
+    const window = input.ownerDocument.defaultView as any;
+
+    // печатаем 'a' после первой цифры
+    input.value = '1a23';
+    input.setSelectionRange(2, 2);
+    input.dispatchEvent(new window.Event('input'));
+    await waitTime(0);
+
+    expect(input.value).toBe('123');
+    expect(input.selectionStart).toBe(1);
+  });
+
+  it('поле без выделения не ломается', async () => {
+    const value = createAtom('1');
+    const App: FC = () => <input id='input' type='number' value={value} />;
+
+    const input = setup(<App />).querySelector('input')!;
+
+    expect(input.selectionStart).toBe(null);
+
+    value.set('2');
+    await waitTime(0);
+
+    expect(input.value).toBe('2');
   });
 });

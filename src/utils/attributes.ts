@@ -71,13 +71,20 @@ export const getAttributeValue = (
 // В строке из stringify они всё равно атрибуты — других в html нет, и
 // гидратация получает из них верное начальное значение.
 //
-// Значение в таблице — чем заменить пропавший или негодный проп:
-// value='' очищает поле, checked=false снимает галку.
-const domProperties: Record<string, Record<string, string | boolean>> = {
-  input: {value: '', checked: false},
-  textarea: {value: ''},
-  select: {value: ''},
-  option: {selected: false},
+// В таблице: чем заменить пропавший или негодный проп (`value=''` очищает
+// поле, `checked=false` снимает галку) и какое событие означает «пользователь
+// это изменил» — на нём двусторонняя связка кладёт значение обратно в атом.
+const domProperties: Record<
+  string,
+  Record<string, {empty: string | boolean; event: string}>
+> = {
+  input: {
+    value: {empty: '', event: 'input'},
+    checked: {empty: false, event: 'change'},
+  },
+  textarea: {value: {empty: '', event: 'input'}},
+  select: {value: {empty: '', event: 'change'}},
+  option: {selected: {empty: false, event: 'change'}},
 };
 
 export const checkDomProperty = (element: Element, name: string) => {
@@ -90,6 +97,32 @@ export const checkDomProperty = (element: Element, name: string) => {
   return name in properties;
 };
 
+export const getPropertyEvent = (element: Element, name: string) => {
+  return domProperties[element.localName][name].event;
+};
+
+// Присваивание element.value швыряет каретку в конец строки. Пользователь
+// печатал в середине — и следующая буква уедет в хвост. Позицию возвращаем
+// со сдвигом на разницу длин: отвергли букву, строка короче на один —
+// каретка встаёт ровно туда, где была до неё.
+//
+// У type=number и type=email выделения нет вовсе: selectionStart там null,
+// а setSelectionRange бросает InvalidStateError.
+const writeValue = (element: Element, name: string, value: any) => {
+  const input = element as HTMLInputElement;
+  const position = input.selectionStart;
+
+  if (position === null || typeof value !== 'string') {
+    (element as any)[name] = value;
+    return;
+  }
+
+  const shift = input.value.length - value.length;
+
+  input.value = value;
+  input.setSelectionRange(position - shift, position - shift);
+};
+
 export const setDomProperty = (element: Element, name: string, value: any) => {
   const known =
     typeof value === 'string' ||
@@ -98,11 +131,13 @@ export const setDomProperty = (element: Element, name: string, value: any) => {
 
   // null и undefined записывать нельзя: в input.value они превратятся
   // в строки 'null' и 'undefined'
-  const newValue = known ? value : domProperties[element.localName][name];
+  const newValue = known ? value : domProperties[element.localName][name].empty;
 
-  // сравнение спасает каретку: запись того же значения в поле сбрасывает
-  // выделение и позицию курсора
-  if ((element as any)[name] !== newValue) {
-    (element as any)[name] = newValue;
+  // сравнение спасает лишнюю запись, а с ней и каретку в тех браузерах,
+  // где она уезжает даже от того же самого значения
+  if ((element as any)[name] === newValue) {
+    return;
   }
+
+  writeValue(element, name, newValue);
 };

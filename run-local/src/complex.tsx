@@ -27,8 +27,8 @@ export const Complex: FC = (props, {mount, getId}) => {
         Your name:{' '}
         <input
           value={name}
-          input={(event) => {
-            name.set(event.target.value);
+          input={({element}) => {
+            name.set(element.value);
           }}
         />
         <AtomWrapper

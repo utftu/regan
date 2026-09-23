@@ -25,8 +25,12 @@ export class ListenerManager {
       listenerManager: this as any,
       func,
     });
-    const preparedFunc = (...args: any[]) => {
-      return preparedFuncForError(...args, element);
+
+    // Слушателю приходит один объект. Голый event трогают редко, а element
+    // нужен почти всегда — при позиционных аргументах его не достать,
+    // не написав (_event, element).
+    const preparedFunc = (event: Event) => {
+      return preparedFuncForError({event, element});
     };
 
     element.addEventListener(name, preparedFunc);
