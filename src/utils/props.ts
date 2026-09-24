@@ -1,4 +1,4 @@
-import {checkAtom} from 'strangelove';
+import {checkAtom, checkIon} from 'strangelove';
 import {Props} from '../types.ts';
 import {ListenerManager} from './listeners.ts';
 import {HNodeElement} from '../h-node/element.ts';
@@ -10,30 +10,36 @@ import {
   getPropertyEvent,
   setDomProperty,
 } from './attributes.ts';
-import {checkNotBind} from './bind.ts';
+import {checkUnbind} from './bind.ts';
 
 export const splitProps = (props: Props) => {
   const joinedProps: Props = {};
   const dynamicProps: Props = {};
   const staticProps: Props = {};
-  // кандидаты на обратную запись: все атомы, кроме завёрнутых в notBind
+  // кандидаты на обратную запись: источники, кроме завёрнутых в unbind
   const bindProps: Props = {};
 
   for (const key in props) {
     const value = props[key];
 
-    if (checkNotBind(value)) {
-      joinedProps[key] = value.reganNotBind.get();
-      dynamicProps[key] = value.reganNotBind;
+    if (checkUnbind(value)) {
+      joinedProps[key] = value.atom.get();
+      dynamicProps[key] = value.atom;
       continue;
     }
 
-    if (checkAtom(value)) {
+    if (checkIon(value)) {
       joinedProps[key] = value.get();
       dynamicProps[key] = value;
-      // связать выйдет не всякий проп: управляемые перечислены в таблице
-      // свойств, и проверить это можно только зная элемент — на монтировании
-      bindProps[key] = value;
+
+      // Связываем только источник: в результат select писать нечем, у него
+      // нет set. Связать выйдет и не всякий проп — управляемые перечислены
+      // в таблице свойств, а проверить это можно, лишь зная элемент,
+      // то есть на монтировании.
+      if (checkAtom(value)) {
+        bindProps[key] = value;
+      }
+
       continue;
     }
 

@@ -1,9 +1,10 @@
-import {Atom} from 'strangelove';
+import {Ion} from 'strangelove';
 import {Ref} from '../types.ts';
 
 // любой атрибут можно задать атомом — тогда regan подпишется и будет
-// обновлять его точечно, не пересобирая элемент
-type Dyn<TValue> = TValue | Atom<TValue>;
+// обновлять его точечно, не пересобирая элемент. Ion, а не Atom: читать
+// одинаково годятся и источник, и результат select
+type Dyn<TValue> = TValue | Ion<TValue>;
 
 // style принимает и строку, и объект: горбатые имена превращаются в дефисные
 type Style = string | Record<string, string | number>;

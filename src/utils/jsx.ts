@@ -1,4 +1,4 @@
-import {Atom, checkAtom} from 'strangelove';
+import {checkIon, Ion} from 'strangelove';
 import {
   checkJsxNode,
   createJsxNodeComponent,
@@ -39,15 +39,15 @@ export function checkPassPrimitive(value: any) {
 }
 
 export const checkAllowedStructure = (value: any) => {
-  if (checkJsxNode(value) || checkAtom(value) || Array.isArray(value)) {
+  if (checkJsxNode(value) || checkIon(value) || Array.isArray(value)) {
     return true;
   }
 
   return false;
 };
 
-export const wrapChildIfNeed = (child: JsxNode | Atom) => {
-  if (checkAtom(child)) {
+export const wrapChildIfNeed = (child: JsxNode | Ion) => {
+  if (checkIon(child)) {
     return createJsxNodeComponent({
       component: AtomWrapper,
       props: {atom: child},

@@ -27,7 +27,7 @@
     "test": "bun test",
     "coverage": "bun test --coverage",
     "types": "tsc --project tsconfig.json",
-    "build": "bun run build:js && bun run build:types",
+    "build": "rm -rf dist && bun run build:js && bun run build:types",
     "build:js": "bun build ./src/regan.ts ./src/subpackages/vite.ts --outdir=./dist --format=esm --external=strangelove --external=vite --minify",
     "build:types": "tsc --project tsconfig.gen.json",
     "watch": "bun build ./src/regan.ts ./src/subpackages/vite.ts --outdir=./dist --format=esm --external=strangelove --external=vite --watch"
@@ -39,14 +39,14 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "strangelove": ">=2.1.5"
+    "strangelove": ">=2.1.6"
   },
   "devDependencies": {
     "@types/bun": "^1.4.2",
     "@types/jsdom": "^21.1.7",
     "dapes": "^0.0.61",
     "jsdom": "^26.1.0",
-    "strangelove": "^2.1.5",
+    "strangelove": "^2.1.6",
     "typescript": "^5.9.2",
     "utftu": "^1.0.31",
     "vite": "^8.2.2"

@@ -1,4 +1,4 @@
-import {Atom} from 'strangelove';
+import {Ion} from 'strangelove';
 import {FC} from '../../types.ts';
 import {Fragment} from '../fragment/fragment.ts';
 import {renderRaw} from '../../render/render.ts';
@@ -11,7 +11,7 @@ import {checkAllowedPrimitive} from '../../utils/jsx.ts';
 import {handleError} from '../../errors/handle.ts';
 
 type Props = {
-  atom: Atom;
+  atom: Ion;
 };
 
 // содержимое обёртки — ровно один текстовый узел, значит его можно обновить

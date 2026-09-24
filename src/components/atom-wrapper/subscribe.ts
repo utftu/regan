@@ -1,4 +1,4 @@
-import {Atom} from 'strangelove';
+import {Ion} from 'strangelove';
 import {AnyFunc} from '../../types.ts';
 import {Ctx} from '../../ctx/ctx.ts';
 
@@ -9,7 +9,7 @@ export const subscribeAtomWrapper = ({
   ctx,
   cb,
 }: {
-  atom: Atom;
+  atom: Ion;
   ctx: Ctx;
   cb: AnyFunc;
 }) => {
@@ -22,14 +22,13 @@ export const subscribeAtomWrapper = ({
 
   ctx.mount((hNode) => {
     // Avoid duplicate subscriptions when the same AtomWrapper re-renders before mount.
-    let subscribed = (hNode.data as Record<string, Set<Atom> | undefined>)[
+    let subscribed = (hNode.data as Record<string, Set<Ion> | undefined>)[
       ATOM_WRAPPER_SUBSCRIPTIONS_KEY
     ];
     if (!subscribed) {
       subscribed = new Set();
-      (hNode.data as Record<string, Set<Atom>>)[
-        ATOM_WRAPPER_SUBSCRIPTIONS_KEY
-      ] = subscribed;
+      (hNode.data as Record<string, Set<Ion>>)[ATOM_WRAPPER_SUBSCRIPTIONS_KEY] =
+        subscribed;
     }
     if (subscribed.has(atom)) {
       ctx.areaCtx.updaterInit.remove(atom, func1);

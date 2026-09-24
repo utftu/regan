@@ -5,7 +5,7 @@ import {waitTime} from 'utftu';
 import {render} from '../render/render.ts';
 import {stringify} from '../stringify/stringify.ts';
 import {insertAndHydrate} from './tests.ts';
-import {notBind} from './bind.ts';
+import {unbind} from './bind.ts';
 import {FC} from '../types.ts';
 
 const setup = (jsxNode: any) => {
@@ -111,7 +111,7 @@ describe('каретка', () => {
     const App: FC = () => (
       <input
         id='input'
-        value={notBind(value)}
+        value={unbind(value)}
         input={({element}) => {
           // фильтр: буквы не принимаем, значение в атоме остаётся прежним
           if (/^\d*$/.test(element.value)) {

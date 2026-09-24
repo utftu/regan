@@ -5,7 +5,7 @@ import {waitTime} from 'utftu';
 import {render} from '../render/render.ts';
 import {stringify} from '../stringify/stringify.ts';
 import {insertAndHydrate} from './tests.ts';
-import {notBind} from './bind.ts';
+import {unbind} from './bind.ts';
 import {FC} from '../types.ts';
 
 const setup = (jsxNode: any) => {
@@ -112,10 +112,10 @@ describe('связка атома с элементом', () => {
   });
 });
 
-describe('notBind', () => {
+describe('unbind', () => {
   it('отменяет обратную запись', () => {
     const text = createAtom('раз');
-    const App: FC = () => <input id='input' value={notBind(text)} />;
+    const App: FC = () => <input id='input' value={unbind(text)} />;
 
     const input = setup(<App />).querySelector('input')!;
 
@@ -126,7 +126,7 @@ describe('notBind', () => {
 
   it('прямую связь оставляет', async () => {
     const text = createAtom('раз');
-    const App: FC = () => <input id='input' value={notBind(text)} />;
+    const App: FC = () => <input id='input' value={unbind(text)} />;
 
     const input = setup(<App />).querySelector('input')!;
 
@@ -136,21 +136,22 @@ describe('notBind', () => {
     expect(input.value).toBe('два');
   });
 
-  it('нужен производному атому: в него писать нельзя', () => {
+  it('производному атому не нужен: он односторонний сам', () => {
     const source = createAtom('раз');
     const upper = select((get) => get(source).toUpperCase());
-    const App: FC = () => <input id='input' value={notBind(upper)} />;
+    const App: FC = () => <input id='input' value={upper} />;
 
     const input = setup(<App />).querySelector('input')!;
 
     typeIn(input, 'два');
 
+    // писать в результат select нечем — regan его и не связывает
     expect(upper.get()).toBe('РАЗ');
   });
 
   it('в строке разворачивается в значение', () => {
     const text = createAtom('раз');
-    const App: FC = () => <input value={notBind(text)} />;
+    const App: FC = () => <input value={unbind(text)} />;
 
     expect(stringify(<App />)).toBe('<input value="раз">');
   });

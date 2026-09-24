@@ -1,4 +1,4 @@
-import {Atom} from 'strangelove';
+import {Ion} from 'strangelove';
 import {reportUncaught} from '../errors/report.ts';
 import {AnyFunc} from '../types.ts';
 
@@ -63,10 +63,10 @@ export class Updater<TUpdaterTask extends UpdaterTask = any> {
     this.updaterTask = updaterTask;
   }
 
-  collection = new Map<Atom, Ent>();
+  collection = new Map<Ion, Ent>();
   updaterTask: TUpdaterTask;
 
-  add(atom: Atom, func: AnyFunc) {
+  add(atom: Ion, func: AnyFunc) {
     if (!this.collection.has(atom)) {
       const subscriber = () => {
         this.collection.get(atom)!.funcs.forEach((func) => {
@@ -84,7 +84,7 @@ export class Updater<TUpdaterTask extends UpdaterTask = any> {
     this.collection.get(atom)!.funcs.push(func);
   }
 
-  remove(atom: Atom, func: AnyFunc) {
+  remove(atom: Ion, func: AnyFunc) {
     if (!this.collection.has(atom)) {
       return;
     }

@@ -1,4 +1,4 @@
-import {checkAtom} from 'strangelove';
+import {checkIon} from 'strangelove';
 import {
   handleChildrenString,
   HandleChildrenStringifyResult,
@@ -8,7 +8,7 @@ import {StringifyProps, StringifyResult} from './types.ts';
 import {SegmentEnt} from '../segment/segment.ts';
 import {Props} from '../types.ts';
 import {getAttributeValue} from '../utils/attributes.ts';
-import {checkNotBind} from '../utils/bind.ts';
+import {checkUnbind} from '../utils/bind.ts';
 
 const selfClosingTags = [
   'area',
@@ -48,11 +48,11 @@ export function createElementString({
 
 // В строке связка это обычное значение: обратной записи на сервере нет.
 const unwrap = (value: any) => {
-  if (checkNotBind(value)) {
-    return value.reganNotBind.get();
+  if (checkUnbind(value)) {
+    return value.atom.get();
   }
 
-  if (checkAtom(value)) {
+  if (checkIon(value)) {
     return value.get();
   }
 

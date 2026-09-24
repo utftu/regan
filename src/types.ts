@@ -1,4 +1,4 @@
-import {Atom} from 'strangelove';
+import {Atom, Ion} from 'strangelove';
 import {JsxNode} from './jsx-node/jsx-node.ts';
 import {Ctx} from './ctx/ctx.ts';
 import {AreaCtx, GlobalCtx} from './ctx/global.ts';
@@ -19,7 +19,7 @@ export type InsertPoint = {
 export type AnyFunc = (...args: any[]) => any;
 
 export type SingleChild =
-  JsxNode | string | null | undefined | void | Atom | ((...args: any[]) => any);
+  JsxNode | string | null | undefined | void | Ion | ((...args: any[]) => any);
 
 export type Child = SingleChild | SingleChild[];
 

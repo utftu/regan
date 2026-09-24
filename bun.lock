@@ -8,7 +8,7 @@
         "@types/jsdom": "^21.1.7",
         "dapes": "^0.0.61",
         "jsdom": "^26.1.0",
-        "strangelove": "^2.1.5",
+        "strangelove": "^2.1.6",
         "typescript": "^5.9.2",
         "utftu": "^1.0.31",
         "vite": "^8.2.2",
@@ -213,7 +213,7 @@
 
     "source-map-js": ["source-map-js@1.2.1", "", {}, "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA=="],
 
-    "strangelove": ["strangelove@2.1.5", "", {}, "sha512-7aBCq/YfFcU0KFz7nwxqRzSO5pyCdcZRQtVEamOSHpWxuMPVIO2bDgxdZWKkMvmDsYtlUZHtnSwr7x1B1OL94w=="],
+    "strangelove": ["strangelove@2.1.6", "", {}, "sha512-j0hfMfYlEj9Ij2TGAc/ySbBttxLoX0kli6dHbV1jj7DUddO6DC/bNiCBxQZFLRI0ALbPL03OoW4SPuJTA0+Y1g=="],
 
     "symbol-tree": ["symbol-tree@3.2.4", "", {}, "sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw=="],
 
