@@ -14,6 +14,7 @@
       "for-jsx/jsx-dev-runtime": ["./src/jsx/FOR_JSX/jsx-dev-runtime.ts"],
       "regan": ["./src/regan.ts"],
       "regan/vite": ["./src/subpackages/vite.ts"],
+      "regan/form": ["./src/subpackages/form/regan-form.ts"],
       "regan/jsx-runtime": ["./src/regan.ts"],
       "regan/jsx-dev-runtime": ["./src/regan.ts"]
     }

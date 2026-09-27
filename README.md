@@ -340,6 +340,110 @@ const Child: FC = (props, ctx) => {
 };
 ```
 
+## Формы
+
+Подпуть `regan/form`: набор полей, проверки и отправка. Кто его не импортировал,
+тот не получил ни байта.
+
+```tsx
+import {createField, createForm} from 'regan/form';
+
+const form = createForm({
+  fields: {
+    name: createField({
+      value: '',
+      validate: (value) => (value === '' ? 'Обязательно' : undefined),
+    }),
+    email: createField({value: ''}),
+  },
+  onSubmit: ({values}) => api.save(values),
+});
+
+const SignUp: FC = () => {
+  const {name} = form.fields;
+
+  return (
+    <form submit={form.submit}>
+      <input {...name.getInput()} />
+      {name.error}
+
+      <button disabled={form.submitting}>Отправить</button>
+    </form>
+  );
+};
+```
+
+Поле — это три атома: `value`, `error` и `touched`. Поэтому `{name.error}` в
+разметке подписывается на одну ошибку, а не на форму целиком, и перечислять
+поля, как это делают формы для React, не нужно.
+
+| поле               | что это                                              |
+| ------------------ | ---------------------------------------------------- |
+| `field.value`      | `Atom` значения, связан с `<input>` в обе стороны    |
+| `field.error`      | `Atom<string>`, пусто — это `''`                     |
+| `field.touched`    | `Atom<boolean>`, поднимается на `blur` и на отправке |
+| `field.set(value)` | положить значение, не проверяя                       |
+| `field.validate()` | проверить и вернуть ошибку строкой                   |
+| `field.reset()`    | вернуть к начальному                                 |
+| `field.getInput()` | пропы под спред: `value` и `blur`                    |
+
+Проверка возвращает строку с ошибкой или ничего:
+`(value) => value === '' ? 'Обязательно' : undefined`. Внутри ошибка всегда
+строка, поэтому в читающем коде объединений нет.
+
+У формы сверху:
+
+|                   | что это                                                          |
+| ----------------- | ---------------------------------------------------------------- |
+| `form.fields`     | те же поля, что вы передали                                      |
+| `form.values`     | `Ion` объекта значений, типы выведены из полей                   |
+| `form.errors`     | `Ion` объекта ошибок                                             |
+| `form.valid`      | `Ion<boolean>` — нет ли показанных ошибок                        |
+| `form.submitting` | `Atom<boolean>`, поднят на время `onSubmit`                      |
+| `form.submit`     | обработчик для `<form submit={...}>`, сам зовёт `preventDefault` |
+| `form.validate()` | прогнать все проверки, вернуть итог                              |
+| `form.reset()`    | сбросить все поля                                                |
+| `form.destroy()`  | снять производные с полей                                        |
+
+`form.submit` перед проверкой делает все поля тронутыми — ошибки, спрятанные до
+первого захода в поле, на отправке обязаны показаться. Если проверка не прошла,
+`onSubmit` не вызывается.
+
+`values`, `errors` и `valid` — производные атомы, они висят на атомах полей.
+Если поля переживут форму — например, лежат в модуле, а форма создаётся в
+компоненте, — позовите `form.destroy()` в `ctx.unmount`. Когда форма и поля
+живут вместе, делать ничего не надо.
+
+### Связанные поля и списки
+
+Поле не знает про соседей, и API для этого не нужен — хватает замыкания:
+
+```tsx
+const password = createField({value: ''});
+const repeat = createField({
+  value: '',
+  validate: (value) =>
+    value === password.value.get() ? undefined : 'Пароли не совпадают',
+});
+```
+
+Замыкание отвечает, **что** сравнить. Если нужна живая реакция на изменение
+соседа — это подписка, и пишется она там, где нужна:
+
+```tsx
+ctx.mount(() =>
+  password.value.listeners.subscribe(() => {
+    if (repeat.touched.get()) {
+      repeat.validate();
+    }
+  }),
+);
+```
+
+Списка полей и массивов в библиотеке нет специально. Список значений — это одно
+поле: `createField({value: []})`. Если на каждую строку нужны свои ошибки и
+`touched` — это форма на строку, а не особый API.
+
 ## API
 
 ### `render(element, node, options?)`

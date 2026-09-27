@@ -21,6 +21,10 @@
     "./vite": {
       "types": "./dist/types/subpackages/vite.d.ts",
       "default": "./dist/subpackages/vite.js"
+    },
+    "./form": {
+      "types": "./dist/types/subpackages/form/regan-form.d.ts",
+      "default": "./dist/subpackages/form/regan-form.js"
     }
   },
   "scripts": {
@@ -28,9 +32,9 @@
     "coverage": "bun test --coverage",
     "types": "tsc --project tsconfig.json",
     "build": "rm -rf dist && bun run build:js && bun run build:types",
-    "build:js": "bun build ./src/regan.ts ./src/subpackages/vite.ts --outdir=./dist --format=esm --external=strangelove --external=vite --minify",
+    "build:js": "bun build ./src/regan.ts ./src/subpackages/vite.ts ./src/subpackages/form/regan-form.ts --outdir=./dist --format=esm --external=strangelove --external=vite --minify",
     "build:types": "tsc --project tsconfig.gen.json",
-    "watch": "bun build ./src/regan.ts ./src/subpackages/vite.ts --outdir=./dist --format=esm --external=strangelove --external=vite --watch"
+    "watch": "bun build ./src/regan.ts ./src/subpackages/vite.ts ./src/subpackages/form/regan-form.ts --outdir=./dist --format=esm --external=strangelove --external=vite --watch"
   },
   "files": [
     "dist/**/*"

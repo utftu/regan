@@ -5,8 +5,8 @@ JSX-фреймворк: клиентский рендер, SSR, гидратац
 источник с записью, `Ion` — только чтение), компилятор не нужен, хватает
 штатного automatic JSX runtime.
 
-Один пакет, публикуется как `regan`. 59 файлов, 3893 строки без тестов, сборка
-25.2 КБ / 7.9 КБ gzip.
+Один пакет, публикуется как `regan`. 63 файла, 4364 строки без тестов, сборка
+26.6 КБ / 7.9 КБ gzip плюс подпути: `form` 1.8 КБ, `vite` 248 байт.
 
 ## Стек
 
@@ -16,7 +16,7 @@ Bun (тесты и сборка), TypeScript strict, jsdom в тестах, pret
 ## Команды
 
 ```bash
-bun test          # 225 тестов
+bun test          # 239 тестов
 bun run types     # tsc --noEmit
 bun run build     # js + d.ts в dist/
 bun run watch     # пересборка js
@@ -121,6 +121,10 @@ patch-версии).
   `throwGlobalSystemError`. **`report.ts`** — как показывают непойманную.
 - **`src/components/`** — `Fragment`, `Show`, `ErrorGuard`. Служебные компоненты
   regan помечены `reganInternal` и не показываются в пути ошибки.
+- **`src/subpackages/form/`** — подпуть `regan/form`: `field.ts` (значение,
+  ошибка, `touched` — три атома, проверка, пропы для `<input>`), `form.ts`
+  (набор полей, производные `values`/`errors`/`valid`, `submit`, `reset`),
+  `regan-form.ts` — вход подпути.
 - **`src/subpackages/vite.ts`** — плагин vite: настраивает `oxc.jsx` и в
   dev-режиме включает `output.keepNames`, чтобы имена компонентов в путях ошибок
   пережили сборку.
@@ -137,7 +141,7 @@ patch-версии).
 ## Что снаружи
 
 `src/regan.ts` — публичный экспорт. Подпути пакета: `regan`,
-`regan/jsx-runtime`, `regan/jsx-dev-runtime`, `regan/vite`.
+`regan/jsx-runtime`, `regan/jsx-dev-runtime`, `regan/vite`, `regan/form`.
 
 Потребитель — [h11-x](https://github.com/utftu/h11): SSR-слой поверх h11, vite и
 regan.
